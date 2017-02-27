@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.fisincorporated.airportweather.metars.Metar"/>
+
+        <variable
+            name="metar"
+            type="Metar"/>
+
+        <import type="com.fisincorporated.utils.TempUtils"/>
+
+        <import type="com.fisincorporated.utils.TimeUtils"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:background="@color/offwhite"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/airport_station_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="@{metar.stationId}"
+                tools:text="KORH"/>
+
+
+            <TextView
+                android:id="@+id/airport_station_time_of_observation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="@dimen/margin_standard"
+                android:text="@{TimeUtils.convertGMTToLocalTime(metar.observationTime)}"
+                tools:text="2017-02-27T15:54:00"/>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/airport_station_raw_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{metar.rawText}"
+            tools:text="KORH 272054Z 24017G28KT 10SM CLR 09/M09 A3025 RMK AO2 PK WND 25032/2043 SLP253 T00941094 55001"/>
+
+
+    </LinearLayout>
+
+</layout>
