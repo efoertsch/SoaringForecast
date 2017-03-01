@@ -51,5 +51,8 @@
     <string name="pref_units_speed_meters_value">m</string>
     <string name="pref_units_speed_knots_value">k</string>
 
+    <!-- misc errors -->
+    <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from avaiationweather.gov</string>
+
 
 </resources>

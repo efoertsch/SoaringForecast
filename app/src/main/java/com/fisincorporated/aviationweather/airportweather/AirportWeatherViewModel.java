@@ -102,12 +102,17 @@ public class AirportWeatherViewModel extends BaseObservable {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
                 Log.d("AirportWeatherActivity", "Got response");
-                if (response != null && response.body().getErrors() == null) {
+                if (response != null && response.body() != null && response.body().getErrors() == null) {
                     metars.clear();
                     metars.addAll(response.body().getData().getMetars());
                 } else {
-                    ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
-                            .getString(R.string.oops), response.body().getErrors());
+                    if (response != null && response.body() != null) {
+                        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
+                                .getString(R.string.oops), response.body().getErrors());
+                    } else {
+                        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
+                                .getString(R.string.oops), bindingView.getContext().getString(R.string.aviation_gov_unspecified_error));
+                    }
                 }
             }
 

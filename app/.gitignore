@@ -8,6 +8,7 @@
 /build
 /captures
 .idea/
- gradle/
- gradlew
- gradlew.bat
+gradle/
+gradlew
+gradlew.bat
+

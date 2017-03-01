@@ -6,11 +6,15 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.fisincorporated.aviationweather.R;
+
+import static com.fisincorporated.aviationweather.R.id.fragment_container;
 
 
 // Cribbed various code
@@ -18,11 +22,27 @@ import com.fisincorporated.aviationweather.R;
 // -preferencefragment
 // http://stackoverflow.com/questions/531427/how-do-i-display-the-current-value-of-an-android
 // -preference-in-the-preference-su/4325239#4325239
-public class MetarSettingsActivity extends PreferenceActivity {
+public class MetarSettingsActivity extends AppCompatActivity {
+
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new
+        setContentView(R.layout.activity_settings);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Settings");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                onBackPressed();
+
+            }
+        });
+
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, new
                 SettingsPreferenceFragment()).commit();
     }
 
