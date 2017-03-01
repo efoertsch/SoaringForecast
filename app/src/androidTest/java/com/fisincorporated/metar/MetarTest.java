@@ -2,7 +2,7 @@ package com.fisincorporated.metar;
 
 
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherAPI;
-import com.fisincorporated.airportweather.metars.MetarResponse;
+import com.fisincorporated.aviationweather.metars.MetarResponse;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
 
 import org.junit.Test;

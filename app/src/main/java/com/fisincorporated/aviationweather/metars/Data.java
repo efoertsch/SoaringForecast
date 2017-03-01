@@ -1,4 +1,4 @@
-package com.fisincorporated.airportweather.metars;
+package com.fisincorporated.aviationweather.metars;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;

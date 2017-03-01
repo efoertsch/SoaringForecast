@@ -1,4 +1,4 @@
-package com.fisincorporated.airportweather;
+package com.fisincorporated.aviationweather.airportweather;
 
 
 import android.databinding.BaseObservable;
@@ -9,13 +9,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import com.fisincorporated.airportweather.metars.Metar;
-import com.fisincorporated.airportweather.metars.MetarResponse;
+import com.fisincorporated.aviationweather.BR;
+import com.fisincorporated.aviationweather.metars.Metar;
+import com.fisincorporated.aviationweather.metars.MetarResponse;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherAPI;
-import com.fisincorporated.metar.BR;
-import com.fisincorporated.metar.R;
-import com.fisincorporated.metar.databinding.ActivityRecyclerViewBinding;
+import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.databinding.ActivityRecyclerViewBinding;
+import com.fisincorporated.aviationweather.utils.ViewUtilities;
 
 import net.droidlabs.mvvm.recyclerview.adapter.binder.ItemBinder;
 import net.droidlabs.mvvm.recyclerview.adapter.binder.ItemBinderBase;
@@ -28,22 +29,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AirportWeatherViewModel  extends BaseObservable {
+public class AirportWeatherViewModel extends BaseObservable {
 
     private Call<MetarResponse> metarCall;
 
     private String airportList;
 
-    private boolean metarCallComplete = false;
-
-    private RecyclerView recyclerView;
-
     public ObservableArrayList<Metar> metars = new ObservableArrayList<>();
 
     private ActivityRecyclerViewBinding viewDataBinding;
 
-    @Inject
-    public AirportWeatherAdapter airportWeatherAdapter;
+    private View bindingView;
+
 
     @Inject
     public AirportWeatherViewModel() {
@@ -53,20 +50,18 @@ public class AirportWeatherViewModel  extends BaseObservable {
      * This gets called via xml parms in recylerview in activity_recycler_view
      * and binds a metar to a row (airport_metar_taf) in the recyclerview
      */
-    public ItemBinder<Metar> itemViewBinder()
-    {
+    public ItemBinder<Metar> itemViewBinder() {
         return new ItemBinderBase<>(BR.metar, R.layout.airport_metar_taf);
     }
 
 
     public AirportWeatherViewModel setView(View view) {
-        view = view.findViewById(R.id.activity_weather_view);
-        viewDataBinding = DataBindingUtil.bind(view);
-        recyclerView = viewDataBinding.activityMetarRecyclerView;
-        setup();
+        bindingView = view.findViewById(R.id.activity_weather_view);
+        viewDataBinding = DataBindingUtil.bind(bindingView);
+        setupRecyclerView(viewDataBinding.activityMetarRecyclerView);
         // This binding is to  handle indeterminate progress bar
         viewDataBinding.setMetars(metars);
-        // This binding is to handle metar detail
+        // This binding is to handle metar detail (set app:itemViewBinder in xml)
         viewDataBinding.setViewmodel(this);
         return this;
     }
@@ -76,14 +71,12 @@ public class AirportWeatherViewModel  extends BaseObservable {
         return this;
     }
 
-    public void setup() {
+    public void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
     }
 
-
     public void onResume() {
-        metarCallComplete = false;
         callForMetar();
     }
 
@@ -102,7 +95,7 @@ public class AirportWeatherViewModel  extends BaseObservable {
         AviationWeatherAPI.CurrentMetar client = AppRetrofit.get().create(AviationWeatherAPI
                 .CurrentMetar.class);
 
-        metarCall = client.mostRecentMetarForEachAirport(airportList, 1);
+        metarCall = client.mostRecentMetarForEachAirport(airportList, 2);
 
         // Execute the call asynchronously. Get a positive or negative callback.
         metarCall.enqueue(new Callback<MetarResponse>() {
@@ -112,19 +105,16 @@ public class AirportWeatherViewModel  extends BaseObservable {
                 if (response != null && response.body().getErrors() == null) {
                     metars.clear();
                     metars.addAll(response.body().getData().getMetars());
-                  // airportWeatherAdapter.setMetarList(response.body().getData().getMetars());
-
                 } else {
-                    Log.d("AirportWeatherActivity", "response with error:" + response.body()
-                            .getErrors());
+                    ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
+                            .getString(R.string.oops), response.body().getErrors());
                 }
-                metarCallComplete = true;
             }
 
             @Override
             public void onFailure(Call<MetarResponse> call, Throwable t) {
-                Log.d("AirportWeatherActivity", t.toString());
-                metarCallComplete = true;
+                ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext().getString
+                        (R.string.oops), t.toString());
             }
         });
     }

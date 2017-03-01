@@ -1,4 +1,4 @@
-package com.fisincorporated.airportweather.metars;
+package com.fisincorporated.aviationweather.metars;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -6,9 +6,7 @@ import org.simpleframework.xml.Root;
 
 import java.util.List;
 
-/**
- * Created by ericfoertsch on 2/22/17.
- */
+
 @Root(name = "METAR", strict = false)
 public class Metar {
 
@@ -356,6 +354,16 @@ public class Metar {
 
     public void setVertVisFt(Integer vertVisFt) {
         this.vertVisFt = vertVisFt;
+    }
+
+    public String getSkyConditionsListString() {
+        StringBuilder sb = new StringBuilder();
+        for (SkyCondition skyCondition : skyConditions) {
+            sb.append((skyCondition.getCloudBaseFtAgl() != null ? skyCondition.getCloudBaseFtAgl() + " " : "")
+                    + (skyCondition.getSkyCover() != null ? skyCondition.getSkyCover() : "")
+                    + "\n");
+        }
+        return sb.delete(sb.length()-1, sb.length()).toString();
     }
 
 }

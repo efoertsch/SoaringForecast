@@ -1,6 +1,6 @@
 package com.fisincorporated.aviationweather.retrofit;
 
-import com.fisincorporated.airportweather.metars.MetarResponse;
+import com.fisincorporated.aviationweather.metars.MetarResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

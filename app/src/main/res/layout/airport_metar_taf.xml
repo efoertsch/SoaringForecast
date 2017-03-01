@@ -4,15 +4,16 @@
 
     <data>
 
-        <import type="com.fisincorporated.airportweather.metars.Metar"/>
+        <import type="com.fisincorporated.aviationweather.metars.Metar"/>
+
+        <import type="android.view.View"/>
 
         <variable
             name="metar"
             type="Metar"/>
 
-        <import type="com.fisincorporated.utils.TempUtils"/>
+        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
 
-        <import type="com.fisincorporated.utils.TimeUtils"/>
     </data>
 
     <LinearLayout
@@ -27,23 +28,42 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-
-            <TextView
-                android:id="@+id/airport_station_id"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:text="@{metar.stationId}"
-                tools:text="KORH"/>
+                android:orientation="horizontal">
 
+                <TextView
+                    android:id="@+id/airport_station_id"
+                    style="@style/metarData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="@{metar.stationId}"
+                    tools:text="KORH"/>
+
+                <TextView
+                    style="@style/metarLabels"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/metar_elevation"/>
+
+                <TextView
+                    style="@style/metarData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(metar.elevationM))}"/>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/airport_station_time_of_observation"
+                style="@style/metarData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginLeft="@dimen/margin_standard"
-                android:text="@{TimeUtils.convertGMTToLocalTime(metar.observationTime)}"
+                android:text="@{ConversionUtils.convertGMTToLocalTime(metar.observationTime)}"
                 tools:text="2017-02-27T15:54:00"/>
 
 
@@ -51,12 +71,130 @@
 
         <TextView
             android:id="@+id/airport_station_raw_text"
+            style="@style/metarData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{metar.rawText}"
             tools:text="KORH 272054Z 24017G28KT 10SM CLR 09/M09 A3025 RMK AO2 PK WND 25032/2043 SLP253 T00941094 55001"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <TextView
+                style="@style/metarLabels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/metar_windDirection"/>
+
+            <TextView
+                style="@style/metarData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{Integer.toString(metar.windDirDegrees)}"
+                tools:text="340"/>
+
+            <TextView
+                style="@style/metarLabels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/metar_speedKt"/>
+
+            <TextView
+                style="@style/metarData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{Integer.toString(metar.windSpeedKt)}"
+                tools:text="15"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="@{metar.windGustKt == null ? View.GONE : View.VISIBLE}">
+
+                <TextView
+                    style="@style/metarLabels"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/metar_windGustKt"/>
+
+                <TextView
+                    style="@style/metarData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{metar.windGustKt == null ? &quot;&quot;  :Integer.toString(metar.windGustKt)}"
+                    tools:text="10"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/metarLabels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:text="@string/metar_skyConditions"/>
+
+            <TextView
+                style="@style/metarData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:orientation="vertical"
+                android:text="@{metar.getSkyConditionsListString}"
+                tools:text="900 BKN \n1800 FEW"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="@{metar.visibilityStatuteMi == null ? View.GONE : View.VISIBLE}">
+
+            <TextView
+                style="@style/metarLabels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/metar_visibiltySM"
+                />
+
+            <TextView
+                style="@style/metarData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(metar.visibilityStatuteMi))}"
+                tools:text="7.5"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="@{metar.vertVisFt == null ? View.GONE : View.VISIBLE}">
+
+                <TextView
+                    style="@style/metarLabels"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/metar_verticalVisibility"
+                    />
+
+                <TextView
+                    style="@style/metarData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{metar.vertVisFt == null ? &quot;&quot; : Integer.toString(metar.vertVisFt)}"
+                    tools:text="100"/>
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
 </layout>

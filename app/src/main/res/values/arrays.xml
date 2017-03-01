@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_units_temp_labels">
+        <item>@string/pref_units_temp_centigrade_label</item>
+        <item>@string/pref_units_temp_fahrenheit_label</item>
+    </string-array>
+
+    <string-array name="pref_units_temp_values">
+        <item>@string/pref_units_temp_centigrade_value</item>
+        <item>@string/pref_units_temp_fahrenheit_value</item>
+    </string-array>
+
+    <string-array name="pref_units_altitude_labels">
+        <item>@string/pref_units_altitude_meters_label</item>
+        <item>@string/pref_units_altitude_feet_label</item>
+    </string-array>
+
+    <string-array name="pref_units_altitude_values">
+        <item>@string/pref_units_altitude_meters_value</item>
+        <item>@string/pref_units_altitude_feet_value</item>
+    </string-array>
+
+    <string-array name="pref_units_speed_labels">
+        <item>@string/pref_units_speed_meters_label</item>
+        <item>@string/pref_units_speed_knots_label</item>
+    </string-array>
+
+    <string-array name="pref_units_speed_values">
+        <item>@string/pref_units_speed_meters_value</item>
+        <item>@string/pref_units_speed_knots_value</item>
+    </string-array>
+
+</resources>

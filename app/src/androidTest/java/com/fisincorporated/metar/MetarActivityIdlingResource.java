@@ -2,7 +2,7 @@ package com.fisincorporated.metar;
 
 import android.support.test.espresso.IdlingResource;
 
-import com.fisincorporated.airportweather.AirportWeatherActivity;
+import com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity;
 
 public class MetarActivityIdlingResource implements IdlingResource {
 

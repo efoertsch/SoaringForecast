@@ -5,25 +5,25 @@
     <data>
         <import type="android.databinding.ObservableArrayList"/>
         <import type="android.view.View"/>
-        <import type="com.fisincorporated.airportweather.metars.Metar"/>
+        <import type="com.fisincorporated.aviationweather.metars.Metar"/>
         <variable
             name="metars"
             type="ObservableArrayList&lt;Metar&gt;"/>
         <variable
             name="viewmodel"
-            type="com.fisincorporated.airportweather.AirportWeatherViewModel"/>
+            type="com.fisincorporated.aviationweather.airportweather.AirportWeatherViewModel"/>
     </data>
 
     <RelativeLayout
         android:id="@+id/activity_weather_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:visibility='@{metars.size() > 0 ? View.GONE : View.VISIBLE}'/>
 
         <android.support.v7.widget.RecyclerView

@@ -1,6 +1,6 @@
 package com.fisincorporated.aviationweather.dagger;
 
-import com.fisincorporated.airportweather.AirportWeatherActivity;
+import com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity;
 
 import javax.inject.Singleton;
 
