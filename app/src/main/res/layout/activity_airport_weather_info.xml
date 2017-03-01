@@ -21,10 +21,11 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ProgressBar
+            android:id="@+id/activity_metar_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:visibility='@{metars.size() > 0 ? View.GONE : View.VISIBLE}'/>
+            android:visibility='@{viewmodel.isShowProgressBar() ? View.VISIBLE : View.GONE}'/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/activity_metar_recycler_view"

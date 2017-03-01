@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.fisincorporated.aviationweather">
+          package="com.fisincorporated.aviationweather">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
+        android:name=".dagger.WeatherApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
-        android:name="com.fisincorporated.aviationweather.dagger.WeatherApplication">
-
-
+        android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name="com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity"
+            android:name=".airportweather.AirportWeatherActivity"
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <activity android:name="com.fisincorporated.aviationweather.settings.MetarSettingsActivity"/>
-
-
+        <activity android:name=".settings.MetarSettingsActivity"/>
+        <activity
+            android:name=".airports.AirportListActivity"
+            android:label="@string/title_activity_airport_list">
+        </activity>
     </application>
 
 </manifest>

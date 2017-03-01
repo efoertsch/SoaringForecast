@@ -44,4 +44,16 @@ public class ConversionUtils {
 
         return "Invalid GMT time: " + gmtTime;
     }
+
+    public static String getAirportListForMetars(String airportList) {
+        StringBuilder sb = new StringBuilder();
+        if (airportList != null) {
+            String[] airportArray  = airportList.trim().split(" ");
+            for (int i = 0; i < airportArray.length; ++i){
+                sb.append(airportArray[i] + (i < airportArray.length - 1 ? ", " : ""));
+            }
+        }
+        return sb.toString();
+    }
+
 }

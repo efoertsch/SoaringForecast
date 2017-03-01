@@ -3,7 +3,6 @@ package com.fisincorporated.aviationweather.airportweather;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -12,9 +11,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.fisincorporated.aviationweather.settings.MetarSettingsActivity;
-import com.fisincorporated.aviationweather.dagger.WeatherApplication;
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.airports.AirportListActivity;
+import com.fisincorporated.aviationweather.dagger.WeatherApplication;
+import com.fisincorporated.aviationweather.settings.MetarSettingsActivity;
 
 import javax.inject.Inject;
 
@@ -38,8 +38,7 @@ public class AirportWeatherActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Go to activity to find/enter additional airports", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                displayAirportList();
 
             }
         });
@@ -67,9 +66,17 @@ public class AirportWeatherActivity extends AppCompatActivity {
             case R.id.metar_menu_settings:
                 displaySettingsActivity();
                 return true;
+            case R.id.add_airport_code:
+                displayAirportList();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void displayAirportList() {
+        Intent i = new Intent(this, AirportListActivity.class);
+        startActivity(i);
     }
 
     private void displaySettingsActivity() {

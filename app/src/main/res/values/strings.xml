@@ -1,10 +1,15 @@
 <resources>
     <string name="app_name">Aviation Weather</string>
 
-
-    <string name="action_settings">Settings</string>
     <string name="ok">OK</string>
     <string name="oops">Oops!</string>
+
+    <!-- misc errors -->
+    <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from avaiationweather.gov</string>
+
+    <!-- menu items -->
+    <string name="action_settings">Settings</string>
+    <string name="action_add_airports">Add airports</string>
 
     <!-- Metar/TAF -->
     <string name="metar_windDirection">Wind Direction:</string>
@@ -51,8 +56,15 @@
     <string name="pref_units_speed_meters_value">m</string>
     <string name="pref_units_speed_knots_value">k</string>
 
-    <!-- misc errors -->
-    <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from avaiationweather.gov</string>
+    <!-- AirportListActivity text -->
+    <string name="title_activity_airport_list">Airport List</string>
+    <string name="enter_airport_codes">Enter airport codes using 4 character ICAO code leaving at least one space between each code:</string>
+    <string name="airport_code_error">Airport codes must be 4 character ICAO code.</string>
+    <string name="airport_code_entry_hint">KBOS KORH</string>
+
+    <string name="done">Done</string>
+    <string name="save">Save</string>
+
 
 
 </resources>
