@@ -32,35 +32,47 @@
 
 
     <!-- Display preferences -->
+    <!-- Display raw metar -->
+    <string name="pref_raw_metar_key">Raw_Metar_key</string>
+    <string name="pref_display_raw_metar">Display raw METAR</string>
+
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
     <string name="pref_units_temp">Temperature</string>
     <string name="pref_units_temp_centigrade_label">Centigrade</string>
     <string name="pref_units_temp_fahrenheit_label">Fahrenheit</string>
     <!-- values -->
-    <string name="pref_units_temp_centigrade_value">c</string>
-    <string name="pref_units_temp_fahrenheit_value">f</string>
+    <string name="pref_units_temp_centigrade_value">C</string>
+    <string name="pref_units_temp_fahrenheit_value">F</string>
 
     <!-- Label for the altitude units preference-->
     <string name="pref_units_altitude">Altitude</string>
     <string name="pref_units_altitude_meters_label">Meters</string>
     <string name="pref_units_altitude_feet_label">Feet</string>
     <!-- values -->
-    <string name="pref_units_altitude_meters_value">m</string>
-    <string name="pref_units_altitude_feet_value">f</string>
+    <string name="pref_units_altitude_meters_value">M</string>
+    <string name="pref_units_altitude_feet_value">Ft</string>
 
     <!-- Label for the altitude units preference-->
-    <string name="pref_units_speed">Wind Speed</string>
+    <string name="pref_units_wind_speed">Wind Speed</string>
     <string name="pref_units_speed_meters_label">Meters/Sec</string>
     <string name="pref_units_speed_knots_label">Knots</string>
     <!-- values -->
-    <string name="pref_units_speed_meters_value">m</string>
-    <string name="pref_units_speed_knots_value">k</string>
+    <string name="pref_units_speed_meters_value">m/sec</string>
+    <string name="pref_units_speed_knots_value">kt</string>
+
+    <!-- Label for the distance units preference-->
+    <string name="pref_units_distance">Distance</string>
+    <string name="pref_units_distance_kilometer_label">Kilometers</string>
+    <string name="pref_units_distance_statue_miles_label">Statue Miles</string>
+    <!-- values -->
+    <string name="pref_units_distance_kilometers_value">KM</string>
+    <string name="pref_units_distance_status_miles_value">SM</string>
 
     <!-- AirportListActivity text -->
     <string name="title_activity_airport_list">Airport List</string>
     <string name="enter_airport_codes">Enter airport codes using 4 character ICAO code leaving at least one space between each code:</string>
     <string name="airport_code_error">Airport codes must be 4 character ICAO code.</string>
-    <string name="airport_code_entry_hint">KBOS KORH</string>
+    <string name="airport_code_entry_hint">eg. KBOS KORH</string>
 
     <string name="done">Done</string>
     <string name="save">Save</string>

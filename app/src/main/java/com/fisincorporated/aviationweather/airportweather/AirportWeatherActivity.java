@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.airports.AirportListActivity;
-import com.fisincorporated.aviationweather.dagger.WeatherApplication;
+import com.fisincorporated.aviationweather.app.WeatherApplication;
 import com.fisincorporated.aviationweather.settings.MetarSettingsActivity;
 
 import javax.inject.Inject;

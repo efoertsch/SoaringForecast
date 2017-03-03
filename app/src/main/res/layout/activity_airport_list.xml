@@ -18,6 +18,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:backgroundTint="@color/colorScreenBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.fisincorporated.aviationweather.airports.AirportListActivity"
     tools:showIn="@layout/activity_airport">
@@ -39,7 +40,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars = "vertical"
-        android:background="@drawable/rounded_corners"
         android:text="@{airports.airportList}"
         android:inputType="text"
         android:textAllCaps="true"

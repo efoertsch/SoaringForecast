@@ -1,1 +1,1 @@
-include ':app', ':recyclerview-binding'
+include ':app'

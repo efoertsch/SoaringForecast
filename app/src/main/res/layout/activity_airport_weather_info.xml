@@ -3,12 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="android.databinding.ObservableArrayList"/>
         <import type="android.view.View"/>
-        <import type="com.fisincorporated.aviationweather.metars.Metar"/>
-        <variable
-            name="metars"
-            type="ObservableArrayList&lt;Metar&gt;"/>
         <variable
             name="viewmodel"
             type="com.fisincorporated.aviationweather.airportweather.AirportWeatherViewModel"/>
@@ -18,21 +13,20 @@
         android:id="@+id/activity_weather_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:backgroundTint="@color/colorScreenBackground"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/activity_metar_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
         <ProgressBar
             android:id="@+id/activity_metar_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:visibility='@{viewmodel.isShowProgressBar() ? View.VISIBLE : View.GONE}'/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/activity_metar_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:items="@{viewmodel.metars}"
-            app:itemViewBinder="@{viewmodel.itemViewBinder}"/>
+            android:visibility='@{viewmodel.showProgressBar ? View.VISIBLE : View.GONE}'/>
 
     </RelativeLayout>
 

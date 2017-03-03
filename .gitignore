@@ -7,3 +7,15 @@
 /build
 /captures
 .externalNativeBuild
+gradlew
+gradlew.bat
+.idea/codeStyleSettings.xml
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/markdown-navigator.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/runConfigurations.xml
+.idea/vcs.xml
+.idea/copyright/profiles_settings.xml
+.idea/markdown-navigator/profiles_settings.xml

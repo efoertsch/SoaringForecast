@@ -4,7 +4,7 @@
         android:width="1dp"
         android:color="@color/black_overlay" />
 
-    <solid android:color="@color/colorCardBackground" />
+    <solid android:color="@color/colorScreenBackground" />
 
     <padding
         android:left="1dp"

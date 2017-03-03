@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <CheckBoxPreference
+        android:key="@string/pref_raw_metar_key"
+        android:title="@string/pref_display_raw_metar"
+        android:defaultValue="true"/>
+
     <ListPreference
-        android:defaultValue="@string/pref_units_temp_fahrenheit_label"
+        android:defaultValue="@string/pref_units_temp_fahrenheit_value"
         android:entries="@array/pref_units_temp_labels"
         android:entryValues="@array/pref_units_temp_values"
         android:key="@string/pref_units_temp"
         android:title="@string/pref_units_temp"/>
 
     <ListPreference
-        android:defaultValue="@string/pref_units_altitude_feet_label"
+        android:defaultValue="@string/pref_units_altitude_feet_value"
         android:entries="@array/pref_units_altitude_labels"
         android:entryValues="@array/pref_units_altitude_values"
         android:key="@string/pref_units_altitude"
         android:title="@string/pref_units_altitude"/>
 
     <ListPreference
-        android:defaultValue="@string/pref_units_speed_knots_label"
+        android:defaultValue="@string/pref_units_speed_knots_value"
         android:entries="@array/pref_units_speed_labels"
         android:entryValues="@array/pref_units_speed_values"
-        android:key="@string/pref_units_speed"
-        android:title="@string/pref_units_speed"/>
+        android:key="@string/pref_units_wind_speed"
+        android:title="@string/pref_units_wind_speed"/>
+
+    <ListPreference
+        android:defaultValue="@string/pref_units_distance_status_miles_value"
+        android:entries="@array/pref_units_distance_labels"
+        android:entryValues="@array/pref_units_distance_values"
+        android:key="@string/pref_units_distance"
+        android:title="@string/pref_units_distance"/>
 
 
 </PreferenceScreen>

@@ -6,7 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.dagger.WeatherApplication;
+import com.fisincorporated.aviationweather.app.WeatherApplication;
 
 import javax.inject.Inject;
 

@@ -31,4 +31,15 @@
         <item>@string/pref_units_speed_knots_value</item>
     </string-array>
 
+    <string-array name="pref_units_distance_labels">
+        <item>@string/pref_units_distance_kilometer_label</item>
+        <item>@string/pref_units_distance_statue_miles_label</item>
+    </string-array>
+
+    <string-array name="pref_units_distance_values">
+        <item>@string/pref_units_distance_kilometers_value</item>
+        <item>@string/pref_units_distance_status_miles_value</item>
+    </string-array>
+
+
 </resources>

@@ -37,8 +37,11 @@ public class AirportListViewModel {
     public AirportListViewModel setView(ViewGroup view) {
         bindingView = view.findViewById(R.id.activity_airport_list);
         viewDataBinding = DataBindingUtil.bind(bindingView);
-        airportList = appPreferences.getAirportList(bindingView.getContext());
+        airportList = appPreferences.getAirportList();
         viewDataBinding.setAirports(this);
+        // to set cursor at end of list of codes
+        viewDataBinding.activityAirportCodes.setText(airportList);
+        viewDataBinding.activityAirportCodes.setSelection(airportList.length()> 0 ? airportList.length() : 0);
         return this;
 
     }
@@ -49,8 +52,8 @@ public class AirportListViewModel {
     }
 
     public void onSaveAirports(View view) {
-        airportList = viewDataBinding.activityAirportCodes.getText().toString();
-        appPreferences.saveAirportList(bindingView.getContext(), airportList);
+        airportList = viewDataBinding.activityAirportCodes.getText().toString().toUpperCase();
+        appPreferences.saveAirportList(airportList);
         if (entryCompleteListener != null) {
             entryCompleteListener.onEntryComplete();
         }

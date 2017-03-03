@@ -4,12 +4,15 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.fisincorporated.aviationweather.metars.Metar"/>
         <import type="android.view.View"/>
+        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
         <variable
             name="metar"
-            type="Metar"/>
-        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+            type="com.fisincorporated.aviationweather.metars.Metar"/>
+
+        <variable
+            name="displayPrefs"
+            type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -18,9 +21,7 @@
         android:layout_marginStart="@dimen/margin_double"
         android:layout_marginEnd="@dimen/margin_double"
         android:layout_marginBottom="@dimen/margin_half"
-        android:layout_marginTop="@dimen/margin_half"
-        app:cardCornerRadius="@dimen/card_view_rounded_corner_radius"
-        app:cardBackgroundColor="@color/colorCardBackground">
+        android:layout_marginTop="@dimen/margin_half">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -79,7 +80,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{metar.rawText}"
-            tools:text="KORH 272054Z 24017G28KT 10SM CLR 09/M09 A3025 RMK AO2 PK WND 25032/2043 SLP253 T00941094 55001"/>
+            tools:text="KORH 272054Z 24017G28KT 10SM CLR 09/M09 A3025 RMK AO2 PK WND 25032/2043 SLP253 T00941094 55001"
+            android:visibility="@{displayPrefs.rawMetarDisplay ? View.VISIBLE : View.GONE}"/>
 
         <LinearLayout
             android:layout_width="match_parent"
