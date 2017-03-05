@@ -8,7 +8,7 @@
         <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
         <variable
             name="metar"
-            type="com.fisincorporated.aviationweather.metars.Metar"/>
+            type="com.fisincorporated.aviationweather.data.metars.Metar"/>
 
         <variable
             name="displayPrefs"
@@ -49,6 +49,7 @@
 
                 <TextView
                     style="@style/metarLabels"
+                    android:layout_marginLeft="@dimen/margin_standard"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/metar_elevation"/>
@@ -57,7 +58,15 @@
                     style="@style/metarData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(metar.elevationM))}"/>
+                    android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(metar.elevationM))}"
+                    tools:text="999"/>
+
+                <TextView
+                    style="@style/metarLabels"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{displayPrefs.altitudeUnits}"
+                    tools:text="Ft"/>
 
             </LinearLayout>
 
@@ -66,8 +75,7 @@
                 style="@style/metarData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="@dimen/margin_standard"
+                android:layout_marginLeft="@dimen/margin_double"
                 android:text="@{ConversionUtils.convertGMTToLocalTime(metar.observationTime)}"
                 tools:text="2017-02-27T15:54:00"/>
 
@@ -77,6 +85,7 @@
         <TextView
             android:id="@+id/airport_station_raw_text"
             style="@style/metarData"
+            android:layout_marginTop="@dimen/margin_half"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{metar.rawText}"
@@ -86,6 +95,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_half"
             android:orientation="horizontal">
 
             <TextView
@@ -103,9 +113,10 @@
 
             <TextView
                 style="@style/metarLabels"
+                android:layout_marginLeft="@dimen/margin_standard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/metar_speedKt"/>
+                android:text="@string/metar_speed"/>
 
             <TextView
                 style="@style/metarData"
@@ -124,7 +135,7 @@
                     style="@style/metarLabels"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/metar_windGustKt"/>
+                    android:text="@string/metar_windGust"/>
 
                 <TextView
                     style="@style/metarData"
@@ -169,7 +180,7 @@
                 style="@style/metarLabels"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/metar_visibiltySM"
+                android:text="@string/metar_visibilty"
                 />
 
             <TextView

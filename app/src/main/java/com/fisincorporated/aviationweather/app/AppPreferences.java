@@ -33,13 +33,13 @@ public class AppPreferences {
 
     private boolean rawMetar;
 
-    private String temperatureUnits;
+    private String ImperialTemperatureUnits;
 
-    private String windSpeedUnits;
+    private String ImperialWindSpeedUnits;
 
-    private String altitudeUnits;
+    private String ImperialAltitudeUnits;
 
-    private String distanceUnits;
+    private String ImperialDistanceUnits;
 
 
     @Inject
@@ -60,10 +60,10 @@ public class AppPreferences {
 
         // and use these default values
         rawMetar = false;
-        temperatureUnits = res.getString(R.string.pref_units_temp_fahrenheit_value);
-        windSpeedUnits = res.getString(R.string.pref_units_speed_knots_value);
-        altitudeUnits = res.getString(R.string.pref_units_altitude_feet_value);
-        distanceUnits = res.getString(R.string.pref_units_distance_statue_miles_label);
+        ImperialTemperatureUnits = res.getString(R.string.pref_units_temp_fahrenheit_value);
+        ImperialWindSpeedUnits = res.getString(R.string.pref_units_speed_knots_value);
+        ImperialAltitudeUnits = res.getString(R.string.pref_units_altitude_feet_value);
+        ImperialDistanceUnits = res.getString(R.string.pref_units_distance_statue_miles_label);
 
 
     }
@@ -79,7 +79,7 @@ public class AppPreferences {
     }
 
     public String getTemperatureDisplay() {
-        return sharedPreferences.getString(TEMPERATURE_UNITS_KEY, temperatureUnits);
+        return sharedPreferences.getString(TEMPERATURE_UNITS_KEY, ImperialTemperatureUnits);
     }
 
     public void setTemperatureDisplay(@NonNull String temperatureDisplay) {
@@ -89,7 +89,7 @@ public class AppPreferences {
     }
 
     public String getWindSpeedDisplay() {
-        return sharedPreferences.getString(WINDSPEED_UNITS_KEY, windSpeedUnits);
+        return sharedPreferences.getString(WINDSPEED_UNITS_KEY, ImperialWindSpeedUnits);
     }
 
     public void setWindSpeedDisplay(@NonNull String windspeedDisplay) {
@@ -99,7 +99,7 @@ public class AppPreferences {
     }
 
     public String getAltitudeDisplay() {
-        return sharedPreferences.getString(ALTITUDE_UNITS_KEY, altitudeUnits);
+        return sharedPreferences.getString(ALTITUDE_UNITS_KEY, ImperialAltitudeUnits);
     }
 
     public void setAltitudeDisplay(@NonNull String altitudeDisplay) {
@@ -119,7 +119,7 @@ public class AppPreferences {
     }
 
     public String getDistanceUnits() {
-        return sharedPreferences.getString(DISTANCE_UNITS_KEY, distanceUnits);
+        return sharedPreferences.getString(DISTANCE_UNITS_KEY, ImperialDistanceUnits);
     }
 
     public void setDistanceUnitsDisplay(@NonNull String distanceUnits) {
@@ -128,4 +128,19 @@ public class AppPreferences {
         editor.apply();
     }
 
+    public String getImperialTemperatureUnits() {
+        return ImperialTemperatureUnits;
+    }
+
+    public String getImperialWindSpeedUnits() {
+        return ImperialWindSpeedUnits;
+    }
+
+    public String getImperialAltitudeUnits() {
+        return ImperialAltitudeUnits;
+    }
+
+    public String getImperialDistanceUnits() {
+        return ImperialDistanceUnits;
+    }
 }

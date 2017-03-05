@@ -13,17 +13,17 @@
 
     <!-- Metar/TAF -->
     <string name="metar_windDirection">Wind Direction:</string>
-    <string name="metar_speedKt">Speed(Kt):</string>
-    <string name="metar_windSpeedKt">Wind Speed(Kt):</string>
-    <string name="metar_windGustKt">Gusts(Kt):</string>
-    <string name="metar_visibiltySM">Visibility(SM):</string>
+    <string name="metar_speed">Speed:</string>
+    <string name="metar_windSpeed">Wind Speed:</string>
+    <string name="metar_windGust">Gusts:</string>
+    <string name="metar_visibilty">Visibility:</string>
     <string name="metar_flightCategory">Flight Category:</string>
     <string name="metar_skyConditions">Sky Conditions:</string>
-    <string name="metar_cloudBaseFtAgl">CloudBase(Ft AGL):</string>
+    <string name="metar_cloudBaseAgl">CloudBase(AGL):</string>
     <string name="metar_skyCover">Sky Cover:</string>
     <string name="metar_tempC">TempC:</string>
     <string name="metar_tempF">TempF:</string>
-    <string name="metar_verticalVisibility">Vertical Visibility(Ft):</string>
+    <string name="metar_verticalVisibility">Vertical Visibility:</string>
     <string name="metar_metarType">MetarType:</string>
     <string name="metar_threeHrPressureTendencyMb">3 Hr Pressure Trend(Mb):</string>
     <string name="metar_seaLevelPressureMb">SeaLevel Pressure(Mb):</string>

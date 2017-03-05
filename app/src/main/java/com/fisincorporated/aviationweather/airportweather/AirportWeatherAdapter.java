@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.app.AppPreferences;
+import com.fisincorporated.aviationweather.data.metars.Metar;
+import com.fisincorporated.aviationweather.data.taf.TAF;
 import com.fisincorporated.aviationweather.databinding.AirportMetarTafBinding;
-import com.fisincorporated.aviationweather.metars.Metar;
 
 import java.util.List;
 
@@ -18,9 +20,15 @@ import javax.inject.Inject;
 
 public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAdapter.BindingHolder> {
 
+
+    public ObservableList<TAF> currentTafs = new ObservableArrayList<>();
+
     public ObservableList<Metar> currentMetars = new ObservableArrayList<>();
 
     public WeatherDisplayPreferences weatherDisplayPreferences;
+
+    @Inject
+    public AppPreferences appPreferences;
 
     @Inject
     public AirportWeatherAdapter() {}
@@ -52,6 +60,27 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
             if (!metarAdded) {
                 currentMetars.add(newMetar);
                 notifyItemInserted(currentMetars.size() - 1);
+            }
+        }
+    }
+
+    public void updateTafList(List<TAF> tafs) {
+        // update observable list
+        boolean tafAdded;
+        for (TAF newTaf : tafs) {
+            tafAdded = false;
+            for (int i = 0 ; i < currentTafs.size(); ++i ) {
+                if (currentTafs.get(i).getStationId().equals(newTaf.getStationId())){
+                    currentTafs.remove(i);
+                    currentTafs.add(i, newTaf);
+                    tafAdded = true;
+                    notifyItemChanged(i);
+                    break;
+                }
+            }
+            if (!tafAdded) {
+                currentTafs.add(newTaf);
+                notifyItemInserted(currentTafs.size() - 1);
             }
         }
     }
