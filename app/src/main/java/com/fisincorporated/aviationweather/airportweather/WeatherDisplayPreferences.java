@@ -6,7 +6,9 @@ import android.databinding.ObservableField;
 
 public interface WeatherDisplayPreferences {
 
-    public ObservableBoolean getRawMetarDisplay();
+    public ObservableBoolean isDisplayRawTafMetar();
+
+    public ObservableBoolean isDecodeTafMetar();
 
     public ObservableField<String> getAltitudeUnits();
 

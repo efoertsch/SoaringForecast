@@ -18,31 +18,32 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/airport_taf_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
             style="@style/forecastLabel"
-            android:textSize="@dimen/text_size_large"
-            android:layout_marginTop="@dimen/margin_standard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/taf"/>
+            android:layout_marginTop="@dimen/margin_standard"
+            android:text="@string/taf"
+            android:textSize="@dimen/text_size_large"/>
 
         <TextView
             style="@style/forecastData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{taf.rawText}"
-            android:visibility="@{displayPrefs.rawMetarDisplay ? View.VISIBLE : View.GONE}"
+            android:visibility="@{displayPrefs.displayRawTafMetar ? View.VISIBLE : View.GONE}"
             tools:text="KORH 052117Z 0521/0618 33012G20KT P6SM SKC"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="@{displayPrefs.rawMetarDisplay ? View.GONE : View.VISIBLE}">
+            android:visibility="@{displayPrefs.decodeTafMetar ? View.VISIBLE : View.GONE}">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,6 +98,16 @@
                     android:text="@{taf.validTimeTo}"
                     tools:text="2117 UTC 05 Mar 2017"/>
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/airport_taf_forecast_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
+
 </layout>

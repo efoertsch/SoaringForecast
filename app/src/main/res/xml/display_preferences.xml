@@ -2,8 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
-        android:key="@string/pref_raw_metar_key"
-        android:title="@string/pref_display_raw_metar"
+        android:key="@string/pref_raw_taf_metar_key"
+        android:title="@string/pref_display_raw_taf_metar"
+        android:defaultValue="true"/>
+
+    <CheckBoxPreference
+        android:key="@string/pref_decode_taf_metar_key"
+        android:title="@string/pref_decode_taf_metar_metar"
         android:defaultValue="true"/>
 
     <ListPreference

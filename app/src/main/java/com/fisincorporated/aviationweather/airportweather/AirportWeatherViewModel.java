@@ -43,7 +43,9 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
 
     public final ObservableBoolean showProgressBar = new ObservableBoolean();
 
-    public final ObservableBoolean rawMetarDisplay = new ObservableBoolean();
+    public final ObservableBoolean displayRawTafMetar = new ObservableBoolean();
+
+    public final ObservableBoolean decodeTafMetar = new ObservableBoolean();
 
     public final ObservableField<String> temperatureUnits = new ObservableField();
 
@@ -187,15 +189,20 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     }
 
     private void assignDisplayOptions() {
-        rawMetarDisplay.set(appPreferences.getDisplayRawMetar());
+        displayRawTafMetar.set(appPreferences.isDisplayRawTafMetar());
+        decodeTafMetar.set(appPreferences.isDecodeTafMetar());
         temperatureUnits.set(appPreferences.getTemperatureDisplay());
         altitudeUnits.set(appPreferences.getAltitudeDisplay());
         windSpeedUnits.set(appPreferences.getWindSpeedDisplay());
         distanceUnits.set(appPreferences.getDistanceUnits());
     }
 
-    public ObservableBoolean getRawMetarDisplay() {
-        return rawMetarDisplay;
+    public ObservableBoolean isDisplayRawTafMetar() {
+        return displayRawTafMetar;
+    }
+
+    public ObservableBoolean isDecodeTafMetar() {
+        return decodeTafMetar;
     }
 
     public ObservableField<String> getAltitudeUnits() {

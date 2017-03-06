@@ -29,9 +29,13 @@ public class AppPreferences {
 
     private static String DISTANCE_UNITS_KEY;
 
+    private static String DECODE_TAF_METAR_KEY;
+
     private SharedPreferences sharedPreferences;
 
-    private boolean rawMetar;
+    private boolean rawTafMetar;
+
+    private boolean decodeTafMetar;
 
     private String ImperialTemperatureUnits;
 
@@ -52,14 +56,16 @@ public class AppPreferences {
         Resources res = application.getResources();
 
         // keys must match to those used in display_perferences.xml
-        RAW_METAR_KEY = res.getString(R.string.pref_raw_metar_key);
+        RAW_METAR_KEY = res.getString(R.string.pref_raw_taf_metar_key);
         TEMPERATURE_UNITS_KEY = res.getString(R.string.pref_units_temp);
         WINDSPEED_UNITS_KEY = res.getString(R.string.pref_units_wind_speed);
         ALTITUDE_UNITS_KEY = res.getString(R.string.pref_units_altitude);
         DISTANCE_UNITS_KEY = res.getString(R.string.pref_units_distance);
+        DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
 
         // and use these default values
-        rawMetar = false;
+        rawTafMetar = true;
+        decodeTafMetar = true;
         ImperialTemperatureUnits = res.getString(R.string.pref_units_temp_fahrenheit_value);
         ImperialWindSpeedUnits = res.getString(R.string.pref_units_speed_knots_value);
         ImperialAltitudeUnits = res.getString(R.string.pref_units_altitude_feet_value);
@@ -76,6 +82,24 @@ public class AppPreferences {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(AIRPORT_LIST_KEY, airportList);
         editor.apply();
+    }
+
+    public boolean isDisplayRawTafMetar() {
+        return sharedPreferences.getBoolean(RAW_METAR_KEY, rawTafMetar);
+    }
+
+    public void setDisplayRawTafMetar(boolean displayRawMetar) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(RAW_METAR_KEY, displayRawMetar);
+        editor.apply();
+    }
+
+    public boolean isDecodeTafMetar() {
+        return sharedPreferences.getBoolean(DECODE_TAF_METAR_KEY, decodeTafMetar);
+    }
+
+    public void setDecodeTafMetar(boolean decodeTafMetar) {
+        this.decodeTafMetar = decodeTafMetar;
     }
 
     public String getTemperatureDisplay() {
@@ -108,16 +132,6 @@ public class AppPreferences {
         editor.apply();
     }
 
-    public boolean getDisplayRawMetar() {
-        return sharedPreferences.getBoolean(RAW_METAR_KEY, rawMetar);
-    }
-
-    public void setDisplayRawMetar(boolean displayRawMetar) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(RAW_METAR_KEY, displayRawMetar);
-        editor.apply();
-    }
-
     public String getDistanceUnits() {
         return sharedPreferences.getString(DISTANCE_UNITS_KEY, ImperialDistanceUnits);
     }
@@ -127,6 +141,8 @@ public class AppPreferences {
         editor.putString(DISTANCE_UNITS_KEY, distanceUnits);
         editor.apply();
     }
+
+
 
     public String getImperialTemperatureUnits() {
         return ImperialTemperatureUnits;

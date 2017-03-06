@@ -42,12 +42,9 @@ public class AirportWeatherActivity extends AppCompatActivity {
             }
         });
 
-        //String airportList = getIntent().getStringExtra(METAR_LIST);
-        String airportList = "KORH, KFIT";
-
         ((WeatherApplication) getApplication()).getComponent().inject(this);
 
-        airportWeatherViewModel.setView((ViewGroup) findViewById(android.R.id.content)).setAirportList(airportList);
+        airportWeatherViewModel.setView((ViewGroup) findViewById(android.R.id.content));
 
     }
 

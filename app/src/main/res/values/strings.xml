@@ -51,9 +51,12 @@
 
 
     <!-- Display preferences -->
-    <!-- Display raw metar -->
-    <string name="pref_raw_metar_key">Raw_Metar_key</string>
-    <string name="pref_display_raw_metar">Display raw METAR</string>
+    <!-- Display raw taf/metar -->
+    <string name="pref_raw_taf_metar_key">Raw_TAF_METAR_key</string>
+    <string name="pref_display_raw_taf_metar">Display raw TAF/METAR</string>
+
+    <string name="pref_decode_taf_metar_key">Decode_TAF_METAR_key</string>
+    <string name="pref_decode_taf_metar_metar">Decode raw TAF/METAR</string>
 
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
     <string name="pref_units_temp">Temperature</string>

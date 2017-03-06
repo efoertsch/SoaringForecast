@@ -83,11 +83,13 @@
             </LinearLayout>
 
             <include
+                android:id="@+id/airport_weather_include_metar"
                 layout="@layout/airport_metar"
                 bind:metar="@{airportWeather.metar}"
                 bind:displayPrefs="@{displayPrefs}"/>
 
             <include
+                android:id="@+id/airport_weather_include_taf"
                 layout="@layout/airport_taf"
                 bind:taf="@{airportWeather.taf}"
                 bind:displayPrefs="@{displayPrefs}"/>

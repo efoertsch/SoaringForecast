@@ -1,18 +1,23 @@
 package com.fisincorporated.aviationweather.airportweather;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.data.AirportWeather;
 import com.fisincorporated.aviationweather.data.metars.Metar;
+import com.fisincorporated.aviationweather.data.taf.Forecast;
 import com.fisincorporated.aviationweather.data.taf.TAF;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherBinding;
+import com.fisincorporated.aviationweather.databinding.TafForecastBinding;
 
 import java.util.Collections;
 import java.util.List;
@@ -113,7 +118,25 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
     public void onBindViewHolder(BindingHolder holder, int position) {
         holder.binding.setAirportWeather(airportWeatherList.get(position));
         holder.binding.setDisplayPrefs(weatherDisplayPreferences);
+        addTafForecasts(holder, airportWeatherList.get(position).getTaf());
         holder.binding.executePendingBindings();
+    }
+
+    private void addTafForecasts(BindingHolder holder, TAF taf) {
+        if (taf != null && taf.getForecast() != null & taf.getForecast().size() > 0) {
+            LinearLayout layout =  holder.binding.airportWeatherIncludeTaf.airportTafForecastLayout;
+            LayoutInflater inflater = (LayoutInflater) layout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            List<Forecast> forecastList = taf.getForecast();
+            for (Forecast forecast : forecastList){
+                TafForecastBinding binding = DataBindingUtil.inflate(inflater, R.layout.taf_forecast,layout, false);
+                binding.setForecast(forecast);
+                binding.setDisplayPrefs(weatherDisplayPreferences);
+                binding.getRoot().setLayoutParams(new LinearLayoutCompat.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT));
+                layout.addView(binding.getRoot());
+            }
+        }
     }
 
     @Override

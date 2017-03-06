@@ -3,11 +3,15 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View"/>
+
         <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+
         <variable
             name="forecast"
             type="com.fisincorporated.aviationweather.data.taf.Forecast"/>
+
         <variable
             name="displayPrefs"
             type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
@@ -48,8 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{forecast.fcstTimeTo}"
-                tools:text="0000 UTC 06 March 2017"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:text="0000 UTC 06 March 2017"/>
         </LinearLayout>
 
         <LinearLayout
@@ -89,40 +93,47 @@
                 android:text="@string/taf_wind_direction"/>
 
             <TextView
+                style="@style/forecastData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/forecastData"
-                android:text="@{forecast.windDirDegrees}"
+                android:text="@{Integer.toString(safeUnbox(forecast.windDirDegrees))}"
                 tools:text="320"/>
 
             <TextView
+                style="@style/forecastData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/forecastData"
                 android:text="@string/taf_winds"/>
 
             <TextView
+                style="@style/forecastData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/forecastData"
-                android:text="@{forecast.windSpeedKt}"
+                android:text="@{Integer.toString(safeUnbox(forecast.windSpeedKt))}"
                 tools:text="8"/>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/forecastData"
-                android:text="@string/taf_wind_gusts"/>
+                android:orientation="horizontal"
+                android:visibility="@{forecast.windGustKt == null ? View.GONE : View.VISIBLE}">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/forecastData"
-                android:text="@{forecast.windGustKt}"
-                tools:text="25"/>
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/taf_wind_gusts"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{Integer.toString(safeUnbox(forecast.windGustKt))}"
+                    tools:text="25"/>
+            </LinearLayout>
 
         </LinearLayout>
 
 
     </LinearLayout>
-    </layout>
+</layout>
