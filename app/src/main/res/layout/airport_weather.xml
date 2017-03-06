@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+
+        <variable
+            name="displayPrefs"
+            type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
+
+        <variable
+            name="airportWeather"
+            type="com.fisincorporated.aviationweather.data.AirportWeather"/>
+
+        <variable
+            name="metar"
+            type="com.fisincorporated.aviationweather.data.metars.Metar"/>
+
+        <variable
+            name="taf"
+            type="com.fisincorporated.aviationweather.data.taf.TAF"/>
+
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_half"
+        android:layout_marginEnd="@dimen/margin_double"
+        android:layout_marginStart="@dimen/margin_double"
+        android:layout_marginTop="@dimen/margin_half">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/airport_station_id"
+                        style="@style/forecastData"
+                        android:textSize="@dimen/text_size_large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:text="@{airportWeather.icaoId}"
+                        tools:text="KORH"/>
+
+                    <TextView
+                        style="@style/forecastLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/metar_elevation"/>
+
+                    <TextView
+                        style="@style/forecastData"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(airportWeather.elevationM))}"
+                        tools:text="999"/>
+
+                    <TextView
+                        style="@style/forecastLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{displayPrefs.altitudeUnits}"
+                        tools:text="Ft"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <include
+                layout="@layout/airport_metar"
+                bind:metar="@{airportWeather.metar}"
+                bind:displayPrefs="@{displayPrefs}"/>
+
+            <include
+                layout="@layout/airport_taf"
+                bind:taf="@{airportWeather.taf}"
+                bind:displayPrefs="@{displayPrefs}"/>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</layout>

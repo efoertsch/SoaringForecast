@@ -10,6 +10,8 @@ public class AirportWeather {
 
     private String icaoId;
 
+    private Float elevationM;
+
     public Metar getMetar() {
         return metar;
     }
@@ -33,4 +35,13 @@ public class AirportWeather {
     public void setIcaoId(String icaoId) {
         this.icaoId = icaoId;
     }
+
+    public Float getElevationM() {
+        return elevationM;
+    }
+
+    public void setElevationM(Float elevationM) {
+        this.elevationM = elevationM;
+    }
+
 }

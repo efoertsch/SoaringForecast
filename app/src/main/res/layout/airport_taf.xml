@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+
+        <variable
+            name="taf"
+            type="com.fisincorporated.aviationweather.data.taf.TAF"/>
+
+        <variable
+            name="displayPrefs"
+            type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/forecastLabel"
+            android:textSize="@dimen/text_size_large"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/taf"/>
+
+        <TextView
+            style="@style/forecastData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{taf.rawText}"
+            android:visibility="@{displayPrefs.rawMetarDisplay ? View.VISIBLE : View.GONE}"
+            tools:text="KORH 052117Z 0521/0618 33012G20KT P6SM SKC"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="@{displayPrefs.rawMetarDisplay ? View.GONE : View.VISIBLE}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/taf_issued_at"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:text="@{taf.issueTime}"
+                    tools:text="2117 UTC 05 Mar 2017"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/forecastLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/taf_valid_from"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:text="@{taf.validTimeFrom}"
+                    tools:text="2117 UTC 05 Mar 2017"/>
+
+                <TextView
+                    style="@style/forecastLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/taf_valid_to"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:text="@{taf.validTimeTo}"
+                    tools:text="2117 UTC 05 Mar 2017"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

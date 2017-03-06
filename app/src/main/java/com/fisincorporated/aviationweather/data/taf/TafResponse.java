@@ -25,7 +25,7 @@ public class TafResponse {
     @Element(name = "time_taken_ms")
     protected int timeTakenMs;
 
-    @Element(required = true)
+    @Element(required = false)
     protected Data data;
 
     @Attribute(name = "version")

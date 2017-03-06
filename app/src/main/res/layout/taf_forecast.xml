@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+        <variable
+            name="forecast"
+            type="com.fisincorporated.aviationweather.data.taf.Forecast"/>
+        <variable
+            name="displayPrefs"
+            type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/taf_forecast_period"/>
+
+            <TextView
+                style="@style/forecastData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{forecast.fcstTimeFrom}"
+                tools:text="0000 UTC 06 March 2017"/>
+
+            <TextView
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/taf_to"
+                tools:text="0000 UTC 06 March 2017"/>
+
+            <TextView
+                style="@style/forecastData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{forecast.fcstTimeTo}"
+                tools:text="0000 UTC 06 March 2017"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/taf_forecast_type"/>
+
+            <TextView
+                style="@style/forecastData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                tools:text="FROM: standard forecast or significant change"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/taf_winds"/>
+
+            <TextView
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/taf_wind_direction"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/forecastData"
+                android:text="@{forecast.windDirDegrees}"
+                tools:text="320"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/forecastData"
+                android:text="@string/taf_winds"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/forecastData"
+                android:text="@{forecast.windSpeedKt}"
+                tools:text="8"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/forecastData"
+                android:text="@string/taf_wind_gusts"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/forecastData"
+                android:text="@{forecast.windGustKt}"
+                tools:text="25"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+    </layout>

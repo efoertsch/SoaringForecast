@@ -38,12 +38,11 @@ public class AirportWeatherActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                displayAirportList();
-
+                airportWeatherViewModel.refresh();
             }
         });
 
-         //String airportList = getIntent().getStringExtra(METAR_LIST);
+        //String airportList = getIntent().getStringExtra(METAR_LIST);
         String airportList = "KORH, KFIT";
 
         ((WeatherApplication) getApplication()).getComponent().inject(this);

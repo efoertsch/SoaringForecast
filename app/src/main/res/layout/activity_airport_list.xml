@@ -28,12 +28,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/enter_airport_codes"
-        style="@style/metarLabels"
+        style="@style/forecastLabel"
         android:layout_alignParentTop="true"
         />
 
     <EditText
-        style="@style/metarData"
+        style="@style/forecastData"
         android:id="@+id/activity_airport_codes"
         android:layout_below="@id/activity_airport_enter_label"
         android:layout_above="@+id/activity_airport_save"

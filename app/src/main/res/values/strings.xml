@@ -3,6 +3,9 @@
 
     <string name="ok">OK</string>
     <string name="oops">Oops!</string>
+    <string name="done">Done</string>
+    <string name="save">Save</string>
+    <string name="to">To</string>
 
     <!-- misc errors -->
     <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from avaiationweather.gov</string>
@@ -12,6 +15,7 @@
     <string name="action_add_airports">Add airports</string>
 
     <!-- Metar/TAF -->
+    <string name="metar">METAR</string>
     <string name="metar_windDirection">Wind Direction:</string>
     <string name="metar_speed">Speed:</string>
     <string name="metar_windSpeed">Wind Speed:</string>
@@ -29,6 +33,21 @@
     <string name="metar_seaLevelPressureMb">SeaLevel Pressure(Mb):</string>
     <string name="metar_wxString">WxString:</string>
     <string name="metar_elevation">Elevation:</string>
+
+    <string name="taf">TAF</string>
+    <string name="taf_issued_at">Issued at</string>
+    <string name="taf_forecast_period">Forecast period</string>
+    <string name="taf_forecast_type">Forecast Type</string>
+    <string name="taf_winds">Winds</string>
+    <string name="taf_visibility">Visibility</string>
+    <string name="taf_ceiling">Ceiling</string>
+    <string name="taf_clouds">Clouds</string>
+    <string name="taf_to">To</string>
+    <string name="taf_wind_direction">Direction:</string>
+    <string name="taf_wind_gusts">Gusts</string>
+    <string name="taf_valid_from">Valid From</string>
+    <string name="taf_valid_to">To</string>
+
 
 
     <!-- Display preferences -->
@@ -58,7 +77,7 @@
     <string name="pref_units_speed_knots_label">Knots</string>
     <!-- values -->
     <string name="pref_units_speed_meters_value">m/sec</string>
-    <string name="pref_units_speed_knots_value">kt</string>
+    <string name="pref_units_speed_knots_value">kts</string>
 
     <!-- Label for the distance units preference-->
     <string name="pref_units_distance">Distance</string>
@@ -73,9 +92,6 @@
     <string name="enter_airport_codes">Enter airport codes using 4 character ICAO code leaving at least one space between each code:</string>
     <string name="airport_code_error">Airport codes must be 4 character ICAO code.</string>
     <string name="airport_code_entry_hint">eg. KBOS KORH</string>
-
-    <string name="done">Done</string>
-    <string name="save">Save</string>
 
 
 

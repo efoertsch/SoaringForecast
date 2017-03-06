@@ -10,7 +10,7 @@ import java.util.List;
 @Root(name = "data", strict = false)
 public class Data {
 
-    @ElementList(name = "TAF", inline = true)
+    @ElementList(name = "TAF", inline = true, required = false)
     protected List<TAF> taf;
     @Attribute(name = "num_results", required = false)
     protected Integer numResults;
