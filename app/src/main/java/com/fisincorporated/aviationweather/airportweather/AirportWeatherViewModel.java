@@ -14,7 +14,7 @@ import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.data.AirportWeather;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
-import com.fisincorporated.aviationweather.databinding.ActivityAirportWeatherInfoBinding;
+import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
@@ -37,7 +37,7 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
 
     public ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
 
-    private ActivityAirportWeatherInfoBinding viewDataBinding;
+    private AirportWeatherInfoBinding viewDataBinding;
 
     private View bindingView;
 

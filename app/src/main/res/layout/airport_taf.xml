@@ -21,13 +21,18 @@
         android:id="@+id/airport_taf_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@drawable/border"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/margin_half"
+        android:paddingEnd="@dimen/margin_standard"
+        android:paddingStart="@dimen/margin_standard"
+        android:paddingTop="@dimen/margin_half"
+        android:visibility="@{taf != null ? View.VISIBLE : View.GONE}">
 
         <TextView
             style="@style/forecastLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_standard"
             android:text="@string/taf"
             android:textSize="@dimen/text_size_large"/>
 
@@ -43,7 +48,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="@{displayPrefs.decodeTafMetar ? View.VISIBLE : View.GONE}">
+            android:visibility="@{displayPrefs.isDecodeTafMetar ? View.VISIBLE : View.GONE}"
+            android:showDividers="beginning"
+            android:divider="@drawable/divider_drawable">
 
             <LinearLayout
                 android:layout_width="match_parent"

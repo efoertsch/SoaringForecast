@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
-import com.fisincorporated.aviationweather.databinding.ActivityAirportListBinding;
+import com.fisincorporated.aviationweather.databinding.AirportListBinding;
 
 import javax.inject.Inject;
 
@@ -19,7 +19,7 @@ public class AirportListViewModel {
 
     private View bindingView;
 
-    private ActivityAirportListBinding viewDataBinding;
+    private AirportListBinding viewDataBinding;
 
     private EntryCompleteListener entryCompleteListener;
 

@@ -18,7 +18,7 @@ import com.fisincorporated.aviationweather.data.taf.Forecast;
 import com.fisincorporated.aviationweather.data.taf.SkyCondition;
 import com.fisincorporated.aviationweather.data.taf.TAF;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherBinding;
-import com.fisincorporated.aviationweather.databinding.CloudLayerBinding;
+import com.fisincorporated.aviationweather.databinding.SkyConditionBinding;
 import com.fisincorporated.aviationweather.databinding.TafForecastBinding;
 
 import java.util.Collections;
@@ -81,7 +81,7 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
 
     //TODO DRY
     public void updateTafList(List<TAF> tafs) {
-        if (tafs != null) {
+        if (tafs != null && tafs.size() > 0) {
             synchronized (airportWeatherList) {
                 boolean tafFound;
                 for (TAF newTaf : tafs) {
@@ -148,7 +148,7 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
             LayoutInflater inflater = (LayoutInflater) layout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             List<SkyCondition> skyConditionList = forecast.getSkyCondition();
             for (SkyCondition skyCondition : skyConditionList){
-                CloudLayerBinding binding = DataBindingUtil.inflate(inflater, R.layout.cloud_layer,layout, false);
+                SkyConditionBinding binding = DataBindingUtil.inflate(inflater, R.layout.sky_condition,layout, false);
                 binding.setSkyCondition(skyCondition);
                 binding.setDisplayPrefs(weatherDisplayPreferences);
                 binding.getRoot().setLayoutParams(new LinearLayoutCompat.LayoutParams(

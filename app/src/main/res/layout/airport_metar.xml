@@ -20,7 +20,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/border"
+        android:paddingEnd="@dimen/margin_standard"
+        android:paddingStart="@dimen/margin_standard"
+        android:paddingBottom="@dimen/margin_half"
+        android:paddingTop="@dimen/margin_half">
 
         <TextView
             style="@style/forecastLabel"
@@ -35,7 +40,6 @@
             style="@style/forecastData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_half"
             android:text="@{metar.rawText}"
             android:visibility="@{displayPrefs.isDisplayRawTafMetar() ? View.VISIBLE : View.GONE}"
             tools:text="KORH 272054Z 24017G28KT 10SM CLR 09/M09 A3025 RMK AO2 PK WND 25032/2043 SLP253 T00941094 55001"/>
@@ -44,7 +48,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="@{displayPrefs.isDecodeTafMetar() ? View.VISIBLE : View.VISIBLE}">
+            android:visibility="@{displayPrefs.isDecodeTafMetar() ? View.VISIBLE : View.GONE}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/forecastLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/metar_temp"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.format(@string/format_temp_one_decimal, safeUnbox(metar.TempC), @string/pref_units_temp_centigrade_value)}"
+                    tools:text="(20.2F)"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.format(@string/format_temp_in_parenthesis, ConversionUtils.convertCentigradeToFahrenheit(safeUnbox(metar.TempC)), @string/pref_units_temp_fahrenheit_value)}"
+                    tools:text="70.2"/>
+
+                <TextView
+                    style="@style/forecastLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/metar_dewpoint"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.format(@string/format_temp_one_decimal, safeUnbox(metar.dewpointC), @string/pref_units_temp_centigrade_value)}"
+                    tools:text="6.2"/>
+
+                <TextView
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.format(@string/format_temp_in_parenthesis, ConversionUtils.convertCentigradeToFahrenheit(safeUnbox(metar.dewpointC)), @string/pref_units_temp_fahrenheit_value)}"
+                    tools:text="(44.5F)"/>
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -78,6 +130,13 @@
                     android:text="@{Integer.toString(metar.windSpeedKt)}"
                     tools:text="15"/>
 
+                <TextView
+                    style="@style/forecastLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{displayPrefs.windSpeedUnits}"
+                    tools:text="Kts"/>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -96,6 +155,13 @@
                         android:layout_height="wrap_content"
                         android:text="@{metar.windGustKt == null ? &quot;&quot; : Integer.toString(safeUnbox(metar.windGustKt))}"
                         tools:text="10"/>
+
+                    <TextView
+                        style="@style/forecastLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{displayPrefs.windSpeedUnits}"
+                        tools:text="Kts"/>
                 </LinearLayout>
 
 
@@ -140,8 +206,15 @@
                     style="@style/forecastData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(metar.visibilityStatuteMi))}"
+                    android:text="@{safeUnbox(metar.visibilityStatuteMi) >= 10 ? @string/tenPlus : String.format(@string/format_float_one_decimal, safeUnbox(metar.visibilityStatuteMi))}"
                     tools:text="7.5"/>
+
+                <TextView
+                    style="@style/forecastLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{displayPrefs.getDistanceUnits}"
+                    tools:text="SM"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -160,7 +233,7 @@
                         style="@style/forecastData"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{metar.vertVisFt == null ? &quot;&quot; : Integer.toString(safeUnbox(metar.vertVisFt))}"
+                        android:text="@{Integer.toString(safeUnbox(metar.vertVisFt))}"
                         tools:text="100"/>
 
                 </LinearLayout>

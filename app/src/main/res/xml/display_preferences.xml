@@ -11,6 +11,7 @@
         android:title="@string/pref_decode_taf_metar_metar"
         android:defaultValue="true"/>
 
+    <!--  TODO update UI for english/metric
     <ListPreference
         android:defaultValue="@string/pref_units_temp_fahrenheit_value"
         android:entries="@array/pref_units_temp_labels"
@@ -38,6 +39,8 @@
         android:entryValues="@array/pref_units_distance_values"
         android:key="@string/pref_units_distance"
         android:title="@string/pref_units_distance"/>
+
+        -->
 
 
 </PreferenceScreen>

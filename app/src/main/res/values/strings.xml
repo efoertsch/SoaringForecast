@@ -7,7 +7,11 @@
     <string name="save">Save</string>
     <string name="to">To</string>
     <string name="sixPlus">6+</string>
+    <string name="tenPlus">10+</string>
     <string name="agl">\u0020AGL</string>
+    <string name="format_float_one_decimal" formatted="false">"%1.1f"</string>
+    <string name="format_temp_one_decimal" formatted="false">"%1.1f%2$s"</string>
+    <string name="format_temp_in_parenthesis" formatted="false">(%1.1f%2$s)</string>
 
     <!-- misc errors -->
     <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from avaiationweather.gov</string>
@@ -38,7 +42,7 @@
 
     <string name="taf">TAF</string>
     <string name="taf_issued_at">Issued at:</string>
-    <string name="taf_forecast_period">Forecast period:</string>
+    <string name="taf_forecast">Forecast:</string>
     <string name="taf_forecast_type">Forecast Type:</string>
     <string name="taf_winds">Winds:</string>
     <string name="taf_visibility">Visibility:</string>
@@ -46,11 +50,12 @@
     <string name="taf_clouds">Clouds:</string>
     <string name="taf_to">To</string>
     <string name="taf_wind_direction">Direction:</string>
-    <string name="taf_wind_gusts">Gusts</string>
+    <string name="taf_wind_gusts">Gusts:</string>
     <string name="taf_valid_from">Valid From:</string>
     <string name="taf_valid_to">To</string>
     <string name="taf_weather">Weather:</string>
-
+    <string name="metar_temp">Temp:</string>
+    <string name="metar_dewpoint">DewPoint:</string>
 
 
     <!-- Display preferences -->
@@ -98,7 +103,5 @@
     <string name="enter_airport_codes">Enter airport codes using 4 character ICAO code leaving at least one space between each code:</string>
     <string name="airport_code_error">Airport codes must be 4 character ICAO code.</string>
     <string name="airport_code_entry_hint">eg. KBOS KORH</string>
-
-
 
 </resources>
