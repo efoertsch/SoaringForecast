@@ -7,7 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface AviationWeatherApis {
+public interface AviationWeatherApi {
 
     /**
      * Get most recent TAFs issued within last x.y hours

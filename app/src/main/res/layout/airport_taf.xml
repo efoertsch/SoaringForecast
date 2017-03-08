@@ -51,6 +51,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    style="@style/forecastLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/taf_issued_at"/>
@@ -60,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
-                    android:text="@{taf.issueTime}"
+                    android:text="@{ConversionUtils.formatToShortTime(taf.issueTime)}"
                     tools:text="2117 UTC 05 Mar 2017"/>
 
             </LinearLayout>
@@ -81,8 +82,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
-                    android:text="@{taf.validTimeFrom}"
-                    tools:text="2117 UTC 05 Mar 2017"/>
+                    android:text="@{ConversionUtils.formatToShortDateTime(taf.validTimeFrom)}"
+                    tools:text="03/07 11:15 PM"/>
 
                 <TextView
                     style="@style/forecastLabel"
@@ -95,8 +96,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
-                    android:text="@{taf.validTimeTo}"
-                    tools:text="2117 UTC 05 Mar 2017"/>
+                    android:text="@{ConversionUtils.formatToShortDateTime(taf.validTimeTo)}"
+                    tools:text="03/08 2:15 APM"/>
             </LinearLayout>
 
             <LinearLayout

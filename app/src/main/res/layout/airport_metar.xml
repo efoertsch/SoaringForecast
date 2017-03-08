@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="@{displayPrefs.isDecodeTafMetar() ? View.GONE : View.VISIBLE}">
+            android:visibility="@{displayPrefs.isDecodeTafMetar() ? View.VISIBLE : View.VISIBLE}">
 
             <LinearLayout
                 android:layout_width="match_parent"

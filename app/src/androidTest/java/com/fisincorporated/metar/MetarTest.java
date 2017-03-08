@@ -3,7 +3,7 @@ package com.fisincorporated.metar;
 
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
-import com.fisincorporated.aviationweather.retrofit.AviationWeatherApis;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class MetarTest {
 
     @Test
     public void shouldGetMetar(){
-        AviationWeatherApis client = AppRetrofit.get().create(AviationWeatherApis.class);
+        AviationWeatherApi client = AppRetrofit.get().create(AviationWeatherApi.class);
 
         final Call<MetarResponse>  metarCall;
 

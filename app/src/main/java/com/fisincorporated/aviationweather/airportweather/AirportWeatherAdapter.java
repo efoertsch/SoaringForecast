@@ -15,8 +15,10 @@ import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.data.AirportWeather;
 import com.fisincorporated.aviationweather.data.metars.Metar;
 import com.fisincorporated.aviationweather.data.taf.Forecast;
+import com.fisincorporated.aviationweather.data.taf.SkyCondition;
 import com.fisincorporated.aviationweather.data.taf.TAF;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherBinding;
+import com.fisincorporated.aviationweather.databinding.CloudLayerBinding;
 import com.fisincorporated.aviationweather.databinding.TafForecastBinding;
 
 import java.util.Collections;
@@ -135,8 +137,27 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT));
                 layout.addView(binding.getRoot());
+                addSkyConditionsToForecast(binding, forecast);
             }
         }
+    }
+
+    private void addSkyConditionsToForecast(TafForecastBinding tafForecastBinding, Forecast forecast){
+        if (forecast != null && forecast.getSkyCondition() != null & forecast.getSkyCondition().size() > 0) {
+            LinearLayout layout =  tafForecastBinding.airportTafCloudLayerLayout;
+            LayoutInflater inflater = (LayoutInflater) layout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            List<SkyCondition> skyConditionList = forecast.getSkyCondition();
+            for (SkyCondition skyCondition : skyConditionList){
+                CloudLayerBinding binding = DataBindingUtil.inflate(inflater, R.layout.cloud_layer,layout, false);
+                binding.setSkyCondition(skyCondition);
+                binding.setDisplayPrefs(weatherDisplayPreferences);
+                binding.getRoot().setLayoutParams(new LinearLayoutCompat.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                layout.addView(binding.getRoot());
+            }
+        }
+
     }
 
     @Override

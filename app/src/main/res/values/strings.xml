@@ -6,6 +6,8 @@
     <string name="done">Done</string>
     <string name="save">Save</string>
     <string name="to">To</string>
+    <string name="sixPlus">6+</string>
+    <string name="agl">\u0020AGL</string>
 
     <!-- misc errors -->
     <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from avaiationweather.gov</string>
@@ -35,18 +37,19 @@
     <string name="metar_elevation">Elevation:</string>
 
     <string name="taf">TAF</string>
-    <string name="taf_issued_at">Issued at</string>
-    <string name="taf_forecast_period">Forecast period</string>
-    <string name="taf_forecast_type">Forecast Type</string>
-    <string name="taf_winds">Winds</string>
-    <string name="taf_visibility">Visibility</string>
-    <string name="taf_ceiling">Ceiling</string>
-    <string name="taf_clouds">Clouds</string>
+    <string name="taf_issued_at">Issued at:</string>
+    <string name="taf_forecast_period">Forecast period:</string>
+    <string name="taf_forecast_type">Forecast Type:</string>
+    <string name="taf_winds">Winds:</string>
+    <string name="taf_visibility">Visibility:</string>
+    <string name="taf_ceiling">Ceiling:</string>
+    <string name="taf_clouds">Clouds:</string>
     <string name="taf_to">To</string>
     <string name="taf_wind_direction">Direction:</string>
     <string name="taf_wind_gusts">Gusts</string>
-    <string name="taf_valid_from">Valid From</string>
+    <string name="taf_valid_from">Valid From:</string>
     <string name="taf_valid_to">To</string>
+    <string name="taf_weather">Weather:</string>
 
 
 

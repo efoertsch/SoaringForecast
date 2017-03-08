@@ -16,7 +16,7 @@ import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.ActivityAirportWeatherInfoBinding;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
-import com.fisincorporated.aviationweather.retrofit.AviationWeatherApis;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
 
 import java.util.ArrayList;
@@ -112,7 +112,7 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     }
 
     private void callForMetar(String airportList) {
-        AviationWeatherApis client = AppRetrofit.get().create(AviationWeatherApis.class);
+        AviationWeatherApi client = AppRetrofit.get().create(AviationWeatherApi.class);
 
         metarCall = client.mostRecentMetarForEachAirport(airportList, 2);
 
@@ -149,7 +149,7 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
 
     private void callForTaf(String airportList) {
 
-        AviationWeatherApis client = AppRetrofit.get().create(AviationWeatherApis.class);
+        AviationWeatherApi client = AppRetrofit.get().create(AviationWeatherApi.class);
 
         tafCall = client.mostRecentTafForEachAirport(airportList, 7);
 

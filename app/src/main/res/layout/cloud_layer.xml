@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+
+        <variable
+            name="skyCondition"
+            type="com.fisincorporated.aviationweather.data.taf.SkyCondition"/>
+
+        <variable
+            name="displayPrefs"
+            type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/forecastData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{skyCondition.skyCover}"
+            android:visibility="@{skyCondition.skyCover != null ? View.VISIBLE : View.GONE}"
+            tools:text="OVC"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="@{skyCondition.cloudBaseFtAgl != null ? View.VISIBLE : View.GONE}">
+
+            <TextView
+                style="@style/forecastData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{Integer.toString(safeUnbox(skyCondition.cloudBaseFtAgl))}"
+                tools:text="4500"/>
+
+            <TextView
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{displayPrefs.getAltitudeUnits + @string/agl}"
+                tools:text="FT AGL"/>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/forecastData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{skyCondition.cloudType}"
+            android:visibility="@{skyCondition.cloudType != null ? View.VISIBLE : View.GONE}"
+            tools:text="CumuloNimbus"/>
+
+    </LinearLayout>
+</layout>
