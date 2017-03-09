@@ -1,4 +1,4 @@
-package com.fisincorporated.metar;
+package com.fisincorporated.aviationweather.test;
 
 import com.fisincorporated.aviationweather.utils.ConversionUtils;
 

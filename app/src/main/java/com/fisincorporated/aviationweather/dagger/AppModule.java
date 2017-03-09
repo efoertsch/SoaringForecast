@@ -5,6 +5,7 @@ import com.fisincorporated.aviationweather.app.WeatherApplication;
 import com.fisincorporated.aviationweather.retrofit.AirportMetarService;
 import com.fisincorporated.aviationweather.retrofit.AirportTafService;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
+import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -26,6 +27,8 @@ public class AppModule {
 
     private WeatherApplication application;
 
+    private AppRetrofit appRetrofit;
+
     public AppModule(WeatherApplication application) {
 
         this.application = application;
@@ -37,15 +40,19 @@ public class AppModule {
     @Singleton
     public AppPreferences provideAppPreferences(){
         return new AppPreferences(application);
-
     }
 
     @Provides
     @Singleton
     public Retrofit provideAppRetrofit(){
-        return  AppRetrofit.get();
+        return new AppRetrofit(getLoggingInterceptor()).getRetrofit();
     }
 
+    @Provides
+    @Singleton
+    public LoggingInterceptor getLoggingInterceptor(){
+        return new LoggingInterceptor();
+    }
 
     @Provides
     public AirportMetarService providesAirportMetarService() {

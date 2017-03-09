@@ -1,4 +1,4 @@
-package com.fisincorporated.metar;
+package com.fisincorporated.aviationweather;
 
 
 import android.content.Context;

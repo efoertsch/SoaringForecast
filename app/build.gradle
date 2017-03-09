@@ -23,6 +23,19 @@ android {
     }
 }
 
+//http://stackoverflow.com/questions/37221590/how-do-i-access-a-text-file-for-junit-test-in-android
+// to pick up mock xml responses
+sourceSets {
+    test {
+        java {
+            srcDirs = [ 'src/test/java' ]
+        }
+        resources {
+            srcDirs = [ 'src/test/resources' ]
+        }
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
