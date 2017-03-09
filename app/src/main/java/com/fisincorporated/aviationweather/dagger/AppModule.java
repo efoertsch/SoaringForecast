@@ -2,12 +2,16 @@ package com.fisincorporated.aviationweather.dagger;
 
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
+import com.fisincorporated.aviationweather.retrofit.AirportMetarService;
+import com.fisincorporated.aviationweather.retrofit.AirportTafService;
+import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
 
 @Module
 public class AppModule {
@@ -34,5 +38,22 @@ public class AppModule {
     public AppPreferences provideAppPreferences(){
         return new AppPreferences(application);
 
+    }
+
+    @Provides
+    @Singleton
+    public Retrofit provideAppRetrofit(){
+        return  AppRetrofit.get();
+    }
+
+
+    @Provides
+    public AirportMetarService providesAirportMetarService() {
+        return provideAppRetrofit().create(AirportMetarService.class);
+    }
+
+    @Provides
+    public AirportTafService providesAirportTafService() {
+        return provideAppRetrofit().create(AirportTafService.class);
     }
 }

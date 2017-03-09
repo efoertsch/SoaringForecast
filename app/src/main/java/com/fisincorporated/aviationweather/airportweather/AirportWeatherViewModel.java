@@ -15,8 +15,8 @@ import com.fisincorporated.aviationweather.data.AirportWeather;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
-import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
-import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
+import com.fisincorporated.aviationweather.retrofit.AirportMetarService;
+import com.fisincorporated.aviationweather.retrofit.AirportTafService;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
 
 import java.util.ArrayList;
@@ -32,8 +32,6 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     private Call<MetarResponse> metarCall;
 
     private Call<TafResponse> tafCall;
-
-    private String airportList;
 
     public ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
 
@@ -62,6 +60,12 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     public AirportWeatherAdapter airportWeatherAdapter;
 
     @Inject
+    public AirportMetarService airportMetarService;
+
+    @Inject
+    public AirportTafService airportTafService;
+
+    @Inject
     public AirportWeatherViewModel() {
     }
 
@@ -69,17 +73,9 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
         bindingView = view.findViewById(R.id.activity_weather_view);
         viewDataBinding = DataBindingUtil.bind(bindingView);
         setupRecyclerView(viewDataBinding.activityMetarRecyclerView);
-        // This binding is to handle metar detail (set app:itemViewBinder in xml)
         viewDataBinding.setViewmodel(this);
-        // Data to recyclerViewAdapter
         airportWeatherAdapter.setAirportWeatherList(airportWeatherList).setWeatherDisplayPreferences(this);
         viewDataBinding.activityMetarRecyclerView.setAdapter(airportWeatherAdapter);
-
-        return this;
-    }
-
-    public WeatherDisplayPreferences setAirportList(String airportList) {
-        this.airportList = airportList;
         return this;
     }
 
@@ -104,7 +100,7 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     }
 
     public void refresh() {
-        airportList = getAirportCodes();
+        String airportList = getAirportCodes();
         if (airportList != null & airportList.trim().length() != 0) {
             callForMetar(airportList);
             callForTaf(airportList);
@@ -112,17 +108,15 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     }
 
     private void callForMetar(String airportList) {
-        AviationWeatherApi client = AppRetrofit.get().create(AviationWeatherApi.class);
 
-        metarCall = client.mostRecentMetarForEachAirport(airportList, 2);
+        metarCall = airportMetarService.mostRecentMetarForEachAirport(airportList, 2);
 
         // Execute the call asynchronously. Get a positive or negative callback.
         metarCall.enqueue(new Callback<MetarResponse>() {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
                 Log.d("AirportWeatherActivity", "METAR Got response");
-                if (response != null && response.body() != null
-                        && response.body().getErrors() == null) {
+                if (response != null && response.body() != null && response.body().getErrors() == null) {
                     airportWeatherAdapter.updateMetarList(response.body().getData().getMetars());
                 } else {
                     if (response != null && response.body() != null) {
@@ -149,9 +143,7 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
 
     private void callForTaf(String airportList) {
 
-        AviationWeatherApi client = AppRetrofit.get().create(AviationWeatherApi.class);
-
-        tafCall = client.mostRecentTafForEachAirport(airportList, 7);
+        tafCall = airportTafService.mostRecentTafForEachAirport(airportList, 7);
 
         // Execute the call asynchronously. Get a positive or negative callback.
         tafCall.enqueue(new Callback<TafResponse>() {
