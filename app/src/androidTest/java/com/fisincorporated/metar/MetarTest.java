@@ -7,56 +7,29 @@ import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MetarTest {
 
-    public static final CallComplete callComplete = new CallComplete();
-
     @Test
-    public void shouldGetMetar(){
+    public void shouldGetMetar() throws IOException {
         AviationWeatherApi client = AppRetrofit.get().create(AviationWeatherApi.class);
 
-        final Call<MetarResponse>  metarCall;
+        final Call<MetarResponse>  call;
 
-        callComplete.setCallComplete(false);
+        call = client.mostRecentMetarForEachAirport("KORH", 1);
+        MetarResponse response = call.execute().body();
 
-        metarCall = client.mostRecentMetarForEachAirport("KORH", 0);
-
-        // Execute the call asynchronously. Get a positive or negative callback.
-        metarCall.enqueue(new Callback<MetarResponse>() {
-            @Override
-            public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
-                checkMetarResponse(response.body());
-
-
-            }
-
-            @Override
-            public void onFailure(Call<MetarResponse> call, Throwable t) {
-                callComplete.setCallComplete(true);
-
-            }
-        });
-
-        while (!callComplete.isCallComplete()){
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
+        checkMetarResponse(response);
 
     }
 
     static private void checkMetarResponse(MetarResponse metarResponse){
         System.out.println("doing asserts");
-        assert(metarResponse.getErrors().isEmpty());
+        assert(metarResponse.getErrors().getError().isEmpty());
         assert(metarResponse.getData().getNumResults().intValue() >= 1);
-        callComplete.setCallComplete(true);
 
     }
 }

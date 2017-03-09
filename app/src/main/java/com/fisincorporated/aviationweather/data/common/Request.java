@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.data.taf;
+package com.fisincorporated.aviationweather.data.common;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;

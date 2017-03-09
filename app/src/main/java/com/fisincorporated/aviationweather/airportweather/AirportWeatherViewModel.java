@@ -12,6 +12,7 @@ import android.view.View;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.data.AirportWeather;
+import com.fisincorporated.aviationweather.data.common.AviationWeatherResponse;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
@@ -116,30 +117,21 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
                 Log.d("AirportWeatherActivity", "METAR Got response");
-                if (response != null && response.body() != null && response.body().getErrors() == null) {
+                if (isGoodResponse(response)) {
                     airportWeatherAdapter.updateMetarList(response.body().getData().getMetars());
                 } else {
-                    if (response != null && response.body() != null) {
-                        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
-                                .getString(R.string.oops), response.body().getErrors());
-                    } else {
-                        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
-                                .getString(R.string.oops), bindingView.getContext().getString
-                                (R.string.aviation_gov_unspecified_error));
-                    }
+                    displayResponseError(response);
                 }
                 showProgressBar.set(false);
             }
 
             @Override
             public void onFailure(Call<MetarResponse> call, Throwable t) {
-                ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext().getString
-                        (R.string.oops), t.toString());
+                displayCallFailure(call, t);
                 showProgressBar.set(false);
             }
         });
     }
-
 
     private void callForTaf(String airportList) {
 
@@ -150,30 +142,42 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {
                 Log.d("AirportWeatherActivity", "TAF Got response");
-                if (response != null
-                        && response.body() != null
-                        && response.body().getErrors() != null && response.body().getErrors().getError() == null) {
+                if (isGoodResponse(response)) {
                     airportWeatherAdapter.updateTafList(response.body().getData().getTAFs());
                 } else {
-                    if (response != null && response.body().getErrors() != null && response.body().getErrors() != null) {
-                        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
-                                .getString(R.string.oops), response.body().getErrors().getError());
-                    } else {
-                        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
-                                .getString(R.string.oops), bindingView.getContext().getString
-                                (R.string.aviation_gov_unspecified_error));
-                    }
+                    displayResponseError(response);
                 }
                 showProgressBar.set(false);
             }
 
             @Override
             public void onFailure(Call<TafResponse> call, Throwable t) {
-                ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext().getString
-                        (R.string.oops), t.toString());
+                displayCallFailure(call, t);
                 showProgressBar.set(false);
             }
         });
+    }
+
+    private boolean isGoodResponse(Response<? extends AviationWeatherResponse> response){
+        return response != null
+                && response.body() != null
+                && response.body().getErrors() != null && response.body().getErrors().getError() == null;
+    }
+
+    private void displayResponseError(Response<? extends AviationWeatherResponse> response) {
+        if (response != null && response.body() != null) {
+            ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
+                    .getString(R.string.oops), response.body().getErrors().getError());
+        } else {
+            ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
+                    .getString(R.string.oops), bindingView.getContext().getString
+                    (R.string.aviation_gov_unspecified_error));
+        }
+    }
+
+    private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable t) {
+        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext().getString
+                (R.string.oops), t.toString());
     }
 
     private String getAirportCodes() {

@@ -356,12 +356,15 @@ public class Metar {
         this.vertVisFt = vertVisFt;
     }
 
+    //TODO refactor with TAF SkyCondition logic
     public String getSkyConditionsListString() {
         StringBuilder sb = new StringBuilder();
-        for (SkyCondition skyCondition : skyConditions) {
-            sb.append((skyCondition.getCloudBaseFtAgl() != null ? skyCondition.getCloudBaseFtAgl() + " " : "")
-                    + (skyCondition.getSkyCover() != null ? skyCondition.getSkyCover() : "")
-                    + "\n");
+        if (skyConditions != null) {
+            for (SkyCondition skyCondition : skyConditions) {
+                sb.append((skyCondition.getCloudBaseFtAgl() != null ? skyCondition.getCloudBaseFtAgl() + " " : "")
+                        + (skyCondition.getSkyCover() != null ? skyCondition.getSkyCover() : "")
+                        + "\n");
+            }
         }
         return sb.delete(sb.length()-1, sb.length()).toString();
     }

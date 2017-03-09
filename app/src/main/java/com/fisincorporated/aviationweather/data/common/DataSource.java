@@ -1,17 +1,16 @@
-package com.fisincorporated.aviationweather.data.taf;
+package com.fisincorporated.aviationweather.data.common;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
-
 
 @Root(name = "data_source", strict = false)
 public class DataSource {
 
     @Attribute(name = "name", required = false)
-    protected String name;
+    private String name;
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String value) {
