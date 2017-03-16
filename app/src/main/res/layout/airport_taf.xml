@@ -37,6 +37,7 @@
             android:textSize="@dimen/text_size_large"/>
 
         <TextView
+            android:id="@+id/airport_taf_raw_forecast"
             style="@style/forecastData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

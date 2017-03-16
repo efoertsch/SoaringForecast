@@ -29,6 +29,7 @@ public class BaseTest {
     public Context getContext() {
         return targetContext ;
     }
+
     public SharedPreferences getSharedPreferences() {
         return targetContext.getSharedPreferences(spName, Context.MODE_PRIVATE);
     }

@@ -73,11 +73,11 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     public AirportWeatherViewModel setView(View view) {
         bindingView = view.findViewById(R.id.activity_weather_view);
         viewDataBinding = DataBindingUtil.bind(bindingView);
-        setupRecyclerView(viewDataBinding.activityMetarRecyclerView);
+        setupRecyclerView(viewDataBinding.activityAirportWeatherRecyclerView);
         viewDataBinding.setViewmodel(this);
         setAirportWeatherOrder();
         airportWeatherAdapter.setAirportWeatherList(airportWeatherList).setWeatherDisplayPreferences(this);
-        viewDataBinding.activityMetarRecyclerView.setAdapter(airportWeatherAdapter);
+        viewDataBinding.activityAirportWeatherRecyclerView.setAdapter(airportWeatherAdapter);
         return this;
     }
 

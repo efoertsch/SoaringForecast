@@ -3,6 +3,7 @@ package com.fisincorporated.aviationweather;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
@@ -19,6 +20,7 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
@@ -36,7 +38,7 @@ public class AirportWeatherActivityTest extends BaseTest {
     }
 
     @Test
-    public void checkThatAirportHasOneDisplayed() {
+    public void airportInfoHasMetarFields() {
         Context targetContext = getContext();
         Intent intent = new Intent(targetContext, AirportWeatherActivity.class);
 
@@ -45,10 +47,56 @@ public class AirportWeatherActivityTest extends BaseTest {
         String[] airports = airportList.split("\\s+");
         for (int i = 0; i < airports.length; ++i) {
 
-            scrollToRecyclerPosition(R.id.activity_metar_recycler_view, i);
-            onView(withRecyclerView(R.id.activity_metar_recycler_view).atPosition(i)).check(matches(hasDescendant(withText(airports[i]))));
+            scrollToRecyclerPosition(R.id.activity_airport_weather_recycler_view, i);
+            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.activity_airport_weather_recycler_view).atPosition(i));
+            // Check that metar layout exists
+            viewInteraction.check(matches(hasDescendant(withId(R.id.airport_weather_include_metar))));
+            // Check that metar field exists
+            viewInteraction.check(matches(hasDescendant(withId(R.id.airport_station_raw_text))));
         }
+    }
 
+    @Test
+    public void airportInfoHasTafFields() {
+        Context targetContext = getContext();
+        Intent intent = new Intent(targetContext, AirportWeatherActivity.class);
+
+        mActivityRule.launchActivity(intent);
+
+        String[] airports = airportList.split("\\s+");
+        for (int i = 0; i < airports.length; ++i) {
+
+            scrollToRecyclerPosition(R.id.activity_airport_weather_recycler_view, i);
+            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.activity_airport_weather_recycler_view).atPosition(i));
+            // Check that metar layout exists
+            viewInteraction.check(matches(hasDescendant(withId(R.id.airport_weather_include_taf))));
+            // Check that metar field exists
+            viewInteraction.check(matches(hasDescendant(withId(R.id.airport_taf_raw_forecast))));
+        }
+    }
+
+    @Test
+    public void airportsAreDisplayedInOrder() {
+        Context targetContext = getContext();
+        Intent intent = new Intent(targetContext, AirportWeatherActivity.class);
+
+        mActivityRule.launchActivity(intent);
+
+        String[] airports = airportList.split("\\s+");
+        for (int i = 0; i < airports.length; ++i) {
+
+            scrollToRecyclerPosition(R.id.activity_airport_weather_recycler_view, i);
+            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.activity_airport_weather_recycler_view).atPosition(i));
+
+            // Check the row has the airport id field
+            viewInteraction.check(matches(hasDescendant(withId(R.id.airport_station_id))));
+            // Check that the current position has the correct airport id
+            viewInteraction.check(matches(hasDescendant(withText(airports[i]))));
+            // Check that metar layout exists
+            viewInteraction.check(matches(hasDescendant(withId(R.id.airport_weather_include_metar))));
+            // Check that metar field exists
+            viewInteraction.check(matches(hasDescendant(withId(R.id.airport_station_raw_text))));
+        }
     }
 
     @After
