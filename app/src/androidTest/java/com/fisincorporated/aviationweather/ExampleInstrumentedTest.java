@@ -1,4 +1,4 @@
-package com.fisincorporated.metar;
+package com.fisincorporated.aviationweather;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.fisincorporated.metar", appContext.getPackageName());
+        assertEquals("com.fisincorporated.aviationweather", appContext.getPackageName());
     }
 }

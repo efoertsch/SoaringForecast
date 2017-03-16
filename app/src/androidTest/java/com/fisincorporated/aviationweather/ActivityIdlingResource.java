@@ -1,15 +1,15 @@
-package com.fisincorporated.metar;
+package com.fisincorporated.aviationweather;
 
 import android.support.test.espresso.IdlingResource;
 
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity;
 
-public class MetarActivityIdlingResource implements IdlingResource {
+public class ActivityIdlingResource implements IdlingResource {
 
     private AirportWeatherActivity activity;
     private ResourceCallback callback;
 
-    public MetarActivityIdlingResource(AirportWeatherActivity activity) {
+    public ActivityIdlingResource(AirportWeatherActivity activity) {
         this.activity = activity;
     }
 

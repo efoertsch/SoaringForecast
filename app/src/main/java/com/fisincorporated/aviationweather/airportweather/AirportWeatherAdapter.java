@@ -21,6 +21,7 @@ import com.fisincorporated.aviationweather.databinding.AirportWeatherBinding;
 import com.fisincorporated.aviationweather.databinding.SkyConditionBinding;
 import com.fisincorporated.aviationweather.databinding.TafForecastBinding;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,9 +40,32 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
     public AirportWeatherAdapter() {
     }
 
-    public AirportWeatherAdapter setAirportWeatherList(@NonNull List<AirportWeather> airportWeatherList) {
-        airportWeatherList.addAll(airportWeatherList);
+    public AirportWeatherAdapter setAirportWeatherList(@NonNull List<AirportWeather> selectedAirports) {
+        synchronized (airportWeatherList) {
+            if (airportWeatherList.size() == 0) {
+                airportWeatherList.addAll(selectedAirports);
+            } else {
+                // Make sure list of airports ordered (and w/ weather info) based on list passed in
+                ArrayList<AirportWeather> newOrderedList = new ArrayList<>();
+                boolean airportAdded;
+                for(AirportWeather selectedAirport : selectedAirports) {
+                    airportAdded = false;
+                    for (AirportWeather existingAirport : airportWeatherList) {
+                        if (selectedAirport.getIcaoId().equals(existingAirport.getIcaoId())) {
+                            newOrderedList.add(existingAirport);
+                            airportAdded = true;
+                        }
+                    }
+                    if (!airportAdded) {
+                        newOrderedList.add(selectedAirport);
+                    }
+                }
+                airportWeatherList.clear();
+                airportWeatherList.addAll(newOrderedList);
+            }
+        }
         return this;
+
     }
 
     public AirportWeatherAdapter setWeatherDisplayPreferences(@NonNull WeatherDisplayPreferences weatherDisplayPreferences) {
@@ -126,11 +150,11 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
 
     private void addTafForecasts(BindingHolder holder, TAF taf) {
         if (taf != null && taf.getForecast() != null & taf.getForecast().size() > 0) {
-            LinearLayout layout =  holder.binding.airportWeatherIncludeTaf.airportTafForecastLayout;
+            LinearLayout layout = holder.binding.airportWeatherIncludeTaf.airportTafForecastLayout;
             LayoutInflater inflater = (LayoutInflater) layout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             List<Forecast> forecastList = taf.getForecast();
-            for (Forecast forecast : forecastList){
-                TafForecastBinding binding = DataBindingUtil.inflate(inflater, R.layout.taf_forecast,layout, false);
+            for (Forecast forecast : forecastList) {
+                TafForecastBinding binding = DataBindingUtil.inflate(inflater, R.layout.taf_forecast, layout, false);
                 binding.setForecast(forecast);
                 binding.setDisplayPrefs(weatherDisplayPreferences);
                 binding.getRoot().setLayoutParams(new LinearLayoutCompat.LayoutParams(
@@ -142,13 +166,13 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
         }
     }
 
-    private void addSkyConditionsToForecast(TafForecastBinding tafForecastBinding, Forecast forecast){
+    private void addSkyConditionsToForecast(TafForecastBinding tafForecastBinding, Forecast forecast) {
         if (forecast != null && forecast.getSkyCondition() != null & forecast.getSkyCondition().size() > 0) {
-            LinearLayout layout =  tafForecastBinding.airportTafCloudLayerLayout;
+            LinearLayout layout = tafForecastBinding.airportTafCloudLayerLayout;
             LayoutInflater inflater = (LayoutInflater) layout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             List<SkyCondition> skyConditionList = forecast.getSkyCondition();
-            for (SkyCondition skyCondition : skyConditionList){
-                SkyConditionBinding binding = DataBindingUtil.inflate(inflater, R.layout.sky_condition,layout, false);
+            for (SkyCondition skyCondition : skyConditionList) {
+                SkyConditionBinding binding = DataBindingUtil.inflate(inflater, R.layout.sky_condition, layout, false);
                 binding.setSkyCondition(skyCondition);
                 binding.setDisplayPrefs(weatherDisplayPreferences);
                 binding.getRoot().setLayoutParams(new LinearLayoutCompat.LayoutParams(

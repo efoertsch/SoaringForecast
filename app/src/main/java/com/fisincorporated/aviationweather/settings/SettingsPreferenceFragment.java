@@ -31,8 +31,8 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements
 
         ((WeatherApplication) getActivity().getApplication()).getComponent().inject(this);
 
+        getPreferenceManager().setSharedPreferencesName(AIRPORT_PREFS);
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.display_preferences, false);
-        //getPreferenceManager().setSharedPreferencesName(AIRPORT_PREFS);
         addPreferencesFromResource(R.xml.display_preferences);
 
     }
@@ -41,8 +41,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements
     public void onResume() {
         super.onResume();
         // Set up a listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         initSummary(getPreferenceScreen());
     }
 

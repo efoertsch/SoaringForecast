@@ -1,5 +1,8 @@
 package com.fisincorporated.aviationweather.retrofit;
 
+import javax.inject.Inject;
+
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
@@ -8,22 +11,24 @@ public class AppRetrofit {
 
     public static final String AVIATION_WEATHER_URL = "https://aviationweather.gov/adds/dataserver_current/";
 
-    private static Retrofit retrofit;
+    private Retrofit retrofit;
 
-    private AppRetrofit(){};
+    @Inject
+    public AppRetrofit(Interceptor interceptor){
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(interceptor);
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl(AVIATION_WEATHER_URL)
+                .client(new OkHttpClient())
+                .addConverterFactory(SimpleXmlConverterFactory.create());
 
-    public static Retrofit get() {
-        if (retrofit == null) {
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        retrofit = builder.client(httpClient.build()).build();
+    };
 
-            Retrofit.Builder builder = new Retrofit.Builder()
-                    .baseUrl(AVIATION_WEATHER_URL)
-                    .client(new OkHttpClient())
-                    .addConverterFactory(SimpleXmlConverterFactory.create());
-
-            retrofit = builder.client(httpClient.build()).build();
-        }
+    public Retrofit getRetrofit() {
         return retrofit;
     }
+
+
 
 }
