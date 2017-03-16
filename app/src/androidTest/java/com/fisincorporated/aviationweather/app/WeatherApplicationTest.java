@@ -3,13 +3,15 @@ package com.fisincorporated.aviationweather.app;
 
 import com.fisincorporated.aviationweather.dagger.AppModule;
 import com.fisincorporated.aviationweather.dagger.DaggerDiComponent;
-import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
 
+import okhttp3.Interceptor;
 import retrofit.MockInterceptor;
-import retrofit2.Retrofit;
 
 //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
 public class WeatherApplicationTest extends WeatherApplication {
+
+
+    public static final String AIRPORT_PREFS_TEST = "SHARED_AIRPORT_FUNCTIONAL_TEST";
 
     @Override
     protected void createDaggerInjections() {
@@ -17,11 +19,12 @@ public class WeatherApplicationTest extends WeatherApplication {
                 .appModule(new AppModule(this) {
                     @Override
                     public String providesAppSharedPreferencesName() {
-                        return "SHARED_AIRPORT_FUNCTIONAL_TEST";
+                        return AIRPORT_PREFS_TEST;
                     }
 
-                    public Retrofit provideAppRetrofit() {
-                        return new AppRetrofit(new MockInterceptor()).getRetrofit();
+                    @Override
+                    public Interceptor getInterceptor() {
+                        return new MockInterceptor();
                     }
                 })
                 .build();

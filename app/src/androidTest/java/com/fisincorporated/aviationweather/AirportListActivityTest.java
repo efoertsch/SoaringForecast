@@ -1,10 +1,8 @@
 package com.fisincorporated.aviationweather;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
@@ -35,7 +33,6 @@ public class AirportListActivityTest extends BaseTest {
             new ActivityTestRule<>(AirportListActivity.class, true, false);
 
     @Before
-    @Override
     public void setup() {
         Log.d("Setup", "Setup called");
         super.setup();
@@ -45,7 +42,6 @@ public class AirportListActivityTest extends BaseTest {
 
     @Test
     public void addAirports() {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(targetContext, AirportListActivity.class);
 
         mActivityRule.launchActivity(intent);

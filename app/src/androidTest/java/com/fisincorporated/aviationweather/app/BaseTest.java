@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 
-import com.fisincorporated.aviationweather.dagger.AppModule;
-
 import utils.RecyclerViewMatcher;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -17,10 +15,11 @@ public class BaseTest {
 
     public static final String airportList = "KORH KFIT";
 
-    public  String spName = AppModule.AIRPORT_PREFS;
+
+    //Making it simple(?) and getting shared prefences name this way rather than using injection
+    public  static final String AIRPORT_PREFS_TEST_NAME = WeatherApplicationTest.AIRPORT_PREFS_TEST;
 
     public Context targetContext;
-
 
     public void setup() {
         targetContext = InstrumentationRegistry.getTargetContext();
@@ -31,7 +30,7 @@ public class BaseTest {
     }
 
     public SharedPreferences getSharedPreferences() {
-        return targetContext.getSharedPreferences(spName, Context.MODE_PRIVATE);
+        return targetContext.getSharedPreferences(AIRPORT_PREFS_TEST_NAME, Context.MODE_PRIVATE);
     }
 
     public void setSharedPreferenceAirportList(String airports) {
