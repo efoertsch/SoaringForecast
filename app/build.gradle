@@ -10,8 +10,8 @@ android {
         versionCode 1
         versionName "1.0"
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        //testInstrumentationRunner "com.fisincorporated.aviationweather.app.OverrideApplicationTestRunner"
+        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.fisincorporated.aviationweather.app.OverrideApplicationTestRunner"
     }
     buildTypes {
         release {
