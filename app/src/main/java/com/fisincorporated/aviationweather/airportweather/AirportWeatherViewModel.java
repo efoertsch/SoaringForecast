@@ -75,9 +75,22 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
         viewDataBinding = DataBindingUtil.bind(bindingView);
         setupRecyclerView(viewDataBinding.activityMetarRecyclerView);
         viewDataBinding.setViewmodel(this);
+        setAirportWeatherOrder();
         airportWeatherAdapter.setAirportWeatherList(airportWeatherList).setWeatherDisplayPreferences(this);
         viewDataBinding.activityMetarRecyclerView.setAdapter(airportWeatherAdapter);
         return this;
+    }
+
+    private void setAirportWeatherOrder() {
+        AirportWeather airportWeather;
+        airportWeatherList.clear();
+        String airportList = getAirportCodes();
+        String[] airports = airportList.trim().split("\\s+");
+        for (int i = 0; i < airports.length ; ++i) {
+            airportWeather = new AirportWeather();
+            airportWeather.setIcaoId(airports[i]);
+            airportWeatherList.add(airportWeather);
+        }
     }
 
     public void setupRecyclerView(RecyclerView recyclerView) {
@@ -87,6 +100,8 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
 
     public void onResume() {
         assignDisplayOptions();
+        setAirportWeatherOrder();
+        airportWeatherAdapter.setAirportWeatherList(airportWeatherList);
         refresh();
     }
 

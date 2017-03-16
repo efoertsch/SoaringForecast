@@ -12,6 +12,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Interceptor;
 import retrofit2.Retrofit;
 
 @Module
@@ -30,10 +31,7 @@ public class AppModule {
     private AppRetrofit appRetrofit;
 
     public AppModule(WeatherApplication application) {
-
         this.application = application;
-        // only doing this to set default preferences if needed
-        provideAppPreferences();
     }
 
     @Provides
@@ -45,12 +43,12 @@ public class AppModule {
     @Provides
     @Singleton
     public Retrofit provideAppRetrofit(){
-        return new AppRetrofit(getLoggingInterceptor()).getRetrofit();
+        return new AppRetrofit(getInterceptor()).getRetrofit();
     }
 
     @Provides
     @Singleton
-    public LoggingInterceptor getLoggingInterceptor(){
+    public Interceptor getInterceptor(){
         return new LoggingInterceptor();
     }
 

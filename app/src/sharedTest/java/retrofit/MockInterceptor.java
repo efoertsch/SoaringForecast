@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.retrofit;
+package retrofit;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,9 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-
+/**
+ * Returns the same METAR/TAF based on what is xml is based in resources directory
+ */
 public class MockInterceptor implements Interceptor {
 
     @Override

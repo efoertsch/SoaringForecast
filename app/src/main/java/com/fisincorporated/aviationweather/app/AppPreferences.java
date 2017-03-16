@@ -4,18 +4,20 @@ package com.fisincorporated.aviationweather.app;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.fisincorporated.aviationweather.R;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class AppPreferences {
 
-//    @Inject
-//    @Named("app.shared.preferences.name")
-//    public String AIRPORT_PREFS;
+    @Inject
+    @Named("app.shared.preferences.name")
+    public String AIRPORT_PREFS;
 
     private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";
 
@@ -31,7 +33,10 @@ public class AppPreferences {
 
     private static String DECODE_TAF_METAR_KEY;
 
+    private static String DEFAULT_PREFS_SET = "DEFAULT_PREFS_SET";
+
     private SharedPreferences sharedPreferences;
+
 
     private boolean rawTafMetar;
 
@@ -48,11 +53,9 @@ public class AppPreferences {
 
     @Inject
     public AppPreferences(WeatherApplication application) {
-        //application.getComponent().inject(this);
 
-        PreferenceManager.setDefaultValues(application, R.xml.display_preferences, false);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
-        //sharedPreferences = application.getSharedPreferences(AIRPORT_PREFS, MODE_PRIVATE);
+        application.getComponent().inject(this);
+
         Resources res = application.getResources();
 
         // keys must match to those used in display_perferences.xml
@@ -63,14 +66,26 @@ public class AppPreferences {
         DISTANCE_UNITS_KEY = res.getString(R.string.pref_units_distance);
         DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
 
-        // and use these default values
-        rawTafMetar = true;
-        decodeTafMetar = true;
+        // these should never be needed but use these default values
+        rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
+        decodeTafMetar = res.getBoolean(R.bool.pref_raw_taf_taf_value);
         ImperialTemperatureUnits = res.getString(R.string.pref_units_temp_fahrenheit_value);
         ImperialWindSpeedUnits = res.getString(R.string.pref_units_speed_knots_value);
         ImperialAltitudeUnits = res.getString(R.string.pref_units_altitude_feet_value);
         ImperialDistanceUnits = res.getString(R.string.pref_units_distance_statue_miles_label);
 
+        // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
+        // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
+        sharedPreferences =  application.getSharedPreferences(AIRPORT_PREFS,  MODE_PRIVATE);
+        if (!sharedPreferences.getBoolean(DEFAULT_PREFS_SET, false)){
+            setDisplayRawTafMetar(rawTafMetar);
+            setDecodeTafMetar(decodeTafMetar);
+            setTemperatureDisplay(ImperialTemperatureUnits);
+            setWindSpeedDisplay(ImperialWindSpeedUnits);
+            setAltitudeDisplay(ImperialAltitudeUnits);
+            setDistanceUnitsDisplay(ImperialDistanceUnits);
+            sharedPreferences.edit().putBoolean(DEFAULT_PREFS_SET, true).commit();
+        }
 
     }
 
@@ -142,8 +157,6 @@ public class AppPreferences {
         editor.apply();
     }
 
-
-
     public String getImperialTemperatureUnits() {
         return ImperialTemperatureUnits;
     }
@@ -158,5 +171,37 @@ public class AppPreferences {
 
     public String getImperialDistanceUnits() {
         return ImperialDistanceUnits;
+    }
+
+    public static String getAirportListKey() {
+        return AIRPORT_LIST_KEY;
+    }
+
+    public static String getRawMetarKey() {
+        return RAW_METAR_KEY;
+    }
+
+    public static String getTemperatureUnitsKey() {
+        return TEMPERATURE_UNITS_KEY;
+    }
+
+    public static String getWindspeedUnitsKey() {
+        return WINDSPEED_UNITS_KEY;
+    }
+
+    public static String getAltitudeUnitsKey() {
+        return ALTITUDE_UNITS_KEY;
+    }
+
+    public static String getDistanceUnitsKey() {
+        return DISTANCE_UNITS_KEY;
+    }
+
+    public static String getDecodeTafMetarKey() {
+        return DECODE_TAF_METAR_KEY;
+    }
+
+    public static String getDefaultPrefsSet() {
+        return DEFAULT_PREFS_SET;
     }
 }

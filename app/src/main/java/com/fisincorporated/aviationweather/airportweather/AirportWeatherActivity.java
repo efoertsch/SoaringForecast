@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.airports.AirportListActivity;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
-import com.fisincorporated.aviationweather.settings.MetarSettingsActivity;
+import com.fisincorporated.aviationweather.settings.SettingsActivity;
 
 import javax.inject.Inject;
 
@@ -76,7 +76,7 @@ public class AirportWeatherActivity extends AppCompatActivity {
     }
 
     private void displaySettingsActivity() {
-        Intent i = new Intent(this, MetarSettingsActivity.class);
+        Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
 

@@ -4,12 +4,12 @@
     <CheckBoxPreference
         android:key="@string/pref_raw_taf_metar_key"
         android:title="@string/pref_display_raw_taf_metar"
-        android:defaultValue="true"/>
+        android:defaultValue="@bool/pref_raw_taf_metar_value"/>
 
     <CheckBoxPreference
         android:key="@string/pref_decode_taf_metar_key"
         android:title="@string/pref_decode_taf_metar_metar"
-        android:defaultValue="true"/>
+        android:defaultValue="@bool/pref_raw_taf_taf_value"/>
 
     <!--  TODO update UI for english/metric
     <ListPreference

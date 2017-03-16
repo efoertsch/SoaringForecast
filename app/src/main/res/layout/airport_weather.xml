@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
 
         <variable
@@ -36,8 +38,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="@dimen/margin_standard">
+            android:layout_margin="@dimen/margin_standard"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -52,32 +54,40 @@
                     <TextView
                         android:id="@+id/airport_station_id"
                         style="@style/forecastData"
-                        android:textSize="@dimen/text_size_large"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:text="@{airportWeather.icaoId}"
+                        android:textSize="@dimen/text_size_large"
                         tools:text="KORH"/>
 
-                    <TextView
-                        style="@style/forecastLabel"
+                    <LinearLayout
+                        android:id="@+id/airport_elevation_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/metar_elevation"/>
+                        android:visibility="@{airportWeather.elevationM != null ? View.VISIBLE : View.GONE}">
 
-                    <TextView
-                        style="@style/forecastData"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(airportWeather.elevationM))}"
-                        tools:text="999"/>
+                        <TextView
+                            style="@style/forecastLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/metar_elevation"/>
 
-                    <TextView
-                        style="@style/forecastLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{displayPrefs.altitudeUnits}"
-                        tools:text="Ft"/>
+                        <TextView
+                            style="@style/forecastData"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(airportWeather.elevationM))}"
+                            tools:text="999"/>
+
+                        <TextView
+                            style="@style/forecastLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{displayPrefs.altitudeUnits}"
+                            tools:text="Ft"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -86,14 +96,14 @@
             <include
                 android:id="@+id/airport_weather_include_metar"
                 layout="@layout/airport_metar"
-                bind:metar="@{airportWeather.metar}"
-                bind:displayPrefs="@{displayPrefs}"/>
+                bind:displayPrefs="@{displayPrefs}"
+                bind:metar="@{airportWeather.metar}"/>
 
             <include
                 android:id="@+id/airport_weather_include_taf"
                 layout="@layout/airport_taf"
-                bind:taf="@{airportWeather.taf}"
-                bind:displayPrefs="@{displayPrefs}"/>
+                bind:displayPrefs="@{displayPrefs}"
+                bind:taf="@{airportWeather.taf}"/>
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

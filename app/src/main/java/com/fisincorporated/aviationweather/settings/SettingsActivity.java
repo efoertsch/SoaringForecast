@@ -13,7 +13,7 @@ import com.fisincorporated.aviationweather.R;
 // -preferencefragment
 // http://stackoverflow.com/questions/531427/how-do-i-display-the-current-value-of-an-android
 // -preference-in-the-preference-su/4325239#4325239
-public class MetarSettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
 

@@ -15,6 +15,11 @@ import retrofit2.Retrofit;
 
 public class MetarTest {
 
+
+    /**
+     * Call the real METAR web service and check for response
+     * @throws IOException
+     */
     @Test
     public void shouldGetMetar() throws IOException {
         Retrofit retrofit = new AppRetrofit(new LoggingInterceptor()).getRetrofit();
