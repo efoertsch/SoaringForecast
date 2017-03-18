@@ -51,7 +51,7 @@ public class AirportWeatherActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_metar, menu);
+        inflater.inflate(R.menu.weather_draw_menu, menu);
         return true;
     }
 
@@ -68,6 +68,7 @@ public class AirportWeatherActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+
     }
 
     private void displayAirportList() {
