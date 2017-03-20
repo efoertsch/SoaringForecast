@@ -17,6 +17,6 @@
         android:layout_gravity="start"
         android:background="@android:color/white"
         app:headerLayout="@layout/app_nav_drawer_header"
-        app:menu="@menu/weather_draw_menu"/>
+        app:menu="@menu/weather_drawer_menu"/>
 
 </android.support.v4.widget.DrawerLayout>

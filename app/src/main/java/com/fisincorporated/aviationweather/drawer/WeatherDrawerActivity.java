@@ -127,10 +127,10 @@ public class WeatherDrawerActivity extends AppCompatActivity {
 
     public void selectDrawerItem(MenuItem menuItem) {
         switch(menuItem.getItemId()) {
-            case R.id.add_airport_code:
+            case R.id.nav_menu_add_airport_codes:
                 displayAirportList();
                 break;
-            case R.id.metar_menu_settings:
+            case R.id.nav_menu_display_options:
                 displaySettingsActivity();
                 break;
         }

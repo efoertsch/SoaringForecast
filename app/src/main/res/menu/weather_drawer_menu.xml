@@ -7,11 +7,11 @@
 
         <!-- TODO - add icons -->
     <item
-        android:id="@+id/add_airport_code"
+        android:id="@+id/nav_menu_add_airport_codes"
         android:title="@string/action_add_airports"/>
 
     <item
-        android:id="@+id/metar_menu_settings"
+        android:id="@+id/nav_menu_display_options"
         android:title="@string/action_settings"
         />
 

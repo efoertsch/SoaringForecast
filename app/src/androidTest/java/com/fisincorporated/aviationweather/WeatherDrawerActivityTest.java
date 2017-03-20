@@ -2,9 +2,10 @@ package com.fisincorporated.aviationweather;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
 import com.fisincorporated.aviationweather.app.BaseTest;
 import com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity;
@@ -15,9 +16,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.contrib.DrawerMatchers.isOpen;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 /**
@@ -35,7 +35,6 @@ public class WeatherDrawerActivityTest extends BaseTest {
     @Before
     public void setup() {
         super.setup();
-        Log.d("Setup", "Setup called");
     }
 
     // Make sure activity can start
@@ -46,12 +45,25 @@ public class WeatherDrawerActivityTest extends BaseTest {
         mActivityRule.launchActivity(intent);
     }
 
+
     @Test
     public void drawerExistsSwipingRight() {
         weatherDrawerActivityExists();
+        onView(withId(R.id.app_drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.app_drawer_layout)).check(matches(isOpen()));
+    }
 
-        onView(withId(R.id.app_drawer_layout)).perform(swipeRight());
-        onView(withId(R.id.app_weather_drawer)).check(matches(isDisplayed()));
+    @Test
+    public void canGetToAirportListFromNavDrawer() {
+        drawerExistsSwipingRight();
+        onView(withId(R.id.app_weather_drawer)).perform(NavigationViewActions.navigateTo(R.id.nav_menu_add_airport_codes));
+    }
+
+    @Test
+    public void canGetToSettingsFromNavDrawer() {
+        drawerExistsSwipingRight();
+        onView(withId(R.id.app_weather_drawer)).perform(NavigationViewActions.navigateTo(R.id.nav_menu_display_options));
+
 
     }
 }
