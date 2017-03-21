@@ -1,12 +1,12 @@
 package com.fisincorporated.aviationweather.airportweather;
 
 
+import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.fisincorporated.aviationweather.R;
@@ -28,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AirportWeatherViewModel implements WeatherDisplayPreferences {
+public class AirportWeatherViewModel extends BaseObservable implements WeatherDisplayPreferences {
 
     private Call<MetarResponse> metarCall;
 
@@ -131,7 +131,6 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
         metarCall.enqueue(new Callback<MetarResponse>() {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
-                Log.d("AirportWeatherActivity", "METAR Got response");
                 if (isGoodResponse(response)) {
                     airportWeatherAdapter.updateMetarList(response.body().getData().getMetars());
                 } else {
@@ -156,7 +155,6 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
         tafCall.enqueue(new Callback<TafResponse>() {
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {
-                Log.d("AirportWeatherActivity", "TAF Got response");
                 if (isGoodResponse(response)) {
                     airportWeatherAdapter.updateTafList(response.body().getData().getTAFs());
                 } else {

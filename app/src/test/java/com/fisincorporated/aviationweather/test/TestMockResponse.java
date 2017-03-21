@@ -26,7 +26,7 @@ public class TestMockResponse {
         AirportMetarService service = retrofit.create(AirportMetarService.class);
         Call<MetarResponse> call = service.mostRecentMetarForEachAirport(airportList, 2);
         MetarResponse tafResponse = call.execute().body();
-        // Can loop through reponse to check data
+        // Can loop through response to check data
     }
 
 }
