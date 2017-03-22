@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import retrofit2.Call;
 
-public class ApiParseTest {
+public class TafParseTest {
 
     AirportTafService client = new AppRetrofit(new LoggingInterceptor()).getRetrofit().create(AirportTafService.class);
     String airportList = new String("KORH KBOS");
@@ -21,7 +21,7 @@ public class ApiParseTest {
     // >>>Synchronous call<<<
     @Test
     public void testTafApiCall() throws IOException {
-        Call<TafResponse> call = client.mostRecentTafForEachAirport(airportList, 2);
+        Call<TafResponse> call = client.mostRecentTafForEachAirport(airportList, AirportTafService.HOURS_BEFORE_NOW);
         TafResponse tafResponse = call.execute().body();
 
     }

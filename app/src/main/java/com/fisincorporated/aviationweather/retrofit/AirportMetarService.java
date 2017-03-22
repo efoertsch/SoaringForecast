@@ -8,8 +8,10 @@ import retrofit2.http.Query;
 
 
 public interface AirportMetarService {
+
+    int HOURS_BEFORE_NOW = 2;
     /**
-     * Get most recent TAFs issued within last x.y hours
+     * Get most recent TAFs issued within last x hours
      *
      * @param icaoIdentifiers whitespace or comma delimited list of airport icao codes
      * @param hoursBeforeNow

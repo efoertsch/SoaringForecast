@@ -124,10 +124,7 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
     }
 
     private void callForMetar(String airportList) {
-
-        metarCall = airportMetarService.mostRecentMetarForEachAirport(airportList, 2);
-
-        // Execute the call asynchronously. Get a positive or negative callback.
+        metarCall = airportMetarService.mostRecentMetarForEachAirport(airportList, AirportMetarService.HOURS_BEFORE_NOW);
         metarCall.enqueue(new Callback<MetarResponse>() {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
@@ -148,10 +145,7 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
     }
 
     private void callForTaf(String airportList) {
-
-        tafCall = airportTafService.mostRecentTafForEachAirport(airportList, 7);
-
-        // Execute the call asynchronously. Get a positive or negative callback.
+        tafCall = airportTafService.mostRecentTafForEachAirport(airportList, AirportTafService.HOURS_BEFORE_NOW);
         tafCall.enqueue(new Callback<TafResponse>() {
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {

@@ -46,6 +46,7 @@ public class AirportWeatherViewModelTest {
         airportWeatherViewModel.airportWeatherAdapter = airportWeatherAdapter;
         // This MockInterceptor always returns same canned Metar and Taf info
         Retrofit retrofit = new AppRetrofit(new retrofit.MockInterceptor()).getRetrofit();
+        retrofit.callbackExecutor();
         airportWeatherViewModel.airportMetarService = retrofit.create(AirportMetarService.class);
         airportWeatherViewModel.airportTafService = retrofit.create(AirportTafService.class);
 

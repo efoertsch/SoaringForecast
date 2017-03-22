@@ -8,6 +8,8 @@ import retrofit2.http.Query;
 
 public interface AirportTafService {
 
+    int HOURS_BEFORE_NOW = 7;
+
     /**
      * Get most recent Metars issued within last x.y hours
      *

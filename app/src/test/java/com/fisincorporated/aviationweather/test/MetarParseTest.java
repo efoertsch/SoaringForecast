@@ -13,7 +13,7 @@ import java.io.IOException;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
-public class MetarTest {
+public class MetarParseTest {
 
 
     /**
@@ -27,7 +27,7 @@ public class MetarTest {
 
         final Call<MetarResponse>  call;
 
-        call = client.mostRecentMetarForEachAirport("KORH", 1);
+        call = client.mostRecentMetarForEachAirport("KORH", AirportMetarService.HOURS_BEFORE_NOW);
         MetarResponse response = call.execute().body();
 
         checkMetarResponse(response);
