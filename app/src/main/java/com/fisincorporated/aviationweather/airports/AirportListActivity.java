@@ -21,12 +21,20 @@ public class AirportListActivity extends AppCompatActivity implements  AirportLi
         setContentView(R.layout.activity_airport);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         ((WeatherApplication) getApplication()).getComponent().inject(this);
 
         airportListViewModel.setView((ViewGroup) findViewById(android.R.id.content))
                 .setEntryCompleteListener(this);
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

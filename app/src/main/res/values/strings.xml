@@ -39,6 +39,9 @@
     <string name="metar_seaLevelPressureMb">SeaLevel Pressure(Mb):</string>
     <string name="metar_wxString">WxString:</string>
     <string name="metar_elevation">Elevation:</string>
+    <string name="metar_temp">Temp:</string>
+    <string name="metar_dewpoint">DewPoint:</string>
+    <string name="metar_not_available">METAR not available or received</string>
 
     <string name="taf">TAF</string>
     <string name="taf_issued_at">Issued at:</string>
@@ -54,9 +57,7 @@
     <string name="taf_valid_from">Valid From:</string>
     <string name="taf_valid_to">To</string>
     <string name="taf_weather">Weather:</string>
-    <string name="metar_temp">Temp:</string>
-    <string name="metar_dewpoint">DewPoint:</string>
-
+    <string name="taf_not_available">TAF not available or received</string>
 
     <!-- Display preferences -->
     <!-- Display raw taf/metar -->
@@ -103,5 +104,13 @@
     <string name="enter_airport_codes">Enter airport codes using 4 character ICAO code leaving at least one space between each code:</string>
     <string name="airport_code_error">Airport codes must be 4 character ICAO code.</string>
     <string name="airport_code_entry_hint">eg. KBOS KORH</string>
+
+    <!-- Nav drawer -->
+    <string name="nav_drawer_metar_taf_label">METAR/TAF</string>
+    <string name="nav_drawer_airport_list_label">Airport List</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+
 
 </resources>

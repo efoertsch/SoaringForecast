@@ -1,6 +1,6 @@
 package com.fisincorporated.aviationweather.retrofit;
 
-import android.util.Log;
+import com.fisincorporated.aviationweather.BuildConfig;
 
 import java.io.IOException;
 
@@ -16,7 +16,10 @@ public class LoggingInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Log.i("LoggingInterceptor", "inside intercept callback");
+
+        if (BuildConfig.DEBUG) {
+            System.out.println("LoggingInterceptor: inside intercept callback");
+        }
         Request request = chain.request();
         long t1 = System.nanoTime();
         String requestLog = String.format("Sending request %s on %s%n%s",
@@ -24,7 +27,9 @@ public class LoggingInterceptor implements Interceptor {
         if (request.method().compareToIgnoreCase("post") == 0) {
             requestLog = "\n" + requestLog + "\n" + bodyToString(request);
         }
-        Log.d("TAG", "request" + "\n" + requestLog);
+        if (BuildConfig.DEBUG) {
+            System.out.println("LoggingInterceptor: request" + "\n" + requestLog);
+        }
         Response response = chain.proceed(request);
         long t2 = System.nanoTime();
 
@@ -32,11 +37,11 @@ public class LoggingInterceptor implements Interceptor {
                 response.request().url(), (t2 - t1) / 1e6d, response.headers());
 
         String bodyString = response.body().string();
+        if (BuildConfig.DEBUG) {
+            System.out.println("LoggingInterceptor: response only" + "\n" + bodyString);
 
-        Log.d("TAG", "response only" + "\n" + bodyString);
-
-        Log.d("TAG", "response" + "\n" + responseLog + "\n" + bodyString);
-
+            System.out.println("LoggingInterceptor: response" + "\n" + responseLog + "\n" + bodyString);
+        }
         return response.newBuilder()
                 .body(ResponseBody.create(response.body().contentType(), bodyString))
                 .build();

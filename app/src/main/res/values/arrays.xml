@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- For shared preference settings (not all yet implemented) -->
     <string-array name="pref_units_temp_labels">
         <item>@string/pref_units_temp_centigrade_label</item>
         <item>@string/pref_units_temp_fahrenheit_label</item>
@@ -39,6 +40,14 @@
     <string-array name="pref_units_distance_values">
         <item>@string/pref_units_distance_kilometers_value</item>
         <item>@string/pref_units_distance_status_miles_value</item>
+    </string-array>
+
+    <!-- End shared preference -->
+
+    <!-- Nav drawer -->
+    <string-array name="nav_drawer_items">
+        <item>@string/nav_drawer_metar_taf_label</item>
+        <item>@string/nav_drawer_airport_list_label</item>
     </string-array>
 
 

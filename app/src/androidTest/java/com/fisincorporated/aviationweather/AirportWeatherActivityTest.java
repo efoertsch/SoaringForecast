@@ -8,8 +8,8 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
-import com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity;
 import com.fisincorporated.aviationweather.app.BaseTest;
+import com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,8 +27,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 public class AirportWeatherActivityTest extends BaseTest {
 
     @Rule
-    public ActivityTestRule<AirportWeatherActivity> mActivityRule =
-            new ActivityTestRule<>(AirportWeatherActivity.class, true, false);
+    public ActivityTestRule<WeatherDrawerActivity> mActivityRule =
+            new ActivityTestRule<>(WeatherDrawerActivity.class, true, false);
 
     @Before
     public void setup() {
@@ -40,7 +40,7 @@ public class AirportWeatherActivityTest extends BaseTest {
     @Test
     public void airportInfoHasMetarFields() {
         Context targetContext = getContext();
-        Intent intent = new Intent(targetContext, AirportWeatherActivity.class);
+        Intent intent = new Intent(targetContext, WeatherDrawerActivity.class);
 
         mActivityRule.launchActivity(intent);
 
@@ -59,7 +59,7 @@ public class AirportWeatherActivityTest extends BaseTest {
     @Test
     public void airportInfoHasTafFields() {
         Context targetContext = getContext();
-        Intent intent = new Intent(targetContext, AirportWeatherActivity.class);
+        Intent intent = new Intent(targetContext, WeatherDrawerActivity.class);
 
         mActivityRule.launchActivity(intent);
 
@@ -78,7 +78,7 @@ public class AirportWeatherActivityTest extends BaseTest {
     @Test
     public void airportsAreDisplayedInOrder() {
         Context targetContext = getContext();
-        Intent intent = new Intent(targetContext, AirportWeatherActivity.class);
+        Intent intent = new Intent(targetContext, WeatherDrawerActivity.class);
 
         mActivityRule.launchActivity(intent);
 

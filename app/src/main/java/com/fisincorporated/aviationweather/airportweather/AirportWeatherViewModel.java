@@ -1,12 +1,12 @@
 package com.fisincorporated.aviationweather.airportweather;
 
 
+import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.fisincorporated.aviationweather.R;
@@ -16,8 +16,7 @@ import com.fisincorporated.aviationweather.data.common.AviationWeatherResponse;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
-import com.fisincorporated.aviationweather.retrofit.AirportMetarService;
-import com.fisincorporated.aviationweather.retrofit.AirportTafService;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AirportWeatherViewModel implements WeatherDisplayPreferences {
+public class AirportWeatherViewModel extends BaseObservable implements WeatherDisplayPreferences {
 
     private Call<MetarResponse> metarCall;
 
@@ -61,10 +60,7 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     public AirportWeatherAdapter airportWeatherAdapter;
 
     @Inject
-    public AirportMetarService airportMetarService;
-
-    @Inject
-    public AirportTafService airportTafService;
+    public AviationWeatherApi aviationWeatherApi;
 
     @Inject
     public AirportWeatherViewModel() {
@@ -124,14 +120,10 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     }
 
     private void callForMetar(String airportList) {
-
-        metarCall = airportMetarService.mostRecentMetarForEachAirport(airportList, 2);
-
-        // Execute the call asynchronously. Get a positive or negative callback.
+        metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
         metarCall.enqueue(new Callback<MetarResponse>() {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
-                Log.d("AirportWeatherActivity", "METAR Got response");
                 if (isGoodResponse(response)) {
                     airportWeatherAdapter.updateMetarList(response.body().getData().getMetars());
                 } else {
@@ -149,14 +141,10 @@ public class AirportWeatherViewModel implements WeatherDisplayPreferences {
     }
 
     private void callForTaf(String airportList) {
-
-        tafCall = airportTafService.mostRecentTafForEachAirport(airportList, 7);
-
-        // Execute the call asynchronously. Get a positive or negative callback.
+        tafCall = aviationWeatherApi.mostRecentTafForEachAirport(airportList, AviationWeatherApi.TAF_HOURS_BEFORE_NOW);
         tafCall.enqueue(new Callback<TafResponse>() {
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {
-                Log.d("AirportWeatherActivity", "TAF Got response");
                 if (isGoodResponse(response)) {
                     airportWeatherAdapter.updateTafList(response.body().getData().getTAFs());
                 } else {

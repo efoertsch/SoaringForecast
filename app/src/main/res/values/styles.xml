@@ -27,9 +27,18 @@
         <item name="android:layout_marginEnd">@dimen/margin_half</item>
     </style>
 
+    <style name="nav_drawer_primary_item_style" parent="AppTheme">
+        <item name="android:paddingStart">@dimen/nav_drawer_item_padding_start</item>
+        <item name="android:paddingEnd">@dimen/nav_drawer_item_padding_end</item>
+        <item name="android:paddingTop">@dimen/nav_drawer_item_padding_top</item>
+        <item name="android:paddingBottom">@dimen/nav_drawer_item_padding_bottom</item>
+        <item name="android:layout_marginEnd">@dimen/nav_drawer_item_margin_end</item>
+    </style>
+
     <style name="AppTheme.NoActionBar.AppBarOverlay"
            parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
 
 </resources>
