@@ -2,9 +2,8 @@ package com.fisincorporated.aviationweather.dagger;
 
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
-import com.fisincorporated.aviationweather.retrofit.AirportMetarService;
-import com.fisincorporated.aviationweather.retrofit.AirportTafService;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
 
 import javax.inject.Named;
@@ -53,12 +52,9 @@ public class AppModule {
     }
 
     @Provides
-    public AirportMetarService providesAirportMetarService() {
-        return provideAppRetrofit().create(AirportMetarService.class);
+    public AviationWeatherApi providesAviationWeatherApi() {
+        return provideAppRetrofit().create(AviationWeatherApi.class);
     }
 
-    @Provides
-    public AirportTafService providesAirportTafService() {
-        return provideAppRetrofit().create(AirportTafService.class);
-    }
+
 }

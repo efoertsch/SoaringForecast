@@ -16,8 +16,7 @@ import com.fisincorporated.aviationweather.data.common.AviationWeatherResponse;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
-import com.fisincorporated.aviationweather.retrofit.AirportMetarService;
-import com.fisincorporated.aviationweather.retrofit.AirportTafService;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
 
 import java.util.ArrayList;
@@ -61,10 +60,7 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
     public AirportWeatherAdapter airportWeatherAdapter;
 
     @Inject
-    public AirportMetarService airportMetarService;
-
-    @Inject
-    public AirportTafService airportTafService;
+    public AviationWeatherApi aviationWeatherApi;
 
     @Inject
     public AirportWeatherViewModel() {
@@ -124,7 +120,7 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
     }
 
     private void callForMetar(String airportList) {
-        metarCall = airportMetarService.mostRecentMetarForEachAirport(airportList, AirportMetarService.HOURS_BEFORE_NOW);
+        metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
         metarCall.enqueue(new Callback<MetarResponse>() {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
@@ -145,7 +141,7 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
     }
 
     private void callForTaf(String airportList) {
-        tafCall = airportTafService.mostRecentTafForEachAirport(airportList, AirportTafService.HOURS_BEFORE_NOW);
+        tafCall = aviationWeatherApi.mostRecentTafForEachAirport(airportList, AviationWeatherApi.TAF_HOURS_BEFORE_NOW);
         tafCall.enqueue(new Callback<TafResponse>() {
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {

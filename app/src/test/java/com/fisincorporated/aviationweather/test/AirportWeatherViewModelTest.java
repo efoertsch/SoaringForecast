@@ -6,9 +6,8 @@ import com.fisincorporated.aviationweather.airportweather.AirportWeatherViewMode
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.data.metars.Metar;
 import com.fisincorporated.aviationweather.data.taf.TAF;
-import com.fisincorporated.aviationweather.retrofit.AirportMetarService;
-import com.fisincorporated.aviationweather.retrofit.AirportTafService;
 import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,12 +46,11 @@ public class AirportWeatherViewModelTest {
         // This MockInterceptor always returns same canned Metar and Taf info
         Retrofit retrofit = new AppRetrofit(new retrofit.MockInterceptor()).getRetrofit();
         retrofit.callbackExecutor();
-        airportWeatherViewModel.airportMetarService = retrofit.create(AirportMetarService.class);
-        airportWeatherViewModel.airportTafService = retrofit.create(AirportTafService.class);
+        airportWeatherViewModel.aviationWeatherApi = retrofit.create(AviationWeatherApi.class);
 
         airportWeatherViewModel.refresh();
 
-        // TODO failing due to async nature of retrofit calls. Find way to test.
+        // TODO not working due to async nature of retrofit calls. Find way to test.
         verify(airportWeatherAdapter).updateMetarList(Matchers.anyListOf(Metar.class));
         verify(airportWeatherAdapter).updateTafList(Matchers.anyListOf(TAF.class));
 
