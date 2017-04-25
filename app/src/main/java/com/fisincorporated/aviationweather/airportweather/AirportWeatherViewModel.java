@@ -18,6 +18,7 @@ import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
+import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AirportWeatherViewModel extends BaseObservable implements WeatherDisplayPreferences {
+public class AirportWeatherViewModel extends BaseObservable implements ViewModelLifeCycle, WeatherDisplayPreferences {
 
     private Call<MetarResponse> metarCall;
 
@@ -94,6 +95,7 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
     }
 
+    @Override
     public void onResume() {
         assignDisplayOptions();
         setAirportWeatherOrder();
@@ -101,6 +103,7 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
         refresh();
     }
 
+    @Override
     public void onPause() {
         if (metarCall != null) {
             metarCall.cancel();
@@ -109,6 +112,11 @@ public class AirportWeatherViewModel extends BaseObservable implements WeatherDi
         if (tafCall != null) {
             tafCall.cancel();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+
     }
 
     public void refresh() {

@@ -6,53 +6,55 @@
     <data>
 
         <import type="com.fisincorporated.aviationweather.airports.AirportListViewModel"/>
+
         <variable
             name="airports"
             type="AirportListViewModel"/>
     </data>
-<RelativeLayout
-    android:id="@+id/activity_airport_list"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:backgroundTint="@color/colorScreenBackground"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.fisincorporated.aviationweather.airports.AirportListActivity"
-    tools:showIn="@layout/activity_airport">
 
-    <TextView
-        android:id="@+id/activity_airport_enter_label"
+    <RelativeLayout
+        android:id="@+id/activity_airport_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/enter_airport_codes"
-        style="@style/forecastLabel"
-        android:layout_alignParentTop="true"
-        />
+        android:layout_height="match_parent"
+        android:backgroundTint="@color/colorScreenBackground"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.fisincorporated.aviationweather.airports.AirportListActivity"
+        tools:showIn="@layout/activity_airport">
 
-    <EditText
-        style="@style/forecastData"
-        android:id="@+id/activity_airport_codes"
-        android:layout_below="@id/activity_airport_enter_label"
-        android:layout_above="@+id/activity_airport_save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars = "vertical"
-        android:text="@{airports.airportList}"
-        android:inputType="text"
-        android:textAllCaps="true"
-        android:gravity="top"
-        android:hint="@string/airport_code_entry_hint"/>
+        <TextView
+            android:id="@+id/activity_airport_enter_label"
+            style="@style/forecastLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="@string/enter_airport_codes"
+            />
 
-    <Button
-        android:id="@+id/activity_airport_save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="@string/save"
-        android:onClick="@{airports::onSaveAirports}"/>
+        <EditText
+            android:id="@+id/activity_airport_codes"
+            style="@style/forecastData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/activity_airport_save"
+            android:layout_below="@id/activity_airport_enter_label"
+            android:gravity="top"
+            android:hint="@string/airport_code_entry_hint"
+            android:inputType="text"
+            android:scrollbars="vertical"
+            android:text="@{airports.airportList}"
+            android:textAllCaps="true"/>
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/activity_airport_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:onClick="@{airports::onSaveAirports}"
+            android:text="@string/save"/>
+
+    </RelativeLayout>
 </layout>
