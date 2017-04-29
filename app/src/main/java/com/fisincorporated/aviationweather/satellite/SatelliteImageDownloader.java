@@ -2,7 +2,6 @@ package com.fisincorporated.aviationweather.satellite;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.widget.ImageView;
 
 import com.fisincorporated.aviationweather.utils.TimeUtils;
 
@@ -38,7 +37,7 @@ public class SatelliteImageDownloader {
     public SatelliteImageDownloader() {
     }
 
-    public void loadSatelliteImages(ImageView imageView, String area, String type) {
+    public void loadSatelliteImages(String area, String type) {
         cancelOutstandingLoads();
         clearSatelliteImageCache();
         Calendar rightNow = TimeUtils.getUtcRightNow();
@@ -47,7 +46,7 @@ public class SatelliteImageDownloader {
         subscription = getImageDownloaderObservable(satelliteImageNames).subscribeOn(Schedulers.io()).subscribe();
     }
 
-    private static List<String> getImageNames(Calendar imageTime, String area, String type) {
+    public static List<String> getImageNames(Calendar imageTime, String area, String type) {
         String imageSuffix = getImageNameSuffix(area, type);
         ArrayList<String> imageTimes = new ArrayList<>();
         TimeUtils.setCalendarToQuarterHour(imageTime);
@@ -60,10 +59,9 @@ public class SatelliteImageDownloader {
         return imageTimes;
     }
 
-    private static String getImageNameSuffix(String area, String type) {
+    public static String getImageNameSuffix(String area, String type) {
         return "_" + area.toUpperCase() + "_" + type + ".jpg";
     }
-
 
     public void cancelOutstandingLoads() {
         if (subscription != null) {

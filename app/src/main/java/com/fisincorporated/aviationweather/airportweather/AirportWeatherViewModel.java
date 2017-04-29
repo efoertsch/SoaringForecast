@@ -187,8 +187,10 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     }
 
     private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable t) {
-        ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext().getString
-                (R.string.oops), t.toString());
+        if (t.getCause() != null && !t.getCause().equals("Canceled")) {
+            ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext().getString
+                    (R.string.oops), t.toString());
+        }
     }
 
     private String getAirportCodes() {

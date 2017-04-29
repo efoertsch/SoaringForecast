@@ -3,17 +3,53 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <import type="android.view.View"/>
+        <import type="android.widget.Spinner"/>
+
         <variable
-            name="viewmodel"
+            name="viewModel"
             type="com.fisincorporated.aviationweather.satellite.SatelliteViewModel"/>
     </data>
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/satellite_image_imageView"
+    <RelativeLayout
+        android:id="@+id/satellite_image_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="?android:attr/actionBarSize"
+        >
 
-    </com.github.chrisbanes.photoview.PhotoView>
+        <LinearLayout
+            android:id="@+id/satellite_image_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+           android:layout_alignParentTop="true">
+
+            <TextView
+                android:id="@+id/satellite_image_region_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/satellite_region"
+                android:gravity="center_vertical"/>
+
+            <Spinner
+                android:id="@+id/satellite_image_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@{viewModel.satelliteRegions}"
+                android:selectedItemPosition="@={viewModel.regionIdx}"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
+
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/satellite_image_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/satellite_image_region"
+            android:layout_alignParentBottom="true">
+        </com.github.chrisbanes.photoview.PhotoView>
+
+    </RelativeLayout>
 
 </layout>

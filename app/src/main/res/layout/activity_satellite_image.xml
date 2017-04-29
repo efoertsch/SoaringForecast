@@ -13,6 +13,5 @@
     <include layout="@layout/satellite_image_display"/>
 
 
-
 </android.support.design.widget.CoordinatorLayout>
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="satellite_region">Satellite Region</string>
+
+    <!-- Satellite regions  key, value-->
+    <string name="satellite_region_us" translatable="false">us,CONUS US</string>
+    <string name="satellite_region_alb" translatable="false">alb,Albany NY</string>
+    <string name="satellite_region_bwi" translatable="false">bwi,Baltimore MD</string>
+    <string name="satellite_region_clt" translatable="false">clt,Charlotte NC</string>
+    <string name="satellite_region_tpa" translatable="false">tpa,Tampa FL</string>
+    <string name="satellite_region_dtw" translatable="false">dtw,Detroit MI</string>
+    <string name="satellite_region_evv" translatable="false">evv,Evansville IN</string>
+    <string name="satellite_region_mgm" translatable="false">mgm,Montgomery AL</string>
+    <string name="satellite_region_msp" translatable="false">msp,Minneapolis MN</string>
+    <string name="satellite_region_lit" translatable="false">lit,Little Rock AR</string>
+    <string name="satellite_region_pir" translatable="false">pir,Pierre SD</string>
+    <string name="satellite_region_ict" translatable="false">ict,Wichita KS</string>
+    <string name="satellite_region_aus" translatable="false">aus,>Austin TX</string>
+    <string name="satellite_region_cod" translatable="false">cod,Cody WY</string>
+    <string name="satellite_region_den" translatable="false">den,Denver CO</string>
+    <string name="satellite_region_abq" translatable="false">abq,Albuquerque NM</string>
+    <string name="satellite_region_lws" translatable="false">lws,Lewiston ID</string>
+    <string name="satellite_region_wmc" translatable="false">wmc,Winnemuca NV</string>
+    <string name="satellite_region_las" translatable="false">las,Las Vegas NV</string>
+    <string name="satellite_region_hi" translatable="false">hi,Hawaii</string>
+    <string name="satellite_region_ak" translatable="false">ak,Alaska</string>
+    <string name="satellite_region_gulf" translatable="false">gulf,Gulf of Mexico</string>
+    <string name="satellite_region_carib" translatable="false">carib,Caribbean</string>
+
+
+    <string-array name="satellite_regions">
+        <item>@string/satellite_region_us</item>
+        <item>@string/satellite_region_alb</item>
+        <item>@string/satellite_region_bwi</item>
+        <item>@string/satellite_region_clt</item>
+        <item>@string/satellite_region_tpa</item>
+        <item>@string/satellite_region_dtw</item>
+        <item>@string/satellite_region_evv</item>
+        <item>@string/satellite_region_mgm</item>
+        <item>@string/satellite_region_msp</item>
+        <item>@string/satellite_region_lit</item>
+        <item>@string/satellite_region_pir</item>
+        <item>@string/satellite_region_ict</item>
+        <item>@string/satellite_region_aus</item>
+        <item>@string/satellite_region_cod</item>
+        <item>@string/satellite_region_den</item>
+        <item>@string/satellite_region_abq</item>
+        <item>@string/satellite_region_lws</item>
+        <item>@string/satellite_region_wmc</item>
+        <item>@string/satellite_region_las</item>
+        <item>@string/satellite_region_hi</item>
+        <item>@string/satellite_region_ak</item>
+        <item>@string/satellite_region_gulf</item>
+        <item>@string/satellite_region_carib</item>
+    </string-array>
+</resources>
