@@ -9,6 +9,7 @@ import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
 import com.fisincorporated.aviationweather.satellite.SatelliteImage;
+import com.fisincorporated.aviationweather.satellite.SatelliteImageType;
 import com.fisincorporated.aviationweather.satellite.SatelliteRegion;
 
 import org.cache2k.Cache;
@@ -82,17 +83,13 @@ public class AppModule {
     @Provides
     @Singleton
     public List<SatelliteRegion> provideSatelliteRegionArray() {
-        String id;
-        String name;
         ArrayList<SatelliteRegion> satelliteRegions = new ArrayList<>();
         Resources res = application.getResources();
         try {
             String[] regions = res.getStringArray(R.array.satellite_regions);
             if (regions != null) {
                 for (int i = 0; i < regions.length; ++i) {
-                    String[] values = regions[i].split(",");
-                    SatelliteRegion satelliteRegion = new SatelliteRegion(values[0],
-                            values.length > 1 ? values[1] : "");
+                    SatelliteRegion satelliteRegion = new SatelliteRegion(regions[i]);
                     satelliteRegions.add(satelliteRegion);
                 }
             }
@@ -100,5 +97,25 @@ public class AppModule {
         return satelliteRegions;
 
     }
+
+    @Provides
+    @Singleton
+    public List<SatelliteImageType> provideSatelliteImageType() {
+        ArrayList<SatelliteImageType> satelliteImageTypes = new ArrayList<>();
+        Resources res = application.getResources();
+        try {
+            String[] imageTypes = res.getStringArray(R.array.satellite_image_types);
+            if (imageTypes != null) {
+                for (int i = 0; i < imageTypes.length; ++i) {
+                    SatelliteImageType satelliteImageType = new SatelliteImageType(imageTypes[i]);
+                    satelliteImageTypes.add(satelliteImageType);
+                }
+            }
+        } catch(Resources.NotFoundException nfe){}
+        return satelliteImageTypes;
+
+    }
+
+
 
 }

@@ -40,9 +40,7 @@ public class SatelliteImageDownloader {
     public void loadSatelliteImages(String area, String type) {
         cancelOutstandingLoads();
         clearSatelliteImageCache();
-        Calendar rightNow = TimeUtils.getUtcRightNow();
-        TimeUtils.setCalendarToQuarterHour(rightNow);
-        satelliteImageNames = getImageNames(Calendar.getInstance(), area, type);
+        satelliteImageNames = getImageNames(TimeUtils.getUtcRightNow(), area, type);
         subscription = getImageDownloaderObservable(satelliteImageNames).subscribeOn(Schedulers.io()).subscribe();
     }
 
@@ -94,7 +92,6 @@ public class SatelliteImageDownloader {
                     }
                 });
     }
-
 
     public void download(final SatelliteImage satelliteImage) {
         Response response = null;

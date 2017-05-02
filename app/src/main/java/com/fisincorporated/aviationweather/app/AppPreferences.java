@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.satellite.SatelliteImageType;
+import com.fisincorporated.aviationweather.satellite.SatelliteRegion;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,6 +23,12 @@ public class AppPreferences {
 
     private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";
 
+    private static final String SATELLITE_REGION_KEY = "SATELLITE_REGION";
+
+    private static final String SATELLITE_IMAGE_TYPE_KEY = "SATELLITE_IMAGE_TYPE";
+
+    private static final String DEFAULT_PREFS_SET = "DEFAULT_PREFS_SET";
+
     private static String RAW_METAR_KEY;
 
     private static String TEMPERATURE_UNITS_KEY;
@@ -32,10 +40,6 @@ public class AppPreferences {
     private static String DISTANCE_UNITS_KEY;
 
     private static String DECODE_TAF_METAR_KEY;
-
-    private static String SATELLITE_REGION_KEY;
-
-    private static String DEFAULT_PREFS_SET = "DEFAULT_PREFS_SET";
 
     private SharedPreferences sharedPreferences;
 
@@ -53,6 +57,8 @@ public class AppPreferences {
 
     private String satelliteRegionUS;
 
+    private String satelliteImageTypeVis;
+
 
     @Inject
     public AppPreferences(WeatherApplication application) {
@@ -69,8 +75,6 @@ public class AppPreferences {
         DISTANCE_UNITS_KEY = res.getString(R.string.pref_units_distance);
         DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
 
-        SATELLITE_REGION_KEY = res.getString(R.string.satellite_region);
-
         // these should never be needed but use these default values
         rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
         decodeTafMetar = res.getBoolean(R.bool.pref_raw_taf_taf_value);
@@ -79,6 +83,7 @@ public class AppPreferences {
         imperialAltitudeUnits = res.getString(R.string.pref_units_altitude_feet_value);
         imperialDistanceUnits = res.getString(R.string.pref_units_distance_statue_miles_label);
         satelliteRegionUS = res.getString(R.string.satellite_region_us);
+        satelliteImageTypeVis = res.getString(R.string.satellite_image_type_vis);
 
         // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
         // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
@@ -211,12 +216,21 @@ public class AppPreferences {
         return DEFAULT_PREFS_SET;
     }
 
-    public void getSatelliteRegion(){
-        sharedPreferences.getString(SATELLITE_REGION_KEY, satelliteRegionUS);
+    public SatelliteRegion getSatelliteRegion(){
+       return new SatelliteRegion(sharedPreferences.getString(SATELLITE_REGION_KEY, satelliteRegionUS));
     }
-    public void setSatelliteRegion(String region) {
+    public void setSatelliteRegion(SatelliteRegion satelliteRegion) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SATELLITE_REGION_KEY, region);
+        editor.putString(SATELLITE_REGION_KEY, satelliteRegion.toStore());
+        editor.apply();
+    }
+
+    public SatelliteImageType getSatelliteImageType(){
+        return new SatelliteImageType(sharedPreferences.getString(SATELLITE_IMAGE_TYPE_KEY, satelliteImageTypeVis));
+    }
+    public void setSatelliteImageType(SatelliteImageType satelliteImageType) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SATELLITE_IMAGE_TYPE_KEY, satelliteImageType.toStore());
         editor.apply();
     }
 }
