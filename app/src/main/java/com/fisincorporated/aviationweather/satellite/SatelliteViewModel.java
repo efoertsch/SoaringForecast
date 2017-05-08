@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-
 @InverseBindingMethods({@InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 public class SatelliteViewModel extends BaseObservable implements ViewModelLifeCycle {
 
@@ -127,34 +126,16 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
 
                     //Bypass if jpg/bitmap does not exist or not loaded yet.
                     if (satelliteImage != null && satelliteImage.isImageLoaded()) {
-//                        if (lastImageIndex != -1) {
-//                            // Get scale and display matrix  but only if an image was previously displayed
-//                            // TODO figure out how to keep panned image position
-//                            imageScaleFactor = satelliteImageView.getScale();
-//
-//                            if (imageScaleFactor < satelliteImageView.getMinimumScale()) {
-//                                imageScaleFactor = satelliteImageView.getMinimumScale();
-//                            } else if (imageScaleFactor > satelliteImageView.getMaximumScale()) {
-//                                imageScaleFactor = satelliteImageView.getMaximumScale();
-//                            }
-//                            Log.d(TAG, "image: " + lastImageIndex + " saving scaleFactor:" + imageScaleFactor);
-//                           satelliteImageView.getDisplayMatrix(imageMatrix);
-//                        }
-
                         // Don't force redraw if still on same image as last time
                         if (lastImageIndex != index) {
-                            Log.d(TAG, "setting image for image: " + index );
+                            //Log.d(TAG, "setting image for image: " + index );
                             utcTimeTextView.setText(satelliteImageInfo.getSatelliteImageUTCTimes().get(index));
                             localTimeTextView.setText(satelliteImageInfo.getSatelliteImageLocalTimes().get(index));
 
                             satelliteImageView.setImageBitmap(satelliteImage.getBitmap());
-                            Log.d(TAG, "set  image for image: " + index );
-
-                            Log.d(TAG, "image: " + index + " setting scaleFactor:" + imageScaleFactor);
-
+//                            Log.d(TAG, "set  image for image: " + index );
+//                            Log.d(TAG, "image: " + index + " setting scaleFactor:" + imageScaleFactor);
                         }
-
-                       // satelliteImageView.setScale(imageScaleFactor);
 
                         lastImageIndex = index;
                     }

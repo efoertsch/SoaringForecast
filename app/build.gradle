@@ -87,9 +87,6 @@ dependencies {
     // Cache for bitmaps
     compile 'org.cache2k:cache2k-core:1.0.0.CR4'
 
-    // Zoom/Pan Satellite images
-    compile 'com.github.chrisbanes:PhotoView:2.0.0'
-
     // JVM Unit Testing
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'

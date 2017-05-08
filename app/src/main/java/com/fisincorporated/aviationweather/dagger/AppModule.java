@@ -95,7 +95,6 @@ public class AppModule {
             }
         } catch(Resources.NotFoundException nfe){}
         return satelliteRegions;
-
     }
 
     @Provides
@@ -113,9 +112,7 @@ public class AppModule {
             }
         } catch(Resources.NotFoundException nfe){}
         return satelliteImageTypes;
-
     }
-
 
 
 }
