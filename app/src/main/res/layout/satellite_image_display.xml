@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <import type="android.widget.Spinner"/>
+
+        <variable
+            name="viewModel"
+            type="com.fisincorporated.aviationweather.satellite.SatelliteViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/satellite_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="?android:attr/actionBarSize">
+
+        <LinearLayout
+            android:id="@+id/satellite_image_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/satellite_image_region_label"
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/satellite_region"/>
+
+            <Spinner
+                android:id="@+id/satellite_image_region_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@{viewModel.satelliteRegions}"
+                android:gravity="center_vertical"
+                bind:selectedRegionValue="@={viewModel.selectedSatelliteRegion}"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/satellite_image_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/satellite_image_region"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/satellite_image_type_label"
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/satellite_image_type"/>
+
+            <Spinner
+                android:id="@+id/satellite_image_type_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@{viewModel.satelliteImageTypes}"
+                android:gravity="center_vertical"
+                bind:selectedImageType="@={viewModel.selectedSatelliteImageType}"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/satellite_image_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/satellite_image_type"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/satellite_image_utc_label"
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/satellite_image_time_utc_label"/>
+
+            <TextView
+                android:id="@+id/satellite_image_utc_time"
+                style="@style/forecastData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/satellite_image_local_label"
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/satellite_image_time_local_label"/>
+
+            <TextView
+                android:id="@+id/satellite_image_local_time"
+                style="@style/forecastData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
+
+
+        <com.fisincorporated.aviationweather.satellite.TouchImageView
+            android:id="@+id/satellite_image_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/satellite_image_time"
+            android:layout_margin="@dimen/margin_standard">
+        </com.fisincorporated.aviationweather.satellite.TouchImageView>
+
+    </RelativeLayout>
+
+</layout>

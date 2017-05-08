@@ -18,6 +18,7 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.airports.AirportListActivity;
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherViewModel;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
+import com.fisincorporated.aviationweather.satellite.SatelliteImageActivity;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
 
 import javax.inject.Inject;
@@ -133,12 +134,13 @@ public class WeatherDrawerActivity extends AppCompatActivity {
             case R.id.nav_menu_display_options:
                 displaySettingsActivity();
                 break;
+            case R.id.nav_menu_satellite_images:
+                displaySatelliteImages();
         }
 
         drawerLayout.closeDrawers();
 
     }
-
 
     private void displayAirportList() {
         Intent i = new Intent(this, AirportListActivity.class);
@@ -149,6 +151,12 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
+
+    private void displaySatelliteImages() {
+        Intent i = new Intent(this, SatelliteImageActivity.class);
+        startActivity(i);
+    }
+
 
 
 }

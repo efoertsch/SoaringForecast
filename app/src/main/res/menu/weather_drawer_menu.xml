@@ -3,17 +3,23 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.fisincorporated.aviationweather.settings.SettingsActivity">
 
-    <group android:checkableBehavior="single">
+    <!-- TODO - add icons -->
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_menu_add_airport_codes"
+            android:title="@string/action_add_airports"/>
 
-        <!-- TODO - add icons -->
-    <item
-        android:id="@+id/nav_menu_add_airport_codes"
-        android:title="@string/action_add_airports"/>
+        <item
+            android:id="@+id/nav_menu_satellite_images"
+            android:title="@string/action_satellite_images"
+            />
 
-    <item
-        android:id="@+id/nav_menu_display_options"
-        android:title="@string/action_settings"
-        />
+    </group>
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_menu_display_options"
+            android:title="@string/action_settings"
+            />
 
     </group>
 

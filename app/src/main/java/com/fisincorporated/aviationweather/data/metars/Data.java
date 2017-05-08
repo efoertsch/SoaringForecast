@@ -9,7 +9,7 @@ import java.util.List;
 @Root(name = "data", strict = false)
 public class Data {
 
-    @ElementList(name = "METAR", inline = true)
+    @ElementList(name = "METAR", inline = true, required = false)
     private List<Metar> metars;
 
     @Attribute(name = "num_results", required = false)

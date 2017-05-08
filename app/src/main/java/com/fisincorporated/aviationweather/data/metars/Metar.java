@@ -163,7 +163,7 @@ public class Metar {
     }
 
 
-    public int getWindDirDegrees() {
+    public Integer getWindDirDegrees() {
         return this.windDirDegrees;
     }
 
@@ -172,7 +172,7 @@ public class Metar {
     }
 
 
-    public int getWindSpeedKt() {
+    public Integer getWindSpeedKt() {
         return this.windSpeedKt;
     }
 
@@ -366,7 +366,10 @@ public class Metar {
                         + "\n");
             }
         }
-        return sb.delete(sb.length()-1, sb.length()).toString();
+        if (sb.length() > 1) {
+            return sb.delete(sb.length() - 1, sb.length()).toString();
+        }
+        return sb.toString();
     }
 
 }

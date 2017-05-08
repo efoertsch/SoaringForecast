@@ -5,6 +5,7 @@ import com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
 import com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity;
+import com.fisincorporated.aviationweather.satellite.SatelliteImageActivity;
 import com.fisincorporated.aviationweather.settings.SettingsPreferenceFragment;
 
 import javax.inject.Singleton;
@@ -27,7 +28,7 @@ public interface DiComponent {
 
     void inject(AppPreferences appPreferences);
 
-
+    void inject(SatelliteImageActivity activity);
 
 }
 

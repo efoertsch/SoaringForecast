@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="satellite_region">Satellite Region</string>
+
+    <!-- Satellite regions.Make sure numbers in order of array string below -->
+    <string name="satellite_region_us" translatable="false">0,us,CONUS US</string>
+    <string name="satellite_region_alb" translatable="false">1,alb,Albany NY</string>
+    <string name="satellite_region_bwi" translatable="false">2,bwi,Baltimore MD</string>
+    <string name="satellite_region_clt" translatable="false">3,clt,Charlotte NC</string>
+    <string name="satellite_region_tpa" translatable="false">4,tpa,Tampa FL</string>
+    <string name="satellite_region_dtw" translatable="false">5,dtw,Detroit MI</string>
+    <string name="satellite_region_evv" translatable="false">6,evv,Evansville IN</string>
+    <string name="satellite_region_mgm" translatable="false">7,mgm,Montgomery AL</string>
+    <string name="satellite_region_msp" translatable="false">8,msp,Minneapolis MN</string>
+    <string name="satellite_region_lit" translatable="false">19,lit,Little Rock AR</string>
+    <string name="satellite_region_pir" translatable="false">10,pir,Pierre SD</string>
+    <string name="satellite_region_ict" translatable="false">11,ict,Wichita KS</string>
+    <string name="satellite_region_aus" translatable="false">12,aus,Austin TX</string>
+    <string name="satellite_region_cod" translatable="false">13,cod,Cody WY</string>
+    <string name="satellite_region_den" translatable="false">14,den,Denver CO</string>
+    <string name="satellite_region_abq" translatable="false">15,abq,Albuquerque NM</string>
+    <string name="satellite_region_lws" translatable="false">16,lws,Lewiston ID</string>
+    <string name="satellite_region_wmc" translatable="false">17,wmc,Winnemuca NV</string>
+    <string name="satellite_region_las" translatable="false">18,las,Las Vegas NV</string>
+    <string name="satellite_region_hi" translatable="false">19,hi,Hawaii</string>
+    <string name="satellite_region_ak" translatable="false">20,ak,Alaska</string>
+    <string name="satellite_region_gulf" translatable="false">21,gulf,Gulf of Mexico</string>
+    <string name="satellite_region_carib" translatable="false">22,carib,Caribbean</string>
+
+
+    <string-array name="satellite_regions">
+        <item>@string/satellite_region_us</item>
+        <item>@string/satellite_region_alb</item>
+        <item>@string/satellite_region_bwi</item>
+        <item>@string/satellite_region_clt</item>
+        <item>@string/satellite_region_tpa</item>
+        <item>@string/satellite_region_dtw</item>
+        <item>@string/satellite_region_evv</item>
+        <item>@string/satellite_region_mgm</item>
+        <item>@string/satellite_region_msp</item>
+        <item>@string/satellite_region_lit</item>
+        <item>@string/satellite_region_pir</item>
+        <item>@string/satellite_region_ict</item>
+        <item>@string/satellite_region_aus</item>
+        <item>@string/satellite_region_cod</item>
+        <item>@string/satellite_region_den</item>
+        <item>@string/satellite_region_abq</item>
+        <item>@string/satellite_region_lws</item>
+        <item>@string/satellite_region_wmc</item>
+        <item>@string/satellite_region_las</item>
+        <item>@string/satellite_region_hi</item>
+        <item>@string/satellite_region_ak</item>
+        <item>@string/satellite_region_gulf</item>
+        <item>@string/satellite_region_carib</item>
+    </string-array>
+</resources>
