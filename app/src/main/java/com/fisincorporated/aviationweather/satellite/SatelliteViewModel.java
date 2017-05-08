@@ -9,17 +9,18 @@ import android.databinding.InverseBindingListener;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
 import android.graphics.Matrix;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 import com.fisincorporated.aviationweather.databinding.SatelliteImageDisplayBinding;
-import com.github.chrisbanes.photoview.PhotoView;
 
 import org.cache2k.Cache;
 
@@ -31,16 +32,22 @@ import javax.inject.Inject;
 @InverseBindingMethods({@InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 public class SatelliteViewModel extends BaseObservable implements ViewModelLifeCycle {
 
+    private static final String TAG = SatelliteViewModel.class.getSimpleName();
+
     private SatelliteImageDisplayBinding viewDataBinding;
-    private PhotoView satelliteImageView;
+    private TouchImageView satelliteImageView;
+    private TextView utcTimeTextView;
+    private TextView localTimeTextView;
     private View bindingView;
-    private List<String> satelliteImageNames;
+    private SatelliteImageInfo satelliteImageInfo;
     private ValueAnimator satelliteImageAnimation;
     private float imageScaleFactor = 1;
     private Matrix imageMatrix = new Matrix();
     private int lastImageIndex = -1;
     private SatelliteRegion selectedSatelliteRegion;
     private SatelliteImageType selectedSatelliteImageType;
+
+    private SatelliteImage satelliteImage;
 
     @Inject
     public SatelliteImageDownloader satelliteImageDownloader;
@@ -68,6 +75,10 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         viewDataBinding = DataBindingUtil.bind(bindingView);
         viewDataBinding.setViewModel(this);
         satelliteImageView = viewDataBinding.satelliteImageImageView;
+
+
+        utcTimeTextView = viewDataBinding.satelliteImageUtcTime;
+        localTimeTextView = viewDataBinding.satelliteImageLocalTime;
         // Bind now so we can set selection to any previously stored region
         viewDataBinding.executePendingBindings();
         setSpinnerSelectedSatelliteRegion();
@@ -88,7 +99,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
     private void setSpinnerSelectedSatelliteRegion() {
-            viewDataBinding.satelliteImageRegionSpinner.setSelection(selectedSatelliteRegion != null ? selectedSatelliteRegion.getId() : 0);
+        viewDataBinding.satelliteImageRegionSpinner.setSelection(selectedSatelliteRegion != null ? selectedSatelliteRegion.getId() : 0);
     }
 
     private void setSpinnerSelectedSatelliteImageType() {
@@ -96,42 +107,55 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
     public void displaySatelliteImages() {
-        loadCurrentVisibleSatelliteImage();
+        loadSatelliteImages();
         startImageAnimation();
     }
 
-    private void startImageAnimation() {
 
-        satelliteImageAnimation = ValueAnimator.ofInt(0, satelliteImageNames.size() - 1);
+    private void startImageAnimation() {
+        stopImageAnimation();
+        satelliteImageAnimation = ValueAnimator.ofInt(0, satelliteImageInfo.getSatelliteImageNames().size() - 1);
         satelliteImageAnimation.setInterpolator(new LinearInterpolator());
         satelliteImageAnimation.setDuration(5000);
         satelliteImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
-                SatelliteImage satelliteImage;
                 int index = (int) updatedAnimation.getAnimatedValue();
-                if (index < satelliteImageNames.size() && lastImageIndex != index) {
-                    satelliteImage = satelliteImageCache.get(satelliteImageNames.get(index));
+                Log.d(TAG, "animation index: " + index);
+                if (index < satelliteImageInfo.getSatelliteImageNames().size()  && lastImageIndex != index) {
+                    satelliteImage = satelliteImageCache.get(satelliteImageInfo.getSatelliteImageNames().get(index));
+
                     //Bypass if jpg/bitmap does not exist or not loaded yet.
                     if (satelliteImage != null && satelliteImage.isImageLoaded()) {
-                        // Get scale and display matrix  but only if an image was previously displayed
-                        if (lastImageIndex != -1 && lastImageIndex != index) {
-                            imageScaleFactor = satelliteImageView.getScale();
-                            if (imageScaleFactor < satelliteImageView.getMinimumScale()) {
-                                imageScaleFactor = satelliteImageView.getMinimumScale();
-                            } else if (imageScaleFactor > satelliteImageView.getMaximumScale()) {
-                                imageScaleFactor = satelliteImageView.getMaximumScale();
-                            }
-                            satelliteImageView.getDisplayMatrix(imageMatrix);
+//                        if (lastImageIndex != -1) {
+//                            // Get scale and display matrix  but only if an image was previously displayed
+//                            // TODO figure out how to keep panned image position
+//                            imageScaleFactor = satelliteImageView.getScale();
+//
+//                            if (imageScaleFactor < satelliteImageView.getMinimumScale()) {
+//                                imageScaleFactor = satelliteImageView.getMinimumScale();
+//                            } else if (imageScaleFactor > satelliteImageView.getMaximumScale()) {
+//                                imageScaleFactor = satelliteImageView.getMaximumScale();
+//                            }
+//                            Log.d(TAG, "image: " + lastImageIndex + " saving scaleFactor:" + imageScaleFactor);
+//                           satelliteImageView.getDisplayMatrix(imageMatrix);
+//                        }
+
+                        // Don't force redraw if still on same image as last time
+                        if (lastImageIndex != index) {
+                            Log.d(TAG, "setting image for image: " + index );
+                            utcTimeTextView.setText(satelliteImageInfo.getSatelliteImageUTCTimes().get(index));
+                            localTimeTextView.setText(satelliteImageInfo.getSatelliteImageLocalTimes().get(index));
+
+                            satelliteImageView.setImageBitmap(satelliteImage.getBitmap());
+                            Log.d(TAG, "set  image for image: " + index );
+
+                            Log.d(TAG, "image: " + index + " setting scaleFactor:" + imageScaleFactor);
+
                         }
 
-                        satelliteImageView.setImageBitmap(satelliteImage.getBitmap());
+                       // satelliteImageView.setScale(imageScaleFactor);
 
-                        if (lastImageIndex != -1) {
-                            // set scale and position to last image
-                            satelliteImageView.setScale(imageScaleFactor);
-                            //satelliteImageView.setDisplayMatrix(imageMatrix);
-                        }
                         lastImageIndex = index;
                     }
                 }
@@ -143,7 +167,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
     private void stopImageAnimation() {
-        if (satelliteImageAnimation != null && satelliteImageAnimation.isRunning()) {
+        if (satelliteImageAnimation != null ) {
             satelliteImageAnimation.cancel();
         }
     }
@@ -155,10 +179,10 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
 
     }
 
-    private void loadCurrentVisibleSatelliteImage() {
+    private void loadSatelliteImages() {
         satelliteImageDownloader.loadSatelliteImages(selectedSatelliteRegion.getCode(), selectedSatelliteImageType.getCode());
         // Get the names of the images so you can start animating them.
-        satelliteImageNames = satelliteImageDownloader.getSatelliteImageNames();
+        satelliteImageInfo = satelliteImageDownloader.getSatelliteImageInfo();
     }
 
     public List<SatelliteRegion> getSatelliteRegions() {

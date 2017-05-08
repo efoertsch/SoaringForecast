@@ -19,7 +19,7 @@
     <!-- menu items -->
     <string name="action_settings">Settings</string>
     <string name="action_add_airports">Add airports</string>
-    <string name="action_satellite_images">Satellite Images</string>
+    <string name="action_satellite_images">Satellite</string>
 
     <!-- Metar/TAF -->
     <string name="metar">METAR</string>
@@ -115,5 +115,8 @@
 
     <!-- Satellite images -->
     <string name="title_activity_satellite_image">Satellite Image</string>
+    <string name="satellite_image_time_utc_label">UTC:</string>
+    <string name="satellite_image_time_local_label">Local:</string>
+
 
 </resources>

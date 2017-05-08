@@ -2,12 +2,12 @@ package com.fisincorporated.aviationweather.test;
 
 
 import com.fisincorporated.aviationweather.satellite.SatelliteImageDownloader;
+import com.fisincorporated.aviationweather.satellite.SatelliteImageInfo;
 import com.fisincorporated.aviationweather.utils.TimeUtils;
 
 import org.junit.Test;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -79,8 +79,8 @@ public class SatelliteImageDownloaderTest {
 
     @Test
     public void makeSure15ImageTimes(){
-        List<String> imageTimes = SatelliteImageDownloader.getImageNames(Calendar.getInstance(TimeZone.getTimeZone("UTC")), "alb", "vis");
-        assertThat("Must be 15 images", imageTimes.size(),equalTo(15));
+        SatelliteImageInfo satelliteImageInfo = SatelliteImageDownloader.createSatelliteImageInfo(Calendar.getInstance(TimeZone.getTimeZone("UTC")), "alb", "vis");
+        assertThat("Must be 15 images", satelliteImageInfo.getSatelliteImageNames().size(),equalTo(15));
     }
 
     @Test

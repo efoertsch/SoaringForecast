@@ -9,7 +9,6 @@ import org.cache2k.Cache;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class SatelliteImageDownloader {
     public static final String SATELLITE_URL = "https://aviationweather.gov/adds/data/satellite/";
 
     private Subscription subscription;
-    private List<String> satelliteImageNames;
+    private SatelliteImageInfo satelliteImageInfo;
 
     @Inject
     public Cache<String, SatelliteImage> satelliteImageCache;
@@ -40,21 +39,30 @@ public class SatelliteImageDownloader {
     public void loadSatelliteImages(String area, String type) {
         cancelOutstandingLoads();
         clearSatelliteImageCache();
-        satelliteImageNames = getImageNames(TimeUtils.getUtcRightNow(), area, type);
-        subscription = getImageDownloaderObservable(satelliteImageNames).subscribeOn(Schedulers.io()).subscribe();
+        satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
+        subscription = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames()).subscribeOn(Schedulers.io()).subscribe();
     }
 
-    public static List<String> getImageNames(Calendar imageTime, String area, String type) {
+    public static SatelliteImageInfo createSatelliteImageInfo(Calendar imageTime, String area, String type) {
+        SatelliteImageInfo satelliteImageInfo = new SatelliteImageInfo();
+        String satelliteImageName;
+        Calendar satelliteImageTime;
+
         String imageSuffix = getImageNameSuffix(area, type);
-        ArrayList<String> imageTimes = new ArrayList<>();
-        TimeUtils.setCalendarToQuarterHour(imageTime);
-        imageTimes.add(TimeUtils.formatCalendarToSatelliteImageUtcDate(imageTime) + imageSuffix);
+        satelliteImageTime =  (Calendar) imageTime.clone();
+
+        TimeUtils.setCalendarToQuarterHour(satelliteImageTime);
+        satelliteImageName = TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime ) + imageSuffix;
+        satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime,0);
+
         // time string will be in ascending order
         for (int i = 0; i < 14; ++i) {
-            imageTime.add(Calendar.MINUTE, -15);
-            imageTimes.add(0, TimeUtils.formatCalendarToSatelliteImageUtcDate(imageTime) + imageSuffix);
+            satelliteImageTime = (Calendar) satelliteImageTime.clone();
+            satelliteImageTime.add(Calendar.MINUTE, -15);
+            satelliteImageName =  TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime) + imageSuffix;
+            satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime,0);
         }
-        return imageTimes;
+        return satelliteImageInfo;
     }
 
     public static String getImageNameSuffix(String area, String type) {
@@ -116,7 +124,7 @@ public class SatelliteImageDownloader {
     }
 
 
-    public List<String> getSatelliteImageNames() {
-        return satelliteImageNames;
+    public SatelliteImageInfo getSatelliteImageInfo() {
+        return satelliteImageInfo;
     }
 }
