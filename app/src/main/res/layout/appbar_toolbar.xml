@@ -3,16 +3,43 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="wrap_content"
     android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:background="?attr/colorPrimary"/>
+        android:orientation="vertical">
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_below="@+id/toolbar">
+
+            <ProgressBar
+                android:id="@+id/activity_progress_bar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:scaleY="5"
+                android:theme="@style/LinearProgress"/>
+
+        </FrameLayout>
+
+
+    </RelativeLayout>
 
 </android.support.design.widget.AppBarLayout>

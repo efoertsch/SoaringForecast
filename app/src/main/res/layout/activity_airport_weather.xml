@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity">
+    tools:context="com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity">
 
     <include layout="@layout/appbar_toolbar"/>
 

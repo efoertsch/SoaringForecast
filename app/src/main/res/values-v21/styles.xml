@@ -1,2 +1,9 @@
 <resources>
+
+    <!-- For indeterminate horizontal progress bar -->
+    <style name="LinearProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:progressBackgroundTint">@android:color/transparent</item>
+    </style>
+
 </resources>
