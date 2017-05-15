@@ -8,7 +8,6 @@ import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
-import android.graphics.Matrix;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
+import com.fisincorporated.aviationweather.app.DataLoading;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 import com.fisincorporated.aviationweather.databinding.SatelliteImageDisplayBinding;
 
@@ -40,11 +40,10 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     private View bindingView;
     private SatelliteImageInfo satelliteImageInfo;
     private ValueAnimator satelliteImageAnimation;
-    private float imageScaleFactor = 1;
-    private Matrix imageMatrix = new Matrix();
     private int lastImageIndex = -1;
     private SatelliteRegion selectedSatelliteRegion;
     private SatelliteImageType selectedSatelliteImageType;
+    private DataLoading dataLoading;
 
     private SatelliteImage satelliteImage;
 
@@ -83,6 +82,11 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         setSpinnerSelectedSatelliteRegion();
         setSpinnerSelectedSatelliteImageType();
 
+        return this;
+    }
+
+    public SatelliteViewModel setDataLoading(DataLoading dataLoading){
+        this.dataLoading = dataLoading;
         return this;
     }
 
@@ -161,7 +165,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
     private void loadSatelliteImages() {
-        satelliteImageDownloader.loadSatelliteImages(selectedSatelliteRegion.getCode(), selectedSatelliteImageType.getCode());
+        satelliteImageDownloader.loadSatelliteImages(dataLoading, selectedSatelliteRegion.getCode(), selectedSatelliteImageType.getCode());
         // Get the names of the images so you can start animating them.
         satelliteImageInfo = satelliteImageDownloader.getSatelliteImageInfo();
     }
@@ -243,6 +247,5 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     public static SatelliteImageType captureSelectedImageTypeValue(Spinner spinner) {
         return (SatelliteImageType) spinner.getSelectedItem();
     }
-
 }
 

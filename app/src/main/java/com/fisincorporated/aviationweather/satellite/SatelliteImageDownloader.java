@@ -3,6 +3,7 @@ package com.fisincorporated.aviationweather.satellite;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.fisincorporated.aviationweather.app.DataLoading;
 import com.fisincorporated.aviationweather.utils.TimeUtils;
 
 import org.cache2k.Cache;
@@ -18,17 +19,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class SatelliteImageDownloader {
 
+    // TODO - inject url
     public static final String SATELLITE_URL = "https://aviationweather.gov/adds/data/satellite/";
 
     private Subscription subscription;
     private SatelliteImageInfo satelliteImageInfo;
+    private DataLoading dataLoading = null;
 
+    //TODO create and inject cache interface
     @Inject
     public Cache<String, SatelliteImage> satelliteImageCache;
 
@@ -36,11 +41,27 @@ public class SatelliteImageDownloader {
     public SatelliteImageDownloader() {
     }
 
-    public void loadSatelliteImages(String area, String type) {
+    public void loadSatelliteImages(DataLoading dataLoading, String area, String type) {
+        this.dataLoading = dataLoading;
         cancelOutstandingLoads();
         clearSatelliteImageCache();
         satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
-        subscription = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames()).subscribeOn(Schedulers.io()).subscribe();
+        fireLoadStarted();
+        subscription = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames()).subscribeOn(Schedulers.io()).subscribe(new Observer<Void>() {
+            @Override
+            public void onCompleted() {
+                fireLoadComplete();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                fireLoadComplete();
+            }
+
+            @Override
+            public void onNext(Void aVoid) {
+            }
+        });
     }
 
     public static SatelliteImageInfo createSatelliteImageInfo(Calendar imageTime, String area, String type) {
@@ -72,6 +93,18 @@ public class SatelliteImageDownloader {
     public void cancelOutstandingLoads() {
         if (subscription != null) {
             subscription.unsubscribe();
+        }
+        fireLoadComplete();
+    }
+
+    public void fireLoadStarted() {
+        if (dataLoading != null) {
+            dataLoading.loadRunning(true);
+        }
+    }
+    public void fireLoadComplete() {
+        if (dataLoading != null) {
+            dataLoading.loadRunning(false);
         }
     }
 

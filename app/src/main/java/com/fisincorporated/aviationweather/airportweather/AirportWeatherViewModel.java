@@ -11,6 +11,8 @@ import android.view.View;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
+import com.fisincorporated.aviationweather.app.DataLoading;
+import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 import com.fisincorporated.aviationweather.data.AirportWeather;
 import com.fisincorporated.aviationweather.data.common.AviationWeatherResponse;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
@@ -18,7 +20,6 @@ import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
-import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 
 import java.util.ArrayList;
 
@@ -30,17 +31,21 @@ import retrofit2.Response;
 
 public class AirportWeatherViewModel extends BaseObservable implements ViewModelLifeCycle, WeatherDisplayPreferences {
 
+    private static final int MAX_CALLS = 2;
+
+    private int numberCallsComplete = 0;
+
     private Call<MetarResponse> metarCall;
 
     private Call<TafResponse> tafCall;
-
-    public ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
 
     private AirportWeatherInfoBinding viewDataBinding;
 
     private View bindingView;
 
-    public final ObservableBoolean showProgressBar = new ObservableBoolean();
+    private DataLoading dataLoading = null;
+
+    public ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
 
     public final ObservableBoolean displayRawTafMetar = new ObservableBoolean();
 
@@ -78,6 +83,12 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
         return this;
     }
 
+
+    public AirportWeatherViewModel setDataLoading(DataLoading dataLoading){
+        this.dataLoading = dataLoading;
+        return this;
+    }
+
     private void setAirportWeatherOrder() {
         AirportWeather airportWeather;
         airportWeatherList.clear();
@@ -107,19 +118,35 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     public void onPause() {
         if (metarCall != null) {
             metarCall.cancel();
+            fireLoadComplete();
         }
 
         if (tafCall != null) {
             tafCall.cancel();
+            fireLoadComplete();
         }
+
     }
 
     @Override
     public void onDestroy() {
+    }
 
+    public void fireLoadStarted() {
+        numberCallsComplete = 0;
+        if (dataLoading != null) {
+            dataLoading.loadRunning(true);
+        }
+    }
+    public void fireLoadComplete() {
+        numberCallsComplete++;
+        if (dataLoading != null && numberCallsComplete >= MAX_CALLS) {
+            dataLoading.loadRunning(false);
+        }
     }
 
     public void refresh() {
+        fireLoadStarted();
         String airportList = getAirportCodes();
         if (airportList != null & airportList.trim().length() != 0) {
             callForMetar(airportList);
@@ -137,13 +164,13 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
                 } else {
                     displayResponseError(response);
                 }
-                showProgressBar.set(false);
+                fireLoadComplete();
             }
 
             @Override
             public void onFailure(Call<MetarResponse> call, Throwable t) {
                 displayCallFailure(call, t);
-                showProgressBar.set(false);
+                fireLoadComplete();
             }
         });
     }
@@ -158,13 +185,13 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
                 } else {
                     displayResponseError(response);
                 }
-                showProgressBar.set(false);
+                fireLoadComplete();
             }
 
             @Override
             public void onFailure(Call<TafResponse> call, Throwable t) {
                 displayCallFailure(call, t);
-                showProgressBar.set(false);
+                fireLoadComplete();
             }
         });
     }

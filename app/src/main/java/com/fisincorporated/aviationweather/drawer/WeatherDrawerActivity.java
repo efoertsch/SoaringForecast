@@ -13,10 +13,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.airports.AirportListActivity;
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherViewModel;
+import com.fisincorporated.aviationweather.app.DataLoading;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageActivity;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
@@ -25,12 +27,13 @@ import javax.inject.Inject;
 
 // Nav bar http://guides.codepath.com/android/fragment-navigation-drawer#setup-toolbar
 
-public class WeatherDrawerActivity extends AppCompatActivity {
+public class WeatherDrawerActivity extends AppCompatActivity implements DataLoading {
 
     private DrawerLayout drawerLayout;
-    private  NavigationView navigationView;
+    private NavigationView navigationView;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
+    private ProgressBar loadingProgressBar;
 
     @Inject
     public AirportWeatherViewModel airportWeatherViewModel;
@@ -47,9 +50,11 @@ public class WeatherDrawerActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        drawerToggle  = setupDrawerToggle();
+        drawerToggle = setupDrawerToggle();
         drawerToggle.syncState();
         drawerLayout.addDrawerListener(drawerToggle);
+
+        loadingProgressBar = (ProgressBar) findViewById(R.id.activity_load_progress_bar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +67,7 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         navigationView = (NavigationView) findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
 
-        airportWeatherViewModel.setView((ViewGroup) findViewById(android.R.id.content));
+        airportWeatherViewModel.setView((ViewGroup) findViewById(android.R.id.content)).setDataLoading(this);;
 
     }
 
@@ -110,7 +115,7 @@ public class WeatherDrawerActivity extends AppCompatActivity {
     private ActionBarDrawerToggle setupDrawerToggle() {
         // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
         // and will not render the hamburger icon without it.
-        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
+        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
 
     }
 
@@ -127,7 +132,7 @@ public class WeatherDrawerActivity extends AppCompatActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        switch(menuItem.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.nav_menu_add_airport_codes:
                 displayAirportList();
                 break;
@@ -157,6 +162,14 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-
+    @Override
+    public void loadRunning(final boolean dataLoading) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loadingProgressBar.setVisibility(dataLoading ? View.VISIBLE : View.GONE);
+            }
+        });
+    }
 
 }

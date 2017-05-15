@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +10,6 @@
     <include layout="@layout/appbar_toolbar"/>
 
     <include layout="@layout/satellite_image_display"/>
-
 
 </android.support.design.widget.CoordinatorLayout>
 
