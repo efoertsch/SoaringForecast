@@ -10,6 +10,11 @@
             android:title="@string/action_add_airports"/>
 
         <item
+            android:id="@+id/nav_menu_airport_weather"
+            android:title="@string/action_airport_weather"
+            />
+
+        <item
             android:id="@+id/nav_menu_satellite_images"
             android:title="@string/action_satellite_images"
             />

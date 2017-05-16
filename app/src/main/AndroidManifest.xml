@@ -25,10 +25,6 @@
             android:name=".airports.AirportListActivity"
             android:label="@string/title_activity_airport_list">
         </activity>
-        <activity
-            android:name=".satellite.SatelliteImageActivity"
-            android:label="@string/title_activity_satellite_image">
-        </activity>
         <!-- <activity android:name=".drawer.WeatherDrawerActivity"/> -->
     </application>
 

@@ -6,9 +6,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- The main content view -->
-    <include layout="@layout/activity_airport_weather"/>
+    <LinearLayout
+        android:id="@+id/app_drawer_toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true">
 
+    <include layout="@layout/appbar_toolbar"/>
+
+    <RelativeLayout
+        android:id="@+id/app_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    </LinearLayout>
     <!-- The navigation drawer -->
     <android.support.design.widget.NavigationView
         android:id="@+id/app_weather_drawer"

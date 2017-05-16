@@ -10,7 +10,6 @@ import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.Spinner;
@@ -20,7 +19,7 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.DataLoading;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
-import com.fisincorporated.aviationweather.databinding.SatelliteImageDisplayBinding;
+import com.fisincorporated.aviationweather.databinding.SatelliteImageBinding;
 
 import org.cache2k.Cache;
 
@@ -33,7 +32,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
 
     private static final String TAG = SatelliteViewModel.class.getSimpleName();
 
-    private SatelliteImageDisplayBinding viewDataBinding;
+    private SatelliteImageBinding viewDataBinding;
     private TouchImageView satelliteImageView;
     private TextView utcTimeTextView;
     private TextView localTimeTextView;
@@ -66,7 +65,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     public SatelliteViewModel() {
     }
 
-    public SatelliteViewModel setView(ViewGroup view) {
+    public SatelliteViewModel setView(View view) {
         bindingView = view.findViewById(R.id.satellite_image_layout);
         selectedSatelliteRegion = appPreferences.getSatelliteRegion();
         selectedSatelliteImageType = appPreferences.getSatelliteImageType();

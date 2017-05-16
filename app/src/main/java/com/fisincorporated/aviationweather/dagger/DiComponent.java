@@ -1,11 +1,10 @@
 package com.fisincorporated.aviationweather.dagger;
 
 import com.fisincorporated.aviationweather.airports.AirportListActivity;
-import com.fisincorporated.aviationweather.airportweather.AirportWeatherActivity;
+import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
-import com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity;
-import com.fisincorporated.aviationweather.satellite.SatelliteImageActivity;
+import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsPreferenceFragment;
 
 import javax.inject.Singleton;
@@ -16,9 +15,7 @@ import dagger.Component;
 @Component(modules = {AppModule.class})
 public interface DiComponent {
 
-    void inject(WeatherDrawerActivity activity);
-
-    void inject(AirportWeatherActivity activity);
+    void inject(AirportWeatherFragment fragment);
 
     void inject(AirportListActivity activity);
 
@@ -28,7 +25,7 @@ public interface DiComponent {
 
     void inject(AppPreferences appPreferences);
 
-    void inject(SatelliteImageActivity activity);
+    void inject(SatelliteImageFragment fragment);
 
 }
 
