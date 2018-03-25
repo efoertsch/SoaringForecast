@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:bind="http://schemas.android.com/apk/res-auto">
 
-    <data>
+    <data class="SatelliteImageBinding">
 
         <import type="android.view.View"/>
 
@@ -17,7 +17,7 @@
         android:id="@+id/satellite_image_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="?android:attr/actionBarSize">
+        >
 
         <LinearLayout
             android:id="@+id/satellite_image_region"

@@ -5,6 +5,7 @@ import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -17,7 +18,7 @@ import com.fisincorporated.aviationweather.data.AirportWeather;
 import com.fisincorporated.aviationweather.data.common.AviationWeatherResponse;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
-import com.fisincorporated.aviationweather.databinding.AirportWeatherInfoBinding;
+import com.fisincorporated.aviationweather.databinding.AirportWeatherFragmentBinding;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
 
@@ -39,11 +40,13 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
 
     private Call<TafResponse> tafCall;
 
-    private AirportWeatherInfoBinding viewDataBinding;
+    private AirportWeatherFragmentBinding viewDataBinding;
 
     private View bindingView;
 
     private DataLoading dataLoading = null;
+
+    private FloatingActionButton fab;
 
     public ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
 
@@ -73,18 +76,25 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     }
 
     public AirportWeatherViewModel setView(View view) {
-        bindingView = view.findViewById(R.id.activity_weather_view);
+
+        bindingView = view.findViewById(R.id.fragment_airport_weather_layout);
         viewDataBinding = DataBindingUtil.bind(bindingView);
-        setupRecyclerView(viewDataBinding.activityAirportWeatherRecyclerView);
+        setupRecyclerView(viewDataBinding.fragmentAirportWeatherRecyclerView);
         viewDataBinding.setViewmodel(this);
+        fab = viewDataBinding.fragmentAirportWeatherFab;
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                refresh();
+            }
+        });
         setAirportWeatherOrder();
         airportWeatherAdapter.setAirportWeatherList(airportWeatherList).setWeatherDisplayPreferences(this);
-        viewDataBinding.activityAirportWeatherRecyclerView.setAdapter(airportWeatherAdapter);
+        viewDataBinding.fragmentAirportWeatherRecyclerView.setAdapter(airportWeatherAdapter);
         return this;
     }
 
-
-    public AirportWeatherViewModel setDataLoading(DataLoading dataLoading){
+    public AirportWeatherViewModel setDataLoading(DataLoading dataLoading) {
         this.dataLoading = dataLoading;
         return this;
     }
@@ -94,7 +104,7 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
         airportWeatherList.clear();
         String airportList = getAirportCodes();
         String[] airports = airportList.trim().split("\\s+");
-        for (int i = 0; i < airports.length ; ++i) {
+        for (int i = 0; i < airports.length; ++i) {
             airportWeather = new AirportWeather();
             airportWeather.setIcaoId(airports[i]);
             airportWeatherList.add(airportWeather);
@@ -138,6 +148,7 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
             dataLoading.loadRunning(true);
         }
     }
+
     public void fireLoadComplete() {
         numberCallsComplete++;
         if (dataLoading != null && numberCallsComplete >= MAX_CALLS) {
@@ -196,7 +207,7 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
         });
     }
 
-    private boolean isGoodResponse(Response<? extends AviationWeatherResponse> response){
+    private boolean isGoodResponse(Response<? extends AviationWeatherResponse> response) {
         return response != null
                 && response.body() != null
                 && response.body().getErrors() != null && response.body().getErrors().getError() == null;

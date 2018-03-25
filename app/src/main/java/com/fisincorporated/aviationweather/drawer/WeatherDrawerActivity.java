@@ -1,10 +1,12 @@
 package com.fisincorporated.aviationweather.drawer;
 
+
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,18 +14,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.airports.AirportListActivity;
-import com.fisincorporated.aviationweather.airportweather.AirportWeatherViewModel;
+import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
 import com.fisincorporated.aviationweather.app.DataLoading;
-import com.fisincorporated.aviationweather.app.WeatherApplication;
-import com.fisincorporated.aviationweather.satellite.SatelliteImageActivity;
+import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
-
-import javax.inject.Inject;
 
 // Nav bar http://guides.codepath.com/android/fragment-navigation-drawer#setup-toolbar
 
@@ -35,14 +33,10 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
     private ActionBarDrawerToggle drawerToggle;
     private ProgressBar loadingProgressBar;
 
-    @Inject
-    public AirportWeatherViewModel airportWeatherViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        ((WeatherApplication) getApplication()).getComponent().inject(this);
 
         setContentView(R.layout.app_nav_drawer);
 
@@ -56,18 +50,9 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
 
         loadingProgressBar = (ProgressBar) findViewById(R.id.activity_load_progress_bar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                airportWeatherViewModel.refresh();
-            }
-        });
-
         navigationView = (NavigationView) findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
-
-        airportWeatherViewModel.setView((ViewGroup) findViewById(android.R.id.content)).setDataLoading(this);;
+        displayAirportWeather();
 
     }
 
@@ -82,20 +67,6 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        airportWeatherViewModel.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        airportWeatherViewModel.onPause();
     }
 
     @Override
@@ -119,7 +90,6 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
 
     }
 
-
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -132,18 +102,41 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
+
         switch (menuItem.getItemId()) {
             case R.id.nav_menu_add_airport_codes:
                 displayAirportList();
+                break;
+            case R.id.nav_menu_airport_weather:
+                displayAirportWeather();
                 break;
             case R.id.nav_menu_display_options:
                 displaySettingsActivity();
                 break;
             case R.id.nav_menu_satellite_images:
                 displaySatelliteImages();
+                break;
+            default:
+                displayAirportList();
         }
 
         drawerLayout.closeDrawers();
+
+    }
+
+    private void displayFragment(Fragment fragment) {
+        // Replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().
+                replace(R.id.app_frame_layout, fragment).
+                commit();
+
+    }
+
+
+    private void displayAirportWeather() {
+        AirportWeatherFragment fragment = new AirportWeatherFragment();
+        displayFragment(fragment);
 
     }
 
@@ -158,8 +151,8 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
     }
 
     private void displaySatelliteImages() {
-        Intent i = new Intent(this, SatelliteImageActivity.class);
-        startActivity(i);
+        SatelliteImageFragment fragment = new SatelliteImageFragment();
+        displayFragment(fragment);
     }
 
     @Override
