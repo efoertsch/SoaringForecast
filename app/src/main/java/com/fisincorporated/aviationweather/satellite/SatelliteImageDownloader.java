@@ -27,13 +27,13 @@ import rx.schedulers.Schedulers;
 public class SatelliteImageDownloader {
 
     // TODO - inject url
-    public static final String SATELLITE_URL = "https://aviationweather.gov/adds/data/satellite/";
+    // Remaining URL string similar to .../20180326/16/20180326_1600_sat_irbw_alb.jpg
+    public static final String SATELLITE_URL = "https://aviationweather.gov/data/obs/sat/us/";
 
     private Subscription subscription;
     private SatelliteImageInfo satelliteImageInfo;
     private DataLoading dataLoading = null;
 
-    //TODO create and inject cache interface
     @Inject
     public Cache<String, SatelliteImage> satelliteImageCache;
 
@@ -44,7 +44,7 @@ public class SatelliteImageDownloader {
     public void loadSatelliteImages(DataLoading dataLoading, String area, String type) {
         this.dataLoading = dataLoading;
         cancelOutstandingLoads();
-        clearSatelliteImageCache();
+        //clearSatelliteImageCache();
         satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
         fireLoadStarted();
         subscription = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames()).subscribeOn(Schedulers.io()).subscribe(new Observer<Void>() {
@@ -86,8 +86,9 @@ public class SatelliteImageDownloader {
         return satelliteImageInfo;
     }
 
+    // In format of  ..._sat_irbw_alb.jpg
     public static String getImageNameSuffix(String area, String type) {
-        return "_" + area.toUpperCase() + "_" + type + ".jpg";
+        return "_sat" + "_" + type + "_" + area +".jpg";
     }
 
     public void cancelOutstandingLoads() {
@@ -148,6 +149,7 @@ public class SatelliteImageDownloader {
 
         } catch (IOException e) {
             satelliteImage.setErrorOnLoad(true);
+            System.out.print("IOException getting" + satelliteImage.getImageName());
             System.out.println(e.toString());
         } finally {
             if (response != null) {

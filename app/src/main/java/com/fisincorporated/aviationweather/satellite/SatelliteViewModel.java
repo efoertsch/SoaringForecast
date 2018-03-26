@@ -8,7 +8,6 @@ import android.databinding.InverseBindingAdapter;
 import android.databinding.InverseBindingListener;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
@@ -123,7 +122,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 int index = (int) updatedAnimation.getAnimatedValue();
-                Log.d(TAG, "animation index: " + index);
+                //Log.d(TAG, "animation index: " + index);
                 if (index < satelliteImageInfo.getSatelliteImageNames().size()  && lastImageIndex != index) {
                     satelliteImage = satelliteImageCache.get(satelliteImageInfo.getSatelliteImageNames().get(index));
 
