@@ -1,7 +1,10 @@
 package com.fisincorporated.aviationweather.retrofit;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
+import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -16,10 +19,14 @@ public class AppRetrofit {
     @Inject
     public AppRetrofit(Interceptor interceptor){
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(4);
+        httpClient.dispatcher(dispatcher);
+        httpClient.readTimeout(30, TimeUnit.SECONDS);
         httpClient.addInterceptor(interceptor);
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(AVIATION_WEATHER_URL)
-                .client(new OkHttpClient())
+                .client(httpClient.build())
                 .addConverterFactory(SimpleXmlConverterFactory.create());
 
         retrofit = builder.client(httpClient.build()).build();

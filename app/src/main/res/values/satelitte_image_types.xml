@@ -7,12 +7,14 @@
     <string name="satellite_image_type_vis" translatable="false">0,vis,Visible</string>
     <string name="satellite_image_type_wv" translatable="false">1,wv,Water Vapor</string>
     <string name="satellite_image_type_irbw" translatable="false">2,irbw,Infrared(BW)</string>
-    <string name="satellite_image_type_ir" translatable="false">3,ir,Infrared(Color)</string>
+    <string name="satellite_image_type_ir" translatable="false">3,ircol,Infrared(Color)</string>
+    <string name="satellite_image_type_irnws" translatable="false">4,irnws,Infrared(NWS)</string>
 
     <string-array name="satellite_image_types">
         <item>@string/satellite_image_type_vis</item>
         <item>@string/satellite_image_type_wv</item>
         <item>@string/satellite_image_type_irbw</item>
         <item>@string/satellite_image_type_ir</item>
+        <item>@string/satellite_image_type_irnws</item>
     </string-array>
 </resources>

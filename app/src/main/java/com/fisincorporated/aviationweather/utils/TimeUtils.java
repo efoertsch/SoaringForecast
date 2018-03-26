@@ -1,14 +1,16 @@
 package com.fisincorporated.aviationweather.utils;
 
 
+import android.annotation.SuppressLint;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 public class TimeUtils {
 
-    // Satellite image date format 20170319_1645;
-    public static final SimpleDateFormat satelliteImageDateFormat = new SimpleDateFormat("yyyyMMdd_HHmm");
+    // Satellite image date format  20180326/16/20180326_1600
+    public static final SimpleDateFormat satelliteImageDateFormat = new SimpleDateFormat("yyyyMMdd/HH/yyyyMMdd_HHmm");
     public static final TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
     /**
@@ -30,9 +32,21 @@ public class TimeUtils {
         return calendar;
     }
 
+    @SuppressLint("DefaultLocale")
     public static String formatCalendarToSatelliteImageUtcDate(Calendar calendar) {
         satelliteImageDateFormat.setTimeZone(utcTimeZone);
         return satelliteImageDateFormat.format(calendar.getTime());
+        // Construct time part of url string like 20180326/16/20180326_1600
+//        return String.format("%d%02d%02d/%02d/%d%02d%02d_%02d%2d"
+//                , calendar.get(Calendar.YEAR)
+//                , calendar.get(Calendar.MONTH) + 1
+//                , calendar.get(Calendar.DAY_OF_MONTH)
+//                , calendar.get(Calendar.HOUR_OF_DAY)
+//                , calendar.get(Calendar.YEAR)
+//                , calendar.get(Calendar.MONTH) + 1
+//                , calendar.get(Calendar.DAY_OF_MONTH)
+//                , calendar.get(Calendar.HOUR_OF_DAY)
+//                , calendar.get(Calendar.MINUTE));
     }
 
     /**
