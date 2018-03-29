@@ -37,6 +37,8 @@ public class SatelliteImageDownloader {
     @Inject
     public Cache<String, SatelliteImage> satelliteImageCache;
 
+    @Inject OkHttpClient client;
+
     @Inject
     public SatelliteImageDownloader() {
     }
@@ -70,25 +72,25 @@ public class SatelliteImageDownloader {
         Calendar satelliteImageTime;
 
         String imageSuffix = getImageNameSuffix(area, type);
-        satelliteImageTime =  (Calendar) imageTime.clone();
+        satelliteImageTime = (Calendar) imageTime.clone();
 
         TimeUtils.setCalendarToQuarterHour(satelliteImageTime);
-        satelliteImageName = TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime ) + imageSuffix;
-        satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime,0);
+        satelliteImageName = TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime) + imageSuffix;
+        satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime, 0);
 
         // time string will be in ascending order
         for (int i = 0; i < 14; ++i) {
             satelliteImageTime = (Calendar) satelliteImageTime.clone();
             satelliteImageTime.add(Calendar.MINUTE, -15);
-            satelliteImageName =  TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime) + imageSuffix;
-            satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime,0);
+            satelliteImageName = TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime) + imageSuffix;
+            satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime, 0);
         }
         return satelliteImageInfo;
     }
 
     // In format of  ..._sat_irbw_alb.jpg
     public static String getImageNameSuffix(String area, String type) {
-        return "_sat" + "_" + type + "_" + area +".jpg";
+        return "_sat" + "_" + type + "_" + area + ".jpg";
     }
 
     public void cancelOutstandingLoads() {
@@ -103,6 +105,7 @@ public class SatelliteImageDownloader {
             dataLoading.loadRunning(true);
         }
     }
+
     public void fireLoadComplete() {
         if (dataLoading != null) {
             dataLoading.loadRunning(false);
@@ -137,7 +140,6 @@ public class SatelliteImageDownloader {
 
     public void download(final SatelliteImage satelliteImage) {
         Response response = null;
-        OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(SATELLITE_URL + satelliteImage.getImageName())
                 .build();
