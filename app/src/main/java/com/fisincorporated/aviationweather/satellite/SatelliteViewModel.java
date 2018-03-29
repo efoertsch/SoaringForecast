@@ -122,7 +122,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 int index = (int) updatedAnimation.getAnimatedValue();
-                //Log.d(TAG, "animation index: " + index);
+                //Timber.d("animation index: " + index);
                 if (index < satelliteImageInfo.getSatelliteImageNames().size()  && lastImageIndex != index) {
                     satelliteImage = satelliteImageCache.get(satelliteImageInfo.getSatelliteImageNames().get(index));
 
@@ -130,13 +130,13 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
                     if (satelliteImage != null && satelliteImage.isImageLoaded()) {
                         // Don't force redraw if still on same image as last time
                         if (lastImageIndex != index) {
-                            //Log.d(TAG, "setting image for image: " + index );
+                            //Timber.d("setting image for image: " + index );
                             utcTimeTextView.setText(satelliteImageInfo.getSatelliteImageUTCTimes().get(index));
                             localTimeTextView.setText(satelliteImageInfo.getSatelliteImageLocalTimes().get(index));
 
                             satelliteImageView.setImageBitmap(satelliteImage.getBitmap());
-//                            Log.d(TAG, "set  image for image: " + index );
-//                            Log.d(TAG, "image: " + index + " setting scaleFactor:" + imageScaleFactor);
+//                            Timber.d("set  image for image: " + index );
+//                            Timber.d("image: " + index + " setting scaleFactor:" + imageScaleFactor);
                         }
 
                         lastImageIndex = index;

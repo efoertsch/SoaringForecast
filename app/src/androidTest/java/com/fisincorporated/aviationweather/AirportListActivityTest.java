@@ -34,7 +34,7 @@ public class AirportListActivityTest extends BaseTest {
 
     @Before
     public void setup() {
-        Log.d("Setup", "Setup called");
+        Timber.d("Setup", "Setup called");
         super.setup();
         setSharedPreferenceAirportList( "");
     }

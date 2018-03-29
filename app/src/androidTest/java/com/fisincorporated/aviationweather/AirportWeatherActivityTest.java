@@ -17,6 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import timber.log.Timber;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -32,7 +34,7 @@ public class AirportWeatherActivityTest extends BaseTest {
 
     @Before
     public void setup() {
-        Log.d("Setup", "Setup called");
+        Timber.d("Setup called");
         super.setup();
         setSharedPreferenceAirportList(airportList);
     }
@@ -101,8 +103,7 @@ public class AirportWeatherActivityTest extends BaseTest {
 
     @After
     public void after() {
-        Log.d("after", "After Called");
+        Timber.d("After Called");
     }
-
 
 }

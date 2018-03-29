@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
+import timber.log.Timber;
 
 public class MetarParseTest {
 
@@ -35,7 +36,7 @@ public class MetarParseTest {
     }
 
     static private void checkMetarResponse(MetarResponse metarResponse){
-        System.out.println("doing asserts");
+        Timber.d("doing asserts");
         assert(metarResponse.getErrors().getError().isEmpty());
         assert(metarResponse.getData().getNumResults().intValue() >= 1);
 
