@@ -25,6 +25,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
 // TODO - Consider breaking up into separate modules - Android specific, Retrofit and Cache
@@ -112,6 +113,15 @@ public class AppModule {
             }
         } catch(Resources.NotFoundException nfe){}
         return satelliteImageTypes;
+    }
+
+    @Provides
+    @Singleton
+    public OkHttpClient getOkHttpClient(){
+        return new OkHttpClient.Builder().
+                connectTimeout(30, TimeUnit.SECONDS).  // connect timeout
+                readTimeout(30, TimeUnit.SECONDS).  // socket timeout
+                build();
     }
 
 
