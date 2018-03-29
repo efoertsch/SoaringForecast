@@ -23,6 +23,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class SatelliteImageDownloader {
 
@@ -151,8 +152,8 @@ public class SatelliteImageDownloader {
 
         } catch (IOException e) {
             satelliteImage.setErrorOnLoad(true);
-            System.out.print("IOException getting" + satelliteImage.getImageName());
-            System.out.println(e.toString());
+            Timber.d("IOException getting" + satelliteImage.getImageName());
+            Timber.e(e.toString());
         } finally {
             if (response != null) {
                 response.close();

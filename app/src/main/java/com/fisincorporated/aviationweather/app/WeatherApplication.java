@@ -2,11 +2,14 @@ package com.fisincorporated.aviationweather.app;
 
 import android.app.Application;
 
+import com.fisincorporated.aviationweather.BuildConfig;
 import com.fisincorporated.aviationweather.dagger.AppModule;
 import com.fisincorporated.aviationweather.dagger.DaggerDiComponent;
 import com.fisincorporated.aviationweather.dagger.DiComponent;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class WeatherApplication extends Application {
 
@@ -20,6 +23,17 @@ public class WeatherApplication extends Application {
     public void onCreate() {
         super.onCreate();
         createDaggerInjections();
+        initTimber();
+    }
+
+    private void initTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            // Update if adding crash reporting
+            Timber.plant(new Timber.DebugTree());
+        }
+
     }
 
     protected void createDaggerInjections() {

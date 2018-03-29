@@ -1,6 +1,7 @@
 *.iml
 .gradle
 /local.properties
+/.idea
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store
@@ -9,6 +10,7 @@
 .externalNativeBuild
 gradlew
 gradlew.bat
+gradle/wrapper/gradle-wrapper.properties
 .idea/codeStyleSettings.xml
 .idea/compiler.xml
 .idea/gradle.xml
