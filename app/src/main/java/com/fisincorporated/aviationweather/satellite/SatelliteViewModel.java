@@ -44,6 +44,8 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     private DataLoading dataLoading;
 
     private SatelliteImage satelliteImage;
+    private boolean bypassSatelliteRegionChange = true;
+    private boolean bypassSatelliteTypeChange = true;
 
     @Inject
     public SatelliteImageDownloader satelliteImageDownloader;
@@ -90,7 +92,15 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
 
     @Override
     public void onResume() {
+        // Setting the initial satellite region and type will cause call update images so need
+        //to bypass
+        setIgnoreSatelliteCalls();
         displaySatelliteImages();
+    }
+
+    private void setIgnoreSatelliteCalls() {
+        bypassSatelliteRegionChange = true;
+         bypassSatelliteTypeChange = true;
     }
 
     @Override
@@ -177,7 +187,12 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
     // Called by generated databinding code - see xml
+    // Bypass first call as first time setting type on UI triggers the call
     public void setSelectedSatelliteRegion(SatelliteRegion satelliteRegion) {
+        if (bypassSatelliteRegionChange) {
+            bypassSatelliteRegionChange = false;
+            return;
+        }
         selectedSatelliteRegion = satelliteRegion;
         appPreferences.setSatelliteRegion(selectedSatelliteRegion);
         displaySatelliteImages();
@@ -217,7 +232,12 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
     // Called by generated databinding code - see xml
+    // Bypass first call as first time setting type on UI triggers the call
     public void setSelectedSatelliteImageType(SatelliteImageType satelliteImageType) {
+        if (bypassSatelliteTypeChange) {
+            bypassSatelliteTypeChange = false;
+            return;
+        }
         selectedSatelliteImageType = satelliteImageType;
         appPreferences.setSatelliteImageType(satelliteImageType);
         displaySatelliteImages();

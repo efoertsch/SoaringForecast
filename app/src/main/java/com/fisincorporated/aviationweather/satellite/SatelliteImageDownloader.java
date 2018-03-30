@@ -124,7 +124,7 @@ public class SatelliteImageDownloader {
         }
     }
 
-    public Observable<Void> getImageDownloaderObservable(final List<String> satelliteImageNames) {
+    private Observable<Void> getImageDownloaderObservable(final List<String> satelliteImageNames) {
         return Observable.from(satelliteImageNames)
                 .flatMap(new Func1<String, Observable<Void>>() {
                     @Override
@@ -139,7 +139,8 @@ public class SatelliteImageDownloader {
                 });
     }
 
-    public void download(final SatelliteImage satelliteImage) {
+    private void download(final SatelliteImage satelliteImage) {
+        Timber.d("Calling for:" + satelliteImage.getImageName());
         Response response = null;
         Request request = new Request.Builder()
                 .url(SATELLITE_URL + satelliteImage.getImageName())
@@ -149,7 +150,6 @@ public class SatelliteImageDownloader {
             InputStream inputStream = response.body().byteStream();
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             satelliteImage.setBitmap(bitmap);
-
         } catch (IOException e) {
             satelliteImage.setErrorOnLoad(true);
             Timber.d("IOException getting" + satelliteImage.getImageName());
@@ -162,7 +162,7 @@ public class SatelliteImageDownloader {
     }
 
 
-    public SatelliteImageInfo getSatelliteImageInfo() {
+    SatelliteImageInfo getSatelliteImageInfo() {
         return satelliteImageInfo;
     }
 }
