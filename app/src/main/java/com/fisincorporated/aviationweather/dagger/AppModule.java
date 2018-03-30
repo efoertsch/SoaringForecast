@@ -5,9 +5,13 @@ import android.content.res.Resources;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
-import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
+import com.fisincorporated.aviationweather.dagger.annotations.AviationWeatherGov;
+import com.fisincorporated.aviationweather.dagger.annotations.SoaringForecast;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
+import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
+import com.fisincorporated.aviationweather.retrofit.SoaringForecastRetrofit;
 import com.fisincorporated.aviationweather.satellite.SatelliteImage;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageType;
 import com.fisincorporated.aviationweather.satellite.SatelliteRegion;
@@ -24,6 +28,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -43,6 +48,9 @@ public class AppModule {
 
     private WeatherApplication application;
 
+    // For unit testing only
+    public AppModule(){}
+
     public AppModule(WeatherApplication application) {
         this.application = application;
     }
@@ -55,8 +63,15 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public Retrofit provideAppRetrofit() {
-        return new AppRetrofit(getInterceptor()).getRetrofit();
+    @AviationWeatherGov
+    public Retrofit provideAviationWeatherGovRetrofit() {
+        return new AviationWeatherGovRetrofit(getOkHttpClient(getInterceptor())).getRetrofit();
+    }
+
+    @Provides
+    @Singleton
+    public AviationWeatherApi providesAviationWeatherApi() {
+        return provideAviationWeatherGovRetrofit().create(AviationWeatherApi.class);
     }
 
     @Provides
@@ -65,9 +80,18 @@ public class AppModule {
         return new LoggingInterceptor();
     }
 
+
     @Provides
-    public AviationWeatherApi providesAviationWeatherApi() {
-        return provideAppRetrofit().create(AviationWeatherApi.class);
+    @Singleton
+    @SoaringForecast
+    public Retrofit provideSoaringForecastRetrofit() {
+        return new SoaringForecastRetrofit(getOkHttpClient(getInterceptor())).getRetrofit();
+    }
+
+    @Provides
+    @Singleton
+    public SoaringForecastApi providesSoaringForecastApi() {
+        return provideSoaringForecastRetrofit().create(SoaringForecastApi.class);
     }
 
     @Provides
@@ -77,7 +101,7 @@ public class AppModule {
                 .name("Satellite Images Cache")
                 .eternal(false)
                 .expireAfterWrite(60, TimeUnit.MINUTES)
-                .entryCapacity(15)
+                .entryCapacity(20)
                 .build();
     }
 
@@ -117,11 +141,15 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public OkHttpClient getOkHttpClient(){
-        return new OkHttpClient.Builder().
-                connectTimeout(30, TimeUnit.SECONDS).  // connect timeout
-                readTimeout(30, TimeUnit.SECONDS).  // socket timeout
-                build();
+    public OkHttpClient getOkHttpClient(Interceptor interceptor){
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(4);
+        httpClient.dispatcher(dispatcher);
+        httpClient.connectTimeout(30, TimeUnit.SECONDS);
+        httpClient.readTimeout(30, TimeUnit.SECONDS);
+        httpClient.addInterceptor(interceptor);
+        return httpClient.build();
     }
 
 

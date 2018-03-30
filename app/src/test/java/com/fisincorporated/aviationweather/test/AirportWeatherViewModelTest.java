@@ -6,7 +6,7 @@ import com.fisincorporated.aviationweather.airportweather.AirportWeatherViewMode
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.data.metars.Metar;
 import com.fisincorporated.aviationweather.data.taf.TAF;
-import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 
 import org.junit.Rule;
@@ -44,7 +44,7 @@ public class AirportWeatherViewModelTest {
         airportWeatherViewModel.appPreferences = appPreferences;
         airportWeatherViewModel.airportWeatherAdapter = airportWeatherAdapter;
         // This MockInterceptor always returns same canned Metar and Taf info
-        Retrofit retrofit = new AppRetrofit(new retrofit.MockInterceptor()).getRetrofit();
+        Retrofit retrofit = new AviationWeatherGovRetrofit(new retrofit.MockInterceptor()).getRetrofit();
         retrofit.callbackExecutor();
         airportWeatherViewModel.aviationWeatherApi = retrofit.create(AviationWeatherApi.class);
 

@@ -1,7 +1,8 @@
 package com.fisincorporated.aviationweather.test;
 
+import com.fisincorporated.aviationweather.dagger.AppModule;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
-import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class TestMockResponse {
     public void testMockRetrofitResponse() throws IOException {
 
         // This MockInterceptor always returns same canned Metar and Taf info
-        Retrofit retrofit = new AppRetrofit(new retrofit.MockInterceptor()).getRetrofit();
+        Retrofit retrofit = new AviationWeatherGovRetrofit(new AppModule().getOkHttpClient(new retrofit.MockInterceptor())).getRetrofit();
 
         AviationWeatherApi service = retrofit.create(AviationWeatherApi.class);
         Call<MetarResponse> call = service.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);

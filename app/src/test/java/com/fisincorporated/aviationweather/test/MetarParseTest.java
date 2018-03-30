@@ -2,7 +2,7 @@ package com.fisincorporated.aviationweather.test;
 
 
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
-import com.fisincorporated.aviationweather.retrofit.AppRetrofit;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
 
@@ -23,7 +23,7 @@ public class MetarParseTest {
      */
     @Test
     public void shouldGetMetar() throws IOException {
-        Retrofit retrofit = new AppRetrofit(new LoggingInterceptor()).getRetrofit();
+        Retrofit retrofit = new AviationWeatherGovRetrofit(new LoggingInterceptor()).getRetrofit();
         AviationWeatherApi client = retrofit.create(AviationWeatherApi.class);
 
         final Call<MetarResponse>  call;

@@ -38,13 +38,14 @@ public class SatelliteImageDownloader {
     @Inject
     public Cache<String, SatelliteImage> satelliteImageCache;
 
-    @Inject OkHttpClient client;
+     private OkHttpClient client;
 
     @Inject
     public SatelliteImageDownloader() {
     }
 
     public void loadSatelliteImages(DataLoading dataLoading, String area, String type) {
+        client = new OkHttpClient();
         this.dataLoading = dataLoading;
         cancelOutstandingLoads();
         //clearSatelliteImageCache();
@@ -149,7 +150,14 @@ public class SatelliteImageDownloader {
             response = client.newCall(request).execute();
             InputStream inputStream = response.body().byteStream();
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            satelliteImage.setBitmap(bitmap);
+            if (bitmap == null || !response.header("Content-Type").startsWith("image")){
+                satelliteImage.setErrorOnLoad(true);
+                Timber.d( satelliteImage.getImageName() + " null bitmap");
+            } else {
+                Timber.d( satelliteImage.getImageName() + "  good bitmap");
+                satelliteImage.setBitmap(bitmap);
+                satelliteImage.setErrorOnLoad(false);
+            }
         } catch (IOException e) {
             satelliteImage.setErrorOnLoad(true);
             Timber.d("IOException getting" + satelliteImage.getImageName());

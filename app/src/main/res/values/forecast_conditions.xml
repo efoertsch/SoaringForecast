@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="thermal_parameters">Thermal Parameters</string>
+    <string name="wind_parameters">Wind Parameters</string>
+    <string name="cloud_parameters">Cloud Parameters</string>
+    <string name="soundings">Wind Parameters</string>
+
+    <string-array name="forecast_conditions">
+        <item>@string/thermal_parameters</item>
+        <item>@string/wind_parameters</item>
+        <item>@string/cloud_parameters</item>
+        <item>@string/soundings</item>
+    </string-array>
+
+    <!-- - - - THERMAL PARAMETERS - - - -->
+    <string name="thermal_update_velocity_and_b_s_ration">Thermal Updraft Velocity &amp; B/S Ratio</string>
+    <string name="thermal_update_velocity_w_star">Thermal Updraft Velocity (W*)</string>
+    <string name="buoyancy_shear_ratio">Buoyancy/Shear Ratio</string>
+    <string name="msl_ht_of_critical_updraft_strenght_175fpm">MSL Ht of Critical Updraft Strength (175fpm)</string>
+    <string name="depth_of_critical_updraft_strengh_agl_hcrit">Depth of Critical Updraft Strength (AGL Hcrit)</string>
+    <string name="bl_top">BL Top</string>
+    <string name="bl_depth">BL Depth</string>
+    <string name="thermalling_height">Thermalling Height</string>
+    <string name="thermal_height_uncertainty">Thermal Height Uncertainty</string>
+    <string name="msl_height_of_max_min_wbl">MSL Height of max/min Wbl</string>
+    <string name="sfc_heating">Sfc.Heating</string>
+    <string name="normalized_sfc_sun">Normalized Sfc. Sun</string>
+    <string name="sfc_temperature">Sfc.Temperature</string>
+    <string name="sfc_dewpoint">Sfc.Dewpoint</string>
+    <string name="star_rating">Star Rating</string>
+    <string name="star_rating_foot_launchers">Star Rating - Foot Launchers</string>
+    <string name="msl_pressure">MSL Pressure</string>
+    <string name="sfc_wind_2m">Sfc.Wind (2m)</string>
+    <string name="sfc_wind_10m">Sfc.Wind (10m)</string>
+    <string name="bl_avg_wind">BL Avg. Wind</string>
+    <string name="wind_at_bl_top">Wind at BL Top</string>
+    <string name="bl_wind_shear">BL Wind Shear</string>
+    <string name="bl_max_up_down_convergence">BL Max. Up/Down (Convergence)</string>
+    <!-- - - - CLOUD PARAMETERS - - - -->
+    <string name="cu_potential">Cu Potential</string>
+    <string name="cu_cloudbase_sfc_lcl_msl">Cu Cloudbase (Sfc.LCL) MSL</string>
+    <string name="cu_cloudbase_where_cu_potential_gt_0">Cu Cloudbase where CuPotential > 0</string>
+    <string name="od_potential">OD Potential</string>
+    <string name="od_cloudname_bl_cl_msl">OD Cloudbase (BL CL) MSL</string>
+    <string name="od_cloudbase_where_od_potential_gt_0">OD Cloudbase where ODpotential > 0</string>
+    <string name="bl_cld_base_if_cloudwater_predicted">BL Cld-Base if CloudWater predicted</string>
+    <string name="bl_cloud_cover">BL Cloud Cover</string>
+    <string name="rain">Rain</string>
+    <string name="cape">CAPE</string>
+    <string name="bl_integrated_cloud_water">BL Integrated Cloud Water</string>
+    <!-- - - - WAVE PARAMETERS - - - -->
+    <string name="vertical_velocity_at_1000mb">Vertical Velocity at 1000mb</string>
+    <string name="vertical_velocity_at_950mb">Vertical Velocity at 950mb</string>
+    <string name="vertical_velocity_at_850mb">Vertical Velocity at 850mb</string>
+    <string name="vertical_velocity_at_700mb">Vertical Velocity at 700mb</string>
+    <string name="vertical_velocity_at_500mb">Vertical Velocity at 500mb</string>
+    <!-- - - - SOUNDINGS - - - -->
+    <string name="sterling">Sterling</string>
+    <string name="jaffery">Jaffrey</string>
+    <string name="springfield">Springfield</string>
+    <string name="franconia">Franconia</string>
+    <string name="newfound_valley">Newfound Valley</string>
+    <string name="danielson">Danielson</string>
+    <string name="sugarbush">Sugarbush</string>
+    <string name="post_mills">Post Mills</string>
+    <string name="nort_adams">North Adams</string>
+    <string name="waterbury">Waterbury</string>
+    <!--- - - MODEL TOPOGRAPHY - - - -->
+    <string name="topography">Topography</string>
+
+</resources>
