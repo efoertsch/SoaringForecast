@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     //buildToolsVersion "25.0.2" - Android Gradle Plugin now includes default version of build tools
     defaultConfig {
         applicationId "com.fisincorporated.aviationweather"
@@ -51,60 +51,84 @@ android.sourceSets {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    final SUPPORT_LIBRARY_VERSION = '26.1.0'
+    final RX_ANDROID = '1.2.1'
+    final RX_JAVA = '1.1.8'
+    final RETROFIT = '2.2.0'
+    final SIMPLE_XML= '2.1.0'
+    final GSON = '2.8.2'
+    final GSON_CONVERTER = '2.3.0'
+    final OKHTTP = '3.8.0'
+    final DAGGER = '2.14.1'
+    final TIMBER = '4.7.0'
+    final ESPRESSO = '2.2.2'
+    final HAMCREST = '1.3'
+    final RUNNER = '1.0.1'
+    final UIAUTOMATOR = '2.1.3'
+    final JUNIT = '4.12'
+    final MOCKITO = '2.7.6'
+    final EVENT_BUS = '3.1.1'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android compat/support libraries
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:support-v4:25.3.1'
+    implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:cardview-v7:$SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
+
+    // Bus
+    implementation "org.greenrobot:eventbus:$EVENT_BUS"
 
     //Retrofit
-    compile 'com.squareup.retrofit2:retrofit:2.2.0'
-    compile ('com.squareup.retrofit2:adapter-rxjava2:2.2.0') {
+    implementation "com.squareup.retrofit2:retrofit:$RETROFIT"
+    implementation ("com.squareup.retrofit2:adapter-rxjava2:$RETROFIT") {
         exclude group: 'io.reactivex.java2', module: 'rxjava'
     }
 
     // RxJava
-    compile 'io.reactivex:rxjava:1.1.8'
-    compile 'io.reactivex:rxandroid:1.2.1'
+    implementation "io.reactivex:rxjava:$RX_JAVA"
+    implementation "io.reactivex:rxandroid:$RX_ANDROID"
 
     // SimpleXML
-    compile('com.squareup.retrofit2:converter-simplexml:2.1.0') {
+    implementation("com.squareup.retrofit2:converter-simplexml:$SIMPLE_XML") {
         exclude module: 'stax-api'
         exclude module: 'stax'
         exclude module: 'xpp3'
     }
 
     // GSON (JSON)
-    compile 'com.google.code.gson:gson:2.8.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation "com.google.code.gson:gson:$GSON"
+    implementation "com.squareup.retrofit2:converter-gson:$GSON_CONVERTER"
 
     //okhttp
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    implementation "com.squareup.okhttp3:okhttp:$OKHTTP"
 
     // For Dagger2
-    compile 'com.google.dagger:dagger:2.8'  // Added above for ButterKnife
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.9'
+    implementation "com.google.dagger:dagger:$DAGGER"  // Added above for ButterKnife
+    annotationProcessor "com.google.dagger:dagger-compiler:$DAGGER"
 
     // Cache for bitmaps
-    compile 'org.cache2k:cache2k-core:1.0.0.CR4'
+    implementation group: 'org.cache2k', name: 'cache2k-api', version: '1.0.2.Final'
+    implementation group: 'org.cache2k', name: 'cache2k-core', version: '1.0.2.Final'
+    //implementation group: 'javax.cache', name: 'cache-api', version: '1.1.0'
 
     // Timber for logging
-    implementation 'com.jakewharton.timber:timber:4.7.0'
+    implementation "com.jakewharton.timber:timber:$TIMBER"
 
     // JVM Unit Testing
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    testImplementation "junit:junit:$JUNIT"
+    testImplementation "org.mockito:mockito-core:$MOCKITO"
 
     //Android testing
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$ESPRESSO") {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'javax.inject'
-    })
+    }
 
-    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:$ESPRESSO") {
         // Necessary to avoid version conflicts
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'
@@ -113,7 +137,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude module: 'recyclerview-v7'
     }
-    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:$ESPRESSO") {
         // Necessary to avoid version conflicts
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'
@@ -123,14 +147,14 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestImplementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
+    androidTestImplementation "com.android.support.test:runner:$RUNNER"
+    androidTestImplementation "com.android.support.test:rules:$RUNNER"
     // Matchers
-    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+    androidTestImplementation "org.hamcrest:hamcrest-library:$HAMCREST"
 
     //UI testing with UI Automator
-    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:$UIAUTOMATOR"
 
 
 }

@@ -23,6 +23,7 @@ public class SatelliteImage  {
 
     public void setErrorOnLoad(boolean errorOnLoad) {
         this.errorOnLoad = errorOnLoad;
+        bitmap = null;
     }
 
     public boolean isErrorOnLoad() {
@@ -35,5 +36,6 @@ public class SatelliteImage  {
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
+        errorOnLoad = false;
     }
 }

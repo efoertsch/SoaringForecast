@@ -3,10 +3,12 @@ package com.fisincorporated.aviationweather.satellite;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.fisincorporated.aviationweather.app.DataLoading;
+import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
+import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.utils.TimeUtils;
 
 import org.cache2k.Cache;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +23,7 @@ import okhttp3.Response;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -33,27 +36,27 @@ public class SatelliteImageDownloader {
 
     private Subscription subscription;
     private SatelliteImageInfo satelliteImageInfo;
-    private DataLoading dataLoading = null;
 
     @Inject
     public Cache<String, SatelliteImage> satelliteImageCache;
 
-     private OkHttpClient client;
+    private OkHttpClient client;
 
     @Inject
-    public SatelliteImageDownloader() {
+    SatelliteImageDownloader() {
     }
 
-    public void loadSatelliteImages(DataLoading dataLoading, String area, String type) {
+    public void loadSatelliteImages(String area, String type) {
         client = new OkHttpClient();
-        this.dataLoading = dataLoading;
         cancelOutstandingLoads();
-        //clearSatelliteImageCache();
         satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
         fireLoadStarted();
-        subscription = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames()).subscribeOn(Schedulers.io()).subscribe(new Observer<Void>() {
+        subscription = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Void>() {
             @Override
             public void onCompleted() {
+                confirmLoad();
                 fireLoadComplete();
             }
 
@@ -66,6 +69,15 @@ public class SatelliteImageDownloader {
             public void onNext(Void aVoid) {
             }
         });
+    }
+
+    private void confirmLoad() {
+        Timber.d("Confirming load in cache");
+        SatelliteImage satelliteImage;
+        for (String satelliteImageName : satelliteImageInfo.getSatelliteImageNames()){
+            satelliteImage = satelliteImageCache.get(satelliteImageName);
+            Timber.d("Satellite image: %s -  %s", satelliteImageName , satelliteImage != null ? " cached" : " not cached");
+        }
     }
 
     public static SatelliteImageInfo createSatelliteImageInfo(Calendar imageTime, String area, String type) {
@@ -99,23 +111,14 @@ public class SatelliteImageDownloader {
         if (subscription != null) {
             subscription.unsubscribe();
         }
-        fireLoadComplete();
     }
 
-    public void fireLoadStarted() {
-        if (dataLoading != null) {
-            dataLoading.loadRunning(true);
-        }
+    private void fireLoadStarted() {
+        EventBus.getDefault().post(new DataLoadingEvent());
     }
 
-    public void fireLoadComplete() {
-        if (dataLoading != null) {
-            dataLoading.loadRunning(false);
-        }
-    }
-
-    private void clearSatelliteImageCache() {
-        satelliteImageCache.clear();
+    private void fireLoadComplete() {
+        EventBus.getDefault().post(new DataLoadCompleteEvent());
     }
 
     public void shutdown() {
@@ -134,6 +137,8 @@ public class SatelliteImageDownloader {
                             SatelliteImage satelliteImage = new SatelliteImage(satelliteImageName);
                             download(satelliteImage);
                             satelliteImageCache.put(satelliteImageName, satelliteImage);
+                            Timber.d(" %s %s", satelliteImage.getImageName()
+                                    , satelliteImageCache.containsKey(satelliteImageName) ? " was cached." + (satelliteImage.isImageLoaded() ? " w/good bitmap" : " no bitmap") : " not cached.");
                         }
                         return Observable.empty();
                     }
@@ -141,7 +146,7 @@ public class SatelliteImageDownloader {
     }
 
     private void download(final SatelliteImage satelliteImage) {
-        Timber.d("Calling for:" + satelliteImage.getImageName());
+        //Timber.d("Calling to get: %s", satelliteImage.getImageName());
         Response response = null;
         Request request = new Request.Builder()
                 .url(SATELLITE_URL + satelliteImage.getImageName())
@@ -150,18 +155,23 @@ public class SatelliteImageDownloader {
             response = client.newCall(request).execute();
             InputStream inputStream = response.body().byteStream();
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            if (bitmap == null || !response.header("Content-Type").startsWith("image")){
-                satelliteImage.setErrorOnLoad(true);
-                Timber.d( satelliteImage.getImageName() + " null bitmap");
-            } else {
-                Timber.d( satelliteImage.getImageName() + "  good bitmap");
+            Timber.d("Content-Type for download: %s", response.header("Content-Type"));
+            if (response.header("Content-Type").startsWith("image") && bitmap != null ) {
+                Timber.d("%s good bitmap ", satelliteImage.getImageName());
                 satelliteImage.setBitmap(bitmap);
-                satelliteImage.setErrorOnLoad(false);
+            } else {
+                satelliteImage.setErrorOnLoad(true);
+                Timber.d("%s null bitmap ", satelliteImage.getImageName());
             }
         } catch (IOException e) {
             satelliteImage.setErrorOnLoad(true);
-            Timber.d("IOException getting" + satelliteImage.getImageName());
+            Timber.d("%s  IOException ", satelliteImage.getImageName());
             Timber.e(e.toString());
+        } catch (NullPointerException npe) {
+            satelliteImage.setErrorOnLoad(true);
+            Timber.d("%s  Null pointer exception on getting response byteStream"
+                    , satelliteImage.getImageName());
+            Timber.e(npe.toString());
         } finally {
             if (response != null) {
                 response.close();

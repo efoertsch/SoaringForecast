@@ -100,7 +100,7 @@ public class AppModule {
         return new Cache2kBuilder<String, SatelliteImage>() {}
                 .name("Satellite Images Cache")
                 .eternal(false)
-                .expireAfterWrite(60, TimeUnit.MINUTES)
+                .expireAfterWrite(15, TimeUnit.MINUTES)    // expire/refresh after 15 minutes
                 .entryCapacity(20)
                 .build();
     }

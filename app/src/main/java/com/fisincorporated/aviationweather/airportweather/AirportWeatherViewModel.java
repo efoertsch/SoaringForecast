@@ -12,15 +12,18 @@ import android.view.View;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
-import com.fisincorporated.aviationweather.app.DataLoading;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 import com.fisincorporated.aviationweather.data.AirportWeather;
 import com.fisincorporated.aviationweather.data.common.AviationWeatherResponse;
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
 import com.fisincorporated.aviationweather.data.taf.TafResponse;
 import com.fisincorporated.aviationweather.databinding.AirportWeatherFragmentBinding;
+import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
+import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -43,8 +46,6 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     private AirportWeatherFragmentBinding viewDataBinding;
 
     private View bindingView;
-
-    private DataLoading dataLoading = null;
 
     private FloatingActionButton fab;
 
@@ -94,11 +95,6 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
         return this;
     }
 
-    public AirportWeatherViewModel setDataLoading(DataLoading dataLoading) {
-        this.dataLoading = dataLoading;
-        return this;
-    }
-
     private void setAirportWeatherOrder() {
         AirportWeather airportWeather;
         airportWeatherList.clear();
@@ -142,18 +138,12 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     public void onDestroy() {
     }
 
-    public void fireLoadStarted() {
-        numberCallsComplete = 0;
-        if (dataLoading != null) {
-            dataLoading.loadRunning(true);
-        }
+    private void fireLoadStarted() {
+        EventBus.getDefault().post(new DataLoadingEvent());
     }
 
-    public void fireLoadComplete() {
-        numberCallsComplete++;
-        if (dataLoading != null && numberCallsComplete >= MAX_CALLS) {
-            dataLoading.loadRunning(false);
-        }
+    private void fireLoadComplete() {
+        EventBus.getDefault().post(new DataLoadCompleteEvent());
     }
 
     public void refresh() {

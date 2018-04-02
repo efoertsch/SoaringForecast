@@ -4,6 +4,7 @@ package com.fisincorporated.aviationweather.drawer;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,16 +20,20 @@ import android.widget.ProgressBar;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.airports.AirportListActivity;
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
-import com.fisincorporated.aviationweather.app.DataLoading;
+import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
+import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 // Nav bar http://guides.codepath.com/android/fragment-navigation-drawer#setup-toolbar
 
-public class WeatherDrawerActivity extends AppCompatActivity implements DataLoading {
+public class WeatherDrawerActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
     private ProgressBar loadingProgressBar;
@@ -40,20 +45,32 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
 
         setContentView(R.layout.app_nav_drawer);
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.app_drawer_layout);
+        drawerLayout = findViewById(R.id.app_drawer_layout);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerToggle = setupDrawerToggle();
         drawerToggle.syncState();
         drawerLayout.addDrawerListener(drawerToggle);
 
-        loadingProgressBar = (ProgressBar) findViewById(R.id.activity_load_progress_bar);
+        loadingProgressBar = findViewById(R.id.activity_load_progress_bar);
 
-        navigationView = (NavigationView) findViewById(R.id.app_weather_drawer);
+        NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
         displayAirportWeather();
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
 
@@ -94,7 +111,7 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         selectDrawerItem(menuItem);
                         return true;
                     }
@@ -155,14 +172,18 @@ public class WeatherDrawerActivity extends AppCompatActivity implements DataLoad
         displayFragment(fragment);
     }
 
-    @Override
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DataLoadingEvent event) {
+        loadRunning(true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DataLoadCompleteEvent event) {
+        loadRunning(false);
+    }
+
     public void loadRunning(final boolean dataLoading) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadingProgressBar.setVisibility(dataLoading ? View.VISIBLE : View.GONE);
-            }
-        });
+        loadingProgressBar.setVisibility(dataLoading ? View.VISIBLE : View.GONE);
     }
 
 }

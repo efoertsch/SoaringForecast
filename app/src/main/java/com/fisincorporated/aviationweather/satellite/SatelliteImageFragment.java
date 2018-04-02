@@ -2,18 +2,17 @@ package com.fisincorporated.aviationweather.satellite;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.app.AppFragment;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
 
 import javax.inject.Inject;
 
-
-public class SatelliteImageFragment extends AppFragment {
+public class SatelliteImageFragment extends Fragment {
 
     @Inject
     SatelliteViewModel satelliteViewModel;
@@ -24,7 +23,6 @@ public class SatelliteImageFragment extends AppFragment {
         View view =  inflater.inflate(R.layout.satellite_image_fragment, container, false);
         ((WeatherApplication) getActivity().getApplication()).getComponent().inject(this);
         satelliteViewModel.setView(view);
-        satelliteViewModel.setDataLoading(dataLoading);
         return view;
     }
 
