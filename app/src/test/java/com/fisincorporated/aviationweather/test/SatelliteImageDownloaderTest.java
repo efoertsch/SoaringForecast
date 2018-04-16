@@ -2,7 +2,7 @@ package com.fisincorporated.aviationweather.test;
 
 
 import com.fisincorporated.aviationweather.satellite.SatelliteImageDownloader;
-import com.fisincorporated.aviationweather.satellite.SatelliteImageInfo;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageInfo;
 import com.fisincorporated.aviationweather.utils.TimeUtils;
 
 import org.junit.Test;

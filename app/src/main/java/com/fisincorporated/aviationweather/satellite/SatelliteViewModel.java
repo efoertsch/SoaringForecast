@@ -17,9 +17,14 @@ import android.widget.TextView;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
+import com.fisincorporated.aviationweather.common.TouchImageView;
 import com.fisincorporated.aviationweather.databinding.SatelliteImageBinding;
 import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImage;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageInfo;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 
 import org.cache2k.Cache;
 import org.greenrobot.eventbus.EventBus;
@@ -81,7 +86,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         viewDataBinding.executePendingBindings();
         setSpinnerSelectedSatelliteRegion();
         setSpinnerSelectedSatelliteImageType();
-        setIgnoreSatelliteCalls();
+        ignoreSpinnerChanges();
         return this;
     }
 
@@ -93,7 +98,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         loadSatelliteImages();
     }
 
-    private void setIgnoreSatelliteCalls() {
+    private void ignoreSpinnerChanges() {
         bypassSatelliteRegionChange = true;
         bypassSatelliteTypeChange = true;
     }

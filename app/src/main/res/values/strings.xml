@@ -21,6 +21,7 @@
     <string name="action_add_airports">Add airports</string>
     <string name="action_satellite_images">Satellite</string>
     <string name="action_airport_weather">Airport Weather</string>
+    <string name="action_soaring_forecasts">Soaring Forecasts</string>
 
     <!-- Metar/TAF -->
     <string name="metar">METAR</string>
@@ -118,7 +119,11 @@
     <string name="title_activity_satellite_image">Satellite Image</string>
     <string name="satellite_image_time_utc_label">UTC:</string>
     <string name="satellite_image_time_local_label">Local:</string>
-
+    <string name="soaring_forecast_date">Date</string>
+    <string name="soaring_forecast_time">Time</string>
+    <string name="soaring_forecast_time_utc_label">UTC</string>
+    <string name="soaring_forecast_time_local_label">Local</string>
+    <string name="new_england_region">NewEngland</string>
 
 
 </resources>

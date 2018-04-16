@@ -1,15 +1,14 @@
-package com.fisincorporated.aviationweather.satellite;
+package com.fisincorporated.aviationweather.common;
 
 import android.graphics.Bitmap;
 
-
-public class SatelliteImage  {
+public class BitmapImage {
 
     private final String imageName;
     private boolean errorOnLoad = false;
     private Bitmap bitmap = null;
 
-    public SatelliteImage(String imageName) {
+    public BitmapImage(String imageName) {
         this.imageName = imageName;
     }
 

@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class LocationTimes {
+// Part of TypeLocationAndTimes
+// http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json
+public class GpsLocationAndTimes {
 
     @SerializedName("corners")
     @Expose

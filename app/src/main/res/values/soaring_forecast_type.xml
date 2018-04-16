@@ -3,9 +3,9 @@
     <string name="soaring_forecast_type">Type</string>
 
     <!-- Soaring forecast types. Type, forecast number of days -->
-    <string name="soaring_forecast_gfs" translatable="false">GFS,7</string>
-    <string name="soaring_forecast_nam" translatable="false">NAM,3</string>
-    <string name="soaring_forecast_rap" translatable="false">RAP,1</string>
+    <string name="soaring_forecast_gfs" translatable="false">0,GFS,7</string>
+    <string name="soaring_forecast_nam" translatable="false">1,NAM,3</string>
+    <string name="soaring_forecast_rap" translatable="false">2,RAP,1</string>
 
 
     <string-array name="soaring_forecast_types">

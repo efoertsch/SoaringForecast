@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.satellite;
+package com.fisincorporated.aviationweather.satellite.data;
 
 public class SatelliteCode {
 

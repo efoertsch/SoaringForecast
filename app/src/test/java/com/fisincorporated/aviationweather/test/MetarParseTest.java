@@ -2,14 +2,14 @@ package com.fisincorporated.aviationweather.test;
 
 
 import com.fisincorporated.aviationweather.data.metars.MetarResponse;
-import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
-import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
+import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 
 import org.junit.Test;
 
 import java.io.IOException;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import timber.log.Timber;
@@ -23,7 +23,7 @@ public class MetarParseTest {
      */
     @Test
     public void shouldGetMetar() throws IOException {
-        Retrofit retrofit = new AviationWeatherGovRetrofit(new LoggingInterceptor()).getRetrofit();
+        Retrofit retrofit = new AviationWeatherGovRetrofit(new OkHttpClient()).getRetrofit();
         AviationWeatherApi client = retrofit.create(AviationWeatherApi.class);
 
         final Call<MetarResponse>  call;

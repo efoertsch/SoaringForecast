@@ -1,7 +1,5 @@
 package com.fisincorporated.aviationweather.app;
 
-import android.app.Application;
-
 import com.fisincorporated.aviationweather.BuildConfig;
 import com.fisincorporated.aviationweather.dagger.AppModule;
 import com.fisincorporated.aviationweather.dagger.DaggerDiComponent;
@@ -9,9 +7,11 @@ import com.fisincorporated.aviationweather.dagger.DiComponent;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjector;
+import dagger.android.support.DaggerApplication;
 import timber.log.Timber;
 
-public class WeatherApplication extends Application {
+public class WeatherApplication extends DaggerApplication {
 
     protected DiComponent component;
 
@@ -22,7 +22,7 @@ public class WeatherApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        createDaggerInjections();
+       // createDaggerInjections();
         initTimber();
     }
 
@@ -36,15 +36,21 @@ public class WeatherApplication extends Application {
 
     }
 
-    protected void createDaggerInjections() {
-        component = DaggerDiComponent.builder()
-                .appModule(new AppModule(this))
-                .build();
-        component.inject(this);
-    }
+//    protected void createDaggerInjections() {
+//        component = DaggerDiComponent.builder()
+//                .appModule(new AppModule(this))
+//                .build();
+//        component.inject(this);
+//    }
 
     public DiComponent getComponent() {
         return component;
     }
 
+    @Override
+    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+        component = DaggerDiComponent.builder().application(this).appModule(new AppModule(this)).build();
+        component.inject(this);
+        return component;
+    }
 }

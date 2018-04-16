@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.satellite;
+package com.fisincorporated.aviationweather.soaring.forecast;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,30 +12,34 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class SatelliteImageFragment extends DaggerFragment {
+public class SoaringForecastFragment extends DaggerFragment {
+
+    public static final String MASTER_FORECAST_FRAGMENT = "MASTER_FORECAST_FRAGMENT";
 
     @Inject
-    SatelliteViewModel satelliteViewModel;
+    SoaringForecastViewModel soaringForecastViewModel;
+
+    public SoaringForecastFragment() {}
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.satellite_image_fragment, container, false);
-        satelliteViewModel.setView(view);
+        View view =  inflater.inflate(R.layout.soaring_forecast_fragment, container, false);
+        soaringForecastViewModel.setView(view);
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        satelliteViewModel.onResume();
+        soaringForecastViewModel.onResume();
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        satelliteViewModel.onPause();
+        soaringForecastViewModel.onPause();
 
     }
 }

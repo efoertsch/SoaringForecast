@@ -3,6 +3,7 @@ package com.fisincorporated.aviationweather.soaring.json;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+// Load  from raw/forecast_options
 public class Forecast {
 
     @SerializedName("forecast_name")

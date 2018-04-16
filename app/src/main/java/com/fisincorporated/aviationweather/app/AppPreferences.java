@@ -2,13 +2,15 @@ package com.fisincorporated.aviationweather.app;
 
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.satellite.SatelliteImageType;
-import com.fisincorporated.aviationweather.satellite.SatelliteRegion;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
+import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastType;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,6 +30,10 @@ public class AppPreferences {
     private static final String SATELLITE_IMAGE_TYPE_KEY = "SATELLITE_IMAGE_TYPE";
 
     private static final String DEFAULT_PREFS_SET = "DEFAULT_PREFS_SET";
+
+    private static final String SOARING_FORECAST_TYPE_KEY = "SOARING_FORECAST_TYPE";
+
+    private static final String SOARING_FORECAST_REGION_KEY = "SOARING_FORECAST_REGION";
 
     private static String RAW_METAR_KEY;
 
@@ -59,13 +65,17 @@ public class AppPreferences {
 
     private String satelliteImageTypeVis;
 
+    private String soaringForecastType;
+
+    private String soaringForecastDefaultRegion;
+
 
     @Inject
-    public AppPreferences(WeatherApplication application) {
+    public AppPreferences(Context context) {
 
-        application.getComponent().inject(this);
+//        AndroidSupportInjection.inject(this);
 
-        Resources res = application.getResources();
+        Resources res = context.getResources();
 
         // keys must match to those used in display_perferences.xml
         RAW_METAR_KEY = res.getString(R.string.pref_raw_taf_metar_key);
@@ -74,6 +84,7 @@ public class AppPreferences {
         ALTITUDE_UNITS_KEY = res.getString(R.string.pref_units_altitude);
         DISTANCE_UNITS_KEY = res.getString(R.string.pref_units_distance);
         DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
+        soaringForecastDefaultRegion = context.getString(R.string.new_england_region);
 
         // these should never be needed but use these default values
         rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
@@ -84,10 +95,11 @@ public class AppPreferences {
         imperialDistanceUnits = res.getString(R.string.pref_units_distance_statue_miles_label);
         satelliteRegionUS = res.getString(R.string.satellite_region_us);
         satelliteImageTypeVis = res.getString(R.string.satellite_image_type_vis);
+        soaringForecastType = res.getString(R.string.soaring_forecast_gfs);
 
         // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
         // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
-        sharedPreferences =  application.getSharedPreferences(AIRPORT_PREFS,  MODE_PRIVATE);
+        sharedPreferences =  context.getSharedPreferences(AIRPORT_PREFS,  MODE_PRIVATE);
         if (!sharedPreferences.getBoolean(DEFAULT_PREFS_SET, false)){
             setDisplayRawTafMetar(rawTafMetar);
             setDecodeTafMetar(decodeTafMetar);
@@ -95,7 +107,7 @@ public class AppPreferences {
             setWindSpeedDisplay(imperialWindSpeedUnits);
             setAltitudeDisplay(imperialAltitudeUnits);
             setDistanceUnitsDisplay(imperialDistanceUnits);
-            sharedPreferences.edit().putBoolean(DEFAULT_PREFS_SET, true).commit();
+            sharedPreferences.edit().putBoolean(DEFAULT_PREFS_SET, true).apply();
         }
 
     }
@@ -114,7 +126,7 @@ public class AppPreferences {
         return sharedPreferences.getBoolean(RAW_METAR_KEY, rawTafMetar);
     }
 
-    public void setDisplayRawTafMetar(boolean displayRawMetar) {
+    private void setDisplayRawTafMetar(boolean displayRawMetar) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(RAW_METAR_KEY, displayRawMetar);
         editor.apply();
@@ -124,7 +136,7 @@ public class AppPreferences {
         return sharedPreferences.getBoolean(DECODE_TAF_METAR_KEY, decodeTafMetar);
     }
 
-    public void setDecodeTafMetar(boolean decodeTafMetar) {
+    private void setDecodeTafMetar(boolean decodeTafMetar) {
         this.decodeTafMetar = decodeTafMetar;
     }
 
@@ -132,7 +144,7 @@ public class AppPreferences {
         return sharedPreferences.getString(TEMPERATURE_UNITS_KEY, imperialTemperatureUnits);
     }
 
-    public void setTemperatureDisplay(@NonNull String temperatureDisplay) {
+    private void setTemperatureDisplay(@NonNull String temperatureDisplay) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(TEMPERATURE_UNITS_KEY, temperatureDisplay);
         editor.apply();
@@ -142,7 +154,7 @@ public class AppPreferences {
         return sharedPreferences.getString(WINDSPEED_UNITS_KEY, imperialWindSpeedUnits);
     }
 
-    public void setWindSpeedDisplay(@NonNull String windspeedDisplay) {
+    private void setWindSpeedDisplay(@NonNull String windspeedDisplay) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(WINDSPEED_UNITS_KEY, windspeedDisplay);
         editor.apply();
@@ -152,7 +164,7 @@ public class AppPreferences {
         return sharedPreferences.getString(ALTITUDE_UNITS_KEY, imperialAltitudeUnits);
     }
 
-    public void setAltitudeDisplay(@NonNull String altitudeDisplay) {
+    private void setAltitudeDisplay(@NonNull String altitudeDisplay) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(ALTITUDE_UNITS_KEY, altitudeDisplay);
         editor.apply();
@@ -162,7 +174,7 @@ public class AppPreferences {
         return sharedPreferences.getString(DISTANCE_UNITS_KEY, imperialDistanceUnits);
     }
 
-    public void setDistanceUnitsDisplay(@NonNull String distanceUnits) {
+    private void setDistanceUnitsDisplay(@NonNull String distanceUnits) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(DISTANCE_UNITS_KEY, distanceUnits);
         editor.apply();
@@ -233,4 +245,23 @@ public class AppPreferences {
         editor.putString(SATELLITE_IMAGE_TYPE_KEY, satelliteImageType.toStore());
         editor.apply();
     }
+
+    public SoaringForecastType getSoaringForecastType(){
+        return new SoaringForecastType(sharedPreferences.getString(SOARING_FORECAST_TYPE_KEY, soaringForecastType));
+    }
+    public void setSoaringForecastType(SoaringForecastType soaringForecastType) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SOARING_FORECAST_TYPE_KEY, soaringForecastType.toStore());
+        editor.apply();
+    }
+
+    public String  getSoaringForecastRegion(){
+        return sharedPreferences.getString(SOARING_FORECAST_REGION_KEY, soaringForecastDefaultRegion);
+    }
+    public void setSoaringForecastRegion(String region) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SOARING_FORECAST_REGION_KEY, region);
+        editor.apply();
+    }
+
 }

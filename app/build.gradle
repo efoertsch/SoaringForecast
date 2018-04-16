@@ -29,6 +29,10 @@ android {
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 // to pick up mock xml responses
@@ -51,12 +55,11 @@ android.sourceSets {
 
 
 dependencies {
-
     final SUPPORT_LIBRARY_VERSION = '26.1.0'
-    final RX_ANDROID = '1.2.1'
-    final RX_JAVA = '1.1.8'
+    final RX_ANDROID = '2.0.2'
+    final RX_JAVA = '2.1.12'
     final RETROFIT = '2.2.0'
-    final SIMPLE_XML= '2.1.0'
+    final SIMPLE_XML = '2.1.0'
     final GSON = '2.8.2'
     final GSON_CONVERTER = '2.3.0'
     final OKHTTP = '3.8.0'
@@ -69,8 +72,9 @@ dependencies {
     final JUNIT = '4.12'
     final MOCKITO = '2.7.6'
     final EVENT_BUS = '3.1.1'
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    final MEMORY_CACHE = '1.0.2.Final'
+    final DISK_CACHE = '2.0.2'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Android compat/support libraries
     implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
@@ -78,19 +82,20 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
     implementation "com.android.support:cardview-v7:$SUPPORT_LIBRARY_VERSION"
     implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:preference-v7:$SUPPORT_LIBRARY_VERSION"
 
     // Bus
     implementation "org.greenrobot:eventbus:$EVENT_BUS"
 
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:$RETROFIT"
-    implementation ("com.squareup.retrofit2:adapter-rxjava2:$RETROFIT") {
+    implementation("com.squareup.retrofit2:adapter-rxjava2:$RETROFIT") {
         exclude group: 'io.reactivex.java2', module: 'rxjava'
     }
 
     // RxJava
-    implementation "io.reactivex:rxjava:$RX_JAVA"
-    implementation "io.reactivex:rxandroid:$RX_ANDROID"
+    implementation "io.reactivex.rxjava2:rxjava:$RX_JAVA"
+    implementation "io.reactivex.rxjava2:rxandroid:$RX_ANDROID"
 
     // SimpleXML
     implementation("com.squareup.retrofit2:converter-simplexml:$SIMPLE_XML") {
@@ -106,14 +111,19 @@ dependencies {
     //okhttp
     implementation "com.squareup.okhttp3:okhttp:$OKHTTP"
 
-    // For Dagger2
-    implementation "com.google.dagger:dagger:$DAGGER"  // Added above for ButterKnife
+    //Dagger2
+    implementation "com.google.dagger:dagger:$DAGGER"
+    implementation "com.google.dagger:dagger-android:$DAGGER"
+    implementation "com.google.dagger:dagger-android-support:$DAGGER"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$DAGGER"
     annotationProcessor "com.google.dagger:dagger-compiler:$DAGGER"
 
-    // Cache for bitmaps
-    implementation group: 'org.cache2k', name: 'cache2k-api', version: '1.0.2.Final'
-    implementation group: 'org.cache2k', name: 'cache2k-core', version: '1.0.2.Final'
-    //implementation group: 'javax.cache', name: 'cache-api', version: '1.1.0'
+    // Diskcache
+    implementation "com.jakewharton:disklrucache:$DISK_CACHE"
+
+    // Memory cache
+    implementation "org.cache2k:cache2k-api:$MEMORY_CACHE"
+    implementation "org.cache2k:cache2k-core:$MEMORY_CACHE"
 
     // Timber for logging
     implementation "com.jakewharton.timber:timber:$TIMBER"
@@ -127,7 +137,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'javax.inject'
     }
-
     androidTestImplementation("com.android.support.test.espresso:espresso-contrib:$ESPRESSO") {
         // Necessary to avoid version conflicts
         exclude group: 'com.android.support', module: 'appcompat'
@@ -146,17 +155,15 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude module: 'recyclerview-v7'
     }
-
     androidTestImplementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
     androidTestImplementation "com.android.support.test:runner:$RUNNER"
     androidTestImplementation "com.android.support.test:rules:$RUNNER"
+
     // Matchers
     androidTestImplementation "org.hamcrest:hamcrest-library:$HAMCREST"
 
     //UI testing with UI Automator
     androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:$UIAUTOMATOR"
-
-
 }
 
 

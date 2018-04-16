@@ -1,10 +1,12 @@
 package com.fisincorporated.aviationweather.dagger;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
+import com.fisincorporated.aviationweather.cache.BitmapCache;
 import com.fisincorporated.aviationweather.dagger.annotations.AviationWeatherGov;
 import com.fisincorporated.aviationweather.dagger.annotations.SoaringForecast;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
@@ -12,9 +14,12 @@ import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastRetrofit;
-import com.fisincorporated.aviationweather.satellite.SatelliteImage;
-import com.fisincorporated.aviationweather.satellite.SatelliteImageType;
-import com.fisincorporated.aviationweather.satellite.SatelliteRegion;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImage;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
+import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastDownloader;
+import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastImage;
+import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastType;
 
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
@@ -40,16 +45,17 @@ public class AppModule {
 
     public static final String AIRPORT_PREFS = "AIRPORT_PREFS";
 
+    private WeatherApplication application;
+
     @Provides
     @Named("app.shared.preferences.name")
     public String providesAppSharedPreferencesName() {
         return AIRPORT_PREFS;
     }
 
-    private WeatherApplication application;
-
     // For unit testing only
-    public AppModule(){}
+    public AppModule() {
+    }
 
     public AppModule(WeatherApplication application) {
         this.application = application;
@@ -57,7 +63,13 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public AppPreferences provideAppPreferences() {
+    Context provideContext(WeatherApplication application) {
+        return application.getApplicationContext();
+    }
+
+    @Provides
+    @Singleton
+    public AppPreferences provideAppPreferences(WeatherApplication application) {
         return new AppPreferences(application);
     }
 
@@ -94,15 +106,24 @@ public class AppModule {
         return provideSoaringForecastRetrofit().create(SoaringForecastApi.class);
     }
 
+
+
     @Provides
     @Singleton
     public Cache<String, SatelliteImage> provideCache() {
-        return new Cache2kBuilder<String, SatelliteImage>() {}
+        return new Cache2kBuilder<String, SatelliteImage>() {
+        }
                 .name("Satellite Images Cache")
                 .eternal(false)
                 .expireAfterWrite(15, TimeUnit.MINUTES)    // expire/refresh after 15 minutes
                 .entryCapacity(20)
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    public BitmapCache getBitmapCache() {
+        return BitmapCache.init(application);
     }
 
     @Provides
@@ -118,7 +139,8 @@ public class AppModule {
                     satelliteRegions.add(satelliteRegion);
                 }
             }
-        } catch(Resources.NotFoundException nfe){}
+        } catch (Resources.NotFoundException nfe) {
+        }
         return satelliteRegions;
     }
 
@@ -135,13 +157,14 @@ public class AppModule {
                     satelliteImageTypes.add(satelliteImageType);
                 }
             }
-        } catch(Resources.NotFoundException nfe){}
+        } catch (Resources.NotFoundException nfe) {
+        }
         return satelliteImageTypes;
     }
 
     @Provides
     @Singleton
-    public OkHttpClient getOkHttpClient(Interceptor interceptor){
+    public OkHttpClient getOkHttpClient(Interceptor interceptor) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(4);
@@ -152,5 +175,42 @@ public class AppModule {
         return httpClient.build();
     }
 
+    @Provides
+    @Singleton
+    public List<SoaringForecastType> provideSoaringForecastTypeArray() {
+        String[] types;
+        ArrayList<SoaringForecastType> soaringForecastTypes = new ArrayList<>();
+        Resources res = application.getResources();
+        try {
+            types = res.getStringArray(R.array.soaring_forecast_types);
+            if (types != null) {
+                for (int i = 0; i < types.length; ++i) {
+                    SoaringForecastType soaringForecastType = new SoaringForecastType(types[i]);
+                    soaringForecastTypes.add(soaringForecastType);
+                }
+            }
+        } catch (Resources.NotFoundException nfe) {
+        }
+        return soaringForecastTypes;
+    }
+
+    @Provides
+    @Singleton
+    public Cache<String, SoaringForecastImage> provideSoaringForecastImageCache() {
+        return new Cache2kBuilder<String, SoaringForecastImage>() {
+        }
+                .name("SoaringForecast Images Cache")
+                .eternal(false)
+                .expireAfterWrite(30, TimeUnit.MINUTES)    // expire/refresh after 15 minutes
+                .entryCapacity(20)
+                .build();
+    }
+
+    // TODO put in separate activity module
+    @Provides
+    @Singleton
+    public SoaringForecastDownloader provideSoaringForecastDownloader() {
+        return new SoaringForecastDownloader(providesSoaringForecastApi());
+    }
 
 }

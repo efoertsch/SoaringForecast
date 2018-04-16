@@ -24,6 +24,7 @@ import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
+import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -40,7 +41,6 @@ public class WeatherDrawerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.app_nav_drawer);
@@ -57,7 +57,8 @@ public class WeatherDrawerActivity extends AppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
-        displayAirportWeather();
+        displaySoaringForecasts();
+        // displayAirportWeather();
 
     }
 
@@ -133,6 +134,10 @@ public class WeatherDrawerActivity extends AppCompatActivity {
             case R.id.nav_menu_satellite_images:
                 displaySatelliteImages();
                 break;
+            case R.id.nav_menu_soaring_forecasts:
+                displaySoaringForecasts();
+                break;
+
             default:
                 displayAirportList();
         }
@@ -140,6 +145,8 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         drawerLayout.closeDrawers();
 
     }
+
+
 
     private void displayFragment(Fragment fragment) {
         // Replacing any existing fragment
@@ -169,6 +176,11 @@ public class WeatherDrawerActivity extends AppCompatActivity {
 
     private void displaySatelliteImages() {
         SatelliteImageFragment fragment = new SatelliteImageFragment();
+        displayFragment(fragment);
+    }
+
+    private void displaySoaringForecasts() {
+        SoaringForecastFragment fragment = new SoaringForecastFragment();
         displayFragment(fragment);
     }
 

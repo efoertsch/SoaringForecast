@@ -34,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, new
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new
                 SettingsPreferenceFragment()).commit();
     }
 
