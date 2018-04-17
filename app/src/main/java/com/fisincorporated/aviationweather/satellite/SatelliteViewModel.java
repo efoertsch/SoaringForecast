@@ -205,7 +205,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
 
-    @BindingAdapter(value = {"bind:selectedRegionValue", "bind:selectedRegionValueAttrChanged"}, requireAll = false)
+    @BindingAdapter(value = {"selectedRegionValue", "selectedRegionValueAttrChanged"}, requireAll = false)
     public static void bindSpinnerData(Spinner spinner, SatelliteRegion newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -223,7 +223,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         }
     }
 
-    @InverseBindingAdapter(attribute = "bind:selectedRegionValue", event = "bind:selectedRegionValueAttrChanged")
+    @InverseBindingAdapter(attribute = "selectedRegionValue", event = "selectedRegionValueAttrChanged")
     public static SatelliteRegion captureSelectedValue(Spinner spinner) {
         return (SatelliteRegion) spinner.getSelectedItem();
     }
@@ -249,7 +249,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         loadSatelliteImages();
     }
 
-    @BindingAdapter(value = {"bind:selectedImageType", "bind:selectedImageTypeAttrChanged"}, requireAll = false)
+    @BindingAdapter(value = {"selectedImageType", "selectedImageTypeAttrChanged"}, requireAll = false)
     public static void bindImageTypeSpinnerData(Spinner spinner, SatelliteImageType newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -267,7 +267,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         }
     }
 
-    @InverseBindingAdapter(attribute = "bind:selectedImageType", event = "bind:selectedImageTypeAttrChanged")
+    @InverseBindingAdapter(attribute = "selectedImageType", event = "selectedImageTypeAttrChanged")
     public static SatelliteImageType captureSelectedImageTypeValue(Spinner spinner) {
         return (SatelliteImageType) spinner.getSelectedItem();
     }

@@ -13,7 +13,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,7 +31,7 @@ public class SoaringForecastDownloader {
 
     private SoaringForecastDate soaringForecastDate;
 
-    private RegionForecastDates regionForecastDates;
+   // private RegionForecastDates regionForecastDates;
 
     private SoaringForecastApi client;
 
@@ -56,14 +55,6 @@ public class SoaringForecastDownloader {
     public void loadSoaringForcecastImages(String name, String yyyymmddDate, String forecastParameter) {
     }
 
-    public void loadSoaringForecastDate(SoaringForecastDate soaringForecastDate) {
-        this.soaringForecastDate = soaringForecastDate;
-    }
-
-    public SoaringForecastDate getSoaringForecastDate() {
-        return soaringForecastDate;
-    }
-
 
     // Run on background thread
     @SuppressLint("CheckResult")
@@ -72,9 +63,8 @@ public class SoaringForecastDownloader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(regionForecastDates -> {
-                    saveRegionForecastDates(regionForecastDates);
-                    loadTypeLocationAndTimes(region, regionForecastDates);
-                },
+                            sendViaBus(regionForecastDates);
+                        },
                         throwable -> {
                             Timber.d("Error: %s ", throwable.getMessage());
                             //TODO - put error on bus
@@ -83,20 +73,15 @@ public class SoaringForecastDownloader {
         );
     }
 
-
-    public void saveRegionForecastDates(RegionForecastDates regionForecastDates) {
-        regionForecastDates.parseForecastDates();
-        this.regionForecastDates = regionForecastDates;
+    private void sendViaBus(RegionForecastDates regionForecastDates) {
         EventBus.getDefault().post(regionForecastDates);
     }
 
-    private void loadTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
-         Observable.fromIterable(regionForecastDates.getForecastDates())
+    public void loadTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
+        Observable.fromIterable(regionForecastDates.getForecastDates())
                 .flatMap((Function<RegionForecastDate, Observable<TypeLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
-                {
-                    return callTypeLocationAndTimes(region, regionForecastDate).toObservable()
-                            .doOnNext(typeLocationAndTimes -> regionForecastDate.setTypeLocationAndTimes(typeLocationAndTimes));
-                })
+                        callTypeLocationAndTimes(region, regionForecastDate).toObservable()
+                                .doOnNext(regionForecastDate::setTypeLocationAndTimes))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<TypeLocationAndTimes>() {
@@ -113,29 +98,18 @@ public class SoaringForecastDownloader {
 
                     @Override
                     public void onError(Throwable e) {
-                            //TODO display error
+                        //TODO - put error on bus
                     }
 
                     @Override
                     public void onComplete() {
-
                         EventBus.getDefault().post(new ReadyToSelectSoaringForecastEvent());
-
 
                     }
                 });
 
     }
 
-    private Function<RegionForecastDates, List<RegionForecastDate>> getRegionForecastDatesList(RegionForecastDates regionForecastDates) {
-        return new Function<RegionForecastDates, List<RegionForecastDate>>() {
-            @Override
-            public List<RegionForecastDate> apply(RegionForecastDates regionForecastDates) throws Exception {
-                regionForecastDates.parseForecastDates();
-                return (regionForecastDates.getRegionForecastDateList());
-            }
-        };
-    }
 
     /**
      * Call to find what days forecasts are available for
@@ -146,10 +120,6 @@ public class SoaringForecastDownloader {
      */
     public Single<RegionForecastDates> callRegionForecastDates() {
         return client.getForecastDates("current.json?" + (new Date()).getTime());
-    }
-
-    public RegionForecastDates getRegionForecastDates() {
-        return regionForecastDates;
     }
 
     /**

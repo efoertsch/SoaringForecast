@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Date;
 
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import timber.log.Timber;
@@ -41,17 +42,16 @@ public class SoaringForecastTest {
      * @throws IOException
      */
     @Test
-    public void shouldGetForecastDatesJson() throws IOException {
-        final Call<RegionForecastDates> call;
-
-        call = client.getForecastDates("current.json?" + (new Date()).getTime());
-        regionForecastDates = call.execute().body();
-
-        checkForecastDatesResponse(regionForecastDates);
+    public void shouldGetForecastDatesJson() throws Exception {
+        Single<RegionForecastDates> single = client.getForecastDates("current.json?" + (new Date()).getTime());
+        single.subscribe(regionForecastDates -> {
+            System.out.println(" Got RegionForecastDates successfully");
+            SoaringForecastTest.this.regionForecastDates = regionForecastDates;
+        });
 
     }
 
-    static private void checkForecastDatesResponse(RegionForecastDates regionForecastDates) {
+    private void checkForecastDatesResponse(RegionForecastDates regionForecastDates) {
         Timber.d("doing asserts");
         assertNotNull(regionForecastDates);
         assertTrue(regionForecastDates.getStringDateList().size() > 3);
@@ -61,15 +61,14 @@ public class SoaringForecastTest {
 
     //http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json - Run for each date in above json list
     @Test
-    public void shouldParseForecastDatesTest() throws IOException {
+    public void shouldParseForecastDatesTest() throws Exception {
         Call<TypeLocationAndTimes> call;
         shouldGetForecastDatesJson();
         regionForecastDates.parseForecastDates();
         assertTrue(regionForecastDates.getRegionForecastDateList().size() > 3);
         for (RegionForecastDate regionForecastDate : regionForecastDates.getForecastDates()) {
-            call = client.getTypeLocationAndTimes("NewEngland" + "/" + regionForecastDate.getYyyymmddDate() + "/status.json");
-            TypeLocationAndTimes typeLocationAndTimes = call.execute().body();
-            checkTypeLocationAndTimes(typeLocationAndTimes);
+            Single<TypeLocationAndTimes> single = client.getTypeLocationAndTimes("NewEngland" + "/" + regionForecastDate.getYyyymmddDate() + "/status.json");
+            single.subscribe(this::checkTypeLocationAndTimes);
         }
 
     }
@@ -77,17 +76,19 @@ public class SoaringForecastTest {
     private void checkTypeLocationAndTimes(TypeLocationAndTimes typeLocationAndTimes) {
         GpsLocationAndTimes gpsLocationAndTimes;
         if (typeLocationAndTimes.getGfs() != null) {
-
+            System.out.println("Gfs available");
             gpsLocationAndTimes = typeLocationAndTimes.getGfs();
             testGpsLocationAndTimes(gpsLocationAndTimes);
         }
 
         if (typeLocationAndTimes.getNam() != null) {
+            System.out.println("Nam available");
             gpsLocationAndTimes = typeLocationAndTimes.getGfs();
             testGpsLocationAndTimes(gpsLocationAndTimes);
         }
 
         if (typeLocationAndTimes.getRap() != null) {
+            System.out.println("Rap available");
             gpsLocationAndTimes = typeLocationAndTimes.getGfs();
             testGpsLocationAndTimes(gpsLocationAndTimes);
         }
@@ -103,29 +104,28 @@ public class SoaringForecastTest {
 
     @Test
     public void callLoadForecastsForDayTest() throws IOException {
-        TypeLocationAndTimes typeLocationAndTimes;
+
         SoaringForecastDownloader soaringForecastDownloader = new SoaringForecastDownloader(client);
-        soaringForecastDownloader.callRegionForecastDates();
-        assertNotNull(soaringForecastDownloader.getRegionForecastDates());
-        for (RegionForecastDate regionForecastDate : soaringForecastDownloader.getRegionForecastDates().getForecastDates()) {
+
+        Single<RegionForecastDates> singleRegionForecastDates = soaringForecastDownloader.callRegionForecastDates();
+        singleRegionForecastDates.subscribe(regionForecastDates -> {
+            assertNotNull("regionForecastDates is null",regionForecastDates);
+            System.out.println(" Got RegionForecastDates successfully");
+            regionForecastDates.parseForecastDates();
+            SoaringForecastTest.this.regionForecastDates = regionForecastDates;
+
+        });
+
+
+        for (RegionForecastDate regionForecastDate : regionForecastDates.getForecastDates()) {
             assertNotNull(regionForecastDate.getFormattedDate());
             System.out.println(String.format("%s  %s", regionForecastDate.getFormattedDate(), regionForecastDate.getYyyymmddDate()));
-            soaringForecastDownloader.callTypeLocationAndTimes("NewEngland", regionForecastDate);
-            typeLocationAndTimes = regionForecastDate.getTypeLocationAndTimes();
-            assertNotNull(typeLocationAndTimes);
-            if (typeLocationAndTimes.getGfs() != null) {
-                System.out.println("Gfs available");
-                testGpsLocationAndTimes(typeLocationAndTimes.getGfs());
-
-            }
-            if (typeLocationAndTimes.getNam() != null) {
-                System.out.println("Nam available");
-                testGpsLocationAndTimes(typeLocationAndTimes.getNam());
-            }
-            if (typeLocationAndTimes.getRap() != null) {
-                System.out.println("Rap available");
-                testGpsLocationAndTimes(typeLocationAndTimes.getRap());
-            }
+            Single<TypeLocationAndTimes> singleTypeLocationAndTimes =soaringForecastDownloader.callTypeLocationAndTimes("NewEngland", regionForecastDate);
+            singleTypeLocationAndTimes.subscribe(typeLocationAndTimes1 -> {
+            regionForecastDate.setTypeLocationAndTimes(typeLocationAndTimes1);
+            assertNotNull("typeLocationAndTimes is null", typeLocationAndTimes1);
+            checkTypeLocationAndTimes(typeLocationAndTimes1);
+            });
 
         }
     }

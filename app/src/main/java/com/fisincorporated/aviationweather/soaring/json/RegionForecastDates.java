@@ -14,12 +14,12 @@ import java.util.List;
 // You then need to parse out the formatted(Friday March 30) and yyyy-mm-dd (dates
 public class RegionForecastDates {
 
-    // parsed json dates
-    private ArrayList<RegionForecastDate> forecastDates = new ArrayList<>();
-
     @SerializedName("NewEngland")
     @Expose
-    private List<List<String>> stringDateList = null;
+    private List<List<String>> stringDateList = new ArrayList<>(new ArrayList<>());
+
+    // parsed json dates
+    private ArrayList<RegionForecastDate> forecastDates = new ArrayList<>();
 
     public List<List<String>> getStringDateList() {
         return stringDateList;
@@ -47,6 +47,13 @@ public class RegionForecastDates {
 
     public ArrayList<RegionForecastDate> getForecastDates() {
         return forecastDates;
+    }
+
+    public void copy(RegionForecastDates regionForecastDates){
+        stringDateList.clear();
+        stringDateList.addAll(regionForecastDates.getStringDateList());
+        forecastDates.clear();
+        forecastDates.addAll(regionForecastDates.getForecastDates());
     }
 
 
