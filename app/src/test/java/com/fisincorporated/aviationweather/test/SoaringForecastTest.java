@@ -1,5 +1,6 @@
 package com.fisincorporated.aviationweather.test;
 
+import com.fisincorporated.aviationweather.cache.BitmapCache;
 import com.fisincorporated.aviationweather.dagger.AppModule;
 import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
@@ -9,6 +10,7 @@ import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
 import com.fisincorporated.aviationweather.soaring.json.TypeLocationAndTimes;
+import com.fisincorporated.aviationweather.utils.BitmapImageUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import io.reactivex.Single;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import timber.log.Timber;
@@ -29,6 +32,9 @@ public class SoaringForecastTest {
     Retrofit retrofit;
     SoaringForecastApi client;
     RegionForecastDates regionForecastDates;
+    OkHttpClient okHttpClient = new OkHttpClient();
+    BitmapCache bitmapCache = new BitmapCache();
+    BitmapImageUtils bitmapImageUtils = new BitmapImageUtils(bitmapCache, new OkHttpClient());
 
     @Before
     public void createRetrofit() {

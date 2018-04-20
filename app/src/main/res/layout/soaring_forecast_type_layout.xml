@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="SoaringForecastTypeView">
+
+        <variable
+            name="soaringForecastType"
+            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastType"/>
+
+        <variable
+            name="typeClickListener"
+            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastTypeClickListener"/>
+    </data>
+
+
+    <TextView
+        android:id="@+id/soaring_forecast_type_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_standard"
+        android:layout_marginStart="@dimen/margin_standard"
+        android:background="@drawable/black_view_border"
+        android:clickable="true"
+        android:onClick="@{() -> typeClickListener.setSoaringForecastType(soaringForecastType)}"
+        android:padding="@dimen/margin_standard"
+        android:text="@{soaringForecastType.name + '(' + soaringForecastType.numberForecastDays + ')'}"
+        android:textAllCaps="true"
+        android:textSize="@dimen/text_size_large"
+        tools:text="GFS (7)"/>
+
+
+</layout>

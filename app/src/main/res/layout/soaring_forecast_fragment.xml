@@ -6,8 +6,6 @@
 
         <import type="android.view.View"/>
 
-        <import type="android.widget.Spinner"/>
-
         <variable
             name="viewModel"
             type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastViewModel"/>
@@ -19,70 +17,29 @@
         android:layout_height="match_parent"
         >
 
-        <LinearLayout
-            android:id="@+id/soaring_forecast_type"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/soaring_forecast_type_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:orientation="horizontal"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/region_forecast_date_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/soaring_forecast_type_recycler_view"
             android:layout_marginEnd="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_standard"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/soaring_forecast_type_label"
-                style="@style/forecastLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="@string/soaring_forecast_type"/>
-
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/soaring_forecast_type_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:entries="@{viewModel.soaringForecastTypes}"
-                android:gravity="center_vertical"
-                bind:selectedForecastType="@={viewModel.selectedSoaringForecastType}"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/soaring_forecast_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/soaring_forecast_type"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_half"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/soaring_forecast_date_label"
-                style="@style/forecastLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="@string/soaring_forecast_date"/>
-
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/soaring_forecast_date_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:entries="@{viewModel.regionForecastDates}"
-                android:gravity="center_vertical"
-                bind:selectedRegionForecastDate="@={viewModel.selectedRegionForecastDate}"/>
-
-        </LinearLayout>
-
+            android:orientation="horizontal"/>
 
         <LinearLayout
             android:id="@+id/soaring_forecast_image_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/soaring_forecast_date"
+            android:layout_below="@+id/region_forecast_date_recycler_view"
             android:layout_marginEnd="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_half"

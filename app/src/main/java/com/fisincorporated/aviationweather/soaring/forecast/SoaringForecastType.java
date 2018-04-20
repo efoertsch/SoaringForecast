@@ -1,7 +1,5 @@
 package com.fisincorporated.aviationweather.soaring.forecast;
 
-import com.fisincorporated.aviationweather.satellite.data.SatelliteCode;
-
 public class SoaringForecastType {
 
     private static final String COMMA_DELIMITER = ",";
@@ -18,8 +16,6 @@ public class SoaringForecastType {
         id = values.length > 0 ? Integer.parseInt(values[0]) : 0;
         name = values.length > 1 ? values[1].trim() : "";
         numberForecastDays = values.length > 2 ? Integer.parseInt(values[2]) : 1;
-
-
     }
 
     public int getId() {
@@ -46,8 +42,8 @@ public class SoaringForecastType {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SatelliteCode) {
-            SatelliteCode c = (SatelliteCode) obj;
+        if (obj instanceof SoaringForecastType) {
+            SoaringForecastType c = (SoaringForecastType) obj;
             if (c.getName().equals(name)) {
                 return true;
             }
@@ -58,7 +54,7 @@ public class SoaringForecastType {
 
     // For storing selected region in SharedPreferences
     public String toStore() {
-        return id + COMMA_DELIMITER + name.trim() + numberForecastDays;
+        return id + COMMA_DELIMITER + name.trim() + COMMA_DELIMITER + numberForecastDays;
     }
 
     public int getNumberForecastDays() {

@@ -2,17 +2,11 @@ package com.fisincorporated.aviationweather.soaring.forecast;
 
 import android.animation.ValueAnimator;
 import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
-import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,6 +19,7 @@ import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
+import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
@@ -38,12 +33,18 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InverseBindingMethods({
-        @InverseBindingMethod(type = Spinner.class, attribute="android:selectedItemPosition"),})
+        @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 
-public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle {
+public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle, SoaringForecastTypeClickListener, RegionForecastDateClickListener {
 
     private static final String TAG = SoaringForecastViewModel.class.getSimpleName();
 
@@ -59,12 +60,10 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private SoaringForecastType selectedSoaringForecastType;
     private RegionForecastDate selectedRegionForecastDate = null;
 
-    private List<SoaringForecastDate> soaringForecastDates;
-
-    private boolean bypassSoaringForecastTypeChange = false;
-    private boolean bypassForecastDateChange = false;
-
     private View bindingView;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -88,9 +87,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     public SoaringForecastViewModel setView(View view) {
         fireLoadStarted();
         bindingView = view.findViewById(R.id.soaring_forecast_layout);
-        ignoreSpinnerChanges();
         bindViewModel();
-        soaringForecastDownloader.loadForecastsForDay(appPreferences.getSoaringForecastRegion());
+
         return this;
     }
 
@@ -99,22 +97,36 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         if (viewDataBinding != null) {
             viewDataBinding.setViewModel(this);
             selectedSoaringForecastType = appPreferences.getSoaringForecastType();
-            setSpinnerSelectedSoaringForecastType();
+            setupSoaringForecastTypeRecyclerView(soaringForecastTypes);
         }
     }
+
+    private void setupSoaringForecastTypeRecyclerView(List<SoaringForecastType> soaringForecastTypes) {
+        viewDataBinding.soaringForecastTypeRecyclerView.setHasFixedSize(true);
+        viewDataBinding.soaringForecastTypeRecyclerView.setLayoutManager(
+                new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
+        // TODO add selectedSoaringForecastType
+        RecyclerViewAdapterSoaringForecastType recyclerViewAdapter = new RecyclerViewAdapterSoaringForecastType(this, soaringForecastTypes);
+        viewDataBinding.soaringForecastTypeRecyclerView.setAdapter(recyclerViewAdapter);
+    }
+
+    private void setupRegionForecastDateRecyclerView(List<RegionForecastDate> regionForecastDateList) {
+        viewDataBinding.regionForecastDateRecyclerView.setHasFixedSize(true);
+        viewDataBinding.regionForecastDateRecyclerView.setLayoutManager(
+                new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
+        // TODO add selectedSoaringForecastType
+        RecyclerViewAdapterRegionForecastDate recyclerViewAdapter = new RecyclerViewAdapterRegionForecastDate(this, regionForecastDateList);
+        viewDataBinding.regionForecastDateRecyclerView.setAdapter(recyclerViewAdapter);
+    }
+
+
 
     @Override
     public void onResume() {
         // Setting the initial satellite region and type will cause call update images so need
         //to bypass
         EventBus.getDefault().register(this);
-
-    }
-
-    private void ignoreSpinnerChanges() {
-        bypassSoaringForecastTypeChange = true;
-        bypassForecastDateChange = true;
-
+        soaringForecastDownloader.loadForecastsForDay(appPreferences.getSoaringForecastRegion());
     }
 
     @Override
@@ -143,34 +155,59 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(RegionForecastDates regionForecastDates) {
         storeRegionForecastDates(regionForecastDates);
+        setupRegionForecastDateRecyclerView(regionForecastDates.getRegionForecastDateList());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ReadyToSelectSoaringForecastEvent readyToSelectSoaringForecastEvent) {
         // TODO - load bitmaps for hcrit for first forecast type (e.g. gfs)
         Timber.d("Ready to load bitmaps");
+        startLoadingSoaringForecastImages();
+    }
+
+    private void startLoadingSoaringForecastImages() {
+        new Thread(() -> loadSoaringForecastImages()).start();
+
     }
 
     private void storeRegionForecastDates(RegionForecastDates downloadedRegionForecastDates) {
-        regionForecastDates.copy(downloadedRegionForecastDates);
+        regionForecastDates = downloadedRegionForecastDates;
         regionForecastDates.parseForecastDates();
         selectedRegionForecastDate = regionForecastDates.getForecastDates().get(0);
-        ArrayAdapter<RegionForecastDate> adapter = new ArrayAdapter<>(
-                viewDataBinding.getRoot().getContext(),
-                android.R.layout.simple_spinner_item,
-                regionForecastDates.getRegionForecastDateList()
-        );
-        viewDataBinding.soaringForecastDateSpinner.setAdapter(adapter);
-        setSpinnerSelectedForecastDate();
         soaringForecastDownloader.loadTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
-
     }
 
     private void loadSoaringForecastImages() {
         stopImageAnimation();
-        //soaringForecastImageView.setImageBitmap(null);
+        Single<SoaringForecastImage> soaringForecastImageSingle =  soaringForecastDownloader.getSoaringForecastImageObservable(bindingView.getContext().getString(R.string.new_england_region)
+                , selectedRegionForecastDate.getYyyymmddDate()
+                , selectedSoaringForecastType.getName()
+                , "hwcrit"
+                , getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes().get(0)
+                , "body");
+        soaringForecastImageSingle.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<SoaringForecastImage>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                compositeDisposable.add(d);
+            }
 
-        soaringForecastDownloader.loadSoaringForcecastImages(selectedSoaringForecastType.getName(), selectedRegionForecastDate.getYyyymmddDate(), "hwcrit");
+            @Override
+            public void onSuccess(SoaringForecastImage soaringForecastImage) {
+                displaySoaringForecastImage(soaringForecastImage);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                displayCallFailure(e);
+            }
+        });
+    }
+
+    private void displaySoaringForecastImage(SoaringForecastImage soaringForecastImage) {
+        viewDataBinding.soaringForecastImageLocalTime.setText(soaringForecastImage.getForecastTime());
+        viewDataBinding.soaringForecastImageView.setImageBitmap(soaringForecastImage.getBitmap());
     }
 
     private void stopImageAnimation() {
@@ -179,108 +216,47 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         }
     }
 
-    public List<SoaringForecastType> getSoaringForecastTypes() {
-        return soaringForecastTypes;
-    }
-
-    public SoaringForecastType getSelectedSoaringForecastType() {
-        return selectedSoaringForecastType;
-    }
-
-    // Called by generated databinding code - see xml
-    // Bypass first call as first time setting type on UI triggers the call
-    public void setSelectedSoaringForecastType(SoaringForecastType soaringForecastType) {
-        if (bypassSoaringForecastTypeChange) {
-            bypassSoaringForecastTypeChange = false;
-            return;
-        }
-        selectedSoaringForecastType = soaringForecastType;
-        appPreferences.setSoaringForecastType(selectedSoaringForecastType);
-        loadSoaringForecastImages();
-    }
-
-
-    @BindingAdapter(value = {"selectedForecastType", "selectedForecastTypeAttrChanged"}, requireAll = false)
-    public static void bindSpinnerData(AppCompatSpinner spinner, SoaringForecastType newSelectedValue, final InverseBindingListener newSoaringForecastTypeAttrChanged) {
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                newSoaringForecastTypeAttrChanged.onChange();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        if (newSelectedValue != null) {
-            int pos = spinner.getSelectedItemPosition();
-            spinner.setSelection(pos, true);
-        }
-    }
-
-    @InverseBindingAdapter(attribute = "selectedForecastType", event = "selectedForecastTypeAttrChanged")
-    public static SoaringForecastType getSelectedSoaringForecastType(AppCompatSpinner spinner) {
-        return (SoaringForecastType) spinner.getSelectedItem();
-    }
-
-    private void setSpinnerSelectedSoaringForecastType() {
-        viewDataBinding.soaringForecastTypeSpinner.setSelection(selectedSoaringForecastType != null ? selectedSoaringForecastType.getId() : -1);
-    }
-
-    public List<RegionForecastDate> getRegionForecastDates() {
-        return regionForecastDates.getForecastDates();
-    }
-
-    @Bindable
-    public RegionForecastDate getSelectedRegionForecastDate() {
-        return selectedRegionForecastDate;
-    }
-
-    // Called by generated databinding code - see xml
-    // Bypass first call as first time setting type on UI triggers the call
-    public void setSelectedRegionForecastDate(RegionForecastDate forecastDate) {
-        if (bypassForecastDateChange) {
-            bypassForecastDateChange = false;
-            return;
-        }
-        selectedRegionForecastDate = forecastDate;
-        loadSoaringForecastImages();
-    }
-
-    @BindingAdapter(value = {"selectedRegionForecastDate", "selectedRegionForecastDateAttrChanged"}, requireAll = false)
-    public static void bindForecastDateSpinnerData(AppCompatSpinner spinner, RegionForecastDate newSelectedValue
-            , final InverseBindingListener newRegionForecastDateAttrChanged) {
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                newRegionForecastDateAttrChanged.onChange();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Timber.d("Nothing selected");
-            }
-        });
-        if (newSelectedValue != null) {
-            int pos = spinner.getSelectedItemPosition();
-            spinner.setSelection(pos, true);
-        }
-    }
-
-    @InverseBindingAdapter(attribute = "selectedRegionForecastDate", event = "selectedRegionForecastDateAttrChanged")
-    public  static RegionForecastDate captureSelectedDate(AppCompatSpinner spinner) {
-        return (RegionForecastDate) spinner.getSelectedItem();
-    }
-
-
-    private void setSpinnerSelectedForecastDate() {
-        viewDataBinding.soaringForecastDateSpinner.setSelection(selectedRegionForecastDate != null ? selectedRegionForecastDate.getIndex() : 0);
-    }
-
     private void displayCallFailure(Throwable t) {
         ViewUtilities.displayErrorDialog(viewDataBinding.getRoot(), bindingView.getContext().getString(R.string.oops), t.toString());
     }
 
+
+
+
+    private void fireLoadStarted() {
+        EventBus.getDefault().post(new DataLoadingEvent());
+    }
+
+    private void fireLoadComplete() {
+        EventBus.getDefault().post(new DataLoadCompleteEvent());
+    }
+
+
+    @Override
+    public void setSoaringForecastType(SoaringForecastType soaringForecastType) {
+        selectedSoaringForecastType = soaringForecastType;
+        appPreferences.setSoaringForecastType(selectedSoaringForecastType);
+    }
+
+    @Override
+    public void setRegionForecastDate(RegionForecastDate regionForecastDate) {
+        selectedRegionForecastDate = regionForecastDate;
+    }
+
+
+    private GpsLocationAndTimes getGpsLocationAndTimesForType(String type) {
+        switch (type) {
+            case "GFS":
+                return selectedRegionForecastDate.getTypeLocationAndTimes().getGfs();
+            case "NAM":
+                return selectedRegionForecastDate.getTypeLocationAndTimes().getNam();
+            case "RAP":
+                return selectedRegionForecastDate.getTypeLocationAndTimes().getRap();
+            default:
+                return null;
+
+        }
+    }
 
     private void startImageAnimation() {
         // need to 'overshoot' the animation to be able to get the last image value
@@ -314,13 +290,5 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 //        soaringForecastImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
 //        soaringForecastImageAnimation.start();
 
-    }
-
-    private void fireLoadStarted() {
-        EventBus.getDefault().post(new DataLoadingEvent());
-    }
-
-    private void fireLoadComplete() {
-        EventBus.getDefault().post(new DataLoadCompleteEvent());
     }
 }

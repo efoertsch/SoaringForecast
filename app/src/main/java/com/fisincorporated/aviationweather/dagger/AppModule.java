@@ -2,6 +2,7 @@ package com.fisincorporated.aviationweather.dagger;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.databinding.ObservableArrayList;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
@@ -20,6 +21,7 @@ import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastDownloader;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastImage;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastType;
+import com.fisincorporated.aviationweather.utils.BitmapImageUtils;
 
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
@@ -177,22 +179,39 @@ public class AppModule {
 
     @Provides
     @Singleton
+    public OkHttpClient getOkHttpClientNoInterceptor() {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(4);
+        httpClient.dispatcher(dispatcher);
+        httpClient.connectTimeout(30, TimeUnit.SECONDS);
+        httpClient.readTimeout(30, TimeUnit.SECONDS);
+        return httpClient.build();
+    }
+
+    @Provides
+    @Singleton
     public List<SoaringForecastType> provideSoaringForecastTypeArray() {
         String[] types;
-        ArrayList<SoaringForecastType> soaringForecastTypes = new ArrayList<>();
+        ObservableArrayList<SoaringForecastType> soaringForecastTypes = new ObservableArrayList<>();
         Resources res = application.getResources();
         try {
             types = res.getStringArray(R.array.soaring_forecast_types);
-            if (types != null) {
-                for (int i = 0; i < types.length; ++i) {
-                    SoaringForecastType soaringForecastType = new SoaringForecastType(types[i]);
-                    soaringForecastTypes.add(soaringForecastType);
-                }
+            for (int i = 0; i < types.length; ++i) {
+                SoaringForecastType soaringForecastType = new SoaringForecastType(types[i]);
+                soaringForecastTypes.add(soaringForecastType);
             }
         } catch (Resources.NotFoundException nfe) {
         }
         return soaringForecastTypes;
     }
+
+    @Provides
+    @Singleton
+    public BitmapImageUtils provideBitmapImageUtils() {
+        return new BitmapImageUtils(getBitmapCache(),getOkHttpClientNoInterceptor());
+    }
+
 
     @Provides
     @Singleton
@@ -210,7 +229,9 @@ public class AppModule {
     @Provides
     @Singleton
     public SoaringForecastDownloader provideSoaringForecastDownloader() {
-        return new SoaringForecastDownloader(providesSoaringForecastApi());
+        return new SoaringForecastDownloader(providesSoaringForecastApi(), provideBitmapImageUtils());
     }
+
+
 
 }

@@ -1,5 +1,7 @@
 package com.fisincorporated.aviationweather.soaring.json;
 
+import android.databinding.ObservableArrayList;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -19,7 +21,7 @@ public class RegionForecastDates {
     private List<List<String>> stringDateList = new ArrayList<>(new ArrayList<>());
 
     // parsed json dates
-    private ArrayList<RegionForecastDate> forecastDates = new ArrayList<>();
+    private ObservableArrayList<RegionForecastDate> forecastDates = new ObservableArrayList<>();
 
     public List<List<String>> getStringDateList() {
         return stringDateList;
