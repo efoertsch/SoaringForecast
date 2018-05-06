@@ -2,6 +2,7 @@ package com.fisincorporated.aviationweather.soaring.forecast;
 
 import android.annotation.SuppressLint;
 
+import com.fisincorporated.aviationweather.common.Constants;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
@@ -13,16 +14,16 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -44,6 +45,7 @@ public class SoaringForecastDownloader {
     }
 
     public void shutdown() {
+        compositeDisposable.dispose();
     }
 
     public void cancelOutstandingLoads() {
@@ -71,18 +73,13 @@ public class SoaringForecastDownloader {
     }
 
     public void loadTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
-        Observable.fromIterable(regionForecastDates.getForecastDates())
+        DisposableObserver disposableObserver = Observable.fromIterable(regionForecastDates.getForecastDates())
                 .flatMap((Function<RegionForecastDate, Observable<TypeLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
                         callTypeLocationAndTimes(region, regionForecastDate).toObservable()
                                 .doOnNext(regionForecastDate::setTypeLocationAndTimes))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<TypeLocationAndTimes>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        compositeDisposable.add(d);
-                    }
-
+                .subscribeWith(new DisposableObserver<TypeLocationAndTimes>() {
                     @Override
                     public void onNext(TypeLocationAndTimes typeLocationAndTimes) {
                         // TODO determine how to combine together into Single
@@ -100,6 +97,7 @@ public class SoaringForecastDownloader {
 
                     }
                 });
+        compositeDisposable.add(disposableObserver);
 
     }
 
@@ -125,7 +123,19 @@ public class SoaringForecastDownloader {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Observable<SoaringForecastImage> getSoaringForecastForTypeAndDay(String region, String yyyymmddDate, String soaringForecastType,
+                                                                            String forecastParameter, List<String> times) {
+        return Observable.fromIterable(times)
+                .flatMap((Function<String, Observable<SoaringForecastImage>>) time ->
+                        Observable.merge(
+                        getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.BODY).toObservable()
+                        , getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.HEAD).toObservable()
+                        , getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.SIDE).toObservable()
+                        , getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.FOOT).toObservable()
+                        )
+                );
 
+    }
 
     /**
      * @param region            - "NewEngland"
@@ -138,7 +148,7 @@ public class SoaringForecastDownloader {
      *                          Construct something like http:soargbsc.com/rasp/NewEngland/2018-03-31/gfs/wstar_bsratio.curr.1500lst.d2.body.png?11:15:44”
      */
     public Single<SoaringForecastImage> getSoaringForecastImageObservable(String region, String yyyymmddDate, String forecastType,
-                                                                 String forecastParameter, String forecastTime, String bitmapType) {
+                                                                          String forecastParameter, String forecastTime, String bitmapType) {
         String parmUrl = String.format("%s/%s/%s/%s.curr.%slst.d2.%s.png?%s", region, yyyymmddDate
                 , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType, new Date().getTime());
         SoaringForecastImage soaringForecastImage = new SoaringForecastImage(parmUrl);
@@ -149,7 +159,7 @@ public class SoaringForecastDownloader {
                 .setForecastTime(forecastTime)
                 .setBitmapType(bitmapType);
 
-        return  Single.create(
+        return Single.create(
                 emitter -> {
                     emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, forecastUrl + parmUrl));
                 });

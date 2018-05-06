@@ -18,15 +18,14 @@
         android:id="@+id/region_forecast_date_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_standard"
-        android:layout_marginStart="@dimen/margin_standard"
+        android:layout_marginEnd="@dimen/margin_half"
+        android:layout_marginStart="@dimen/margin_half"
         android:background="@drawable/black_view_border"
         android:clickable="true"
         android:onClick="@{() -> typeClickListener.setRegionForecastDate(regionForecastDate)}"
         android:padding="@dimen/margin_standard"
         android:text="@{regionForecastDate.getFormattedDate}"
         android:textAllCaps="true"
-        android:textSize="@dimen/text_size_large"
         tools:text="Sat. Apr 21."/>
 
 </layout>

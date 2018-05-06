@@ -4,13 +4,15 @@ import com.fisincorporated.aviationweather.common.BitmapImage;
 
 public class SoaringForecastImage extends BitmapImage {
 
+    private static final String separator = ":";
+
     private String forecastTime = null;  //1300
     private String forecastType = null;  // nam
     private String bitmapType = null;  // body footer header
     private String region = null;     // NewEngland
     private String forecastParameter = null;   // wstar
-    private String yyyymmdd = null;
-
+    private String yyyymmdd = null;    // 218-04-23
+    private String specs = "";
 
     public SoaringForecastImage(String imageName) {
         super(imageName);
@@ -69,5 +71,18 @@ public class SoaringForecastImage extends BitmapImage {
     public SoaringForecastImage setYyyymmdd(String yyyymmdd) {
         this.yyyymmdd = yyyymmdd;
         return this;
+    }
+
+    public String getForecastSpecs() {
+        if (specs.isEmpty()) {
+            specs = new StringBuilder().append(region).append(separator)
+                    .append(forecastType).append(separator)
+                    .append(yyyymmdd).append(separator)
+                    .append(forecastTime).append(separator)
+                    .append(forecastParameter).append(separator)
+                    .append(bitmapType).toString();
+        }
+        return specs;
+
     }
 }

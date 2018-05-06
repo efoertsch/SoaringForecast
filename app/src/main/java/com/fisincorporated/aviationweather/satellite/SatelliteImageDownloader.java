@@ -19,11 +19,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -53,13 +52,12 @@ public class SatelliteImageDownloader {
         cancelOutstandingLoads();
         satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
         fireLoadStarted();
-        getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
+        DisposableObserver disposableObserver = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new Observer<Void>() {
+                .subscribeWith(new DisposableObserver<Void>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-                        compositeDisposable.add(d);
+                    public void onStart(){
                     }
 
                     @Override
@@ -79,6 +77,7 @@ public class SatelliteImageDownloader {
 
                     }
                 });
+        compositeDisposable.add(disposableObserver);
     }
 
     private void confirmLoad() {
@@ -118,7 +117,7 @@ public class SatelliteImageDownloader {
     }
 
     public void cancelOutstandingLoads() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     private void fireLoadStarted() {

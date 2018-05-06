@@ -47,6 +47,8 @@ public class AppModule {
 
     public static final String AIRPORT_PREFS = "AIRPORT_PREFS";
 
+    public static BitmapCache bitmapCache;
+
     private WeatherApplication application;
 
     @Provides
@@ -125,7 +127,10 @@ public class AppModule {
     @Provides
     @Singleton
     public BitmapCache getBitmapCache() {
-        return BitmapCache.init(application);
+        if (bitmapCache == null) {
+            bitmapCache = BitmapCache.init(application);
+        }
+        return bitmapCache;
     }
 
     @Provides

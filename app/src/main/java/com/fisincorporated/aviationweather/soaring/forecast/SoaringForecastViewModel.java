@@ -1,18 +1,21 @@
 package com.fisincorporated.aviationweather.soaring.forecast;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
+import com.fisincorporated.aviationweather.common.Constants;
 import com.fisincorporated.aviationweather.common.TouchImageView;
 import com.fisincorporated.aviationweather.databinding.SoaringForecastImageBinding;
 import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
@@ -29,15 +32,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -53,7 +55,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private TextView localTimeTextView;
     private SoaringForecastDate soaringForecastImageInfo;
     private ValueAnimator soaringForecastImageAnimation;
-    private int lastImageIndex = -1;
 
     private RegionForecastDates regionForecastDates = new RegionForecastDates();
 
@@ -64,6 +65,12 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
+
+    private List<String> times;
+    private int numberTimes;
+    private SoaringForecastImageSet soaringForecastImageSet;
+    private int lastImageIndex = -1;
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -139,6 +146,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     @Override
     public void onDestroy() {
         soaringForecastDownloader.shutdown();
+        compositeDisposable.dispose();
         stopImageAnimation();
     }
 
@@ -166,7 +174,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     }
 
     private void startLoadingSoaringForecastImages() {
-        new Thread(() -> loadSoaringForecastImages()).start();
+        loadSoaringForecastImages();
+        //new Thread(() -> loadSoaringForecastImages()).start();
 
     }
 
@@ -177,38 +186,68 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         soaringForecastDownloader.loadTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
     }
 
+    @SuppressLint("CheckResult")
     private void loadSoaringForecastImages() {
         stopImageAnimation();
-        Single<SoaringForecastImage> soaringForecastImageSingle =  soaringForecastDownloader.getSoaringForecastImageObservable(bindingView.getContext().getString(R.string.new_england_region)
-                , selectedRegionForecastDate.getYyyymmddDate()
-                , selectedSoaringForecastType.getName()
-                , "hwcrit"
-                , getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes().get(0)
-                , "body");
-        soaringForecastImageSingle.subscribeOn(Schedulers.newThread())
+        compositeDisposable.clear();
+        imageMap.clear();
+        DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
+                bindingView.getContext().getString(R.string.new_england_region)
+                , selectedRegionForecastDate.getYyyymmddDate(), selectedSoaringForecastType.getName()
+                , "wstar"
+                , getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<SoaringForecastImage>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                compositeDisposable.add(d);
-            }
+                .subscribeWith(new DisposableObserver<SoaringForecastImage>() {
+                    @Override
+                    public void onStart() {
+                        fireLoadStarted();
+                    }
 
-            @Override
-            public void onSuccess(SoaringForecastImage soaringForecastImage) {
-                displaySoaringForecastImage(soaringForecastImage);
-            }
+                    @Override
+                    public void onNext(SoaringForecastImage soaringForecastImage) {
+                        storeImage(soaringForecastImage);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                displayCallFailure(e);
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        displayCallFailure(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        fireLoadComplete();
+                        startImageAnimation();
+
+                    }
+                });
+        compositeDisposable.add(disposableObserver);
     }
 
-    private void displaySoaringForecastImage(SoaringForecastImage soaringForecastImage) {
-        viewDataBinding.soaringForecastImageLocalTime.setText(soaringForecastImage.getForecastTime());
-        viewDataBinding.soaringForecastImageView.setImageBitmap(soaringForecastImage.getBitmap());
+    private void storeImage(SoaringForecastImage soaringForecastImage) {
+        SoaringForecastImageSet imageSet = imageMap.get(soaringForecastImage.getForecastTime());
+        if (imageSet == null) {
+            imageSet = new SoaringForecastImageSet();
+        }
+        switch (soaringForecastImage.getBitmapType()) {
+            case Constants.BODY:
+                imageSet.setBodyImage(soaringForecastImage);
+                break;
+            case Constants.HEAD:
+                imageSet.setHeaderImage(soaringForecastImage);
+                break;
+            case Constants.SIDE:
+                imageSet.setSideImage(soaringForecastImage);
+                break;
+            case Constants.FOOT:
+                imageSet.setFooterImage(soaringForecastImage);
+                break;
+            default:
+                Timber.d("Unknown forecast image type: %s", soaringForecastImage.getBitmapType());
+        }
+        imageMap.put(soaringForecastImage.getForecastTime(), imageSet);
     }
+
 
     private void stopImageAnimation() {
         if (soaringForecastImageAnimation != null) {
@@ -219,9 +258,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private void displayCallFailure(Throwable t) {
         ViewUtilities.displayErrorDialog(viewDataBinding.getRoot(), bindingView.getContext().getString(R.string.oops), t.toString());
     }
-
-
-
 
     private void fireLoadStarted() {
         EventBus.getDefault().post(new DataLoadingEvent());
@@ -245,12 +281,12 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
 
     private GpsLocationAndTimes getGpsLocationAndTimesForType(String type) {
-        switch (type) {
-            case "GFS":
+        switch (type.toLowerCase()) {
+            case "gfs":
                 return selectedRegionForecastDate.getTypeLocationAndTimes().getGfs();
-            case "NAM":
+            case "nam":
                 return selectedRegionForecastDate.getTypeLocationAndTimes().getNam();
-            case "RAP":
+            case "rap":
                 return selectedRegionForecastDate.getTypeLocationAndTimes().getRap();
             default:
                 return null;
@@ -260,35 +296,38 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     private void startImageAnimation() {
         // need to 'overshoot' the animation to be able to get the last image value
-//        soaringForecastImageAnimation = ValueAnimator.ofInt(0, soaringForecastImageInfo.getSoaringForecastImageNames().size());
-//        soaringForecastImageAnimation.setInterpolator(new LinearInterpolator());
-//        soaringForecastImageAnimation.setDuration(5000);
-//        soaringForecastImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
-//                int index = (int) updatedAnimation.getAnimatedValue();
-//                // Timber.d("animation index: %d  ", index);
-//                if (index > soaringForecastImageInfo.getSoaringForecastImageNames().size() - 1) {
-//                    index = soaringForecastImageInfo.getSoaringForecastImageNames().size() - 1;
-//                }
-//                if (lastImageIndex != index) {
-//                    // Don't force redraw if still on same image as last time
-//                    soaringForecastImage = soaringForecastImageCache.get(soaringForecastImageInfo.getSoaringForecastImageNames().get(index));
-//                    //Bypass if jpg/bitmap does not exist or not loaded yet.
-//                    if (soaringForecastImage != null && soaringForecastImage.isImageLoaded()) {
-//                        //Timber.d("Displaying image for %s - %d", satelliteImage.getImageName(), index);
-//                        localTimeTextView.setText(soaringForecastImageInfo.getSoaringForecastImageLocalTimes().get(index));
-//                        soaringForecastImage.setImageBitmap(satelliteImage.getBitmap());
-//                        // Timber.d("set  image for image: %d", index );
-//                    } else {
-//                        // Timber.d("Satellite image: %s, Index %d image: %s",  satelliteImageInfo.getSatelliteImageNames().get(index),index, satelliteImage == null ? " not in cache" : (satelliteImage.isImageLoaded() ? "  bitmap loaded" : " bitmap not loaded"));
-//                    }
-//                    lastImageIndex = index;
-//                }
-//            }
-//        });
-//        soaringForecastImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
-//        soaringForecastImageAnimation.start();
+        times = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes();
+        numberTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes().size();
+        soaringForecastImageAnimation = ValueAnimator.ofInt(0, numberTimes);
+        soaringForecastImageAnimation.setInterpolator(new LinearInterpolator());
+        soaringForecastImageAnimation.setDuration(10000);
+        soaringForecastImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
+                int index = (int) updatedAnimation.getAnimatedValue();
+                // Timber.d("animation index: %d  ", index);
+                if (index > numberTimes - 1) {
+                    index = numberTimes - 1;
+                }
+                // Don't force redraw if still on same image as last time
+                if (lastImageIndex != index) {
+                    soaringForecastImageSet = imageMap.get(times.get(index));
+                    viewDataBinding.soaringForecastImageLocalTime.setText(times.get(index));
+                    if (soaringForecastImageSet != null) {
+                        if (soaringForecastImageSet.getHeaderImage() != null
+                                && soaringForecastImageSet.getSideImage() != null
+                                && soaringForecastImageSet.getBodyImage() != null) {
+                            viewDataBinding.soaringForecastBodyImage.setImageBitmap(soaringForecastImageSet.getBodyImage().getBitmap());
+                            viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
+                            viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
+                        }
+                    }
+                }
+                lastImageIndex = index;
+            }
+        });
+        soaringForecastImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
+        soaringForecastImageAnimation.start();
 
     }
 }
