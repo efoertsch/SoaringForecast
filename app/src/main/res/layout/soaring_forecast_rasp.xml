@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data class="SoaringForecastImageBinding">
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewModel"
+            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastViewModel"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/soaring_forecast_constraint_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/soaring_forecast_type_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:orientation="horizontal"
+            android:scrollbars="none"
+            bind:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintTop_toTopOf="parent"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/region_forecast_date_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/soaring_forecast_type_recycler_view"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            bind:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_type_recycler_view"
+            />
+
+        <LinearLayout
+            android:id="@+id/soaring_forecast_image_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/region_forecast_date_recycler_view"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:gravity="center"
+            android:orientation="horizontal"
+            bind:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintTop_toBottomOf="@+id/region_forecast_date_recycler_view">
+
+            <ImageView
+                android:id="@+id/soaring_forecast_time_back_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/back_arrow"
+                android:tint="@color/colorPrimary"
+                bind:srcCompat="@drawable/ic_keyboard_arrow_left"/>
+
+            <TextView
+                android:id="@+id/soaring_forecast_image_local_time"
+                style="@style/forecastData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/soaring_forecast_time_local_label"
+                style="@style/forecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/soaring_forecast_time_local_label"/>
+
+            <ImageView
+                android:id="@+id/soaring_forecast_time_forward_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/forward_arrow"
+                android:tint="@color/colorPrimary"
+                bind:srcCompat="@drawable/ic_keyboard_arrow_right"/>
+
+            <ImageView
+                android:id="@+id/soaring_forecast_time_loop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/loop"
+                android:tint="@color/colorPrimary"
+                bind:srcCompat="@drawable/ic_sync"/>
+
+        </LinearLayout>
+
+        <com.fisincorporated.aviationweather.common.ProportionalImageView
+            android:id="@+id/soaring_forecast_header_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            bind:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+            custom:adjustDimension="height"/>
+
+        <FrameLayout
+            android:id="@+id/soaring_forecast_map_and_bitmap"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            bind:layout_constraintBottom_toTopOf="@+id/soaring_forecast_scale_image"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_header_image"
+            >
+
+            <fragment
+                android:id="@+id/soaring_forecast_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </FrameLayout>
+
+        <com.fisincorporated.aviationweather.common.ProportionalImageView
+            android:id="@+id/soaring_forecast_scale_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:adjustViewBounds="true"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            custom:adjustDimension="height"
+            />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

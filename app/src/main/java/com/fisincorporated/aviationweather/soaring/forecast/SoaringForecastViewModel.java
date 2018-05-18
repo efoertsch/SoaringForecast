@@ -6,17 +6,17 @@ import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
 import android.databinding.InverseBindingMethod;
 import android.databinding.InverseBindingMethods;
+import android.graphics.Bitmap;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 import com.fisincorporated.aviationweather.common.Constants;
-import com.fisincorporated.aviationweather.common.TouchImageView;
 import com.fisincorporated.aviationweather.databinding.SoaringForecastImageBinding;
 import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
@@ -26,6 +26,14 @@ import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import org.cache2k.Cache;
 import org.greenrobot.eventbus.EventBus;
@@ -46,18 +54,15 @@ import timber.log.Timber;
 @InverseBindingMethods({
         @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 
-public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle, SoaringForecastTypeClickListener, RegionForecastDateClickListener {
+public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle, SoaringForecastTypeClickListener
+        , RegionForecastDateClickListener, OnMapReadyCallback {
 
     private static final String TAG = SoaringForecastViewModel.class.getSimpleName();
 
     private SoaringForecastImageBinding viewDataBinding;
-    private TouchImageView soaringForecastImageView;
-    private TextView localTimeTextView;
-    private SoaringForecastDate soaringForecastImageInfo;
     private ValueAnimator soaringForecastImageAnimation;
 
     private RegionForecastDates regionForecastDates = new RegionForecastDates();
-
     private SoaringForecastType selectedSoaringForecastType;
     private RegionForecastDate selectedRegionForecastDate = null;
 
@@ -71,6 +76,11 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private int numberTimes;
     private SoaringForecastImageSet soaringForecastImageSet;
     private int lastImageIndex = -1;
+    private Fragment parentFragment;
+    private SupportMapFragment mapFragment;
+    private GoogleMap googleMap;
+    private LatLngBounds mapLatLngBounds;
+    private GroundOverlay forecastOverlay;
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -91,9 +101,10 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     SoaringForecastViewModel() {
     }
 
-    public SoaringForecastViewModel setView(View view) {
+    public SoaringForecastViewModel setView(Fragment fragment, View view) {
+        parentFragment = fragment;
         fireLoadStarted();
-        bindingView = view.findViewById(R.id.soaring_forecast_layout);
+        bindingView = view.findViewById(R.id.soaring_forecast_constraint_layout);
         bindViewModel();
 
         return this;
@@ -175,7 +186,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     private void startLoadingSoaringForecastImages() {
         loadSoaringForecastImages();
-        //new Thread(() -> loadSoaringForecastImages()).start();
+        setMapBounds();
+        displayMap();
 
     }
 
@@ -300,7 +312,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         numberTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes().size();
         soaringForecastImageAnimation = ValueAnimator.ofInt(0, numberTimes);
         soaringForecastImageAnimation.setInterpolator(new LinearInterpolator());
-        soaringForecastImageAnimation.setDuration(10000);
+        soaringForecastImageAnimation.setDuration(15000);
         soaringForecastImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
@@ -315,10 +327,11 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                     viewDataBinding.soaringForecastImageLocalTime.setText(times.get(index));
                     if (soaringForecastImageSet != null) {
                         if (soaringForecastImageSet.getHeaderImage() != null
-                                && soaringForecastImageSet.getSideImage() != null
+                                && soaringForecastImageSet.getFooterImage() != null
                                 && soaringForecastImageSet.getBodyImage() != null) {
-                            viewDataBinding.soaringForecastBodyImage.setImageBitmap(soaringForecastImageSet.getBodyImage().getBitmap());
-                            viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
+                            //viewDataBinding.soaringForecastBodyImage.setImageBitmap(soaringForecastImageSet.getBodyImage().getBitmap());
+                            setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
+                            viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getFooterImage().getBitmap());
                             viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
                         }
                     }
@@ -329,5 +342,48 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         soaringForecastImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
         soaringForecastImageAnimation.start();
 
+    }
+
+    //------- map stuff ---------
+
+    private void displayMap() {
+        SupportMapFragment supportMapFragment = (SupportMapFragment) parentFragment.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map);
+        supportMapFragment.getMapAsync(this);
+    }
+
+
+
+
+    private void setMapBounds() {
+        GpsLocationAndTimes gpsLocationAndTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName());
+        mapLatLngBounds = new LatLngBounds(
+                gpsLocationAndTimes.getSouthWestLatLng(), gpsLocationAndTimes.getNorthEastLatLng());
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        setupMap();// do your map stuff here
+    }
+
+
+    private void setupMap() {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
+        googleMap.setLatLngBoundsForCameraTarget(mapLatLngBounds);
+
+    }
+
+    private void setGroundOverlay(Bitmap bitmap){
+        if (bitmap == null) {
+            return;
+        }
+        if (forecastOverlay == null) {
+            GroundOverlayOptions forecastOverlayOptions = new GroundOverlayOptions()
+                    .image(BitmapDescriptorFactory.fromBitmap(bitmap))
+                    .positionFromBounds(mapLatLngBounds);
+            forecastOverlay = googleMap.addGroundOverlay(forecastOverlayOptions);
+        } else {
+            forecastOverlay.setImage(BitmapDescriptorFactory.fromBitmap(bitmap));
+        }
     }
 }

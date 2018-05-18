@@ -134,7 +134,7 @@
                         style="@style/forecastData"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{Integer.toString(metar.windDirDegrees)}"
+                        android:text="@{Integer.toString(safeUnbox(metar.windDirDegrees))}"
                         tools:text="340"/>
 
                     <LinearLayout
@@ -153,7 +153,7 @@
                             style="@style/forecastData"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{Integer.toString(metar.windSpeedKt)}"
+                            android:text="@{Integer.toString(safeUnbox(metar.windSpeedKt))}"
                             tools:text="15"/>
 
                         <TextView

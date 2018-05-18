@@ -1,5 +1,6 @@
 package com.fisincorporated.aviationweather.soaring.json;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -41,6 +42,20 @@ public class GpsLocationAndTimes {
 
     public void setTimes(List<String> times) {
         this.times = times;
+    }
+
+    public LatLng getSouthWestLatLng(){
+        if (corners != null && corners.size() > 0 && corners.get(0).size() > 1) {
+            return new LatLng(corners.get(0).get(0), corners.get(0).get(1));
+        }
+        return new LatLng(0.0d, 0.0d);
+    }
+
+    public LatLng getNorthEastLatLng(){
+        if (corners != null && corners.size() > 1 && corners.get(1).size() > 1) {
+            return new LatLng(corners.get(1).get(0), corners.get(1).get(1));
+        }
+        return new LatLng(0.0d, 0.0d);
     }
 
 }
