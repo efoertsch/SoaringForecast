@@ -8,9 +8,6 @@
             name="regionForecastDate"
             type="com.fisincorporated.aviationweather.soaring.json.RegionForecastDate"/>
 
-        <variable
-            name="typeClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.RegionForecastDateClickListener"/>
     </data>
 
 
@@ -22,8 +19,8 @@
         android:layout_marginStart="@dimen/margin_half"
         android:background="@drawable/black_view_border"
         android:clickable="true"
-        android:onClick="@{() -> typeClickListener.setRegionForecastDate(regionForecastDate)}"
-        android:padding="@dimen/margin_standard"
+        android:focusable="true"
+        android:padding="@dimen/margin_half"
         android:text="@{regionForecastDate.getFormattedDate}"
         android:textAllCaps="true"
         tools:text="Sat. Apr 21."/>

@@ -6,4 +6,11 @@ public class Constants {
     public static final String HEAD = "head";
     public static final String SIDE = "side";
     public static final String FOOT = "foot";
+
+    public enum FORECASTACTION {
+        FORWARD,
+        BACKWARD,
+        LOOP
+    }
+
 }

@@ -23,7 +23,7 @@
         android:background="@drawable/black_view_border"
         android:clickable="true"
         android:onClick="@{() -> typeClickListener.setSoaringForecastType(soaringForecastType)}"
-        android:padding="@dimen/margin_standard"
+        android:padding="@dimen/margin_half"
         android:text="@{soaringForecastType.name + '(' + soaringForecastType.numberForecastDays + ')'}"
         android:textAllCaps="true"
         tools:text="GFS (7)"/>

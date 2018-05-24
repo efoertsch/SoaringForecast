@@ -17,6 +17,7 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 import com.fisincorporated.aviationweather.common.Constants;
+import com.fisincorporated.aviationweather.common.Constants.FORECASTACTION;
 import com.fisincorporated.aviationweather.databinding.SoaringForecastImageBinding;
 import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
@@ -61,23 +62,17 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     private SoaringForecastImageBinding viewDataBinding;
     private ValueAnimator soaringForecastImageAnimation;
-
     private RegionForecastDates regionForecastDates = new RegionForecastDates();
     private SoaringForecastType selectedSoaringForecastType;
     private RegionForecastDate selectedRegionForecastDate = null;
-
     private View bindingView;
-
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
     private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
-
-    private List<String> times;
-    private int numberTimes;
+    private List<String> forecastTimes;
+    private int numberForecastTimes;
     private SoaringForecastImageSet soaringForecastImageSet;
     private int lastImageIndex = -1;
     private Fragment parentFragment;
-    private SupportMapFragment mapFragment;
     private GoogleMap googleMap;
     private LatLngBounds mapLatLngBounds;
     private GroundOverlay forecastOverlay;
@@ -133,7 +128,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         viewDataBinding.regionForecastDateRecyclerView.setLayoutManager(
                 new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
         // TODO add selectedSoaringForecastType
-        RecyclerViewAdapterRegionForecastDate recyclerViewAdapter = new RecyclerViewAdapterRegionForecastDate(this, regionForecastDateList);
+        RecyclerViewAdapterRegionForecastDate recyclerViewAdapter = new RecyclerViewAdapterRegionForecastDate(regionForecastDateList);
         viewDataBinding.regionForecastDateRecyclerView.setAdapter(recyclerViewAdapter);
     }
 
@@ -168,6 +163,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DataLoadCompleteEvent event) {
+        getForecastTimes();
         startImageAnimation();
     }
 
@@ -229,6 +225,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                     @Override
                     public void onComplete() {
                         fireLoadComplete();
+                        getForecastTimes();
                         startImageAnimation();
 
                     }
@@ -263,7 +260,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     private void stopImageAnimation() {
         if (soaringForecastImageAnimation != null) {
-            soaringForecastImageAnimation.cancel();
+            soaringForecastImageAnimation.end();
         }
     }
 
@@ -279,11 +276,17 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         EventBus.getDefault().post(new DataLoadCompleteEvent());
     }
 
-
+    /**
+     * Data binding clickListener to select forecast type gfs, nam, ...
+     * @param soaringForecastType
+     */
     @Override
     public void setSoaringForecastType(SoaringForecastType soaringForecastType) {
-        selectedSoaringForecastType = soaringForecastType;
-        appPreferences.setSoaringForecastType(selectedSoaringForecastType);
+        if (soaringForecastType != selectedSoaringForecastType) {
+            selectedSoaringForecastType = soaringForecastType;
+            appPreferences.setSoaringForecastType(selectedSoaringForecastType);
+            loadSoaringForecastImages();
+        }
     }
 
     @Override
@@ -291,6 +294,13 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         selectedRegionForecastDate = regionForecastDate;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(RegionForecastDate regionForecastDate) {
+        if (selectedRegionForecastDate != regionForecastDate) {
+            selectedRegionForecastDate = regionForecastDate;
+            loadSoaringForecastImages();
+        }
+    }
 
     private GpsLocationAndTimes getGpsLocationAndTimesForType(String type) {
         switch (type.toLowerCase()) {
@@ -308,40 +318,75 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     private void startImageAnimation() {
         // need to 'overshoot' the animation to be able to get the last image value
-        times = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes();
-        numberTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes().size();
-        soaringForecastImageAnimation = ValueAnimator.ofInt(0, numberTimes);
+        soaringForecastImageAnimation = ValueAnimator.ofInt(0, numberForecastTimes);
         soaringForecastImageAnimation.setInterpolator(new LinearInterpolator());
         soaringForecastImageAnimation.setDuration(15000);
         soaringForecastImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 int index = (int) updatedAnimation.getAnimatedValue();
-                // Timber.d("animation index: %d  ", index);
-                if (index > numberTimes - 1) {
-                    index = numberTimes - 1;
+                  Timber.d("animation index: %d  ", index);
+                if (index > numberForecastTimes - 1) {
+                    index = numberForecastTimes - 1;
                 }
                 // Don't force redraw if still on same image as last time
                 if (lastImageIndex != index) {
-                    soaringForecastImageSet = imageMap.get(times.get(index));
-                    viewDataBinding.soaringForecastImageLocalTime.setText(times.get(index));
-                    if (soaringForecastImageSet != null) {
-                        if (soaringForecastImageSet.getHeaderImage() != null
-                                && soaringForecastImageSet.getFooterImage() != null
-                                && soaringForecastImageSet.getBodyImage() != null) {
-                            //viewDataBinding.soaringForecastBodyImage.setImageBitmap(soaringForecastImageSet.getBodyImage().getBitmap());
-                            setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
-                            viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getFooterImage().getBitmap());
-                            viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
-                        }
-                    }
+                    Timber.d("updating image to index: %1$d", index);
+                    displayForecastImage(index);
                 }
                 lastImageIndex = index;
             }
         });
         soaringForecastImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
         soaringForecastImageAnimation.start();
+    }
 
+    private void getForecastTimes() {
+        forecastTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes();
+        numberForecastTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes().size();
+    }
+
+    public void displayForecastImage(int index) {
+        soaringForecastImageSet = imageMap.get(forecastTimes.get(index));
+        viewDataBinding.soaringForecastImageLocalTime.setText(forecastTimes.get(index));
+        if (soaringForecastImageSet != null) {
+            if (soaringForecastImageSet.getHeaderImage() != null
+                    && soaringForecastImageSet.getFooterImage() != null
+                    && soaringForecastImageSet.getBodyImage() != null) {
+                //viewDataBinding.soaringForecastBodyImage.setImageBitmap(soaringForecastImageSet.getBodyImage().getBitmap());
+                setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
+                viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getFooterImage().getBitmap());
+                viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
+            }
+        }
+    }
+
+    // Stepping thru forecast images
+
+    public void onStepClick(FORECASTACTION forecastaction){
+        switch (forecastaction){
+            case BACKWARD:
+                stopImageAnimation();
+                displayForecastImage(stepImageBy(-1));
+                break;
+            case FORWARD:
+                stopImageAnimation();
+                displayForecastImage(stepImageBy(1));
+                break;
+            case LOOP:
+                startImageAnimation();
+                break;
+        }
+    }
+
+    private int stepImageBy(int step) {
+        lastImageIndex = lastImageIndex + step;
+        if (lastImageIndex < 0 ) {
+            lastImageIndex = numberForecastTimes - 1;
+        } else if (lastImageIndex > (numberForecastTimes - 1)) {
+            lastImageIndex = 0;
+        }
+        return lastImageIndex;
     }
 
     //------- map stuff ---------

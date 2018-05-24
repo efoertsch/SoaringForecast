@@ -9,14 +9,16 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.databinding.RegionForecastDateView;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 public class RecyclerViewAdapterRegionForecastDate extends RecyclerView.Adapter<RecyclerViewAdapterRegionForecastDate.ViewHolder> {
     private List<RegionForecastDate> regionForecastDates;
-    public RegionForecastDateClickListener regionForecastDateClickListener;
+    private int selectedPos = RecyclerView.NO_POSITION;
 
-    public RecyclerViewAdapterRegionForecastDate(RegionForecastDateClickListener RegionForecastDateClickListener, List<RegionForecastDate> regionForecastDates) {
-        this.regionForecastDateClickListener = RegionForecastDateClickListener;
+
+    public RecyclerViewAdapterRegionForecastDate(List<RegionForecastDate> regionForecastDates) {
         this.regionForecastDates = regionForecastDates;
     }
 
@@ -30,24 +32,30 @@ public class RecyclerViewAdapterRegionForecastDate extends RecyclerView.Adapter<
     public void onBindViewHolder(RecyclerViewAdapterRegionForecastDate.ViewHolder holder, int position) {
         holder.binding.setRegionForecastDate(regionForecastDates.get(position));
         holder.binding.regionForecastDateLabel.setTag(regionForecastDates.get(position));
-        holder.binding.setTypeClickListener(regionForecastDateClickListener);
+        holder.binding.regionForecastDateLabel.setSelected(selectedPos == position);
     }
-
 
     @Override
     public int getItemCount() {
         return regionForecastDates.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        protected static final int LAYOUT_RESOURCE = R.layout.region_forecast_date_layout;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        static final int LAYOUT_RESOURCE = R.layout.region_forecast_date_layout;
 
         private final RegionForecastDateView  binding;
 
-        public ViewHolder(RegionForecastDateView  bindingView) {
+        ViewHolder(RegionForecastDateView bindingView) {
             super(bindingView.getRoot());
             binding = bindingView;
+            bindingView.regionForecastDateLabel.setOnClickListener(v -> {
+                notifyItemChanged(selectedPos);
+                selectedPos = getLayoutPosition();
+                notifyItemChanged(selectedPos);
+                EventBus.getDefault().post(v.getTag());
+            });
         }
+
 
     }
 }

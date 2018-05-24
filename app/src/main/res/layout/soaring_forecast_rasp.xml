@@ -10,6 +10,10 @@
         <import type="android.view.View"/>
 
         <variable
+            name="forecastAction"
+            type="com.fisincorporated.aviationweather.common.Constants.FORECASTACTION"/>
+
+        <variable
             name="viewModel"
             type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastViewModel"/>
     </data>
@@ -68,7 +72,8 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/back_arrow"
                 android:tint="@color/colorPrimary"
-                bind:srcCompat="@drawable/ic_keyboard_arrow_left"/>
+                bind:srcCompat="@drawable/ic_keyboard_arrow_left"
+                android:onClick="@{() -> viewModel.onStepClick(forecastAction.BACKWARD)}"/>
 
             <TextView
                 android:id="@+id/soaring_forecast_image_local_time"
@@ -91,7 +96,8 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/forward_arrow"
                 android:tint="@color/colorPrimary"
-                bind:srcCompat="@drawable/ic_keyboard_arrow_right"/>
+                bind:srcCompat="@drawable/ic_keyboard_arrow_right"
+                android:onClick="@{() -> viewModel.onStepClick(forecastAction.FORWARD)}"/>
 
             <ImageView
                 android:id="@+id/soaring_forecast_time_loop"
@@ -99,7 +105,8 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/loop"
                 android:tint="@color/colorPrimary"
-                bind:srcCompat="@drawable/ic_sync"/>
+                bind:srcCompat="@drawable/ic_sync"
+                android:onClick="@{() -> viewModel.onStepClick(forecastAction.LOOP)}"/>
 
         </LinearLayout>
 

@@ -13,6 +13,7 @@ import java.util.List;
 public class RecyclerViewAdapterSoaringForecastType extends RecyclerView.Adapter<RecyclerViewAdapterSoaringForecastType.ViewHolder> {
     private List<SoaringForecastType> soaringForecastTypes;
     public SoaringForecastTypeClickListener soaringForecastTypeClickListener;
+    private int selectedPos = RecyclerView.NO_POSITION;
 
     public RecyclerViewAdapterSoaringForecastType(SoaringForecastTypeClickListener soaringForecastTypeClickListener, List<SoaringForecastType> soaringForecastTypes) {
         this.soaringForecastTypeClickListener = soaringForecastTypeClickListener;
@@ -30,6 +31,7 @@ public class RecyclerViewAdapterSoaringForecastType extends RecyclerView.Adapter
         holder.binding.setSoaringForecastType(soaringForecastTypes.get(position));
         holder.binding.soaringForecastTypeLabel.setTag(soaringForecastTypes.get(position));
         holder.binding.setTypeClickListener(soaringForecastTypeClickListener);
+        holder.binding.soaringForecastTypeLabel.setSelected(selectedPos == position);
     }
 
 
@@ -38,8 +40,8 @@ public class RecyclerViewAdapterSoaringForecastType extends RecyclerView.Adapter
         return soaringForecastTypes.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        protected static final int LAYOUT_RESOURCE = R.layout.soaring_forecast_type_layout;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        static final int LAYOUT_RESOURCE = R.layout.soaring_forecast_type_layout;
 
         private final SoaringForecastTypeView  binding;
 
