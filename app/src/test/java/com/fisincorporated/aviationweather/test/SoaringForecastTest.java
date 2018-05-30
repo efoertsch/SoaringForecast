@@ -7,9 +7,9 @@ import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastRetrofit;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastDownloader;
 import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
+import com.fisincorporated.aviationweather.soaring.json.ModelLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
-import com.fisincorporated.aviationweather.soaring.json.TypeLocationAndTimes;
 import com.fisincorporated.aviationweather.utils.BitmapImageUtils;
 
 import org.junit.Before;
@@ -68,34 +68,34 @@ public class SoaringForecastTest {
     //http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json - Run for each date in above json list
     @Test
     public void shouldParseForecastDatesTest() throws Exception {
-        Call<TypeLocationAndTimes> call;
+        Call<ModelLocationAndTimes> call;
         shouldGetForecastDatesJson();
         regionForecastDates.parseForecastDates();
         assertTrue(regionForecastDates.getRegionForecastDateList().size() > 3);
         for (RegionForecastDate regionForecastDate : regionForecastDates.getForecastDates()) {
-            Single<TypeLocationAndTimes> single = client.getTypeLocationAndTimes("NewEngland" + "/" + regionForecastDate.getYyyymmddDate() + "/status.json");
+            Single<ModelLocationAndTimes> single = client.getTypeLocationAndTimes("NewEngland" + "/" + regionForecastDate.getYyyymmddDate() + "/status.json");
             single.subscribe(this::checkTypeLocationAndTimes);
         }
 
     }
 
-    private void checkTypeLocationAndTimes(TypeLocationAndTimes typeLocationAndTimes) {
+    private void checkTypeLocationAndTimes(ModelLocationAndTimes modelLocationAndTimes) {
         GpsLocationAndTimes gpsLocationAndTimes;
-        if (typeLocationAndTimes.getGfs() != null) {
+        if (modelLocationAndTimes.getGfs() != null) {
             System.out.println("Gfs available");
-            gpsLocationAndTimes = typeLocationAndTimes.getGfs();
+            gpsLocationAndTimes = modelLocationAndTimes.getGfs();
             testGpsLocationAndTimes(gpsLocationAndTimes);
         }
 
-        if (typeLocationAndTimes.getNam() != null) {
+        if (modelLocationAndTimes.getNam() != null) {
             System.out.println("Nam available");
-            gpsLocationAndTimes = typeLocationAndTimes.getGfs();
+            gpsLocationAndTimes = modelLocationAndTimes.getGfs();
             testGpsLocationAndTimes(gpsLocationAndTimes);
         }
 
-        if (typeLocationAndTimes.getRap() != null) {
+        if (modelLocationAndTimes.getRap() != null) {
             System.out.println("Rap available");
-            gpsLocationAndTimes = typeLocationAndTimes.getGfs();
+            gpsLocationAndTimes = modelLocationAndTimes.getGfs();
             testGpsLocationAndTimes(gpsLocationAndTimes);
         }
 
@@ -126,11 +126,11 @@ public class SoaringForecastTest {
         for (RegionForecastDate regionForecastDate : regionForecastDates.getForecastDates()) {
             assertNotNull(regionForecastDate.getFormattedDate());
             System.out.println(String.format("%s  %s", regionForecastDate.getFormattedDate(), regionForecastDate.getYyyymmddDate()));
-            Single<TypeLocationAndTimes> singleTypeLocationAndTimes =soaringForecastDownloader.callTypeLocationAndTimes("NewEngland", regionForecastDate);
-            singleTypeLocationAndTimes.subscribe(typeLocationAndTimes1 -> {
-            regionForecastDate.setTypeLocationAndTimes(typeLocationAndTimes1);
-            assertNotNull("typeLocationAndTimes is null", typeLocationAndTimes1);
-            checkTypeLocationAndTimes(typeLocationAndTimes1);
+            Single<ModelLocationAndTimes> singleTypeLocationAndTimes =soaringForecastDownloader.callTypeLocationAndTimes("NewEngland", regionForecastDate);
+            singleTypeLocationAndTimes.subscribe(modelLocationAndTimes1 -> {
+            regionForecastDate.setModelLocationAndTimes(modelLocationAndTimes1);
+            assertNotNull("typeLocationAndTimes is null", modelLocationAndTimes1);
+            checkTypeLocationAndTimes(modelLocationAndTimes1);
             });
 
         }

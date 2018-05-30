@@ -20,7 +20,7 @@ import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
 import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastDownloader;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastImage;
-import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastType;
+import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel;
 import com.fisincorporated.aviationweather.utils.BitmapImageUtils;
 
 import org.cache2k.Cache;
@@ -196,19 +196,19 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public List<SoaringForecastType> provideSoaringForecastTypeArray() {
+    public List<SoaringForecastModel> provideSoaringForecastTypeArray() {
         String[] types;
-        ObservableArrayList<SoaringForecastType> soaringForecastTypes = new ObservableArrayList<>();
+        ObservableArrayList<SoaringForecastModel> soaringForecastModels = new ObservableArrayList<>();
         Resources res = application.getResources();
         try {
-            types = res.getStringArray(R.array.soaring_forecast_types);
+            types = res.getStringArray(R.array.soaring_forecast_models);
             for (int i = 0; i < types.length; ++i) {
-                SoaringForecastType soaringForecastType = new SoaringForecastType(types[i]);
-                soaringForecastTypes.add(soaringForecastType);
+                SoaringForecastModel soaringForecastModel = new SoaringForecastModel(types[i]);
+                soaringForecastModels.add(soaringForecastModel);
             }
         } catch (Resources.NotFoundException nfe) {
         }
-        return soaringForecastTypes;
+        return soaringForecastModels;
     }
 
     @Provides

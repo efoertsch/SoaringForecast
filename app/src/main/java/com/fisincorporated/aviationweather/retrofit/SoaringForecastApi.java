@@ -3,7 +3,7 @@ package com.fisincorporated.aviationweather.retrofit;
 
 
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
-import com.fisincorporated.aviationweather.soaring.json.TypeLocationAndTimes;
+import com.fisincorporated.aviationweather.soaring.json.ModelLocationAndTimes;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;
@@ -27,7 +27,7 @@ public interface SoaringForecastApi {
     // Numbers at end are current time in millisec (used to always get updated json and
     // not server cached version
     @GET
-    Single<TypeLocationAndTimes> getTypeLocationAndTimes(@Url String url);
+    Single<ModelLocationAndTimes> getTypeLocationAndTimes(@Url String url);
 
 
 }

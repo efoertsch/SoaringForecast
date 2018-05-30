@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 //http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json
 // Run for each date from RegionForecastDates
-public class TypeLocationAndTimes {
+public class ModelLocationAndTimes {
 
     @SerializedName("rap")
     @Expose
@@ -17,6 +17,9 @@ public class TypeLocationAndTimes {
     @SerializedName("gfs")
     @Expose
     private GpsLocationAndTimes gfs;
+    @SerializedName("hrrr")
+    @Expose
+    private GpsLocationAndTimes hrrr;
 
     public GpsLocationAndTimes getRap() {
         return rap;
@@ -42,4 +45,27 @@ public class TypeLocationAndTimes {
         this.gfs = gfs;
     }
 
+    public GpsLocationAndTimes getHrrr() {
+        return hrrr;
+    }
+
+    public void setHrrr(GpsLocationAndTimes hrrr) {
+        this.hrrr = hrrr;
+    }
+
+    public GpsLocationAndTimes getGpsLocationAndTimesForModel(String forecastModel) {
+        switch (forecastModel.toLowerCase()) {
+            case "gfs":
+                return getGfs();
+            case "hrrr":
+                return getHrrr();
+            case "nam":
+                return getNam();
+            case "rap":
+                return getRap();
+            default:
+                return null;
+
+        }
+    }
 }

@@ -5,12 +5,12 @@
     <data class="SoaringForecastTypeView">
 
         <variable
-            name="soaringForecastType"
-            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastType"/>
+            name="soaringForecastModel"
+            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel"/>
 
         <variable
             name="typeClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastTypeClickListener"/>
+            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModelClickListener"/>
     </data>
 
 
@@ -20,11 +20,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_half"
         android:layout_marginStart="@dimen/margin_half"
-        android:background="@drawable/black_view_border"
         android:clickable="true"
-        android:onClick="@{() -> typeClickListener.setSoaringForecastType(soaringForecastType)}"
+        android:onClick="@{() -> typeClickListener.setSoaringForecastModel(soaringForecastModel)}"
         android:padding="@dimen/margin_half"
-        android:text="@{soaringForecastType.name + '(' + soaringForecastType.numberForecastDays + ')'}"
+        android:text="@{soaringForecastModel.name + '(' + soaringForecastModel.numberForecastDays + ')'}"
         android:textAllCaps="true"
         tools:text="GFS (7)"/>
 

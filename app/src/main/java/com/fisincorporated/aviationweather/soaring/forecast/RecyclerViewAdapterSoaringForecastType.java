@@ -11,13 +11,13 @@ import com.fisincorporated.aviationweather.databinding.SoaringForecastTypeView;
 import java.util.List;
 
 public class RecyclerViewAdapterSoaringForecastType extends RecyclerView.Adapter<RecyclerViewAdapterSoaringForecastType.ViewHolder> {
-    private List<SoaringForecastType> soaringForecastTypes;
-    public SoaringForecastTypeClickListener soaringForecastTypeClickListener;
+    private List<SoaringForecastModel> soaringForecastModels;
+    public SoaringForecastModelClickListener soaringForecastModelClickListener;
     private int selectedPos = RecyclerView.NO_POSITION;
 
-    public RecyclerViewAdapterSoaringForecastType(SoaringForecastTypeClickListener soaringForecastTypeClickListener, List<SoaringForecastType> soaringForecastTypes) {
-        this.soaringForecastTypeClickListener = soaringForecastTypeClickListener;
-        this.soaringForecastTypes = soaringForecastTypes;
+    public RecyclerViewAdapterSoaringForecastType(SoaringForecastModelClickListener soaringForecastModelClickListener, List<SoaringForecastModel> soaringForecastModels) {
+        this.soaringForecastModelClickListener = soaringForecastModelClickListener;
+        this.soaringForecastModels = soaringForecastModels;
     }
 
     @Override
@@ -28,16 +28,16 @@ public class RecyclerViewAdapterSoaringForecastType extends RecyclerView.Adapter
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapterSoaringForecastType.ViewHolder holder, int position) {
-        holder.binding.setSoaringForecastType(soaringForecastTypes.get(position));
-        holder.binding.soaringForecastTypeLabel.setTag(soaringForecastTypes.get(position));
-        holder.binding.setTypeClickListener(soaringForecastTypeClickListener);
+        holder.binding.setSoaringForecastModel(soaringForecastModels.get(position));
+        holder.binding.soaringForecastTypeLabel.setTag(soaringForecastModels.get(position));
+        holder.binding.setTypeClickListener(soaringForecastModelClickListener);
         holder.binding.soaringForecastTypeLabel.setSelected(selectedPos == position);
     }
 
 
     @Override
     public int getItemCount() {
-        return soaringForecastTypes.size();
+        return soaringForecastModels.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

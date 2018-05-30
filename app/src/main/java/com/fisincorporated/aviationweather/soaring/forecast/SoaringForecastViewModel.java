@@ -24,6 +24,8 @@ import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
 import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
+import com.fisincorporated.aviationweather.soaring.json.ModelForecastDate;
+import com.fisincorporated.aviationweather.soaring.json.ModelLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
@@ -41,6 +43,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,16 +58,16 @@ import timber.log.Timber;
 @InverseBindingMethods({
         @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 
-public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle, SoaringForecastTypeClickListener
-        , RegionForecastDateClickListener, OnMapReadyCallback {
+public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle, SoaringForecastModelClickListener
+        , ModelForecastDateClickListener, OnMapReadyCallback {
 
     private static final String TAG = SoaringForecastViewModel.class.getSimpleName();
 
     private SoaringForecastImageBinding viewDataBinding;
     private ValueAnimator soaringForecastImageAnimation;
     private RegionForecastDates regionForecastDates = new RegionForecastDates();
-    private SoaringForecastType selectedSoaringForecastType;
-    private RegionForecastDate selectedRegionForecastDate = null;
+    private SoaringForecastModel selectedSoaringForecastModel;
+    private ModelForecastDate selectedModelForecastDate = null;
     private View bindingView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
@@ -76,6 +79,9 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private GoogleMap googleMap;
     private LatLngBounds mapLatLngBounds;
     private GroundOverlay forecastOverlay;
+    private List<ModelForecastDate> modelForecastDates;
+    private RecyclerViewAdapterModelForecastDate modelForecastDaterecyclerViewAdapter;
+
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -84,7 +90,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     public Cache<String, SoaringForecastImage> soaringForecastImageCache;
 
     @Inject
-    public List<SoaringForecastType> soaringForecastTypes;
+    public List<SoaringForecastModel> soaringForecastModels;
 
     @Inject
     public AppPreferences appPreferences;
@@ -109,29 +115,30 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         viewDataBinding = DataBindingUtil.bind(bindingView);
         if (viewDataBinding != null) {
             viewDataBinding.setViewModel(this);
-            selectedSoaringForecastType = appPreferences.getSoaringForecastType();
-            setupSoaringForecastTypeRecyclerView(soaringForecastTypes);
+            selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
+            setupSoaringForecastModelsRecyclerView(soaringForecastModels);
         }
     }
 
-    private void setupSoaringForecastTypeRecyclerView(List<SoaringForecastType> soaringForecastTypes) {
+    /**
+     * Set up recycler view with forecast models - gfs, rap, ...
+     * @param soaringForecastModels
+     */
+    private void setupSoaringForecastModelsRecyclerView(List<SoaringForecastModel> soaringForecastModels) {
         viewDataBinding.soaringForecastTypeRecyclerView.setHasFixedSize(true);
         viewDataBinding.soaringForecastTypeRecyclerView.setLayoutManager(
                 new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
-        // TODO add selectedSoaringForecastType
-        RecyclerViewAdapterSoaringForecastType recyclerViewAdapter = new RecyclerViewAdapterSoaringForecastType(this, soaringForecastTypes);
+        RecyclerViewAdapterSoaringForecastType recyclerViewAdapter = new RecyclerViewAdapterSoaringForecastType(this, soaringForecastModels);
         viewDataBinding.soaringForecastTypeRecyclerView.setAdapter(recyclerViewAdapter);
     }
 
-    private void setupRegionForecastDateRecyclerView(List<RegionForecastDate> regionForecastDateList) {
+    private void setupModelForecastDateRecyclerView(List<ModelForecastDate> modelForecastDateList) {
         viewDataBinding.regionForecastDateRecyclerView.setHasFixedSize(true);
         viewDataBinding.regionForecastDateRecyclerView.setLayoutManager(
                 new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
-        // TODO add selectedSoaringForecastType
-        RecyclerViewAdapterRegionForecastDate recyclerViewAdapter = new RecyclerViewAdapterRegionForecastDate(regionForecastDateList);
-        viewDataBinding.regionForecastDateRecyclerView.setAdapter(recyclerViewAdapter);
+        modelForecastDaterecyclerViewAdapter = new RecyclerViewAdapterModelForecastDate(modelForecastDateList);
+        viewDataBinding.regionForecastDateRecyclerView.setAdapter(modelForecastDaterecyclerViewAdapter);
     }
-
 
 
     @Override
@@ -161,23 +168,55 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         stopImageAnimation();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(DataLoadCompleteEvent event) {
-        getForecastTimes();
-        startImageAnimation();
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onMessageEvent(DataLoadCompleteEvent event) {
+//        getForecastTimes();
+//        startImageAnimation();
+//    }
 
+    /**
+     * Should be called after response from current.json call
+     * You get a list of all dates for which some forecast model will be provided.
+     * @param regionForecastDates
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(RegionForecastDates regionForecastDates) {
         storeRegionForecastDates(regionForecastDates);
-        setupRegionForecastDateRecyclerView(regionForecastDates.getRegionForecastDateList());
+        createForecastDateListForSelectedModel();
+        setupModelForecastDateRecyclerView(modelForecastDates);
+        // Get whatever current date is to start
+        selectedModelForecastDate = modelForecastDates.get(0);
     }
 
+    /**
+     * Should be called once all models for each date in current.json response are received and processed
+     *
+     * @param readyToSelectSoaringForecastEvent
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ReadyToSelectSoaringForecastEvent readyToSelectSoaringForecastEvent) {
+        // At this point for each date RegionForecastDates contains for each date the type of forecast available
+        // So pull out the dates available for the forecast type selected.
+        createForecastDateListForSelectedModel();
         // TODO - load bitmaps for hcrit for first forecast type (e.g. gfs)
         Timber.d("Ready to load bitmaps");
         startLoadingSoaringForecastImages();
+    }
+
+    private void createForecastDateListForSelectedModel() {
+        GpsLocationAndTimes gpsLocationAndTimes;
+        ModelLocationAndTimes modelLocationAndTimes;
+        String model = selectedSoaringForecastModel.getName();
+        modelForecastDates = new ArrayList<>();
+        for (RegionForecastDate regionForecastDate : regionForecastDates.getRegionForecastDateList()) {
+            modelLocationAndTimes = regionForecastDate.getModelLocationAndTimes();
+            if (modelLocationAndTimes != null && modelLocationAndTimes.getGpsLocationAndTimesForModel(model) != null) {
+                ModelForecastDate modelForecastDate = new ModelForecastDate(model);
+                modelForecastDate.setBaseDate(regionForecastDate.getIndex(), regionForecastDate.getFormattedDate(), regionForecastDate.getYyyymmddDate());
+                modelForecastDate.setGpsLocationAndTimes(modelLocationAndTimes.getGpsLocationAndTimesForModel(model));
+                modelForecastDates.add(modelForecastDate);
+            }
+        }
     }
 
     private void startLoadingSoaringForecastImages() {
@@ -190,7 +229,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private void storeRegionForecastDates(RegionForecastDates downloadedRegionForecastDates) {
         regionForecastDates = downloadedRegionForecastDates;
         regionForecastDates.parseForecastDates();
-        selectedRegionForecastDate = regionForecastDates.getForecastDates().get(0);
         soaringForecastDownloader.loadTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
     }
 
@@ -201,9 +239,9 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         imageMap.clear();
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
                 bindingView.getContext().getString(R.string.new_england_region)
-                , selectedRegionForecastDate.getYyyymmddDate(), selectedSoaringForecastType.getName()
+                , selectedModelForecastDate.getYyyymmddDate(), selectedSoaringForecastModel.getName()
                 , "wstar"
-                , getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes())
+                , selectedModelForecastDate.getGpsLocationAndTimes().getTimes())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<SoaringForecastImage>() {
@@ -259,9 +297,12 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
 
     private void stopImageAnimation() {
+        Timber.d("Stopping Animation");
         if (soaringForecastImageAnimation != null) {
-            soaringForecastImageAnimation.end();
+            soaringForecastImageAnimation.cancel();
+            return;
         }
+        Timber.e("soaringForecastImageanimation is null so no animation to stop");
     }
 
     private void displayCallFailure(Throwable t) {
@@ -278,54 +319,48 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     /**
      * Data binding clickListener to select forecast type gfs, nam, ...
-     * @param soaringForecastType
+     *
+     * @param soaringForecastModel
      */
     @Override
-    public void setSoaringForecastType(SoaringForecastType soaringForecastType) {
-        if (soaringForecastType != selectedSoaringForecastType) {
-            selectedSoaringForecastType = soaringForecastType;
-            appPreferences.setSoaringForecastType(selectedSoaringForecastType);
+    public void setSoaringForecastModel(SoaringForecastModel soaringForecastModel) {
+        if (!soaringForecastModel.equals(selectedSoaringForecastModel)) {
+            selectedSoaringForecastModel = soaringForecastModel;
+            appPreferences.setSoaringForecastType(selectedSoaringForecastModel);
+            createForecastDateListForSelectedModel();
+            if (modelForecastDaterecyclerViewAdapter != null){
+                modelForecastDaterecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
+            }
             loadSoaringForecastImages();
         }
     }
 
+    /**
+     * Data binding clickListener to select model date
+     *
+     * @param modelForecastDate
+     */
     @Override
-    public void setRegionForecastDate(RegionForecastDate regionForecastDate) {
-        selectedRegionForecastDate = regionForecastDate;
+    public void setModelForecastDate(ModelForecastDate modelForecastDate) {
+        selectedModelForecastDate = modelForecastDate;
+        loadSoaringForecastImages();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(RegionForecastDate regionForecastDate) {
-        if (selectedRegionForecastDate != regionForecastDate) {
-            selectedRegionForecastDate = regionForecastDate;
-            loadSoaringForecastImages();
-        }
-    }
-
-    private GpsLocationAndTimes getGpsLocationAndTimesForType(String type) {
-        switch (type.toLowerCase()) {
-            case "gfs":
-                return selectedRegionForecastDate.getTypeLocationAndTimes().getGfs();
-            case "nam":
-                return selectedRegionForecastDate.getTypeLocationAndTimes().getNam();
-            case "rap":
-                return selectedRegionForecastDate.getTypeLocationAndTimes().getRap();
-            default:
-                return null;
-
-        }
-    }
 
     private void startImageAnimation() {
         // need to 'overshoot' the animation to be able to get the last image value
+        Thread thread = Thread.currentThread();
+        Timber.d("Creating animation on %1$s ( %2$d )", thread.getName(), thread.getId());
         soaringForecastImageAnimation = ValueAnimator.ofInt(0, numberForecastTimes);
         soaringForecastImageAnimation.setInterpolator(new LinearInterpolator());
         soaringForecastImageAnimation.setDuration(15000);
         soaringForecastImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
+//                Thread thread = Thread.currentThread();
+//                Timber.d("RunnableJob is being run by %1$s ( %2$d )",  thread.getName(), thread.getId() );
                 int index = (int) updatedAnimation.getAnimatedValue();
-                  Timber.d("animation index: %d  ", index);
+                Timber.d("animation index: %d  ", index);
                 if (index > numberForecastTimes - 1) {
                     index = numberForecastTimes - 1;
                 }
@@ -342,8 +377,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     }
 
     private void getForecastTimes() {
-        forecastTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes();
-        numberForecastTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName()).getTimes().size();
+        forecastTimes = selectedModelForecastDate.getGpsLocationAndTimes().getTimes();
+        numberForecastTimes = forecastTimes.size();
     }
 
     public void displayForecastImage(int index) {
@@ -363,8 +398,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     // Stepping thru forecast images
 
-    public void onStepClick(FORECASTACTION forecastaction){
-        switch (forecastaction){
+    public void onStepClick(FORECASTACTION forecastaction) {
+        switch (forecastaction) {
             case BACKWARD:
                 stopImageAnimation();
                 displayForecastImage(stepImageBy(-1));
@@ -381,7 +416,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     private int stepImageBy(int step) {
         lastImageIndex = lastImageIndex + step;
-        if (lastImageIndex < 0 ) {
+        if (lastImageIndex < 0) {
             lastImageIndex = numberForecastTimes - 1;
         } else if (lastImageIndex > (numberForecastTimes - 1)) {
             lastImageIndex = 0;
@@ -400,7 +435,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
 
     private void setMapBounds() {
-        GpsLocationAndTimes gpsLocationAndTimes = getGpsLocationAndTimesForType(selectedSoaringForecastType.getName());
+        GpsLocationAndTimes gpsLocationAndTimes = selectedModelForecastDate.getGpsLocationAndTimes();
         mapLatLngBounds = new LatLngBounds(
                 gpsLocationAndTimes.getSouthWestLatLng(), gpsLocationAndTimes.getNorthEastLatLng());
     }
@@ -418,7 +453,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     }
 
-    private void setGroundOverlay(Bitmap bitmap){
+    private void setGroundOverlay(Bitmap bitmap) {
         if (bitmap == null) {
             return;
         }

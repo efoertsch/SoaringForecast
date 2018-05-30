@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
 import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
-import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastType;
+import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -246,12 +246,12 @@ public class AppPreferences {
         editor.apply();
     }
 
-    public SoaringForecastType getSoaringForecastType(){
-        return new SoaringForecastType(sharedPreferences.getString(SOARING_FORECAST_TYPE_KEY, soaringForecastType));
+    public SoaringForecastModel getSoaringForecastType(){
+        return new SoaringForecastModel(sharedPreferences.getString(SOARING_FORECAST_TYPE_KEY, soaringForecastType));
     }
-    public void setSoaringForecastType(SoaringForecastType soaringForecastType) {
+    public void setSoaringForecastType(SoaringForecastModel soaringForecastModel) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SOARING_FORECAST_TYPE_KEY, soaringForecastType.toStore());
+        editor.putString(SOARING_FORECAST_TYPE_KEY, soaringForecastModel.toStore());
         editor.apply();
     }
 

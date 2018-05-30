@@ -2,26 +2,31 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="RegionForecastDateView">
+    <data class="ModelForecastDateView">
 
         <variable
-            name="regionForecastDate"
-            type="com.fisincorporated.aviationweather.soaring.json.RegionForecastDate"/>
+            name="modelForecastDate"
+            type="com.fisincorporated.aviationweather.soaring.json.ModelForecastDate"/>
+
+        <variable
+            name="dateClickListener"
+            type="com.fisincorporated.aviationweather.soaring.forecast.ModelForecastDateClickListener"/>
 
     </data>
 
 
     <TextView
-        android:id="@+id/region_forecast_date_label"
+        android:id="@+id/model_forecast_date_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_half"
         android:layout_marginStart="@dimen/margin_half"
         android:background="@drawable/black_view_border"
         android:clickable="true"
+        android:onClick="@{() -> dateClickListener.setModelForecastDate(modelForecastDate)}"
         android:focusable="true"
         android:padding="@dimen/margin_half"
-        android:text="@{regionForecastDate.getFormattedDate}"
+        android:text="@{modelForecastDate.getFormattedDate}"
         android:textAllCaps="true"
         tools:text="Sat. Apr 21."/>
 

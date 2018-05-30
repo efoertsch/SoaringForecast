@@ -5,9 +5,9 @@ import android.annotation.SuppressLint;
 import com.fisincorporated.aviationweather.common.Constants;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
+import com.fisincorporated.aviationweather.soaring.json.ModelLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
-import com.fisincorporated.aviationweather.soaring.json.TypeLocationAndTimes;
 import com.fisincorporated.aviationweather.utils.BitmapImageUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -74,14 +74,14 @@ public class SoaringForecastDownloader {
 
     public void loadTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
         DisposableObserver disposableObserver = Observable.fromIterable(regionForecastDates.getForecastDates())
-                .flatMap((Function<RegionForecastDate, Observable<TypeLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
+                .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
                         callTypeLocationAndTimes(region, regionForecastDate).toObservable()
-                                .doOnNext(regionForecastDate::setTypeLocationAndTimes))
+                                .doOnNext(regionForecastDate::setModelLocationAndTimes))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<TypeLocationAndTimes>() {
+                .subscribeWith(new DisposableObserver<ModelLocationAndTimes>() {
                     @Override
-                    public void onNext(TypeLocationAndTimes typeLocationAndTimes) {
+                    public void onNext(ModelLocationAndTimes typeLocationAndTimes) {
                         // TODO determine how to combine together into Single
                         //nothing
                     }
@@ -118,7 +118,7 @@ public class SoaringForecastDownloader {
      * @param regionForecastDate
      * @throws IOException
      */
-    public Single<TypeLocationAndTimes> callTypeLocationAndTimes(String region, RegionForecastDate regionForecastDate) {
+    public Single<ModelLocationAndTimes> callTypeLocationAndTimes(String region, RegionForecastDate regionForecastDate) {
         return client.getTypeLocationAndTimes(region + "/" + regionForecastDate.getYyyymmddDate() + "/status.json")
                 .subscribeOn(Schedulers.io());
     }
