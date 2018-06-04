@@ -127,6 +127,7 @@
     <string name="back_arrow">back arrow</string>
     <string name="forward_arrow">forward arrow</string>
     <string name="loop">loop</string>
+    <string name="model_forecast_for_date_not_available">Oops. No model forecast found for specified dates.</string>
 
 
 </resources>

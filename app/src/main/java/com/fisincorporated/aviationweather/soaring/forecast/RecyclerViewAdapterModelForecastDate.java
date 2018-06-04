@@ -15,10 +15,12 @@ import java.util.List;
 
 public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<RecyclerViewAdapterModelForecastDate.ViewHolder> {
     private List<ModelForecastDate> modelForecastDates;
+    private ModelForecastDateClickListener modelForecastDateClickListener;
     private int selectedPos = RecyclerView.NO_POSITION;
 
 
-    public RecyclerViewAdapterModelForecastDate(List<ModelForecastDate> modelForecastDates) {
+    public RecyclerViewAdapterModelForecastDate(ModelForecastDateClickListener modelForecastDateClickListener, List<ModelForecastDate> modelForecastDates) {
+        this.modelForecastDateClickListener = modelForecastDateClickListener;
         this.modelForecastDates = modelForecastDates;
     }
 
@@ -43,6 +45,7 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
         holder.binding.setModelForecastDate(modelForecastDates.get(position));
         holder.binding.modelForecastDateLabel.setTag(modelForecastDates.get(position));
         holder.binding.modelForecastDateLabel.setSelected(selectedPos == position);
+        holder.binding.setDateClickListener(modelForecastDateClickListener);
     }
 
     @Override
