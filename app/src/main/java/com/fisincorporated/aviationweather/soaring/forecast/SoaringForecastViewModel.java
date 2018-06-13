@@ -119,6 +119,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             viewDataBinding.setViewModel(this);
             selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
             setupSoaringForecastModelsRecyclerView(soaringForecastModels);
+
             mapProgressBar = viewDataBinding.soaringForecastMapProgressBar;
             setMapProgresBarVisibility(true);
 
@@ -142,6 +143,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                 new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
         RecyclerViewAdapterSoaringForecastModel recyclerViewAdapter = new RecyclerViewAdapterSoaringForecastModel(soaringForecastModels);
         viewDataBinding.soaringForecastTypeRecyclerView.setAdapter(recyclerViewAdapter);
+        recyclerViewAdapter.setSelectedPosition(0);
     }
 
     private void setupModelForecastDateRecyclerView(List<ModelForecastDate> modelForecastDateList) {
@@ -202,6 +204,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         // So pull out the dates available for the forecast type selected.
         createForecastDateListForSelectedModel();
         setupModelForecastDateRecyclerView(modelForecastDates);
+        modelForecastDaterecyclerViewAdapter.setSelectedPosition(0);
         // Get whatever current date is to start
         if (modelForecastDates.size() > 0) {
             setMapProgresBarVisibility(false);

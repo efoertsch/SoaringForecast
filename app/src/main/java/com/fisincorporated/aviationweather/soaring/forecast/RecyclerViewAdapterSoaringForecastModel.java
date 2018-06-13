@@ -14,11 +14,15 @@ import java.util.List;
 
 public class RecyclerViewAdapterSoaringForecastModel extends RecyclerView.Adapter<RecyclerViewAdapterSoaringForecastModel.ViewHolder> {
     private List<SoaringForecastModel> soaringForecastModels;
-    public SoaringForecastModelClickListener soaringForecastModelClickListener;
     private int selectedPos = RecyclerView.NO_POSITION;
 
     public RecyclerViewAdapterSoaringForecastModel(List<SoaringForecastModel> soaringForecastModels) {
         this.soaringForecastModels = soaringForecastModels;
+    }
+
+    public void setSelectedPosition(int selectedPos){
+        this.selectedPos = selectedPos;
+        notifyDataSetChanged();
     }
 
     @Override

@@ -15,17 +15,20 @@ import java.util.List;
 
 public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<RecyclerViewAdapterModelForecastDate.ViewHolder> {
     private List<ModelForecastDate> modelForecastDates;
-    private ModelForecastDateClickListener modelForecastDateClickListener;
     private int selectedPos = RecyclerView.NO_POSITION;
 
 
     public RecyclerViewAdapterModelForecastDate(List<ModelForecastDate> modelForecastDates) {
-        this.modelForecastDateClickListener = modelForecastDateClickListener;
         this.modelForecastDates = modelForecastDates;
     }
 
     public void updateModelForecastDateList(List<ModelForecastDate> modelForecastDates) {
         this.modelForecastDates = modelForecastDates;
+        notifyDataSetChanged();
+    }
+
+    public void setSelectedPosition(int selectedPos){
+        this.selectedPos = selectedPos;
         notifyDataSetChanged();
     }
 
