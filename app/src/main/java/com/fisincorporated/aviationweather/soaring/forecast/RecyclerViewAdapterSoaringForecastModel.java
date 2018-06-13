@@ -8,29 +8,38 @@ import android.view.ViewGroup;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.databinding.SoaringForecastTypeView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
-public class RecyclerViewAdapterSoaringForecastType extends RecyclerView.Adapter<RecyclerViewAdapterSoaringForecastType.ViewHolder> {
+public class RecyclerViewAdapterSoaringForecastModel extends RecyclerView.Adapter<RecyclerViewAdapterSoaringForecastModel.ViewHolder> {
     private List<SoaringForecastModel> soaringForecastModels;
     public SoaringForecastModelClickListener soaringForecastModelClickListener;
     private int selectedPos = RecyclerView.NO_POSITION;
 
-    public RecyclerViewAdapterSoaringForecastType(SoaringForecastModelClickListener soaringForecastModelClickListener, List<SoaringForecastModel> soaringForecastModels) {
-        this.soaringForecastModelClickListener = soaringForecastModelClickListener;
+    public RecyclerViewAdapterSoaringForecastModel(List<SoaringForecastModel> soaringForecastModels) {
         this.soaringForecastModels = soaringForecastModels;
     }
 
     @Override
-    public RecyclerViewAdapterSoaringForecastType.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewAdapterSoaringForecastModel.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         SoaringForecastTypeView binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), ViewHolder.LAYOUT_RESOURCE, parent, false);
-        return new RecyclerViewAdapterSoaringForecastType.ViewHolder(binding);
+        ViewHolder viewHolder = new RecyclerViewAdapterSoaringForecastModel.ViewHolder(binding);
+
+        viewHolder.itemView.setOnClickListener(v -> {
+            SoaringForecastModel soaringForecastModel = soaringForecastModels.get(viewHolder.getAdapterPosition());
+            notifyItemChanged(selectedPos);
+            selectedPos = viewHolder.getLayoutPosition();
+            notifyItemChanged(selectedPos);
+            EventBus.getDefault().post(soaringForecastModel);
+        });
+        return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapterSoaringForecastType.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerViewAdapterSoaringForecastModel.ViewHolder holder, int position) {
         holder.binding.setSoaringForecastModel(soaringForecastModels.get(position));
         holder.binding.soaringForecastTypeLabel.setTag(soaringForecastModels.get(position));
-        holder.binding.setTypeClickListener(soaringForecastModelClickListener);
         holder.binding.soaringForecastTypeLabel.setSelected(selectedPos == position);
     }
 
@@ -43,9 +52,9 @@ public class RecyclerViewAdapterSoaringForecastType extends RecyclerView.Adapter
     class ViewHolder extends RecyclerView.ViewHolder {
         static final int LAYOUT_RESOURCE = R.layout.soaring_forecast_type_layout;
 
-        private final SoaringForecastTypeView  binding;
+        private final SoaringForecastTypeView binding;
 
-        public ViewHolder(SoaringForecastTypeView  bindingView) {
+        public ViewHolder(SoaringForecastTypeView bindingView) {
             super(bindingView.getRoot());
             binding = bindingView;
         }

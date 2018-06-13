@@ -8,9 +8,6 @@
             name="modelForecastDate"
             type="com.fisincorporated.aviationweather.soaring.json.ModelForecastDate"/>
 
-        <variable
-            name="dateClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.ModelForecastDateClickListener"/>
     </data>
 
 
@@ -20,9 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_half"
         android:layout_marginStart="@dimen/margin_half"
-        android:background="@drawable/black_view_border"
+        android:background="@drawable/selected_view"
         android:clickable="true"
-        android:onClick="@{() -> dateClickListener.setModelForecastDate(modelForecastDate)}"
         android:focusable="true"
         android:padding="@dimen/margin_half"
         android:text="@{modelForecastDate.getFormattedDate}"

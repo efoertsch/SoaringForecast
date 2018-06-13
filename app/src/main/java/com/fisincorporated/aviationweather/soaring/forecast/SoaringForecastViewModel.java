@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.fisincorporated.aviationweather.R;
@@ -59,8 +60,8 @@ import timber.log.Timber;
 @InverseBindingMethods({
         @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 
-public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle, SoaringForecastModelClickListener
-        , ModelForecastDateClickListener, OnMapReadyCallback {
+public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle
+        , OnMapReadyCallback {
 
     private static final String TAG = SoaringForecastViewModel.class.getSimpleName();
 
@@ -82,7 +83,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private GroundOverlay forecastOverlay;
     private List<ModelForecastDate> modelForecastDates;
     private RecyclerViewAdapterModelForecastDate modelForecastDaterecyclerViewAdapter;
-
+    private ProgressBar mapProgressBar;
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -118,18 +119,28 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             viewDataBinding.setViewModel(this);
             selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
             setupSoaringForecastModelsRecyclerView(soaringForecastModels);
+            mapProgressBar = viewDataBinding.soaringForecastMapProgressBar;
+            setMapProgresBarVisibility(true);
+
+        }
+    }
+
+    private void setMapProgresBarVisibility(boolean visible) {
+        if (mapProgressBar != null) {
+            mapProgressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
 
     /**
      * Set up recycler view with forecast models - gfs, rap, ...
+     *
      * @param soaringForecastModels
      */
     private void setupSoaringForecastModelsRecyclerView(List<SoaringForecastModel> soaringForecastModels) {
         viewDataBinding.soaringForecastTypeRecyclerView.setHasFixedSize(true);
         viewDataBinding.soaringForecastTypeRecyclerView.setLayoutManager(
                 new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
-        RecyclerViewAdapterSoaringForecastType recyclerViewAdapter = new RecyclerViewAdapterSoaringForecastType(this, soaringForecastModels);
+        RecyclerViewAdapterSoaringForecastModel recyclerViewAdapter = new RecyclerViewAdapterSoaringForecastModel(soaringForecastModels);
         viewDataBinding.soaringForecastTypeRecyclerView.setAdapter(recyclerViewAdapter);
     }
 
@@ -137,7 +148,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         viewDataBinding.regionForecastDateRecyclerView.setHasFixedSize(true);
         viewDataBinding.regionForecastDateRecyclerView.setLayoutManager(
                 new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
-        modelForecastDaterecyclerViewAdapter = new RecyclerViewAdapterModelForecastDate(this, modelForecastDateList);
+        modelForecastDaterecyclerViewAdapter = new RecyclerViewAdapterModelForecastDate(modelForecastDateList);
         viewDataBinding.regionForecastDateRecyclerView.setAdapter(modelForecastDaterecyclerViewAdapter);
     }
 
@@ -172,6 +183,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     /**
      * Should be called after response from current.json call
      * You get a list of all dates for which some forecast model will be provided.
+     *
      * @param regionForecastDates
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -191,13 +203,13 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         createForecastDateListForSelectedModel();
         setupModelForecastDateRecyclerView(modelForecastDates);
         // Get whatever current date is to start
-        if (modelForecastDates.size() > 0 ) {
+        if (modelForecastDates.size() > 0) {
+            setMapProgresBarVisibility(false);
             selectedModelForecastDate = modelForecastDates.get(0);
             // TODO - load bitmaps for hcrit for first forecast type (e.g. gfs)
             Timber.d("Ready to load bitmaps");
             startLoadingSoaringForecastImages();
-        }
-        else {
+        } else {
             Snackbar.make(bindingView, R.string.model_forecast_for_date_not_available, Snackbar.LENGTH_LONG);
         }
     }
@@ -236,6 +248,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         stopImageAnimation();
         compositeDisposable.clear();
         imageMap.clear();
+        setMapProgresBarVisibility(true);
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
                 bindingView.getContext().getString(R.string.new_england_region)
                 , selectedModelForecastDate.getYyyymmddDate(), selectedSoaringForecastModel.getName()
@@ -263,6 +276,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                     public void onComplete() {
                         fireLoadComplete();
                         getForecastTimes();
+                        setMapProgresBarVisibility(false);
                         startImageAnimation();
 
                     }
@@ -307,17 +321,17 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     }
 
     /**
-     * Data binding clickListener to select forecast type gfs, nam, ...
+     * Selected forecast type gfs, nam, ...
      *
      * @param soaringForecastModel
      */
-    @Override
-    public void setSoaringForecastModel(SoaringForecastModel soaringForecastModel) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SoaringForecastModel soaringForecastModel) {
         if (!soaringForecastModel.equals(selectedSoaringForecastModel)) {
             selectedSoaringForecastModel = soaringForecastModel;
             appPreferences.setSoaringForecastType(selectedSoaringForecastModel);
             createForecastDateListForSelectedModel();
-            if (modelForecastDaterecyclerViewAdapter != null){
+            if (modelForecastDaterecyclerViewAdapter != null) {
                 modelForecastDaterecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
             }
             loadSoaringForecastImages();
@@ -325,12 +339,12 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     }
 
     /**
-     * Data binding clickListener to select model date
+     * Selected model date
      *
      * @param modelForecastDate
      */
-    @Override
-    public void setModelForecastDate(ModelForecastDate modelForecastDate) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(ModelForecastDate modelForecastDate) {
         selectedModelForecastDate = modelForecastDate;
         loadSoaringForecastImages();
     }
@@ -352,23 +366,19 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         soaringForecastImageAnimation = ValueAnimator.ofInt(0, numberForecastTimes);
         soaringForecastImageAnimation.setInterpolator(new LinearInterpolator());
         soaringForecastImageAnimation.setDuration(15000);
-        soaringForecastImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
-//                Thread thread = Thread.currentThread();
+        soaringForecastImageAnimation.addUpdateListener(updatedAnimation -> {
 //                Timber.d("RunnableJob is being run by %1$s ( %2$d )",  thread.getName(), thread.getId() );
-                int index = (int) updatedAnimation.getAnimatedValue();
-                Timber.d("animation index: %d  ", index);
-                if (index > numberForecastTimes - 1) {
-                    index = numberForecastTimes - 1;
-                }
-                // Don't force redraw if still on same image as last time
-                if (lastImageIndex != index) {
-                    Timber.d("updating image to index: %1$d", index);
-                    displayForecastImage(index);
-                }
-                lastImageIndex = index;
+            int index = (int) updatedAnimation.getAnimatedValue();
+            //Timber.d("animation index: %d  ", index);
+            if (index > numberForecastTimes - 1) {
+                index = numberForecastTimes - 1;
             }
+            // Don't force redraw if still on same image as last time
+            if (lastImageIndex != index) {
+                // Timber.d("updating image to index: %1$d", index);
+                displayForecastImage(index);
+            }
+            lastImageIndex = index;
         });
         soaringForecastImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
         soaringForecastImageAnimation.start();
@@ -386,7 +396,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             if (soaringForecastImageSet.getHeaderImage() != null
                     && soaringForecastImageSet.getFooterImage() != null
                     && soaringForecastImageSet.getBodyImage() != null) {
-                //viewDataBinding.soaringForecastBodyImage.setImageBitmap(soaringForecastImageSet.getBodyImage().getBitmap());
                 setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
                 viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getFooterImage().getBitmap());
                 viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
@@ -445,7 +454,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private void setupMap() {
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
         googleMap.setLatLngBoundsForCameraTarget(mapLatLngBounds);
-
     }
 
     private void setGroundOverlay(Bitmap bitmap) {

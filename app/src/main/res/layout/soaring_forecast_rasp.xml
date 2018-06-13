@@ -71,9 +71,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/back_arrow"
+                android:onClick="@{() -> viewModel.onStepClick(forecastAction.BACKWARD)}"
                 android:tint="@color/colorPrimary"
-                bind:srcCompat="@drawable/ic_keyboard_arrow_left"
-                android:onClick="@{() -> viewModel.onStepClick(forecastAction.BACKWARD)}"/>
+                bind:srcCompat="@drawable/ic_keyboard_arrow_left"/>
 
             <TextView
                 android:id="@+id/soaring_forecast_image_local_time"
@@ -95,18 +95,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/forward_arrow"
+                android:onClick="@{() -> viewModel.onStepClick(forecastAction.FORWARD)}"
                 android:tint="@color/colorPrimary"
-                bind:srcCompat="@drawable/ic_keyboard_arrow_right"
-                android:onClick="@{() -> viewModel.onStepClick(forecastAction.FORWARD)}"/>
+                bind:srcCompat="@drawable/ic_keyboard_arrow_right"/>
 
             <ImageView
                 android:id="@+id/soaring_forecast_time_loop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/loop"
+                android:onClick="@{() -> viewModel.onStepClick(forecastAction.LOOP)}"
                 android:tint="@color/colorPrimary"
-                bind:srcCompat="@drawable/ic_sync"
-                android:onClick="@{() -> viewModel.onStepClick(forecastAction.LOOP)}"/>
+                bind:srcCompat="@drawable/ic_sync"/>
 
         </LinearLayout>
 
@@ -138,6 +138,16 @@
                 />
 
         </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/soaring_forecast_map_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            bind:layout_constraintBottom_toTopOf="@+id/soaring_forecast_scale_image"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_header_image"
+            />
 
         <com.fisincorporated.aviationweather.common.ProportionalImageView
             android:id="@+id/soaring_forecast_scale_image"

@@ -19,7 +19,7 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
     private int selectedPos = RecyclerView.NO_POSITION;
 
 
-    public RecyclerViewAdapterModelForecastDate(ModelForecastDateClickListener modelForecastDateClickListener, List<ModelForecastDate> modelForecastDates) {
+    public RecyclerViewAdapterModelForecastDate(List<ModelForecastDate> modelForecastDates) {
         this.modelForecastDateClickListener = modelForecastDateClickListener;
         this.modelForecastDates = modelForecastDates;
     }
@@ -29,15 +29,20 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
         notifyDataSetChanged();
     }
 
-    public void setSelectedPosition(int selectedPos){
-        this.selectedPos = selectedPos;
-        notifyDataSetChanged();
-    }
-
     @Override
     public RecyclerViewAdapterModelForecastDate.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new RecyclerViewAdapterModelForecastDate.ViewHolder(DataBindingUtil.inflate(
-                LayoutInflater.from(parent.getContext()), ViewHolder.LAYOUT_RESOURCE, parent, false));
+        ModelForecastDateView binding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()), ViewHolder.LAYOUT_RESOURCE, parent, false);
+        ViewHolder viewHolder = new RecyclerViewAdapterModelForecastDate.ViewHolder(binding);
+        viewHolder.itemView.setOnClickListener(v -> {
+            ModelForecastDate modelForecastDate = modelForecastDates.get(viewHolder.getAdapterPosition());
+            notifyItemChanged(selectedPos);
+            selectedPos = viewHolder.getLayoutPosition();
+            notifyItemChanged(selectedPos);
+            EventBus.getDefault().post(modelForecastDate);
+        });
+        return viewHolder;
+
     }
 
     @Override
@@ -45,7 +50,6 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
         holder.binding.setModelForecastDate(modelForecastDates.get(position));
         holder.binding.modelForecastDateLabel.setTag(modelForecastDates.get(position));
         holder.binding.modelForecastDateLabel.setSelected(selectedPos == position);
-        holder.binding.setDateClickListener(modelForecastDateClickListener);
     }
 
     @Override
@@ -61,12 +65,6 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
         ViewHolder(ModelForecastDateView bindingView) {
             super(bindingView.getRoot());
             binding = bindingView;
-            bindingView.modelForecastDateLabel.setOnClickListener(v -> {
-                notifyItemChanged(selectedPos);
-                selectedPos = getLayoutPosition();
-                notifyItemChanged(selectedPos);
-                EventBus.getDefault().post(v.getTag());
-            });
         }
 
 
