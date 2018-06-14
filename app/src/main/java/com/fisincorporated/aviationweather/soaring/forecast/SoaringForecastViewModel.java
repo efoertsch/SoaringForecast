@@ -25,6 +25,8 @@ import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
+import com.fisincorporated.aviationweather.soaring.json.Forecast;
+import com.fisincorporated.aviationweather.soaring.json.Forecasts;
 import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.ModelForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.ModelLocationAndTimes;
@@ -101,6 +103,9 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     public SoaringForecastApi soaringForecastApi;
 
     @Inject
+    public Forecasts forecasts;
+
+    @Inject
     SoaringForecastViewModel() {
     }
 
@@ -119,6 +124,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             viewDataBinding.setViewModel(this);
             selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
             setupSoaringForecastModelsRecyclerView(soaringForecastModels);
+            setupSoaringConditionRecyclerView(forecasts.getForecasts());
 
             mapProgressBar = viewDataBinding.soaringForecastMapProgressBar;
             setMapProgresBarVisibility(true);
@@ -154,6 +160,13 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         viewDataBinding.regionForecastDateRecyclerView.setAdapter(modelForecastDaterecyclerViewAdapter);
     }
 
+    private void setupSoaringConditionRecyclerView(List<Forecast> forecasts) {
+        viewDataBinding.soaringForecastRecyclerView.setHasFixedSize(true);
+        viewDataBinding.soaringForecastRecyclerView.setLayoutManager(
+                new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
+        RecyclerViewAdapterSoaringCondition recyclerViewAdapter = new RecyclerViewAdapterSoaringCondition(forecasts);
+        viewDataBinding.soaringForecastRecyclerView.setAdapter(recyclerViewAdapter);
+    }
 
     @Override
     public void onResume() {
@@ -401,7 +414,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                     && soaringForecastImageSet.getBodyImage() != null) {
                 setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
                 viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getFooterImage().getBitmap());
-                viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
+               // viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
             }
         }
     }

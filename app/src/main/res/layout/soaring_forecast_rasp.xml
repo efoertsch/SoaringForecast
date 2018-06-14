@@ -52,11 +52,26 @@
             bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_type_recycler_view"
             />
 
+         <android.support.v7.widget.RecyclerView
+            android:id="@+id/soaring_forecast_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/region_forecast_date_recycler_view"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            bind:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+            bind:layout_constraintTop_toBottomOf="@+id/region_forecast_date_recycler_view"
+            />
+
         <LinearLayout
             android:id="@+id/soaring_forecast_image_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/region_forecast_date_recycler_view"
+            android:layout_below="@+id/soaring_forecast_recycler_view"
             android:layout_marginEnd="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_half"
@@ -64,7 +79,7 @@
             android:orientation="horizontal"
             bind:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
             bind:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
-            bind:layout_constraintTop_toBottomOf="@+id/region_forecast_date_recycler_view">
+            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_recycler_view">
 
             <ImageView
                 android:id="@+id/soaring_forecast_time_back_arrow"
@@ -110,16 +125,6 @@
 
         </LinearLayout>
 
-        <com.fisincorporated.aviationweather.common.ProportionalImageView
-            android:id="@+id/soaring_forecast_header_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            bind:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
-            bind:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
-            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
-            custom:adjustDimension="height"/>
-
         <FrameLayout
             android:id="@+id/soaring_forecast_map_and_bitmap"
             android:layout_width="match_parent"
@@ -127,7 +132,7 @@
             bind:layout_constraintBottom_toTopOf="@+id/soaring_forecast_scale_image"
             bind:layout_constraintEnd_toEndOf="parent"
             bind:layout_constraintStart_toStartOf="parent"
-            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_header_image"
+            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
             >
 
             <fragment
@@ -146,7 +151,7 @@
             bind:layout_constraintBottom_toTopOf="@+id/soaring_forecast_scale_image"
             bind:layout_constraintEnd_toEndOf="parent"
             bind:layout_constraintStart_toStartOf="parent"
-            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_header_image"
+            bind:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
             />
 
         <com.fisincorporated.aviationweather.common.ProportionalImageView

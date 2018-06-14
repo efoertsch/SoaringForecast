@@ -1,6 +1,5 @@
 package com.fisincorporated.aviationweather.soaring.json;
 
-import com.fisincorporated.aviationweather.data.taf.Forecast;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -19,5 +18,6 @@ public class Forecasts {
     public void setForecasts(List<Forecast> forecasts) {
         this.forecasts = forecasts;
     }
+
 
 }
