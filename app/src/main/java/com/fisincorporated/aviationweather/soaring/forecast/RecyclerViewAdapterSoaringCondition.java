@@ -34,6 +34,9 @@ public class RecyclerViewAdapterSoaringCondition extends RecyclerView.Adapter<Re
         RecyclerViewAdapterSoaringCondition.ViewHolder viewHolder = new RecyclerViewAdapterSoaringCondition.ViewHolder(binding);
         viewHolder.itemView.setOnClickListener(v -> {
             Forecast forecast = forecastOptions.get(viewHolder.getAdapterPosition());
+            if (forecast.getForecastType().equalsIgnoreCase("comment")) {
+                return;
+            }
             notifyItemChanged(selectedPos);
             selectedPos = viewHolder.getLayoutPosition();
             notifyItemChanged(selectedPos);

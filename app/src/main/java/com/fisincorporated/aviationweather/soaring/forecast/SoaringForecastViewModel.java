@@ -86,6 +86,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private List<ModelForecastDate> modelForecastDates;
     private RecyclerViewAdapterModelForecastDate modelForecastDaterecyclerViewAdapter;
     private ProgressBar mapProgressBar;
+    private Forecast selectedForecast;
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -113,9 +114,15 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         parentFragment = fragment;
         fireLoadStarted();
         bindingView = view.findViewById(R.id.soaring_forecast_constraint_layout);
+        setDefaultSoaringForecast();
         bindViewModel();
-
         return this;
+    }
+
+    private void setDefaultSoaringForecast() {
+        // TODO cheat here to get wstar - do something more flexible
+        selectedForecast = forecasts.getForecasts().get(1);
+
     }
 
     public void bindViewModel() {
@@ -125,7 +132,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
             setupSoaringForecastModelsRecyclerView(soaringForecastModels);
             setupSoaringConditionRecyclerView(forecasts.getForecasts());
-
             mapProgressBar = viewDataBinding.soaringForecastMapProgressBar;
             setMapProgresBarVisibility(true);
 
@@ -166,6 +172,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                 new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
         RecyclerViewAdapterSoaringCondition recyclerViewAdapter = new RecyclerViewAdapterSoaringCondition(forecasts);
         viewDataBinding.soaringForecastRecyclerView.setAdapter(recyclerViewAdapter);
+        // TODO do better way to set selected
+        recyclerViewAdapter.setSelectedPosition(1);
     }
 
     @Override
@@ -268,7 +276,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
                 bindingView.getContext().getString(R.string.new_england_region)
                 , selectedModelForecastDate.getYyyymmddDate(), selectedSoaringForecastModel.getName()
-                , "wstar"
+                , selectedForecast.getForecastName()
                 , selectedModelForecastDate.getGpsLocationAndTimes().getTimes())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -365,6 +373,14 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         loadSoaringForecastImages();
     }
 
+    @Subscribe
+    public void onMessageEvent(Forecast forecast){
+        selectedForecast = forecast;
+        loadSoaringForecastImages();
+
+
+    }
+
     private void stopImageAnimation() {
         Timber.d("Stopping Animation");
         if (soaringForecastImageAnimation != null) {
@@ -373,6 +389,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         }
         Timber.e("soaringForecastImageanimation is null so no animation to stop");
     }
+
+
 
     private void startImageAnimation() {
         stopImageAnimation();
