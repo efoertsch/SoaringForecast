@@ -1,17 +1,19 @@
 package com.fisincorporated.aviationweather.app;
 
-import android.app.Application;
-
 import com.fisincorporated.aviationweather.BuildConfig;
 import com.fisincorporated.aviationweather.dagger.AppModule;
 import com.fisincorporated.aviationweather.dagger.DaggerDiComponent;
 import com.fisincorporated.aviationweather.dagger.DiComponent;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjector;
+import dagger.android.support.DaggerApplication;
 import timber.log.Timber;
 
-public class WeatherApplication extends Application {
+public class WeatherApplication extends DaggerApplication {
 
     protected DiComponent component;
 
@@ -22,7 +24,7 @@ public class WeatherApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        createDaggerInjections();
+        configureEventBus();
         initTimber();
     }
 
@@ -33,18 +35,16 @@ public class WeatherApplication extends Application {
             // Update if adding crash reporting
             Timber.plant(new Timber.DebugTree());
         }
-
     }
 
-    protected void createDaggerInjections() {
-        component = DaggerDiComponent.builder()
-                .appModule(new AppModule(this))
-                .build();
+    private void configureEventBus() {
+        EventBus.builder().throwSubscriberException(BuildConfig.DEBUG).installDefaultEventBus();
+    }
+
+    @Override
+    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+        component = DaggerDiComponent.builder().application(this).appModule(new AppModule(this)).build();
         component.inject(this);
-    }
-
-    public DiComponent getComponent() {
         return component;
     }
-
 }

@@ -18,6 +18,11 @@
             android:id="@+id/nav_menu_satellite_images"
             android:title="@string/action_satellite_images"
             />
+        <item
+            android:id="@+id/nav_menu_soaring_forecasts"
+            android:title="@string/action_soaring_forecasts"
+            />
+
 
     </group>
     <group android:checkableBehavior="none">

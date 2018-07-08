@@ -16,11 +16,20 @@ import android.widget.TextView;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
-import com.fisincorporated.aviationweather.app.DataLoading;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
+import com.fisincorporated.aviationweather.common.TouchImageView;
 import com.fisincorporated.aviationweather.databinding.SatelliteImageBinding;
+import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
+import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImage;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageInfo;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 
 import org.cache2k.Cache;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -35,13 +44,11 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     private TouchImageView satelliteImageView;
     private TextView utcTimeTextView;
     private TextView localTimeTextView;
-    private View bindingView;
     private SatelliteImageInfo satelliteImageInfo;
     private ValueAnimator satelliteImageAnimation;
     private int lastImageIndex = -1;
     private SatelliteRegion selectedSatelliteRegion;
     private SatelliteImageType selectedSatelliteImageType;
-    private DataLoading dataLoading;
 
     private SatelliteImage satelliteImage;
     private boolean bypassSatelliteRegionChange = true;
@@ -63,30 +70,23 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     public AppPreferences appPreferences;
 
     @Inject
-    public SatelliteViewModel() {
+    SatelliteViewModel() {
     }
 
     public SatelliteViewModel setView(View view) {
-        bindingView = view.findViewById(R.id.satellite_image_layout);
+        View bindingView = view.findViewById(R.id.satellite_image_layout);
         selectedSatelliteRegion = appPreferences.getSatelliteRegion();
         selectedSatelliteImageType = appPreferences.getSatelliteImageType();
         viewDataBinding = DataBindingUtil.bind(bindingView);
         viewDataBinding.setViewModel(this);
         satelliteImageView = viewDataBinding.satelliteImageImageView;
-
-
         utcTimeTextView = viewDataBinding.satelliteImageUtcTime;
         localTimeTextView = viewDataBinding.satelliteImageLocalTime;
         // Bind now so we can set selection to any previously stored region
         viewDataBinding.executePendingBindings();
         setSpinnerSelectedSatelliteRegion();
         setSpinnerSelectedSatelliteImageType();
-
-        return this;
-    }
-
-    public SatelliteViewModel setDataLoading(DataLoading dataLoading){
-        this.dataLoading = dataLoading;
+        ignoreSpinnerChanges();
         return this;
     }
 
@@ -94,17 +94,18 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     public void onResume() {
         // Setting the initial satellite region and type will cause call update images so need
         //to bypass
-        setIgnoreSatelliteCalls();
-        displaySatelliteImages();
+        EventBus.getDefault().register(this);
+        loadSatelliteImages();
     }
 
-    private void setIgnoreSatelliteCalls() {
+    private void ignoreSpinnerChanges() {
         bypassSatelliteRegionChange = true;
-         bypassSatelliteTypeChange = true;
+        bypassSatelliteTypeChange = true;
     }
 
     @Override
     public void onPause() {
+        EventBus.getDefault().unregister(this);
         satelliteImageDownloader.cancelOutstandingLoads();
         stopImageAnimation();
     }
@@ -117,52 +118,14 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         viewDataBinding.satelliteImageTypeSpinner.setSelection(selectedSatelliteImageType != null ? selectedSatelliteImageType.getId() : 0);
     }
 
-    public void displaySatelliteImages() {
-        loadSatelliteImages();
-        startImageAnimation();
-    }
-
-
-    private void startImageAnimation() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DataLoadingEvent event) {
         stopImageAnimation();
-        satelliteImageAnimation = ValueAnimator.ofInt(0, satelliteImageInfo.getSatelliteImageNames().size() - 1);
-        satelliteImageAnimation.setInterpolator(new LinearInterpolator());
-        satelliteImageAnimation.setDuration(5000);
-        satelliteImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
-                int index = (int) updatedAnimation.getAnimatedValue();
-                //Timber.d("animation index: " + index);
-                if (index < satelliteImageInfo.getSatelliteImageNames().size()  && lastImageIndex != index) {
-                    satelliteImage = satelliteImageCache.get(satelliteImageInfo.getSatelliteImageNames().get(index));
-
-                    //Bypass if jpg/bitmap does not exist or not loaded yet.
-                    if (satelliteImage != null && satelliteImage.isImageLoaded()) {
-                        // Don't force redraw if still on same image as last time
-                        if (lastImageIndex != index) {
-                            //Timber.d("setting image for image: " + index );
-                            utcTimeTextView.setText(satelliteImageInfo.getSatelliteImageUTCTimes().get(index));
-                            localTimeTextView.setText(satelliteImageInfo.getSatelliteImageLocalTimes().get(index));
-
-                            satelliteImageView.setImageBitmap(satelliteImage.getBitmap());
-//                            Timber.d("set  image for image: " + index );
-//                            Timber.d("image: " + index + " setting scaleFactor:" + imageScaleFactor);
-                        }
-
-                        lastImageIndex = index;
-                    }
-                }
-            }
-        });
-        satelliteImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
-        satelliteImageAnimation.start();
-
     }
 
-    private void stopImageAnimation() {
-        if (satelliteImageAnimation != null ) {
-            satelliteImageAnimation.cancel();
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DataLoadCompleteEvent event) {
+        startImageAnimation();
     }
 
     @Override
@@ -173,9 +136,52 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     }
 
     private void loadSatelliteImages() {
-        satelliteImageDownloader.loadSatelliteImages(dataLoading, selectedSatelliteRegion.getCode(), selectedSatelliteImageType.getCode());
+        stopImageAnimation();
+        satelliteImageView.setImageBitmap(null);
+        satelliteImageDownloader.loadSatelliteImages(selectedSatelliteRegion.getCode(), selectedSatelliteImageType.getCode());
         // Get the names of the images so you can start animating them.
         satelliteImageInfo = satelliteImageDownloader.getSatelliteImageInfo();
+    }
+
+    private void startImageAnimation() {
+        // need to 'overshoot' the animation to be able to get the last image value
+        satelliteImageAnimation = ValueAnimator.ofInt(0, satelliteImageInfo.getSatelliteImageNames().size());
+        satelliteImageAnimation.setInterpolator(new LinearInterpolator());
+        satelliteImageAnimation.setDuration(5000);
+        satelliteImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
+                int index = (int) updatedAnimation.getAnimatedValue();
+                // Timber.d("animation index: %d  ", index);
+                if (index > satelliteImageInfo.getSatelliteImageNames().size() - 1) {
+                    index = satelliteImageInfo.getSatelliteImageNames().size() - 1;
+                }
+                if (lastImageIndex != index) {
+                    // Don't force redraw if still on same image as last time
+                    satelliteImage = satelliteImageCache.get(satelliteImageInfo.getSatelliteImageNames().get(index));
+                    //Bypass if jpg/bitmap does not exist or not loaded yet.
+                    if (satelliteImage != null && satelliteImage.isImageLoaded()) {
+                        //Timber.d("Displaying image for %s - %d", satelliteImage.getImageName(), index);
+                        utcTimeTextView.setText(satelliteImageInfo.getSatelliteImageUTCTimes().get(index));
+                        localTimeTextView.setText(satelliteImageInfo.getSatelliteImageLocalTimes().get(index));
+                        satelliteImageView.setImageBitmap(satelliteImage.getBitmap());
+                        // Timber.d("set  image for image: %d", index );
+                    } else {
+                       // Timber.d("Satellite image: %s, Index %d image: %s",  satelliteImageInfo.getSatelliteImageNames().get(index),index, satelliteImage == null ? " not in cache" : (satelliteImage.isImageLoaded() ? "  bitmap loaded" : " bitmap not loaded"));
+                    }
+                    lastImageIndex = index;
+                }
+            }
+        });
+        satelliteImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
+        satelliteImageAnimation.start();
+
+    }
+
+    private void stopImageAnimation() {
+        if (satelliteImageAnimation != null) {
+            satelliteImageAnimation.cancel();
+        }
     }
 
     public List<SatelliteRegion> getSatelliteRegions() {
@@ -195,11 +201,11 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         }
         selectedSatelliteRegion = satelliteRegion;
         appPreferences.setSatelliteRegion(selectedSatelliteRegion);
-        displaySatelliteImages();
+        loadSatelliteImages();
     }
 
 
-    @BindingAdapter(value = {"bind:selectedRegionValue", "bind:selectedRegionValueAttrChanged"}, requireAll = false)
+    @BindingAdapter(value = {"selectedRegionValue", "selectedRegionValueAttrChanged"}, requireAll = false)
     public static void bindSpinnerData(Spinner spinner, SatelliteRegion newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -217,7 +223,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         }
     }
 
-    @InverseBindingAdapter(attribute = "bind:selectedRegionValue", event = "bind:selectedRegionValueAttrChanged")
+    @InverseBindingAdapter(attribute = "selectedRegionValue", event = "selectedRegionValueAttrChanged")
     public static SatelliteRegion captureSelectedValue(Spinner spinner) {
         return (SatelliteRegion) spinner.getSelectedItem();
     }
@@ -240,10 +246,10 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         }
         selectedSatelliteImageType = satelliteImageType;
         appPreferences.setSatelliteImageType(satelliteImageType);
-        displaySatelliteImages();
+        loadSatelliteImages();
     }
 
-    @BindingAdapter(value = {"bind:selectedImageType", "bind:selectedImageTypeAttrChanged"}, requireAll = false)
+    @BindingAdapter(value = {"selectedImageType", "selectedImageTypeAttrChanged"}, requireAll = false)
     public static void bindImageTypeSpinnerData(Spinner spinner, SatelliteImageType newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -261,7 +267,7 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
         }
     }
 
-    @InverseBindingAdapter(attribute = "bind:selectedImageType", event = "bind:selectedImageTypeAttrChanged")
+    @InverseBindingAdapter(attribute = "selectedImageType", event = "selectedImageTypeAttrChanged")
     public static SatelliteImageType captureSelectedImageTypeValue(Spinner spinner) {
         return (SatelliteImageType) spinner.getSelectedItem();
     }

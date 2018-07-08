@@ -1,31 +1,33 @@
 package com.fisincorporated.aviationweather.dagger;
 
-import com.fisincorporated.aviationweather.airports.AirportListActivity;
-import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
-import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.WeatherApplication;
-import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
-import com.fisincorporated.aviationweather.settings.SettingsPreferenceFragment;
 
 import javax.inject.Singleton;
 
+import dagger.BindsInstance;
 import dagger.Component;
+import dagger.android.AndroidInjector;
+import dagger.android.support.AndroidSupportInjectionModule;
 
 @Singleton
-@Component(modules = {AppModule.class})
-public interface DiComponent {
+@Component(modules = {AppModule.class,  AndroidSupportInjectionModule.class, UIBuildersModule.class})
+public interface DiComponent extends
+        AndroidInjector<WeatherApplication> {
 
-    void inject(AirportWeatherFragment fragment);
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        Builder application(WeatherApplication application);
 
-    void inject(AirportListActivity activity);
+        Builder appModule(AppModule appModule);
+
+        DiComponent build();
+    }
 
     void inject(WeatherApplication weatherApplication);
 
-    void inject(SettingsPreferenceFragment settingsPreferenceFragment);
 
-    void inject(AppPreferences appPreferences);
 
-    void inject(SatelliteImageFragment fragment);
 
 }
 

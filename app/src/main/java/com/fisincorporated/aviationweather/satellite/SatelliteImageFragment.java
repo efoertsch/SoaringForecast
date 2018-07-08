@@ -7,13 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.app.AppFragment;
-import com.fisincorporated.aviationweather.app.WeatherApplication;
 
 import javax.inject.Inject;
 
+import dagger.android.support.DaggerFragment;
 
-public class SatelliteImageFragment extends AppFragment {
+public class SatelliteImageFragment extends DaggerFragment {
 
     @Inject
     SatelliteViewModel satelliteViewModel;
@@ -22,9 +21,7 @@ public class SatelliteImageFragment extends AppFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.satellite_image_fragment, container, false);
-        ((WeatherApplication) getActivity().getApplication()).getComponent().inject(this);
         satelliteViewModel.setView(view);
-        satelliteViewModel.setDataLoading(dataLoading);
         return view;
     }
 

@@ -1,70 +1,92 @@
 package com.fisincorporated.aviationweather.satellite;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.annotation.SuppressLint;
 
-import com.fisincorporated.aviationweather.app.DataLoading;
+import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
+import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImage;
+import com.fisincorporated.aviationweather.satellite.data.SatelliteImageInfo;
+import com.fisincorporated.aviationweather.utils.BitmapImageUtils;
 import com.fisincorporated.aviationweather.utils.TimeUtils;
 
 import org.cache2k.Cache;
+import org.greenrobot.eventbus.EventBus;
+import org.reactivestreams.Subscription;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class SatelliteImageDownloader {
 
     // TODO - inject url
     // Remaining URL string similar to .../20180326/16/20180326_1600_sat_irbw_alb.jpg
-    public static final String SATELLITE_URL = "https://aviationweather.gov/data/obs/sat/us/";
+    private static final String SATELLITE_URL = "https://aviationweather.gov/data/obs/sat/us/";
 
     private Subscription subscription;
     private SatelliteImageInfo satelliteImageInfo;
-    private DataLoading dataLoading = null;
 
     @Inject
     public Cache<String, SatelliteImage> satelliteImageCache;
 
-    @Inject OkHttpClient client;
+    @Inject
+    public BitmapImageUtils bitmapImageUtils;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Inject
-    public SatelliteImageDownloader() {
+    SatelliteImageDownloader() {
     }
 
-    public void loadSatelliteImages(DataLoading dataLoading, String area, String type) {
-        this.dataLoading = dataLoading;
+    @SuppressLint("CheckResult")
+    public void loadSatelliteImages(String area, String type) {
         cancelOutstandingLoads();
-        //clearSatelliteImageCache();
         satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
         fireLoadStarted();
-        subscription = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames()).subscribeOn(Schedulers.io()).subscribe(new Observer<Void>() {
-            @Override
-            public void onCompleted() {
-                fireLoadComplete();
-            }
+        DisposableObserver disposableObserver = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<Void>() {
+                    @Override
+                    public void onStart(){
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                fireLoadComplete();
-            }
+                    @Override
+                    public void onNext(Void aVoid) {
 
-            @Override
-            public void onNext(Void aVoid) {
-            }
-        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        confirmLoad();
+                        fireLoadComplete();
+
+                    }
+                });
+        compositeDisposable.add(disposableObserver);
+    }
+
+    private void confirmLoad() {
+        Timber.d("Confirming load in cache");
+        SatelliteImage satelliteImage;
+        for (String satelliteImageName : satelliteImageInfo.getSatelliteImageNames()) {
+            satelliteImage = satelliteImageCache.get(satelliteImageName);
+            Timber.d("Satellite image: %s -  %s", satelliteImageName, satelliteImage != null ? " cached" : " not cached");
+        }
     }
 
     public static SatelliteImageInfo createSatelliteImageInfo(Calendar imageTime, String area, String type) {
@@ -95,26 +117,15 @@ public class SatelliteImageDownloader {
     }
 
     public void cancelOutstandingLoads() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
-        fireLoadComplete();
+        compositeDisposable.clear();
     }
 
-    public void fireLoadStarted() {
-        if (dataLoading != null) {
-            dataLoading.loadRunning(true);
-        }
+    private void fireLoadStarted() {
+        EventBus.getDefault().post(new DataLoadingEvent());
     }
 
-    public void fireLoadComplete() {
-        if (dataLoading != null) {
-            dataLoading.loadRunning(false);
-        }
-    }
-
-    private void clearSatelliteImageCache() {
-        satelliteImageCache.clear();
+    private void fireLoadComplete() {
+        EventBus.getDefault().post(new DataLoadCompleteEvent());
     }
 
     public void shutdown() {
@@ -125,40 +136,23 @@ public class SatelliteImageDownloader {
     }
 
     private Observable<Void> getImageDownloaderObservable(final List<String> satelliteImageNames) {
-        return Observable.from(satelliteImageNames)
-                .flatMap(new Func1<String, Observable<Void>>() {
-                    @Override
-                    public Observable<Void> call(String satelliteImageName) {
-                        if (satelliteImageCache.get(satelliteImageName) == null) {
-                            SatelliteImage satelliteImage = new SatelliteImage(satelliteImageName);
-                            download(satelliteImage);
-                            satelliteImageCache.put(satelliteImageName, satelliteImage);
-                        }
-                        return Observable.empty();
+        return Observable.fromIterable(satelliteImageNames)
+                .flatMap((Function<String, Observable<Void>>) satelliteImageName -> {
+                    if (satelliteImageCache.get(satelliteImageName) == null) {
+                        SatelliteImage satelliteImage = new SatelliteImage(satelliteImageName);
+                        getBitmapImage(satelliteImage);
+                        satelliteImageCache.put(satelliteImageName, satelliteImage);
+                        Timber.d(" %s %s", satelliteImage.getImageName()
+                                , satelliteImageCache.containsKey(satelliteImageName) ?
+                                        String.format(" was cached.%s", (satelliteImage.isImageLoaded() ? " w/good bitmap" : " no bitmap")) : " not cached.");
                     }
+                    return Observable.empty();
                 });
     }
 
-    private void download(final SatelliteImage satelliteImage) {
-        Timber.d("Calling for:" + satelliteImage.getImageName());
-        Response response = null;
-        Request request = new Request.Builder()
-                .url(SATELLITE_URL + satelliteImage.getImageName())
-                .build();
-        try {
-            response = client.newCall(request).execute();
-            InputStream inputStream = response.body().byteStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            satelliteImage.setBitmap(bitmap);
-        } catch (IOException e) {
-            satelliteImage.setErrorOnLoad(true);
-            Timber.d("IOException getting" + satelliteImage.getImageName());
-            Timber.e(e.toString());
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-        }
+    private void getBitmapImage(final SatelliteImage satelliteImage) {
+        String url = SATELLITE_URL + satelliteImage.getImageName();
+        bitmapImageUtils.getBitmapImage(satelliteImage, url);
     }
 
 

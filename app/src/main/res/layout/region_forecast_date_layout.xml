@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="ModelForecastDateView">
+
+        <variable
+            name="modelForecastDate"
+            type="com.fisincorporated.aviationweather.soaring.json.ModelForecastDate"/>
+
+    </data>
+
+
+    <TextView
+        android:id="@+id/model_forecast_date_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_half"
+        android:layout_marginStart="@dimen/margin_half"
+        android:background="@drawable/selected_view"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="@dimen/margin_half"
+        android:text="@{modelForecastDate.getFormattedDate}"
+        android:textAllCaps="true"
+        tools:text="Sat. Apr 21."/>
+
+</layout>

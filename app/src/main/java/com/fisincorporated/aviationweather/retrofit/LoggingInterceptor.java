@@ -37,15 +37,21 @@ public class LoggingInterceptor implements Interceptor {
         String responseLog = String.format("Received response for %s in %.1fms%n%s",
                 response.request().url(), (t2 - t1) / 1e6d, response.headers());
 
-        String bodyString = response.body().string();
-        if (BuildConfig.DEBUG) {
-            Timber.d("response only" + "\n" + bodyString);
+        String contentType = response.header("Content-Type");
+        if (!contentType.startsWith("image")) {
+            String bodyString = response.body().string();
+            if (BuildConfig.DEBUG) {
+                Timber.d("response only" + "\n" + bodyString);
 
-            Timber.d("response" + "\n" + responseLog + "\n" + bodyString);
+                Timber.d("response" + "\n" + responseLog + "\n" + bodyString);
+            }
+            return response.newBuilder()
+                    .body(ResponseBody.create(response.body().contentType(), bodyString))
+                    .build();
+        } else {
+            return chain.proceed(request);
         }
-        return response.newBuilder()
-                .body(ResponseBody.create(response.body().contentType(), bodyString))
-                .build();
+
     }
 
 

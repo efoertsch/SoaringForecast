@@ -1,16 +1,16 @@
 package com.fisincorporated.aviationweather.airports;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.app.WeatherApplication;
 
 import javax.inject.Inject;
 
-public class AirportListActivity extends AppCompatActivity implements  AirportListViewModel.EntryCompleteListener{
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class AirportListActivity extends DaggerAppCompatActivity implements  AirportListViewModel.EntryCompleteListener{
 
     @Inject
     public AirportListViewModel airportListViewModel;
@@ -23,8 +23,6 @@ public class AirportListActivity extends AppCompatActivity implements  AirportLi
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        ((WeatherApplication) getApplication()).getComponent().inject(this);
 
         airportListViewModel.setView((ViewGroup) findViewById(android.R.id.content))
                 .setEntryCompleteListener(this);
