@@ -22,9 +22,11 @@ public class RecyclerViewAdapterSoaringCondition extends RecyclerView.Adapter<Re
         this.forecastOptions = forecastOptions;
     }
 
-    public void setSelectedPosition(int selectedPos) {
+    public void setSelectedPosition(int selectedPos, boolean notify) {
         this.selectedPos = selectedPos;
-        notifyDataSetChanged();
+        if (notify) {
+            notifyDataSetChanged();
+        }
     }
 
     @Override

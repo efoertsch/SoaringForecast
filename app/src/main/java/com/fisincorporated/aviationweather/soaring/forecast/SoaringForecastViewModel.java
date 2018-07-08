@@ -4,8 +4,6 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
-import android.databinding.InverseBindingMethod;
-import android.databinding.InverseBindingMethods;
 import android.graphics.Bitmap;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
@@ -59,8 +56,8 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-@InverseBindingMethods({
-        @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
+//@InverseBindingMethods({
+//        @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 
 public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle
         , OnMapReadyCallback {
@@ -122,7 +119,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private void setDefaultSoaringForecast() {
         // TODO cheat here to get wstar - do something more flexible
         selectedForecast = forecasts.getForecasts().get(1);
-
     }
 
     public void bindViewModel() {
@@ -173,7 +169,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         RecyclerViewAdapterSoaringCondition recyclerViewAdapter = new RecyclerViewAdapterSoaringCondition(forecasts);
         viewDataBinding.soaringForecastRecyclerView.setAdapter(recyclerViewAdapter);
         // TODO do better way to set selected
-        recyclerViewAdapter.setSelectedPosition(1);
+        recyclerViewAdapter.setSelectedPosition(1, false);
     }
 
     @Override
@@ -257,7 +253,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private void startLoadingSoaringForecastImages() {
         loadSoaringForecastImages();
         setMapBounds();
-        displayMap();
 
     }
 
@@ -300,9 +295,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                     public void onComplete() {
                         fireLoadComplete();
                         getForecastTimes();
-                        setMapProgresBarVisibility(false);
-                        startImageAnimation();
-
+                        displayMap();
                     }
                 });
         compositeDisposable.add(disposableObserver);
@@ -377,8 +370,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     public void onMessageEvent(Forecast forecast){
         selectedForecast = forecast;
         loadSoaringForecastImages();
-
-
     }
 
     private void stopImageAnimation() {
@@ -389,8 +380,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         }
         Timber.e("soaringForecastImageanimation is null so no animation to stop");
     }
-
-
 
     private void startImageAnimation() {
         stopImageAnimation();
@@ -428,11 +417,10 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         viewDataBinding.soaringForecastImageLocalTime.setText(forecastTimes.get(index));
         if (soaringForecastImageSet != null) {
             if (soaringForecastImageSet.getHeaderImage() != null
-                    && soaringForecastImageSet.getFooterImage() != null
+                    && soaringForecastImageSet.getSideImage() != null
                     && soaringForecastImageSet.getBodyImage() != null) {
                 setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
-                viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getFooterImage().getBitmap());
-               // viewDataBinding.soaringForecastHeaderImage.setImageBitmap(soaringForecastImageSet.getHeaderImage().getBitmap());
+                viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
             }
         }
     }
@@ -482,6 +470,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         setupMap();// do your map stuff here
+        setMapProgresBarVisibility(false);
+        startImageAnimation();
     }
 
 
@@ -498,6 +488,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             GroundOverlayOptions forecastOverlayOptions = new GroundOverlayOptions()
                     .image(BitmapDescriptorFactory.fromBitmap(bitmap))
                     .positionFromBounds(mapLatLngBounds);
+            forecastOverlayOptions.transparency(.50f);
             forecastOverlay = googleMap.addGroundOverlay(forecastOverlayOptions);
         } else {
             forecastOverlay.setImage(BitmapDescriptorFactory.fromBitmap(bitmap));
