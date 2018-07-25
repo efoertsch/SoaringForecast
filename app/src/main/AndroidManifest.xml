@@ -22,10 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".settings.SettingsActivity"/>
+        <activity android:name=".settings.SettingsActivity"
+                  android:screenOrientation="portrait"/>
         <activity
             android:name=".airports.AirportListActivity"
-            android:label="@string/title_activity_airport_list">
+            android:label="@string/title_activity_airport_list"
+            android:screenOrientation="portrait">
         </activity>
         <!-- <activity android:name=".drawer.WeatherDrawerActivity"/> -->
 

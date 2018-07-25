@@ -14,8 +14,6 @@ import retrofit2.http.Url;
  */
 public interface SoaringForecastApi {
 
-    String BASE_URL = "http:://www.soargbsc.com/rasp/";
-
     // Construct URL as BASE_URL + "current.json?123456"
     // Numbers at end are current time in millisec (used to always get updated json and
     // not server cached version
