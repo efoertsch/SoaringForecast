@@ -1,5 +1,5 @@
 # SoaringWeather
-Display weather of interest to glider pilots.
+Display weather and soaring forecasts of interest to New England glider pilots.
 
 Currently displays
 1. METAR and TAF (from aviationweather.gov)
