@@ -23,6 +23,9 @@ import dagger.android.support.HasSupportFragmentInjector;
 
 // http://stackoverflow.com/questions/531427/how-do-i-display-the-current-value-of-an-android-preference-in-the-preference-su
 // and modified somewhat
+// Using PreferenceFragmentCompat so that dagger injection can be used in onAttach
+// This required calling onCreatePreferences() but setting shared preferences there caused updated to be ignored
+// So call is made just for form, no program logic done there.
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener, HasSupportFragmentInjector {
 
@@ -48,22 +51,23 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPreferenceManager().setSharedPreferencesName(AIRPORT_PREFS);
-        PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.display_preferences, false);
+        PreferenceManager.setDefaultValues(getContext(), R.xml.display_preferences, false);
         addPreferencesFromResource(R.xml.display_preferences);
-
     }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        addPreferencesFromResource(R.xml.display_preferences);
+        // See comments at top
+        //  setPreferencesFromResource(R.xml.display_preferences, rootKey);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         // Set up a listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         initSummary(getPreferenceScreen());
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
