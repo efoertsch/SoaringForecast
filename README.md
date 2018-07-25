@@ -1,9 +1,10 @@
-# AviationWeather
-Display weather info from aviationweather.gov
+# SoaringWeather
+Display weather of interest to glider pilots.
 
 Currently displays
-1. METAR and TAF 
-2. Satellite images for visibile, water vapor and infrared color/bw images. Satellite images are animated.
+1. METAR and TAF (from aviationweather.gov)
+2. Satellite images for visibile, water vapor and infrared color/bw images. Satellite images are animated. (aviationweather.gov)
+3. New England soaring forecasts from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Pavalo)
 
 Currently project involves
 1. Android data binding for MVVM binding.
