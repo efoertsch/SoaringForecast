@@ -54,7 +54,7 @@ public class AppModule {
     private WeatherApplication application;
 
     @Provides
-    @Named("app.shared.preferences.name")
+    @Named(AIRPORT_PREFS)
     public String providesAppSharedPreferencesName() {
         return AIRPORT_PREFS;
     }
@@ -76,7 +76,7 @@ public class AppModule {
     @Provides
     @Singleton
     public AppPreferences provideAppPreferences(WeatherApplication application) {
-        return new AppPreferences(application);
+        return new AppPreferences(application, AIRPORT_PREFS);
     }
 
     @Provides

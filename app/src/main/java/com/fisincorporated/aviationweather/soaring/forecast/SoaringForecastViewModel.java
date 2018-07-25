@@ -183,7 +183,8 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     @Override
     public void onPause() {
         EventBus.getDefault().unregister(this);
-        soaringForecastDownloader.cancelOutstandingLoads();
+        soaringForecastDownloader.clearOutstandingLoads();
+        compositeDisposable.clear();
         stopImageAnimation();
     }
 
