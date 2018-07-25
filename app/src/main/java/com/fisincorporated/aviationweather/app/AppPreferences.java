@@ -13,15 +13,10 @@ import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class AppPreferences {
-
-    @Inject
-    @Named("app.shared.preferences.name")
-    public String AIRPORT_PREFS;
 
     private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";
 
@@ -69,11 +64,13 @@ public class AppPreferences {
 
     private String soaringForecastDefaultRegion;
 
+    private String airportPrefs;
+
 
     @Inject
-    public AppPreferences(Context context) {
+    public AppPreferences(Context context, String airportPrefs) {
 
-//        AndroidSupportInjection.inject(this);
+        this.airportPrefs = airportPrefs;
 
         Resources res = context.getResources();
 
@@ -99,7 +96,7 @@ public class AppPreferences {
 
         // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
         // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
-        sharedPreferences =  context.getSharedPreferences(AIRPORT_PREFS,  MODE_PRIVATE);
+        sharedPreferences =  context.getSharedPreferences(this.airportPrefs,  MODE_PRIVATE);
         if (!sharedPreferences.getBoolean(DEFAULT_PREFS_SET, false)){
             setDisplayRawTafMetar(rawTafMetar);
             setDecodeTafMetar(decodeTafMetar);

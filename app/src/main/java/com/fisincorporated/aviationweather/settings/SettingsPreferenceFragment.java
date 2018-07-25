@@ -44,7 +44,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
     }
 
     @Inject
-    @Named("app.shared.preferences.name")
+    @Named("AIRPORT_PREFS")
     public String AIRPORT_PREFS;
 
     @Override

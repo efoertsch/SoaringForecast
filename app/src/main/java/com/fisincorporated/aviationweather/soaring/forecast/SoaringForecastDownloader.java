@@ -48,7 +48,8 @@ public class SoaringForecastDownloader {
         compositeDisposable.dispose();
     }
 
-    public void cancelOutstandingLoads() {
+    public void clearOutstandingLoads() {
+        compositeDisposable.clear();
     }
 
     // Run on background thread
@@ -134,7 +135,6 @@ public class SoaringForecastDownloader {
                         , getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.FOOT).toObservable()
                         )
                 );
-
     }
 
     /**
