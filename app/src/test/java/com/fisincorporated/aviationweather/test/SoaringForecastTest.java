@@ -111,7 +111,8 @@ public class SoaringForecastTest {
     @Test
     public void callLoadForecastsForDayTest() throws IOException {
 
-        SoaringForecastDownloader soaringForecastDownloader = new SoaringForecastDownloader(client);
+        SoaringForecastDownloader soaringForecastDownloader = new SoaringForecastDownloader(client
+        , new BitmapImageUtils(bitmapCache, new OkHttpClient.Builder().build()));
 
         Single<RegionForecastDates> singleRegionForecastDates = soaringForecastDownloader.callRegionForecastDates();
         singleRegionForecastDates.subscribe(regionForecastDates -> {

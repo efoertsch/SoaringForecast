@@ -33,6 +33,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
 }
 
 // to pick up mock xml responses
@@ -56,8 +57,8 @@ android.sourceSets {
 
 dependencies {
     final SUPPORT_LIBRARY_VERSION = '26.1.0'
-    final CONSTRAINT_LIBRARY_VERSION = '1.0.2'
-    final GOOGLE_MAPS_VERSION = '11.6.2'
+    final CONSTRAINT_LIBRARY_VERSION = '1.1.2'
+    final GOOGLE_MAPS_VERSION = '15.0.1'
     final RX_ANDROID = '2.0.2'
     final RX_JAVA = '2.1.12'
     final RETROFIT = '2.2.0'
@@ -72,10 +73,12 @@ dependencies {
     final RUNNER = '1.0.1'
     final UIAUTOMATOR = '2.1.3'
     final JUNIT = '4.12'
-    final MOCKITO = '2.7.6'
+    final MOCKITO = '2.4.0'
     final EVENT_BUS = '3.1.1'
     final MEMORY_CACHE = '1.0.2.Final'
     final DISK_CACHE = '2.0.2'
+    final ROOM_Version = '1.1.1'
+    final ARCH_LIFE_CYCLE_VERSION = '1.1.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Android compat/support libraries
@@ -87,7 +90,6 @@ dependencies {
     implementation "com.android.support:preference-v7:$SUPPORT_LIBRARY_VERSION"
     implementation "com.android.support.constraint:constraint-layout:$CONSTRAINT_LIBRARY_VERSION"
     implementation "com.google.android.gms:play-services-maps:$GOOGLE_MAPS_VERSION"
-
 
     // Bus
     implementation "org.greenrobot:eventbus:$EVENT_BUS"
@@ -130,12 +132,25 @@ dependencies {
     implementation "org.cache2k:cache2k-api:$MEMORY_CACHE"
     implementation "org.cache2k:cache2k-core:$MEMORY_CACHE"
 
+    //Room
+    // Room components
+    implementation "android.arch.persistence.room:runtime:$ROOM_Version"
+    annotationProcessor "android.arch.persistence.room:compiler:$ROOM_Version"
+    androidTestImplementation "android.arch.persistence.room:testing:$ROOM_Version"
+
+// Lifecycle components
+    implementation "android.arch.lifecycle:extensions:$ARCH_LIFE_CYCLE_VERSION"
+    annotationProcessor "android.arch.lifecycle:compiler:$ARCH_LIFE_CYCLE_VERSION"
+
     // Timber for logging
     implementation "com.jakewharton.timber:timber:$TIMBER"
 
     // JVM Unit Testing
     testImplementation "junit:junit:$JUNIT"
     testImplementation "org.mockito:mockito-core:$MOCKITO"
+    testImplementation "org.powermock:powermock-api-mockito:1.7.0RC2"
+    testImplementation "org.powermock:powermock-module-junit4:1.7.0RC2"
+    testImplementation "org.powermock:powermock-api-mockito2:1.7.0RC2"
 
     //Android testing
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$ESPRESSO") {
@@ -163,6 +178,10 @@ dependencies {
     androidTestImplementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
     androidTestImplementation "com.android.support.test:runner:$RUNNER"
     androidTestImplementation "com.android.support.test:rules:$RUNNER"
+
+    // Test helpers for Room
+    testImplementation "android.arch.persistence.room:testing:$ROOM_Version"
+
 
     // Matchers
     androidTestImplementation "org.hamcrest:hamcrest-library:$HAMCREST"
