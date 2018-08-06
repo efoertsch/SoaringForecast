@@ -10,6 +10,7 @@ import com.fisincorporated.aviationweather.app.WeatherApplication;
 import com.fisincorporated.aviationweather.cache.BitmapCache;
 import com.fisincorporated.aviationweather.dagger.annotations.AviationWeatherGov;
 import com.fisincorporated.aviationweather.dagger.annotations.SoaringForecast;
+import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherApi;
 import com.fisincorporated.aviationweather.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.aviationweather.retrofit.LoggingInterceptor;
@@ -47,9 +48,9 @@ import retrofit2.Retrofit;
 @Module
 public class AppModule {
 
-    public static final String AIRPORT_PREFS = "AIRPORT_PREFS";
+    private static final String AIRPORT_PREFS = "AIRPORT_PREFS";
 
-    public static BitmapCache bitmapCache;
+    private BitmapCache bitmapCache;
 
     private WeatherApplication application;
 
@@ -142,13 +143,11 @@ public class AppModule {
         Resources res = application.getResources();
         try {
             String[] regions = res.getStringArray(R.array.satellite_regions);
-            if (regions != null) {
-                for (int i = 0; i < regions.length; ++i) {
-                    SatelliteRegion satelliteRegion = new SatelliteRegion(regions[i]);
-                    satelliteRegions.add(satelliteRegion);
-                }
+            for (int i = 0; i < regions.length; ++i) {
+                SatelliteRegion satelliteRegion = new SatelliteRegion(regions[i]);
+                satelliteRegions.add(satelliteRegion);
             }
-        } catch (Resources.NotFoundException nfe) {
+        } catch (Resources.NotFoundException ignored) {
         }
         return satelliteRegions;
     }
@@ -160,13 +159,11 @@ public class AppModule {
         Resources res = application.getResources();
         try {
             String[] imageTypes = res.getStringArray(R.array.satellite_image_types);
-            if (imageTypes != null) {
-                for (int i = 0; i < imageTypes.length; ++i) {
-                    SatelliteImageType satelliteImageType = new SatelliteImageType(imageTypes[i]);
-                    satelliteImageTypes.add(satelliteImageType);
-                }
+            for (int i = 0; i < imageTypes.length; ++i) {
+                SatelliteImageType satelliteImageType = new SatelliteImageType(imageTypes[i]);
+                satelliteImageTypes.add(satelliteImageType);
             }
-        } catch (Resources.NotFoundException nfe) {
+        } catch (Resources.NotFoundException ignored) {
         }
         return satelliteImageTypes;
     }
@@ -216,7 +213,7 @@ public class AppModule {
     @Provides
     @Singleton
     public BitmapImageUtils provideBitmapImageUtils() {
-        return new BitmapImageUtils(getBitmapCache(),getOkHttpClientNoInterceptor());
+        return new BitmapImageUtils(getBitmapCache(), getOkHttpClientNoInterceptor());
     }
 
 
@@ -243,10 +240,14 @@ public class AppModule {
     //TODO put in separate module
     @Provides
     @Singleton
-    static Forecasts getForecastOptions(Context context) {
+    public Forecasts getForecastOptions(Context context) {
         return (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
     }
 
-
+    @Provides
+    @Singleton
+    public AppRepository getAppRepository() {
+        return  AppRepository.getAppRepository(application);
+    }
 
 }

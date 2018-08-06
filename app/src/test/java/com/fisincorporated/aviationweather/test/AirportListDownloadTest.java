@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public class AirportListDownloadTest {
 
-    OkHttpClient okHttpClient = new AppModule().getOkHttpClient(new LoggingInterceptor());
+    private OkHttpClient okHttpClient = new AppModule().getOkHttpClient(new LoggingInterceptor());
 
     @Before
     public void createRetrofit() {
@@ -40,17 +40,15 @@ public class AirportListDownloadTest {
         File file = new File("." + AirportListProcessor.AIRPORT_LIST_DIR + "/" + AirportListProcessor.AIRPORT_LIST_FILENAME);
 
         Single<ResponseBody> observable = getDownloadAirportListObservable();
-        AirportListProcessor airportListProcessor = new AirportListProcessor();
-        airportListProcessor.saveAirportListToFile(".", observable.blockingGet());
+
+        AirportListProcessor.saveAirportListToFile(".", observable.blockingGet());
 
         assertTrue(file.exists());
 
     }
 
-    public Single<ResponseBody> getDownloadAirportListObservable(){
+    private Single<ResponseBody> getDownloadAirportListObservable(){
         AirportListProcessor airportListProcessor = new AirportListProcessor();
-        Single<ResponseBody> observable =  airportListProcessor.getDownloadAirportListObservable(okHttpClient);
-        return observable;
-
+        return  airportListProcessor.getDownloadAirportListObservable(okHttpClient);
     }
 }

@@ -2,6 +2,8 @@ package com.fisincorporated.aviationweather.airports;
 
 import android.os.AsyncTask;
 
+import com.fisincorporated.aviationweather.repository.Airport;
+import com.fisincorporated.aviationweather.repository.AirportDao;
 import com.fisincorporated.aviationweather.retrofit.AirportListDownloadApi;
 import com.fisincorporated.aviationweather.retrofit.AirportListRetrofit;
 
@@ -33,7 +35,7 @@ import timber.log.Timber;
  */
 public class AirportListProcessor {
 
-    private final OkHttpClient okHttpClient;
+    private OkHttpClient okHttpClient;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public static final String AIRPORT_LIST_DIR = "/airportlist";
@@ -42,8 +44,11 @@ public class AirportListProcessor {
     private String path;
     private ResponseBody responseBody;
     private AirportDao airportDao;
-    Disposable disposable;
+    private Disposable disposable;
 
+
+    public AirportListProcessor() {
+    }
 
     public AirportListProcessor(OkHttpClient okHttpClient, AirportDao airportDao) {
         this.okHttpClient = okHttpClient;
@@ -51,21 +56,21 @@ public class AirportListProcessor {
 
     }
 
-    public void doAirpportListDownloadAndStore(){
-       disposable = downloadAirportsToDB(okHttpClient).subscribeWith(new DisposableCompletableObserver() {
-           @Override
-           public void onComplete() {
-               // all done
-           }
+    public void doAirportListDownloadAndStore() {
+        disposable = downloadAirportsToDB(okHttpClient).subscribeWith(new DisposableCompletableObserver() {
+            @Override
+            public void onComplete() {
+                // all done
+            }
 
-           @Override
-           public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
                 Timber.d(e);
-           }
-       });
+            }
+        });
     }
 
-    public void cancelAirportListDownloadAndStore(){
+    public void cancelAirportListDownloadAndStore() {
         disposable.dispose();
     }
 
@@ -77,56 +82,47 @@ public class AirportListProcessor {
     public Single<ResponseBody> getDownloadAirportListObservable(OkHttpClient okHttpClient) {
         Retrofit retrofit = new AirportListRetrofit(okHttpClient).getRetrofit();
         AirportListDownloadApi downloadService = retrofit.create(AirportListDownloadApi.class);
-        Single<ResponseBody> observable = downloadService.downloadAirportList();
-        return observable;
+        return downloadService.downloadAirportList();
+
     }
 
 
-    public Completable saveAirportListToDB(ResponseBody responseBody) {
+    private Completable saveAirportListToDB(ResponseBody responseBody) {
         return new Completable() {
             @Override
             protected void subscribeActual(CompletableObserver s) {
+                Airport airport;
+                String airportLine;
+                int linesRead = 0;
+                int usAirports = 0;
+                BufferedReader reader = null;
                 try {
-                    int linesRead = 0;
-                    BufferedReader reader = null;
-                    String airportLine;
-                    int usAirports = 0;
-
-                    try {
-                        Timber.d("File Size=" + responseBody.contentLength());
-                        reader = new BufferedReader(new InputStreamReader(responseBody.byteStream()));
-
-                        airportLine = reader.readLine();
-                        while (airportLine != null) {
-                            linesRead++;
-                            if (linesRead == 2 || airportLine.contains("US-")) {
-                                storeAirportInDB(airportLine);
-                                usAirports++;
+                    Timber.d("File Size= %1$s" , responseBody.contentLength());
+                    reader = new BufferedReader(new InputStreamReader(responseBody.byteStream()));
+                    airportLine = reader.readLine();
+                    while (airportLine != null && !airportLine.isEmpty()) {
+                        linesRead++;
+                        if (linesRead == 2 || airportLine.contains("US-")) {
+                            airport = Airport.createAirportFromCSVDetail(airportLine);
+                            if (airport != null && airport.getIdent() != null) {
+                                airportDao.insertAirport(airport);
                             }
-                            airportLine = reader.readLine();
+                            usAirports++;
                         }
-                        Timber.d("Lines read: %1$d   Lines written %2$d", linesRead, usAirports);
-                        Timber.d("File saved successfully!");
-                        return;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Timber.d("Failed to save the file!");
-                        return;
-                    } finally {
-                        if (reader != null) reader.close();
-
+                        airportLine = reader.readLine();
                     }
+                    Timber.d("Lines read: %1$d   Lines written %2$d", linesRead, usAirports);
+                    Timber.d("File saved to DB successfully!");
+                    s.onComplete();
                 } catch (IOException e) {
                     e.printStackTrace();
                     Timber.d("Failed to save the file!");
-                    return;
+                    s.onError(e);
+                } finally {
+                    if (reader != null) try {reader.close();} catch (IOException ignored){}
                 }
             }
         };
-    }
-
-    private void storeAirportInDB(String airportLine) {
-        airportDao.insertAirport(Airport.createAirport(airportLine));
     }
 
 
@@ -168,7 +164,7 @@ public class AirportListProcessor {
             File destinationFile = getAirportFilePathAndName(path);
 
             try {
-                Timber.d("File Size=" + responseBody.contentLength());
+                Timber.d("File Size= %1$s" ,responseBody.contentLength());
                 reader = new BufferedReader(new InputStreamReader(responseBody.byteStream()));
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destinationFile)));
 
@@ -182,15 +178,11 @@ public class AirportListProcessor {
                     airportLine = reader.readLine();
                 }
                 Timber.d("Lines read: %1$d   Lines written %2$d", linesRead, linesWritten);
-
                 writer.flush();
-
                 Timber.d("File saved successfully!");
-                return;
             } catch (IOException e) {
                 e.printStackTrace();
                 Timber.d("Failed to save the file!");
-                return;
             } finally {
                 if (reader != null) reader.close();
                 if (writer != null) writer.close();
@@ -198,7 +190,6 @@ public class AirportListProcessor {
         } catch (IOException e) {
             e.printStackTrace();
             Timber.d("Failed to save the file!");
-            return;
         }
     }
 
