@@ -1,6 +1,6 @@
 package com.fisincorporated.aviationweather.dagger;
 
-import com.fisincorporated.aviationweather.app.WeatherApplication;
+import com.fisincorporated.aviationweather.app.SoaringWeatherApplication;
 
 import javax.inject.Singleton;
 
@@ -10,21 +10,27 @@ import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 
 @Singleton
-@Component(modules = {AppModule.class,  AndroidSupportInjectionModule.class, UIBuildersModule.class})
+@Component(modules = {AppModule.class
+        , AndroidSupportInjectionModule.class
+        , UIBuildersModule.class
+        , DownloadAirportWorkerModule.class
+        , AppRepositoryModule.class
+        })
+
 public interface DiComponent extends
-        AndroidInjector<WeatherApplication> {
+        AndroidInjector<SoaringWeatherApplication> {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
-        Builder application(WeatherApplication application);
+        Builder application(SoaringWeatherApplication application);
 
         Builder appModule(AppModule appModule);
 
         DiComponent build();
     }
 
-    void inject(WeatherApplication weatherApplication);
+    void inject(SoaringWeatherApplication soaringWeatherApplication);
 
 
 

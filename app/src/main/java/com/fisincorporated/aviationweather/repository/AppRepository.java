@@ -1,28 +1,27 @@
 package com.fisincorporated.aviationweather.repository;
 
-import android.app.Application;
-import android.arch.lifecycle.LiveData;
+import android.content.Context;
 
 import java.util.List;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 public class AppRepository {
 
     private static AppRepository appRepository;
     private AirportDao airportDao;
 
-    private AppRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
+    private AppRepository(Context context) {
+        AppDatabase db = AppDatabase.getDatabase(context);
         airportDao = db.getAirportDao();
     }
 
-    public static AppRepository getAppRepository(Application application) {
+    public static AppRepository getAppRepository(Context context) {
         if (appRepository == null) {
             synchronized (AppRepository.class) {
                 if (appRepository == null) {
-                    appRepository = new AppRepository(application);
+                    appRepository = new AppRepository(context);
                 }
             }
         }
@@ -30,25 +29,30 @@ public class AppRepository {
     }
 
     public void insertAirport(Airport airport) {
-        Completable completable = new Completable() {
-            @Override
-            protected void subscribeActual(CompletableObserver s) {
-                airportDao.insertAirport(airport);
-                s.onComplete();
-            }
-        };
+        airportDao.insertAirport(airport);
+//        Completable completable = new Completable() {
+//            @Override
+//            protected void subscribeActual(CompletableObserver s) {
+//                airportDao.insertAirport(airport);
+//                s.onComplete();
+//            }
+//        };
     }
 
-    public int getCountOfAirports() {
+    public Single<Integer> getCountOfAirports() {
         return airportDao.getCountOfAirports();
     }
 
-    public LiveData<List<Airport>> findAirports(String ident, String name, String municipality) {
-        return airportDao.findAirports(ident, name, municipality);
+    public Maybe<List<Airport>> findAirports(String searchTerm ) {
+        return airportDao.findAirports(searchTerm);
+    }
+
+    public Maybe<List<Airport>> listAllAirports() {
+        return airportDao.listAllAirports();
     }
 
 
-    public LiveData<Airport> getAirport(String ident) {
+    public Maybe<Airport> getAirport(String ident) {
         return airportDao.getAirportByIdent(ident);
     }
 }

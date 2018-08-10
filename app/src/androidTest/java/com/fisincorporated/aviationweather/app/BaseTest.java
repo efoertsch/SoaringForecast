@@ -20,7 +20,7 @@ public class BaseTest {
 
 
     //Making it simple(?) and getting shared prefences name this way rather than using injection
-    public  static final String AIRPORT_PREFS_TEST_NAME = WeatherApplicationTest.AIRPORT_PREFS_TEST;
+    public  static final String AIRPORT_PREFS_TEST_NAME = SoaringWeatherApplicationTest.AIRPORT_PREFS_TEST;
 
     public Context targetContext;
 

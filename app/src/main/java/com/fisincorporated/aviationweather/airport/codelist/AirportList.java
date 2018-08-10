@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.airports;
+package com.fisincorporated.aviationweather.airport.codelist;
 
 
 

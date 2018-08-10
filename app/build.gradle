@@ -79,6 +79,7 @@ dependencies {
     final DISK_CACHE = '2.0.2'
     final ROOM_VERSION = '1.1.1'
     final ARCH_LIFE_CYCLE_VERSION = '1.1.1'
+    final work_version = "1.0.0-alpha06"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Android compat/support libraries
@@ -135,7 +136,11 @@ dependencies {
     //Room
     // Room components
     implementation "android.arch.persistence.room:runtime:$ROOM_VERSION"
+    implementation "android.arch.persistence.room:rxjava2:$ROOM_VERSION"
     annotationProcessor "android.arch.persistence.room:compiler:$ROOM_VERSION"
+
+    // WorkManager
+    implementation "android.arch.work:work-runtime:$work_version"
 
 
     // Lifecycle components
@@ -145,14 +150,16 @@ dependencies {
     // Timber for logging
     implementation "com.jakewharton.timber:timber:$TIMBER"
 
-    // JVM Unit Testing
+    // JVM Unit Testing---------------------------------------------------------------------
     testImplementation "junit:junit:$JUNIT"
     testImplementation "org.mockito:mockito-core:$MOCKITO"
     testImplementation "org.powermock:powermock-api-mockito:1.7.0RC2"
     testImplementation "org.powermock:powermock-module-junit4:1.7.0RC2"
     testImplementation "org.powermock:powermock-api-mockito2:1.7.0RC2"
 
-    //Android testing
+    testImplementation "android.arch.persistence.room:testing:$ROOM_VERSION"
+
+    //Android testing---------------------------------------------------------------------------
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$ESPRESSO") {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'javax.inject'
@@ -181,11 +188,14 @@ dependencies {
 
     // Test helpers for Room
     androidTestImplementation "android.arch.persistence.room:testing:$ROOM_VERSION"
-    testImplementation "android.arch.persistence.room:testing:$ROOM_VERSION"
+    androidTestImplementation "android.arch.core:core-testing:$ROOM_VERSION"
 
 
     // Matchers
     androidTestImplementation "org.hamcrest:hamcrest-library:$HAMCREST"
+
+    // WorkManager - Test helpers
+    androidTestImplementation "android.arch.work:work-testing:$work_version"
 
     //UI testing with UI Automator
     androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:$UIAUTOMATOR"

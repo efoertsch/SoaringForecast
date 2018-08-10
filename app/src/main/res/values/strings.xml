@@ -128,6 +128,12 @@
     <string name="forward_arrow">forward arrow</string>
     <string name="loop">loop</string>
     <string name="model_forecast_for_date_not_available">Oops. No model forecast found for specified dates.</string>
+    <string name="airport_database_loaded_ok">Airport database loaded OK</string>
+    <string name="airport_database_load_oops">Oops. It looks like airport download failed. Will try again shortly.</string>
+    <string name="channel_name">Soaring Weather</string>
+    <string name="channel_description">One source for soaring weather</string>
+    <string name="download_of_airports_started">Download of airports started</string>
+    <string name="airport_list">Airport List</string>
 
 
 </resources>

@@ -1,6 +1,7 @@
 package com.fisincorporated.aviationweather.dagger;
 
-import com.fisincorporated.aviationweather.airports.AirportListActivity;
+import com.fisincorporated.aviationweather.airport.codelist.AirportListActivity;
+import com.fisincorporated.aviationweather.airport.list.AirportListFragment;
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsPreferenceFragment;
@@ -26,6 +27,9 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract SoaringForecastFragment bindSoaringForecastFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract AirportListFragment binAirportListFragment();
 }
 
 

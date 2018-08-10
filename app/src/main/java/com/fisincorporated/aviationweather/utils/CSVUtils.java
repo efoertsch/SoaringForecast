@@ -24,7 +24,7 @@ public class CSVUtils {
         List<String> result = new ArrayList<>();
 
         //if empty, return!
-        if (cvsLine == null && cvsLine.isEmpty()) {
+        if (cvsLine == null || cvsLine.isEmpty()) {
             return result;
         }
 
@@ -69,9 +69,9 @@ public class CSVUtils {
                     inQuotes = true;
 
                     //Fixed : allow "" in empty quote enclosed
-                    if (chars[0] != '"' && customQuote == '\"') {
-                        curVal.append('"');
-                    }
+//                    if (chars[0] != '"' && customQuote == '\"') {
+//                        curVal.append('"');
+//                    }
 
                     //double quotes in column will hit this!
                     if (startCollectChar) {

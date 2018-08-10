@@ -9,8 +9,7 @@ import com.fisincorporated.aviationweather.utils.CSVUtils;
 
 import java.util.List;
 
-@Entity(indices = {@Index("name"),@Index("state"),@Index("municipality")})
-
+@Entity(indices = {@Index("name"),@Index(value={"state","name"}),@Index("municipality")})
 public class Airport {
 
     @PrimaryKey
@@ -44,6 +43,8 @@ public class Airport {
 
     public static Airport createAirportFromCSVDetail(String airportDetail) {
         // assumes example format and field position at above
+        // Strip off quote at start and end of airportDetail
+
         List<String> airportDetails = CSVUtils.parseLine(airportDetail);
         Airport airport = new Airport();
         try {
@@ -59,7 +60,7 @@ public class Airport {
             if (!airportDetails.get(6).isEmpty()) {
                 airport.elevationFt = Integer.parseInt(airportDetails.get(6));
             }
-            airport.state = airportDetails.get(9).substring(4);
+            airport.state = airportDetails.get(9).substring(3);
             airport.municipality = airportDetails.get(10);
         } catch (Exception nfe) {
             airport = null;

@@ -1,8 +1,7 @@
-package com.fisincorporated.aviationweather.airports;
+package com.fisincorporated.aviationweather.airport.codelist;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 
@@ -10,10 +9,10 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class AirportListActivity extends DaggerAppCompatActivity implements  AirportListViewModel.EntryCompleteListener{
+public class AirportListActivity extends DaggerAppCompatActivity implements  AirportCodeListViewModel.EntryCompleteListener{
 
     @Inject
-    public AirportListViewModel airportListViewModel;
+    public AirportCodeListViewModel airportCodeListViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +23,7 @@ public class AirportListActivity extends DaggerAppCompatActivity implements  Air
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        airportListViewModel.setView((ViewGroup) findViewById(android.R.id.content))
+        airportCodeListViewModel.setView(findViewById(android.R.id.content))
                 .setEntryCompleteListener(this);
 
     }
