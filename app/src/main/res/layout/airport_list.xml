@@ -1,60 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <data>
-
-        <import type="com.fisincorporated.aviationweather.airports.AirportListViewModel"/>
-
-        <variable
-            name="airports"
-            type="AirportListViewModel"/>
-    </data>
-
-    <RelativeLayout
-        android:id="@+id/activity_airport_list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/airport_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTint="@color/colorScreenBackground"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.fisincorporated.aviationweather.airports.AirportListActivity"
-        tools:showIn="@layout/activity_airport">
+        android:layout_marginStart="@dimen/margin_standard"
+        android:layout_marginTop="@dimen/margin_standard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <TextView
-            android:id="@+id/activity_airport_enter_label"
-            style="@style/forecastLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text="@string/enter_airport_codes"
-            />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_double"
+        android:layout_marginEnd="@dimen/margin_double"
+        android:clickable="true"
+        android:focusable="auto"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_input_add"/>
 
-        <EditText
-            android:id="@+id/activity_airport_codes"
-            style="@style/forecastData"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/activity_airport_save"
-            android:layout_below="@id/activity_airport_enter_label"
-            android:gravity="top"
-            android:hint="@string/airport_code_entry_hint"
-            android:inputType="text"
-            android:scrollbars="vertical"
-            android:text="@{airports.airportList}"
-            android:textAllCaps="true"/>
-
-        <Button
-            android:id="@+id/activity_airport_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:onClick="@{airports::onSaveAirports}"
-            android:text="@string/save"/>
-
-    </RelativeLayout>
-</layout>
+</android.support.constraint.ConstraintLayout>

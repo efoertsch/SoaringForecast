@@ -29,7 +29,9 @@ public class BitmapCache {
     private DiskLruImageCache mDiskLruCache;
     private Context context;
 
-    private BitmapCache() {
+    // Needed to make public for unit testing
+    // TODO how to make private (mock context, AyncTask)
+    public BitmapCache() {
     }
 
     public static BitmapCache init(Context context) {

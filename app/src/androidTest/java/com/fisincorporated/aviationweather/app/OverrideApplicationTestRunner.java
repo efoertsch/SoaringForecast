@@ -21,6 +21,6 @@ public class OverrideApplicationTestRunner extends AndroidJUnitRunner {
             throws InstantiationException,
             IllegalAccessException,
             ClassNotFoundException {
-        return Instrumentation.newApplication(WeatherApplicationTest.class, context);
+        return Instrumentation.newApplication(SoaringWeatherApplicationTest.class, context);
     }
 }

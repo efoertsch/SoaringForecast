@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.airports;
+package com.fisincorporated.aviationweather.airport.codelist;
 
 import android.databinding.DataBindingUtil;
 import android.view.View;
@@ -6,20 +6,20 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
-import com.fisincorporated.aviationweather.databinding.AirportListBinding;
+import com.fisincorporated.aviationweather.databinding.AirportWeatherListBinding;
 
 import javax.inject.Inject;
 
 /**
  * For now a simple method to enter airport codes
  */
-public class AirportListViewModel {
+public class AirportCodeListViewModel {
 
     private String airportList = "";
 
     private View bindingView;
 
-    private AirportListBinding viewDataBinding;
+    private AirportWeatherListBinding viewDataBinding;
 
     private EntryCompleteListener entryCompleteListener;
 
@@ -31,14 +31,14 @@ public class AirportListViewModel {
     }
 
     @Inject
-    public AirportListViewModel() {
+    public AirportCodeListViewModel() {
     }
 
-    public AirportListViewModel setView(ViewGroup view) {
+    public AirportCodeListViewModel setView(ViewGroup view) {
         bindingView = view.findViewById(R.id.activity_airport_list);
         viewDataBinding = DataBindingUtil.bind(bindingView);
         airportList = appPreferences.getAirportList();
-        viewDataBinding.setAirports(this);
+        viewDataBinding.setAirportList(this);
         // to set cursor at end of list of codes
         viewDataBinding.activityAirportCodes.setText(airportList);
         viewDataBinding.activityAirportCodes.setSelection(airportList.length()> 0 ? airportList.length() : 0);
@@ -46,7 +46,7 @@ public class AirportListViewModel {
 
     }
 
-    public AirportListViewModel setEntryCompleteListener(EntryCompleteListener entryCompleteListener) {
+    public AirportCodeListViewModel setEntryCompleteListener(EntryCompleteListener entryCompleteListener) {
         this.entryCompleteListener = entryCompleteListener;
         return this;
     }

@@ -6,7 +6,7 @@ import android.databinding.ObservableArrayList;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
-import com.fisincorporated.aviationweather.app.WeatherApplication;
+import com.fisincorporated.aviationweather.app.SoaringWeatherApplication;
 import com.fisincorporated.aviationweather.cache.BitmapCache;
 import com.fisincorporated.aviationweather.dagger.annotations.AviationWeatherGov;
 import com.fisincorporated.aviationweather.dagger.annotations.SoaringForecast;
@@ -47,11 +47,11 @@ import retrofit2.Retrofit;
 @Module
 public class AppModule {
 
-    public static final String AIRPORT_PREFS = "AIRPORT_PREFS";
+    private static final String AIRPORT_PREFS = "AIRPORT_PREFS";
 
-    public static BitmapCache bitmapCache;
+    private BitmapCache bitmapCache;
 
-    private WeatherApplication application;
+    private Context appContext;
 
     @Provides
     @Named(AIRPORT_PREFS)
@@ -59,24 +59,25 @@ public class AppModule {
         return AIRPORT_PREFS;
     }
 
+
     // For unit testing only
     public AppModule() {
     }
 
-    public AppModule(WeatherApplication application) {
-        this.application = application;
+    public AppModule(Context appContext) {
+        this.appContext = appContext;
     }
 
     @Provides
     @Singleton
-    Context provideContext(WeatherApplication application) {
-        return application.getApplicationContext();
+    Context provideContext(SoaringWeatherApplication application) {
+        return appContext;
     }
 
     @Provides
     @Singleton
-    public AppPreferences provideAppPreferences(WeatherApplication application) {
-        return new AppPreferences(application, AIRPORT_PREFS);
+    public AppPreferences provideAppPreferences() {
+        return new AppPreferences(appContext, AIRPORT_PREFS);
     }
 
     @Provides
@@ -130,7 +131,7 @@ public class AppModule {
     @Singleton
     public BitmapCache getBitmapCache() {
         if (bitmapCache == null) {
-            bitmapCache = BitmapCache.init(application);
+            bitmapCache = BitmapCache.init(appContext);
         }
         return bitmapCache;
     }
@@ -139,16 +140,14 @@ public class AppModule {
     @Singleton
     public List<SatelliteRegion> provideSatelliteRegionArray() {
         ArrayList<SatelliteRegion> satelliteRegions = new ArrayList<>();
-        Resources res = application.getResources();
+        Resources res = appContext.getResources();
         try {
             String[] regions = res.getStringArray(R.array.satellite_regions);
-            if (regions != null) {
-                for (int i = 0; i < regions.length; ++i) {
-                    SatelliteRegion satelliteRegion = new SatelliteRegion(regions[i]);
-                    satelliteRegions.add(satelliteRegion);
-                }
+            for (int i = 0; i < regions.length; ++i) {
+                SatelliteRegion satelliteRegion = new SatelliteRegion(regions[i]);
+                satelliteRegions.add(satelliteRegion);
             }
-        } catch (Resources.NotFoundException nfe) {
+        } catch (Resources.NotFoundException ignored) {
         }
         return satelliteRegions;
     }
@@ -157,16 +156,14 @@ public class AppModule {
     @Singleton
     public List<SatelliteImageType> provideSatelliteImageType() {
         ArrayList<SatelliteImageType> satelliteImageTypes = new ArrayList<>();
-        Resources res = application.getResources();
+        Resources res = appContext.getResources();
         try {
             String[] imageTypes = res.getStringArray(R.array.satellite_image_types);
-            if (imageTypes != null) {
-                for (int i = 0; i < imageTypes.length; ++i) {
-                    SatelliteImageType satelliteImageType = new SatelliteImageType(imageTypes[i]);
-                    satelliteImageTypes.add(satelliteImageType);
-                }
+            for (int i = 0; i < imageTypes.length; ++i) {
+                SatelliteImageType satelliteImageType = new SatelliteImageType(imageTypes[i]);
+                satelliteImageTypes.add(satelliteImageType);
             }
-        } catch (Resources.NotFoundException nfe) {
+        } catch (Resources.NotFoundException ignored) {
         }
         return satelliteImageTypes;
     }
@@ -201,7 +198,7 @@ public class AppModule {
     public List<SoaringForecastModel> provideSoaringForecastTypeArray() {
         String[] types;
         ObservableArrayList<SoaringForecastModel> soaringForecastModels = new ObservableArrayList<>();
-        Resources res = application.getResources();
+        Resources res = appContext.getResources();
         try {
             types = res.getStringArray(R.array.soaring_forecast_models);
             for (int i = 0; i < types.length; ++i) {
@@ -216,7 +213,7 @@ public class AppModule {
     @Provides
     @Singleton
     public BitmapImageUtils provideBitmapImageUtils() {
-        return new BitmapImageUtils(getBitmapCache(),getOkHttpClientNoInterceptor());
+        return new BitmapImageUtils(getBitmapCache(), getOkHttpClientNoInterceptor());
     }
 
 
@@ -243,10 +240,9 @@ public class AppModule {
     //TODO put in separate module
     @Provides
     @Singleton
-    static Forecasts getForecastOptions(Context context) {
+    public Forecasts getForecastOptions(Context context) {
         return (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
     }
-
 
 
 }

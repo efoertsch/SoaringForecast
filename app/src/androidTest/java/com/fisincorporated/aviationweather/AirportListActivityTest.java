@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.fisincorporated.aviationweather.airports.AirportListActivity;
+import com.fisincorporated.aviationweather.airport.codelist.AirportListActivity;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.BaseTest;
 

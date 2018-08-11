@@ -18,7 +18,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.airports.AirportListActivity;
+import com.fisincorporated.aviationweather.airport.codelist.AirportListActivity;
+import com.fisincorporated.aviationweather.airport.list.AirportListFragment;
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
 import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
@@ -122,8 +123,11 @@ public class WeatherDrawerActivity extends AppCompatActivity {
     public void selectDrawerItem(MenuItem menuItem) {
 
         switch (menuItem.getItemId()) {
+            case R.id.nava_menu_airport_list:
+                displayAirportListFragment();
+                break;
             case R.id.nav_menu_add_airport_codes:
-                displayAirportList();
+                displayAirportCodeListActivity();
                 break;
             case R.id.nav_menu_airport_weather:
                 displayAirportWeather();
@@ -139,13 +143,10 @@ public class WeatherDrawerActivity extends AppCompatActivity {
                 break;
 
             default:
-                displayAirportList();
+                displayAirportCodeListActivity();
         }
-
         drawerLayout.closeDrawers();
-
     }
-
 
 
     private void displayFragment(Fragment fragment) {
@@ -154,17 +155,20 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         fragmentManager.beginTransaction().
                 replace(R.id.app_frame_layout, fragment).
                 commit();
-
     }
 
+
+    private void displayAirportListFragment() {
+        AirportListFragment fragment = new AirportListFragment();
+        displayFragment(fragment);
+    }
 
     private void displayAirportWeather() {
         AirportWeatherFragment fragment = new AirportWeatherFragment();
         displayFragment(fragment);
-
     }
 
-    private void displayAirportList() {
+    private void displayAirportCodeListActivity() {
         Intent i = new Intent(this, AirportListActivity.class);
         startActivity(i);
     }
