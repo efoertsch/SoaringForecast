@@ -6,11 +6,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
 import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -18,7 +23,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AppPreferences {
 
-    private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";
+    //private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";
 
     private static final String SATELLITE_REGION_KEY = "SATELLITE_REGION";
 
@@ -29,6 +34,10 @@ public class AppPreferences {
     private static final String SOARING_FORECAST_TYPE_KEY = "SOARING_FORECAST_TYPE";
 
     private static final String SOARING_FORECAST_REGION_KEY = "SOARING_FORECAST_REGION";
+
+    private static final String AIRPORT_CODES_FOR_METAR = "AIRPORT_CODES_FOR_METAR_TAF";
+
+    private static final String ICAO_CODE_DELIMITER = " ";
 
     private static String RAW_METAR_KEY;
 
@@ -96,8 +105,8 @@ public class AppPreferences {
 
         // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
         // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
-        sharedPreferences =  context.getSharedPreferences(this.airportPrefs,  MODE_PRIVATE);
-        if (!sharedPreferences.getBoolean(DEFAULT_PREFS_SET, false)){
+        sharedPreferences = context.getSharedPreferences(this.airportPrefs, MODE_PRIVATE);
+        if (!sharedPreferences.getBoolean(DEFAULT_PREFS_SET, false)) {
             setDisplayRawTafMetar(rawTafMetar);
             setDecodeTafMetar(decodeTafMetar);
             setTemperatureDisplay(imperialTemperatureUnits);
@@ -110,12 +119,12 @@ public class AppPreferences {
     }
 
     public String getAirportList() {
-        return sharedPreferences.getString(AIRPORT_LIST_KEY, "");
+        return sharedPreferences.getString(AIRPORT_CODES_FOR_METAR, "");
     }
 
     public void saveAirportList(@NonNull String airportList) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(AIRPORT_LIST_KEY, airportList);
+        editor.putString(AIRPORT_CODES_FOR_METAR, airportList);
         editor.apply();
     }
 
@@ -194,7 +203,7 @@ public class AppPreferences {
     }
 
     public static String getAirportListKey() {
-        return AIRPORT_LIST_KEY;
+        return AIRPORT_CODES_FOR_METAR;
     }
 
     public static String getRawMetarKey() {
@@ -225,40 +234,86 @@ public class AppPreferences {
         return DEFAULT_PREFS_SET;
     }
 
-    public SatelliteRegion getSatelliteRegion(){
-       return new SatelliteRegion(sharedPreferences.getString(SATELLITE_REGION_KEY, satelliteRegionUS));
+    public SatelliteRegion getSatelliteRegion() {
+        return new SatelliteRegion(sharedPreferences.getString(SATELLITE_REGION_KEY, satelliteRegionUS));
     }
+
     public void setSatelliteRegion(SatelliteRegion satelliteRegion) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SATELLITE_REGION_KEY, satelliteRegion.toStore());
         editor.apply();
     }
 
-    public SatelliteImageType getSatelliteImageType(){
+    public SatelliteImageType getSatelliteImageType() {
         return new SatelliteImageType(sharedPreferences.getString(SATELLITE_IMAGE_TYPE_KEY, satelliteImageTypeVis));
     }
+
     public void setSatelliteImageType(SatelliteImageType satelliteImageType) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SATELLITE_IMAGE_TYPE_KEY, satelliteImageType.toStore());
         editor.apply();
     }
 
-    public SoaringForecastModel getSoaringForecastType(){
+    public SoaringForecastModel getSoaringForecastType() {
         return new SoaringForecastModel(sharedPreferences.getString(SOARING_FORECAST_TYPE_KEY, soaringForecastType));
     }
+
     public void setSoaringForecastType(SoaringForecastModel soaringForecastModel) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SOARING_FORECAST_TYPE_KEY, soaringForecastModel.toStore());
         editor.apply();
     }
 
-    public String  getSoaringForecastRegion(){
+    public String getSoaringForecastRegion() {
         return sharedPreferences.getString(SOARING_FORECAST_REGION_KEY, soaringForecastDefaultRegion);
     }
+
     public void setSoaringForecastRegion(String region) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SOARING_FORECAST_REGION_KEY, region);
         editor.apply();
+    }
+
+    /**
+     * @param icaoCodes space delimited list of icao codes eg "KORH KBOS ..."
+     */
+    public void setSelectedAirportCodes(@NonNull String icaoCodes) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(AIRPORT_CODES_FOR_METAR, icaoCodes);
+        editor.apply();
+
+    }
+
+    /**
+     * @return space delimited list of icao codes eg "KORH KBOS ..."
+     */
+    public String getSelectedAirportCodes() {
+        return sharedPreferences.getString(AIRPORT_CODES_FOR_METAR, "");
+    }
+
+    /**
+     * @param icaoCodes list of icao codes eg KORH, KBOS, ...
+     */
+    public void setSelectedAirportCodes(@NonNull List<String> icaoCodes) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(AIRPORT_CODES_FOR_METAR, TextUtils.join(ICAO_CODE_DELIMITER, icaoCodes));
+        editor.apply();
+    }
+
+    /**
+     * @return List of icao airport codes eg KORH, KBOS, ...
+     */
+    public List<String> getSelectedAirportCodesList() {
+        String airportCodes = sharedPreferences.getString(AIRPORT_CODES_FOR_METAR, "");
+        return new ArrayList<>(Arrays.asList(airportCodes.trim().split("\\s+")));
+    }
+
+    public void addAirportCodeToSelectedIcaoCodes(String icaoCode) {
+        String oldIcaoCodes = getSelectedAirportCodes();
+        if (!oldIcaoCodes.contains(icaoCode)) {
+            String newSelectedIcaoCodes = getSelectedAirportCodes() + ICAO_CODE_DELIMITER + icaoCode;
+            setSelectedAirportCodes(newSelectedIcaoCodes);
+        }
     }
 
 }

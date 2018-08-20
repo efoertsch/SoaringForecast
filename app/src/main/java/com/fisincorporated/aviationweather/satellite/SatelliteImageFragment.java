@@ -28,6 +28,8 @@ public class SatelliteImageFragment extends DaggerFragment {
     @Override
     public void onResume() {
         super.onResume();
+        //set title
+        getActivity().setTitle(R.string.satellite);
         satelliteViewModel.onResume();
 
     }

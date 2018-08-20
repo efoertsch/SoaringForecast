@@ -36,6 +36,8 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Override
     public void onResume() {
         super.onResume();
+        //set title
+        getActivity().setTitle(R.string.rasp);
         soaringForecastViewModel.onResume();
 
     }

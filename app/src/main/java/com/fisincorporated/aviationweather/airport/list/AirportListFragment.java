@@ -3,6 +3,7 @@ package com.fisincorporated.aviationweather.airport.list;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.app.AppPreferences;
+import com.fisincorporated.aviationweather.messages.AddAirportEvent;
 import com.fisincorporated.aviationweather.repository.AppRepository;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -19,6 +26,8 @@ import dagger.android.support.DaggerFragment;
 
 public class AirportListFragment extends DaggerFragment {
 
+    @Inject
+    public AppPreferences appPreferences;
 
     @Inject
     AppRepository appRepository;
@@ -30,12 +39,13 @@ public class AirportListFragment extends DaggerFragment {
 
 
     @Inject
-    public AirportListFragment(){}
+    public AirportListFragment() {
+    }
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.airport_list, container, false);
+        View view = inflater.inflate(R.layout.airport_list, container, false);
 
         airportListViewModel = ViewModelProviders.of(this).get(AirportListViewModel.class).setAppRepository(appRepository);
         airportListAdapter = new AirportListAdapter();
@@ -46,13 +56,25 @@ public class AirportListFragment extends DaggerFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(airportListAdapter);
 
-
-        airportListViewModel.listAirports().observe(this, airports -> {
-            airportListAdapter.setAirportList(airports);
-        });
+        FloatingActionButton button = view.findViewById(R.id.airport_list_add_button);
+        button.setOnClickListener(v -> EventBus.getDefault().post(new AddAirportEvent()));
 
         return view;
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        //set title
+        getActivity().setTitle(R.string.metar_taf_airports);
+        refreshAirports();
+    }
+
+    private void refreshAirports() {
+        List<String> airportList = appPreferences.getSelectedAirportCodesList();
+        airportListViewModel.listSelectedAirports(airportList).observe(this, airports -> {
+            airportListAdapter.setAirportList(airports);
+        });
+    }
 
 }

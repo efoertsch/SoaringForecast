@@ -1,8 +1,8 @@
 package com.fisincorporated.aviationweather.dagger;
 
-import com.fisincorporated.aviationweather.airport.codelist.AirportListActivity;
 import com.fisincorporated.aviationweather.airport.list.AirportListFragment;
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
+import com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsPreferenceFragment;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastFragment;
@@ -14,10 +14,10 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
-    abstract AirportWeatherFragment bindAirportWeatherFragment();
+    abstract WeatherDrawerActivity bindWeatherDrawerActivity();
 
     @ContributesAndroidInjector(modules = {})
-    abstract AirportListActivity bindAirportListActivity();
+    abstract AirportWeatherFragment bindAirportWeatherFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();

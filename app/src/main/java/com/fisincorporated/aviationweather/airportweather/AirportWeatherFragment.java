@@ -26,12 +26,16 @@ public class AirportWeatherFragment extends DaggerFragment {
                              @Nullable Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.airport_weather_fragment, container, false);
         airportWeatherViewModel.setView(view);
+        //set title
+        getActivity().setTitle(R.string.action_airport_weather);
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        //set title
+        getActivity().setTitle(R.string.nav_drawer_metar_taf_label);
         airportWeatherViewModel.onResume();
 
     }
