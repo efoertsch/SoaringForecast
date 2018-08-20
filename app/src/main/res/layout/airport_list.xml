@@ -23,10 +23,10 @@
         android:layout_marginRight="@dimen/margin_standard"
         android:clickable="true"
         app:fabSize="normal"
-        android:scaleType="center"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_add_circle_primary_blue_24dp"
+        app:srcCompat="@drawable/ic_add_white_24dp"
         android:onClick="addAirportClick"/>
 
 
