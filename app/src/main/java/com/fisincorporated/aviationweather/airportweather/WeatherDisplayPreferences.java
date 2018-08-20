@@ -1,19 +1,16 @@
 package com.fisincorporated.aviationweather.airportweather;
 
 
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
+interface WeatherDisplayPreferences {
 
-public interface WeatherDisplayPreferences {
+    boolean isDisplayRawTafMetar();
 
-    public ObservableBoolean isDisplayRawTafMetar();
+    boolean isDecodeTafMetar();
 
-    public ObservableBoolean isDecodeTafMetar();
+    String getAltitudeUnits();
 
-    public ObservableField<String> getAltitudeUnits();
+    String getWindSpeedUnits();
 
-    public ObservableField<String> getWindSpeedUnits();
-
-    public ObservableField<String> getDistanceUnits();
+    String getDistanceUnits();
 
 }

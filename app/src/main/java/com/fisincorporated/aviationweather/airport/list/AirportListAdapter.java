@@ -14,8 +14,19 @@ import java.util.List;
 public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.BindingHolder> {
 
     private List<Airport> airports;
+    private AirportListAdapter.OnItemClickListener onItemClickListener;
 
-    public  AirportListAdapter() { }
+    public interface OnItemClickListener {
+        void onItemClick(Airport airport);
+    }
+
+    public AirportListAdapter() {
+    }
+
+
+    public void setOnItemClickListener(OnItemClickListener onClick) {
+        this.onItemClickListener  = onClick;
+    }
 
     public void setAirportList(List<Airport> newAirportList) {
         this.airports = newAirportList;
@@ -30,8 +41,9 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(BindingHolder holder, int position) {
+    public void onBindViewHolder(BindingHolder holder,  int position) {
         holder.binding.setAirport(airports.get(position));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(holder.binding.getAirport()));
     }
 
     @Override
@@ -50,4 +62,5 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
         }
 
     }
+
 }

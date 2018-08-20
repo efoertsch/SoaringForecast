@@ -3,8 +3,6 @@ package com.fisincorporated.aviationweather.airportweather;
 
 import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,19 +47,19 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
 
     private FloatingActionButton fab;
 
-    public ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
+    private ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
 
-    public final ObservableBoolean displayRawTafMetar = new ObservableBoolean();
+    private boolean displayRawTafMetar;
 
-    public final ObservableBoolean decodeTafMetar = new ObservableBoolean();
+    private boolean decodeTafMetar;
 
-    public final ObservableField<String> temperatureUnits = new ObservableField();
+    private String temperatureUnits;
 
-    public final ObservableField<String> altitudeUnits = new ObservableField();
+    private String altitudeUnits;
 
-    public final ObservableField<String> windSpeedUnits = new ObservableField();
+    private String windSpeedUnits;
 
-    public final ObservableField<String> distanceUnits = new ObservableField<>();
+    private String distanceUnits;
 
     @Inject
     public AppPreferences appPreferences;
@@ -226,31 +224,31 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     }
 
     private void assignDisplayOptions() {
-        displayRawTafMetar.set(appPreferences.isDisplayRawTafMetar());
-        decodeTafMetar.set(appPreferences.isDecodeTafMetar());
-        temperatureUnits.set(appPreferences.getTemperatureDisplay());
-        altitudeUnits.set(appPreferences.getAltitudeDisplay());
-        windSpeedUnits.set(appPreferences.getWindSpeedDisplay());
-        distanceUnits.set(appPreferences.getDistanceUnits());
+        displayRawTafMetar = appPreferences.isDisplayRawTafMetar();
+        decodeTafMetar = appPreferences.isDecodeTafMetar();
+        temperatureUnits = appPreferences.getTemperatureDisplay();
+        altitudeUnits = appPreferences.getAltitudeDisplay();
+        windSpeedUnits = appPreferences.getWindSpeedDisplay();
+        distanceUnits = appPreferences.getDistanceUnits();
     }
 
-    public ObservableBoolean isDisplayRawTafMetar() {
+    public boolean isDisplayRawTafMetar() {
         return displayRawTafMetar;
     }
 
-    public ObservableBoolean isDecodeTafMetar() {
+    public boolean isDecodeTafMetar() {
         return decodeTafMetar;
     }
 
-    public ObservableField<String> getAltitudeUnits() {
+    public String getAltitudeUnits() {
         return altitudeUnits;
     }
 
-    public ObservableField<String> getWindSpeedUnits() {
+    public String getWindSpeedUnits() {
         return windSpeedUnits;
     }
 
-    public ObservableField<String> getDistanceUnits() {
+    public String getDistanceUnits() {
         return distanceUnits;
     }
 

@@ -1,5 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.fisincorporated.aviationweather.settings.SettingsActivity">
 
@@ -9,10 +8,6 @@
             android:id="@+id/nava_menu_airport_list"
             android:title="@string/airport_list"
             />
-
-        <item
-            android:id="@+id/nav_menu_add_airport_codes"
-            android:title="@string/action_add_airports"/>
 
         <item
             android:id="@+id/nav_menu_airport_weather"

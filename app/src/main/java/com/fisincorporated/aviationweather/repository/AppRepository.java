@@ -51,8 +51,13 @@ public class AppRepository {
         return airportDao.listAllAirports();
     }
 
+    public Maybe<List<Airport>> selectIcaoIdAirports(List<String> iacoAirports) {
+        return airportDao.selectIcaoIdAirports(iacoAirports);
+    }
 
     public Maybe<Airport> getAirport(String ident) {
         return airportDao.getAirportByIdent(ident);
     }
+
+
 }

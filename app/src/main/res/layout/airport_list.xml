@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,16 +14,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/airport_list_add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_double"
-        android:layout_marginEnd="@dimen/margin_double"
+        android:layout_marginBottom="@dimen/margin_standard"
+        android:layout_marginRight="@dimen/margin_standard"
         android:clickable="true"
-        android:focusable="auto"
+        app:fabSize="normal"
+        android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add"/>
+        app:srcCompat="@drawable/ic_add_circle_primary_blue_24dp"
+        android:onClick="addAirportClick"/>
+
+
 
 </android.support.constraint.ConstraintLayout>

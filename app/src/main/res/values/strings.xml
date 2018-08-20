@@ -134,6 +134,15 @@
     <string name="channel_description">One source for soaring weather</string>
     <string name="download_of_airports_started">Download of airports started</string>
     <string name="airport_list">Airport List</string>
+    <string name="search_for_airports_title">Search</string>
+    <string name="airport_search">Airport Search</string>
+    <string name="search_for">Search for …</string>
+    <string name="finish">Finish</string>
+    <string name="search_for_airports_hint">ICAO code, name, city, state</string>
+    <string name="icao_added_for_metar_taf">%1$s added for METAR/TAF</string>
+    <string name="rasp">RASP</string>
+    <string name="satellite">Satellite</string>
+    <string name="metar_taf_airports">METAR/TAF Airports</string>
 
 
 </resources>

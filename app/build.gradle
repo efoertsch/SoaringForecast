@@ -12,6 +12,9 @@ android {
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner "com.fisincorporated.aviationweather.app.OverrideApplicationTestRunner"
+
+        // to use any vector drawables
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -142,7 +145,6 @@ dependencies {
     // WorkManager
     implementation "android.arch.work:work-runtime:$work_version"
 
-
     // Lifecycle components
     implementation "android.arch.lifecycle:extensions:$ARCH_LIFE_CYCLE_VERSION"
     annotationProcessor "android.arch.lifecycle:compiler:$ARCH_LIFE_CYCLE_VERSION"
@@ -189,7 +191,6 @@ dependencies {
     // Test helpers for Room
     androidTestImplementation "android.arch.persistence.room:testing:$ROOM_VERSION"
     androidTestImplementation "android.arch.core:core-testing:$ROOM_VERSION"
-
 
     // Matchers
     androidTestImplementation "org.hamcrest:hamcrest-library:$HAMCREST"

@@ -41,4 +41,18 @@ public class AirportListViewModel extends ViewModel {
         return airports;
     }
 
+    @SuppressLint("CheckResult")
+    public LiveData<List<Airport>> listSelectedAirports(List<String> icaoIds) {
+        appRepository.selectIcaoIdAirports(icaoIds)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(airportList -> {
+                            airports.setValue(airportList);
+                        },
+                        t -> {
+                            Timber.e(t);
+                        });
+        return airports;
+    }
+
 }

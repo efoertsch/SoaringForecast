@@ -4,25 +4,28 @@ package com.fisincorporated.aviationweather.drawer;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.airport.codelist.AirportListActivity;
 import com.fisincorporated.aviationweather.airport.list.AirportListFragment;
+import com.fisincorporated.aviationweather.airport.search.AirportSearchFragment;
 import com.fisincorporated.aviationweather.airportweather.AirportWeatherFragment;
+import com.fisincorporated.aviationweather.app.AppPreferences;
+import com.fisincorporated.aviationweather.messages.AddAirportEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
+import com.fisincorporated.aviationweather.messages.SnackbarMessage;
+import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastFragment;
@@ -31,14 +34,24 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerAppCompatActivity;
+
 // Nav bar http://guides.codepath.com/android/fragment-navigation-drawer#setup-toolbar
 
-public class WeatherDrawerActivity extends AppCompatActivity {
+public class WeatherDrawerActivity extends DaggerAppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
     private ProgressBar loadingProgressBar;
+
+    @Inject
+    AppRepository appRepository;
+
+    @Inject
+    AppPreferences appPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,12 +124,9 @@ public class WeatherDrawerActivity extends AppCompatActivity {
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                        selectDrawerItem(menuItem);
-                        return true;
-                    }
+                menuItem -> {
+                    selectDrawerItem(menuItem);
+                    return true;
                 });
     }
 
@@ -125,9 +135,6 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         switch (menuItem.getItemId()) {
             case R.id.nava_menu_airport_list:
                 displayAirportListFragment();
-                break;
-            case R.id.nav_menu_add_airport_codes:
-                displayAirportCodeListActivity();
                 break;
             case R.id.nav_menu_airport_weather:
                 displayAirportWeather();
@@ -141,9 +148,6 @@ public class WeatherDrawerActivity extends AppCompatActivity {
             case R.id.nav_menu_soaring_forecasts:
                 displaySoaringForecasts();
                 break;
-
-            default:
-                displayAirportCodeListActivity();
         }
         drawerLayout.closeDrawers();
     }
@@ -152,9 +156,10 @@ public class WeatherDrawerActivity extends AppCompatActivity {
     private void displayFragment(Fragment fragment) {
         // Replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().
-                replace(R.id.app_frame_layout, fragment).
-                commit();
+        fragmentManager.beginTransaction()
+                .replace(R.id.app_frame_layout, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
 
@@ -166,11 +171,6 @@ public class WeatherDrawerActivity extends AppCompatActivity {
     private void displayAirportWeather() {
         AirportWeatherFragment fragment = new AirportWeatherFragment();
         displayFragment(fragment);
-    }
-
-    private void displayAirportCodeListActivity() {
-        Intent i = new Intent(this, AirportListActivity.class);
-        startActivity(i);
     }
 
     private void displaySettingsActivity() {
@@ -188,6 +188,7 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         displayFragment(fragment);
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DataLoadingEvent event) {
         loadRunning(true);
@@ -198,8 +199,26 @@ public class WeatherDrawerActivity extends AppCompatActivity {
         loadRunning(false);
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddAirportEvent event) {
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        AirportSearchFragment airportSearchFragment = AirportSearchFragment.newInstance(appRepository, appPreferences);
+//        airportSearchFragment.show(fragmentManager, "AddAirport");
+
+        AirportSearchFragment airportSearchFragment = AirportSearchFragment.newInstance(appRepository, appPreferences);
+        displayFragment(airportSearchFragment);
+    }
+
     public void loadRunning(final boolean dataLoading) {
         loadingProgressBar.setVisibility(dataLoading ? View.VISIBLE : View.GONE);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SnackbarMessage message){
+        Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(),
+                Snackbar.LENGTH_SHORT)
+                .show();
     }
 
 }
