@@ -1,7 +1,7 @@
 package com.fisincorporated.aviationweather.airportweather;
 
 
-interface WeatherDisplayPreferences {
+public interface WeatherDisplayPreferences {
 
     boolean isDisplayRawTafMetar();
 
