@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.messages.AddAirportEvent;
 import com.fisincorporated.aviationweather.repository.AppRepository;
+import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
+import com.fisincorporated.aviationweather.touchhelper.SimpleItemTouchHelperCallback;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -24,7 +27,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class AirportListFragment extends DaggerFragment {
+public class AirportListFragment extends DaggerFragment implements OnStartDragListener {
 
     @Inject
     public AppPreferences appPreferences;
@@ -33,9 +36,11 @@ public class AirportListFragment extends DaggerFragment {
     AppRepository appRepository;
 
     //TODO figure out injection for view model and then also inject adapter
-    AirportListViewModel airportListViewModel;
+    private AirportListViewModel airportListViewModel;
 
-    AirportListAdapter airportListAdapter;
+    private AirportListAdapter airportListAdapter;
+
+    private ItemTouchHelper mItemTouchHelper;
 
 
     @Inject
@@ -59,6 +64,11 @@ public class AirportListFragment extends DaggerFragment {
         FloatingActionButton button = view.findViewById(R.id.airport_list_add_button);
         button.setOnClickListener(v -> EventBus.getDefault().post(new AddAirportEvent()));
 
+        airportListAdapter.setOnStartDragListener(this);
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(airportListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+
         return view;
     }
 
@@ -75,6 +85,11 @@ public class AirportListFragment extends DaggerFragment {
         airportListViewModel.listSelectedAirports(airportList).observe(this, airports -> {
             airportListAdapter.setAirportList(airports);
         });
+    }
+
+   @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
     }
 
 }

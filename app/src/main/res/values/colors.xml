@@ -12,4 +12,6 @@
     <color name="offwhite">#F5F5F5</color>
 
     <color name="selected">#6fff4107</color>
+
+    <item name="dividerColor" type="color">#2F000000</item>
 </resources>
