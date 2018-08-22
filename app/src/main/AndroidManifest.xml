@@ -24,11 +24,7 @@
         </activity>
         <activity android:name=".settings.SettingsActivity"
                   android:screenOrientation="portrait"/>
-        <activity
-            android:name=".airport.codelist.AirportListActivity"
-            android:label="@string/title_activity_airport_list"
-            android:screenOrientation="portrait">
-        </activity>
+
         <!-- <activity android:name=".drawer.WeatherDrawerActivity"/> -->
 
         <meta-data

@@ -1,31 +1,57 @@
 package com.fisincorporated.aviationweather.airport.list;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.databinding.AirportDetailBinding;
 import com.fisincorporated.aviationweather.repository.Airport;
+import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperAdapter;
+import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperViewHolder;
+import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
 
+import java.util.Collections;
 import java.util.List;
 
-public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.BindingHolder> {
+// !!! Note that in order to get swipe to work needed to put views inside RelativeLayout rather than
+// !!! just having them in ConstraintLayout
+public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.BindingHolder>
+        implements ItemTouchHelperAdapter {
 
     private List<Airport> airports;
     private AirportListAdapter.OnItemClickListener onItemClickListener;
+    private OnStartDragListener mDragStartListener;
+    private NewAirportListListener newAirportListListener;
 
     public interface OnItemClickListener {
         void onItemClick(Airport airport);
     }
 
+    public interface NewAirportListListener {
+        void newAirportOrder(List<Airport> airports);
+    }
+
     public AirportListAdapter() {
     }
 
+    public AirportListAdapter setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+        return this;
+    }
 
-    public void setOnItemClickListener(OnItemClickListener onClick) {
-        this.onItemClickListener  = onClick;
+    public AirportListAdapter setOnStartDragListener(OnStartDragListener dragStartListener) {
+        mDragStartListener = dragStartListener;
+        return this;
+    }
+
+    public AirportListAdapter setNewAirportListListener(NewAirportListListener newAirportListListener){
+        this.newAirportListListener = newAirportListListener;
+        return this;
     }
 
     public void setAirportList(List<Airport> newAirportList) {
@@ -41,17 +67,60 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(BindingHolder holder,  int position) {
+    public void onBindViewHolder(BindingHolder holder, int position) {
         holder.binding.setAirport(airports.get(position));
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(holder.binding.getAirport()));
+
+        if (mDragStartListener != null) {
+            // Start a drag whenever the handle view it touched
+            holder.itemView.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    mDragStartListener.onStartDrag(holder);
+                }
+                return false;
+            });
+        }
+
+        if (onItemClickListener != null) {
+            // Not sure why holder.itemView.setOnClickListner didn't work
+            holder.itemView.findViewById(R.id.airport_layout_view).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onItemClick(holder.binding.getAirport());
+                }
+            });
+        }
     }
+
+
+    @Override
+    public void onItemDismiss(int position) {
+        airports.remove(position);
+        notifyItemRemoved(position);
+        notifyNewAirportList(airports);
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(airports, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        notifyNewAirportList(airports);
+        return true;
+    }
+
+    private void notifyNewAirportList(List<Airport> airports) {
+        if (newAirportListListener != null){
+            newAirportListListener.newAirportOrder(airports);
+        }
+    }
+
 
     @Override
     public int getItemCount() {
         return airports == null ? 0 : airports.size();
     }
 
-    public static class BindingHolder extends RecyclerView.ViewHolder {
+    public static class BindingHolder extends RecyclerView.ViewHolder implements
+            ItemTouchHelperViewHolder {
         protected static final int LAYOUT_RESOURCE = R.layout.airport_detail;
 
         private AirportDetailBinding binding;
@@ -61,6 +130,15 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
             binding = bindingView;
         }
 
-    }
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY);
+        }
 
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(0);
+        }
+    }
 }
+

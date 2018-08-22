@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.repository.Airport;
 import com.fisincorporated.aviationweather.satellite.data.SatelliteImageType;
 import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel;
@@ -316,4 +317,14 @@ public class AppPreferences {
         }
     }
 
+    public void storeNewAirportOrder(List<Airport> airports) {
+        StringBuffer sb = new StringBuffer();
+        if (airports != null) {
+            for (Airport airport : airports) {
+                sb.append(airport.getIdent());
+                sb.append(ICAO_CODE_DELIMITER);
+            }
+        }
+        setSelectedAirportCodes(sb.toString());
+    }
 }
