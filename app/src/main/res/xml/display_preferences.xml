@@ -2,14 +2,19 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
+        android:defaultValue="@bool/pref_raw_taf_metar_value"
         android:key="@string/pref_raw_taf_metar_key"
-        android:title="@string/pref_display_raw_taf_metar"
-        android:defaultValue="@bool/pref_raw_taf_metar_value"/>
+        android:title="@string/pref_display_raw_taf_metar"/>
 
     <CheckBoxPreference
+        android:defaultValue="@bool/pref_raw_taf_taf_value"
         android:key="@string/pref_decode_taf_metar_key"
-        android:title="@string/pref_decode_taf_metar_metar"
-        android:defaultValue="@bool/pref_raw_taf_taf_value"/>
+        android:title="@string/pref_decode_taf_metar_metar"/>
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="@string/pref_add_skysight_to_menu_key"
+        android:title="@string/pref_add_skysight_to_menu"/>
 
     <!--  TODO update UI for english/metric
     <ListPreference

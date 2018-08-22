@@ -3,6 +3,7 @@ package com.fisincorporated.aviationweather.drawer;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -133,7 +134,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     public void selectDrawerItem(MenuItem menuItem) {
 
         switch (menuItem.getItemId()) {
-            case R.id.nava_menu_airport_list:
+            case R.id.nav_menu_airport_list:
                 displayAirportListFragment();
                 break;
             case R.id.nav_menu_airport_weather:
@@ -145,11 +146,19 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_satellite_images:
                 displaySatelliteImages();
                 break;
-            case R.id.nav_menu_soaring_forecasts:
+            case R.id.nav_menu_rasp:
                 displaySoaringForecasts();
+                break;
+            case R.id.nav_menu_skysight:
+                startSkySightBrowser();
                 break;
         }
         drawerLayout.closeDrawers();
+    }
+
+    private void startSkySightBrowser() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://skysight.io/secure/#"));
+        startActivity(browserIntent);
     }
 
 
@@ -202,10 +211,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddAirportEvent event) {
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        AirportSearchFragment airportSearchFragment = AirportSearchFragment.newInstance(appRepository, appPreferences);
-//        airportSearchFragment.show(fragmentManager, "AddAirport");
-
         AirportSearchFragment airportSearchFragment = AirportSearchFragment.newInstance(appRepository, appPreferences);
         displayFragment(airportSearchFragment);
     }
@@ -215,7 +220,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SnackbarMessage message){
+    public void onMessageEvent(SnackbarMessage message) {
         Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(),
                 Snackbar.LENGTH_SHORT)
                 .show();
