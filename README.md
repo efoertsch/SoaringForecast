@@ -1,12 +1,13 @@
 # SoaringWeather
-Display weather and soaring forecasts of interest to New England glider pilots.
+Display weather information and soaring forecasts of interest to New England glider pilots.
 
 Currently displays
 1. METAR and TAF (from aviationweather.gov)
 2. Satellite images for visibile, water vapor and infrared color/bw images. Satellite images are animated. (aviationweather.gov)
-3. New England soaring forecasts from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Pavalo)
+3. New England soaring forecasts from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Paavalo)
+4. Options to start browsers to display either Dr. Jacks and/or SkySight
 
-Currently project involves
+Currently project involves:
 1. Android data binding for MVVM binding.
 2. Dagger2 
 3. OkHTTP3
