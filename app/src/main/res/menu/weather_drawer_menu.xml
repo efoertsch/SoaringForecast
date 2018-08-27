@@ -16,6 +16,10 @@
                     android:id="@+id/nav_menu_skysight"
                     android:title="@string/action_soaring_forecast_skysight"/>
 
+                <item
+                    android:id="@+id/nav_menu_dr_jacks"
+                    android:title="@string/dr_jacks"/>
+
             </menu>
         </item>
 

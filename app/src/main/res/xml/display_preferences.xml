@@ -16,6 +16,12 @@
         android:key="@string/pref_add_skysight_to_menu_key"
         android:title="@string/pref_add_skysight_to_menu"/>
 
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="@string/pref_add_dr_jacks_to_menu_key"
+        android:title="@string/pref_add_dr_jacks_to_menu"/>
+
+
     <!--  TODO update UI for english/metric
     <ListPreference
         android:defaultValue="@string/pref_units_temp_fahrenheit_value"

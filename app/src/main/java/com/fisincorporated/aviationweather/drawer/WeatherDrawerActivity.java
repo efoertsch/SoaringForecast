@@ -13,6 +13,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -73,7 +74,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
         displaySoaringForecasts();
-        // displayAirportWeather();
 
     }
 
@@ -81,12 +81,27 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        checkForecastsToBeDisplayed();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+    }
+
+
+    public void  checkForecastsToBeDisplayed() {
+        NavigationView navigationView = findViewById(R.id.app_weather_drawer);
+        Menu menu= navigationView.getMenu();
+        MenuItem menuItem = menu.findItem(R.id.nav_menu_skysight);
+        if (menuItem != null) {
+            menuItem.setVisible(appPreferences.isSkySightDisplayed());
+        }
+        menuItem = menu.findItem(R.id.nav_menu_dr_jacks);
+        if (menuItem != null) {
+            menuItem.setVisible(appPreferences.isDrJacksDisplayed());
+        }
     }
 
 
@@ -152,8 +167,17 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_skysight:
                 startSkySightBrowser();
                 break;
+
+            case R.id.nav_menu_dr_jacks:
+                startDrJacksBrowser();
+                break;
         }
         drawerLayout.closeDrawers();
+    }
+
+    private void startDrJacksBrowser() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.drjack.info/BLIP/univiewer.html"));
+        startActivity(browserIntent);
     }
 
     private void startSkySightBrowser() {
