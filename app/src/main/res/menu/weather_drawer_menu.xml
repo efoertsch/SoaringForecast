@@ -5,9 +5,23 @@
     <!-- TODO - add icons -->
     <group android:checkableBehavior="none">
         <item
-            android:id="@+id/nava_menu_airport_list"
-            android:title="@string/airport_list"
-            />
+            android:id="@+id/nav_menu_soaring_forecasts"
+            android:title="@string/action_soaring_forecasts"
+            >
+            <menu>
+                <item
+                    android:id="@+id/nav_menu_rasp"
+                    android:title="@string/action_soaring_forecast_rasp"/>
+                <item
+                    android:id="@+id/nav_menu_skysight"
+                    android:title="@string/action_soaring_forecast_skysight"/>
+
+                <item
+                    android:id="@+id/nav_menu_dr_jacks"
+                    android:title="@string/dr_jacks"/>
+
+            </menu>
+        </item>
 
         <item
             android:id="@+id/nav_menu_airport_weather"
@@ -18,13 +32,24 @@
             android:id="@+id/nav_menu_satellite_images"
             android:title="@string/action_satellite_images"
             />
-        <item
-            android:id="@+id/nav_menu_soaring_forecasts"
-            android:title="@string/action_soaring_forecasts"
-            />
 
+        <item
+            android:id="@+id/nav_menu_options"
+            android:title="@string/action_soaring_options">
+            <menu>
+
+                <item
+                    android:id="@+id/nav_menu_airport_list"
+                    android:title="@string/airport_list"
+                    />
+
+            </menu>
+
+        </item>
 
     </group>
+
+
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_menu_display_options"

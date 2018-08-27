@@ -40,6 +40,10 @@ public class AppPreferences {
 
     private static final String ICAO_CODE_DELIMITER = " ";
 
+    private static String DISPLAY_SKYSIGHT_MENU_OPTION;
+
+    private static String DISPLAY_DR_JACKS_MENU_OPTION;
+
     private static String RAW_METAR_KEY;
 
     private static String TEMPERATURE_UNITS_KEY;
@@ -92,6 +96,9 @@ public class AppPreferences {
         DISTANCE_UNITS_KEY = res.getString(R.string.pref_units_distance);
         DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
         soaringForecastDefaultRegion = context.getString(R.string.new_england_region);
+
+        DISPLAY_SKYSIGHT_MENU_OPTION = context.getString(R.string.pref_add_skysight_to_menu_key);
+        DISPLAY_DR_JACKS_MENU_OPTION = context.getString(R.string.pref_add_dr_jacks_to_menu_key);
 
         // these should never be needed but use these default values
         rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
@@ -327,4 +334,13 @@ public class AppPreferences {
         }
         setSelectedAirportCodes(sb.toString());
     }
+
+    public boolean isSkySightDisplayed(){
+        return sharedPreferences.getBoolean(DISPLAY_SKYSIGHT_MENU_OPTION, false);
+    }
+
+    public boolean isDrJacksDisplayed(){
+        return sharedPreferences.getBoolean(DISPLAY_DR_JACKS_MENU_OPTION, false);
+    }
+
 }

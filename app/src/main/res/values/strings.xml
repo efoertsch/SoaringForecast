@@ -70,6 +70,13 @@
     <string name="pref_decode_taf_metar_key">Decode_TAF_METAR_key</string>
     <string name="pref_decode_taf_metar_metar">Decode raw TAF/METAR</string>
 
+    <string name="pref_add_skysight_to_menu_key">Display_SkySight_key</string>
+    <string name="pref_add_skysight_to_menu">Add SkySight to Menu </string>
+
+    <string name="pref_add_dr_jacks_to_menu_key">Display_Dr_Jacks_key</string>
+    <string name="pref_add_dr_jacks_to_menu">Add Dr. Jacks to Menu </string>
+
+
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
     <string name="pref_units_temp">Temperature</string>
     <string name="pref_units_temp_centigrade_label">Centigrade</string>
@@ -143,6 +150,10 @@
     <string name="rasp">RASP</string>
     <string name="satellite">Satellite</string>
     <string name="metar_taf_airports">METAR/TAF Airports</string>
+    <string name="action_soaring_forecast_rasp">RASP</string>
+    <string name="action_soaring_forecast_skysight">SkySight</string>
+    <string name="action_soaring_options">Options</string>
+    <string name="dr_jacks">Dr. Jacks</string>
 
 
 </resources>
