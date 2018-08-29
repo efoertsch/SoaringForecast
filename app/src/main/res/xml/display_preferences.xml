@@ -21,6 +21,11 @@
         android:key="@string/pref_add_dr_jacks_to_menu_key"
         android:title="@string/pref_add_dr_jacks_to_menu"/>
 
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="@string/pref_display_forecast_soundings_key"
+        android:title="@string/pref_display_forecast_soundings"/>
+
 
     <!--  TODO update UI for english/metric
     <ListPreference

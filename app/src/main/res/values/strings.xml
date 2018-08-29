@@ -63,18 +63,20 @@
     <string name="taf_not_available">TAF not available or received</string>
 
     <!-- Display preferences -->
-    <!-- Display raw taf/metar -->
-    <string name="pref_raw_taf_metar_key">Raw_TAF_METAR_key</string>
+    <string name="pref_raw_taf_metar_key" translatable="false">Raw_TAF_METAR_key</string>
     <string name="pref_display_raw_taf_metar">Display raw TAF/METAR</string>
 
-    <string name="pref_decode_taf_metar_key">Decode_TAF_METAR_key</string>
+    <string name="pref_decode_taf_metar_key" translatable="false">Decode_TAF_METAR_key</string>
     <string name="pref_decode_taf_metar_metar">Decode raw TAF/METAR</string>
 
-    <string name="pref_add_skysight_to_menu_key">Display_SkySight_key</string>
+    <string name="pref_add_skysight_to_menu_key" translatable="false">Display_SkySight_key</string>
     <string name="pref_add_skysight_to_menu">Add SkySight to Menu </string>
 
-    <string name="pref_add_dr_jacks_to_menu_key">Display_Dr_Jacks_key</string>
+    <string name="pref_add_dr_jacks_to_menu_key" translatable="false">Display_Dr_Jacks_key</string>
     <string name="pref_add_dr_jacks_to_menu">Add Dr. Jacks to Menu </string>
+
+    <string name="pref_display_forecast_soundings_key" translatable="false">Display_forecast_soundings_key</string>
+    <string name="pref_display_forecast_soundings">Display Forecast \nSoundings </string>
 
 
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
@@ -154,6 +156,8 @@
     <string name="action_soaring_forecast_skysight">SkySight</string>
     <string name="action_soaring_options">Options</string>
     <string name="dr_jacks">Dr. Jacks</string>
+    <string name="opacity_slider">Opacity</string>
+    <string name="forecast_menu_toggle_sounds">Soundings</string>
 
 
 </resources>
