@@ -8,16 +8,16 @@ public class Forecast {
 
     @SerializedName("forecast_name")
     @Expose
-    private String forecastName;
+    private String forecastName;   // "wstar_bsratio"
     @SerializedName("forecast_type")
     @Expose
-    private String forecastType;
+    private String forecastType;    //"" (primary type always displayed), "full" (display if all types to be displayed), "comment" (header)
     @SerializedName("forecast_name_display")
     @Expose
-    private String forecastNameDisplay;
+    private String forecastNameDisplay;    //"Thermal Updraft Velocity & B/S Ratio"
     @SerializedName("forecast_description")
     @Expose
-    private String forecastDescription;
+    private String forecastDescription;   //"A composite plot displaying the Thermal Updraft Velocity ...."
 
     public String getForecastName() {
         return forecastName;

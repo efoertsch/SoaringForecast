@@ -158,6 +158,9 @@
     <string name="dr_jacks">Dr. Jacks</string>
     <string name="opacity_slider">Opacity</string>
     <string name="forecast_menu_toggle_sounds">Soundings</string>
+    <string name="zero_percent">0%</string>
+    <string name="one_hundred_percent">100%</string>
+    <string name="string_soaring_forecast_sounding_description">Soaring forecast sounding image by hour</string>
 
 
 </resources>

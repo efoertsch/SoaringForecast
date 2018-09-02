@@ -21,9 +21,7 @@ import com.fisincorporated.aviationweather.satellite.data.SatelliteRegion;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastDownloader;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastImage;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel;
-import com.fisincorporated.aviationweather.soaring.json.Forecasts;
 import com.fisincorporated.aviationweather.utils.BitmapImageUtils;
-import com.fisincorporated.aviationweather.utils.JSONResourceReader;
 
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
@@ -235,14 +233,5 @@ public class AppModule {
     public SoaringForecastDownloader provideSoaringForecastDownloader() {
         return new SoaringForecastDownloader(providesSoaringForecastApi(), provideBitmapImageUtils());
     }
-
-
-    //TODO put in separate module
-    @Provides
-    @Singleton
-    public Forecasts getForecastOptions(Context context) {
-        return (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
-    }
-
 
 }

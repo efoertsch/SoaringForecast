@@ -8,7 +8,7 @@ public class SoaringForecastImage extends BitmapImage {
 
     private String forecastTime = null;  //1300
     private String forecastType = null;  // nam
-    private String bitmapType = null;  // body footer header
+    private String bitmapType = null;  // body footer header Constants.BODY, HEAD, FOOT, SIDE
     private String region = null;     // NewEngland
     private String forecastParameter = null;   // wstar
     private String yyyymmdd = null;    // 218-04-23
