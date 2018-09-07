@@ -38,8 +38,11 @@ public class AppPreferences {
 
     private static final String AIRPORT_CODES_FOR_METAR = "AIRPORT_CODES_FOR_METAR_TAF";
 
+    private static final String FORECAST_OVERLAY_OPACITY = "FORECAST_OVERLAY_OPACITY";
+
     private static final String ICAO_CODE_DELIMITER = " ";
 
+    // These string values are assigned in code so they match what is used in Settings
     private static String DISPLAY_SKYSIGHT_MENU_OPTION;
 
     private static String DISPLAY_DR_JACKS_MENU_OPTION;
@@ -55,6 +58,9 @@ public class AppPreferences {
     private static String DISTANCE_UNITS_KEY;
 
     private static String DECODE_TAF_METAR_KEY;
+
+    private static String DISPLAY_FORECAST_SOUNDINGS;
+
 
     private SharedPreferences sharedPreferences;
 
@@ -78,13 +84,10 @@ public class AppPreferences {
 
     private String soaringForecastDefaultRegion;
 
-    private String airportPrefs;
-
-
     @Inject
     public AppPreferences(Context context, String airportPrefs) {
 
-        this.airportPrefs = airportPrefs;
+        String airportPrefs1 = airportPrefs;
 
         Resources res = context.getResources();
 
@@ -100,6 +103,8 @@ public class AppPreferences {
         DISPLAY_SKYSIGHT_MENU_OPTION = context.getString(R.string.pref_add_skysight_to_menu_key);
         DISPLAY_DR_JACKS_MENU_OPTION = context.getString(R.string.pref_add_dr_jacks_to_menu_key);
 
+        DISPLAY_FORECAST_SOUNDINGS = context.getString(R.string.pref_display_forecast_soundings_key);
+
         // these should never be needed but use these default values
         rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
         decodeTafMetar = res.getBoolean(R.bool.pref_raw_taf_taf_value);
@@ -113,7 +118,7 @@ public class AppPreferences {
 
         // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
         // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
-        sharedPreferences = context.getSharedPreferences(this.airportPrefs, MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(airportPrefs1, MODE_PRIVATE);
         if (!sharedPreferences.getBoolean(DEFAULT_PREFS_SET, false)) {
             setDisplayRawTafMetar(rawTafMetar);
             setDecodeTafMetar(decodeTafMetar);
@@ -341,6 +346,26 @@ public class AppPreferences {
 
     public boolean isDrJacksDisplayed(){
         return sharedPreferences.getBoolean(DISPLAY_DR_JACKS_MENU_OPTION, false);
+    }
+
+    public void setForecastOverlayOpacity(int opacity){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(FORECAST_OVERLAY_OPACITY, opacity);
+        editor.apply();
+    }
+
+    public int getForecastOverlayOpacity(){
+       return sharedPreferences.getInt(FORECAST_OVERLAY_OPACITY, 30);
+    }
+
+    public void setDisplayForecastSoundings(boolean display){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(DISPLAY_FORECAST_SOUNDINGS,  display);
+        editor.apply();
+    }
+
+    public boolean getDisplayForecastSoundings(){
+        return sharedPreferences.getBoolean(DISPLAY_FORECAST_SOUNDINGS, true);
     }
 
 }

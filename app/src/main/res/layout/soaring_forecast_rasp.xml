@@ -9,17 +9,18 @@
 
         <variable
             name="forecastAction"
-            type="com.fisincorporated.aviationweather.common.Constants.FORECASTACTION"/>
+            type="com.fisincorporated.aviationweather.common.Constants.FORECAST_ACTION"/>
 
         <variable
-            name="viewModel"
-            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastViewModel"/>
+            name="forecastDisplay"
+            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastDisplay"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/soaring_forecast_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline_20pct"
@@ -124,8 +125,9 @@
                 android:id="@+id/soaring_forecast_time_back_arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_standard"
                 android:contentDescription="@string/back_arrow"
-                android:onClick="@{() -> viewModel.onStepClick(forecastAction.BACKWARD)}"
+                android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.BACKWARD)}"
                 android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_keyboard_arrow_left"/>
 
@@ -148,8 +150,9 @@
                 android:id="@+id/soaring_forecast_time_forward_arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_standard"
                 android:contentDescription="@string/forward_arrow"
-                android:onClick="@{() -> viewModel.onStepClick(forecastAction.FORWARD)}"
+                android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.FORWARD)}"
                 android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right"/>
 
@@ -158,7 +161,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/loop"
-                android:onClick="@{() -> viewModel.onStepClick(forecastAction.LOOP)}"
+                android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.LOOP)}"
                 android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_sync"/>
 
@@ -183,16 +186,6 @@
 
         </FrameLayout>
 
-        <ProgressBar
-            android:id="@+id/soaring_forecast_map_progress_bar"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
-            />
-
         <com.fisincorporated.aviationweather.common.TouchImageView
             android:id="@+id/soaring_forecast_scale_image"
             android:layout_width="0dp"
@@ -203,6 +196,91 @@
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
             />
 
+        <LinearLayout
+            android:id="@+id/soaring_forecast_seekbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_standard"
+            android:background="@color/colorScreenBackground"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="10"
+            app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+            app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+            >
+
+            <TextView
+                android:id="@+id/soaring_forecast_seekbar_0_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:text="@string/zero_percent"
+                />
+
+            <SeekBar
+                android:id="@+id/soaring_forecast_seekbar_opacity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:max="100"
+                android:min="0"
+                android:onProgressChanged="@{forecastDisplay::onOpacityValueChanged}"
+                />
+
+            <TextView
+                android:id="@+id/soaring_forecast_seekbar_100_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_weight="2"
+                android:gravity="start"
+                android:text="@string/one_hundred_percent"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/soaring_forecast_sounding_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+            android:visibility="gone"
+            >
+
+            <com.fisincorporated.aviationweather.common.TouchImageView
+                android:id="@+id/soaring_forecast_sounding_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <ImageView
+                android:id="@+id/soaring_forecast_close_sounding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/margin_standard"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:layout_alignParentTop="true"
+                app:srcCompat="@drawable/ic_close_black_24dp"
+                android:onClick="@{() -> forecastDisplay.soundingImageCloseClick()}"
+                android:contentDescription="@string/string_soaring_forecast_sounding_description"/>
+
+        </RelativeLayout>
+
+        <ProgressBar
+            android:id="@+id/soaring_forecast_map_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+            />
 
     </android.support.constraint.ConstraintLayout>
 

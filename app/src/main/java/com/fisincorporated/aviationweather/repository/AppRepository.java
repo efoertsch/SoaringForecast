@@ -2,19 +2,35 @@ package com.fisincorporated.aviationweather.repository;
 
 import android.content.Context;
 
+import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.soaring.json.Forecasts;
+import com.fisincorporated.aviationweather.soaring.json.SoundingLocation;
+import com.fisincorporated.aviationweather.soaring.json.Soundings;
+import com.fisincorporated.aviationweather.utils.JSONResourceReader;
+
 import java.util.List;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 
+
+// TODO consolidate all data access to repository
+/**
+ * Use to access airport database
+ * JSON soundings file
+ *
+ */
+
 public class AppRepository {
 
     private static AppRepository appRepository;
     private AirportDao airportDao;
+    private Context context;
 
     private AppRepository(Context context) {
         AppDatabase db = AppDatabase.getDatabase(context);
         airportDao = db.getAirportDao();
+        this.context = context;
     }
 
     public static AppRepository getAppRepository(Context context) {
@@ -57,6 +73,16 @@ public class AppRepository {
 
     public Maybe<Airport> getAirport(String ident) {
         return airportDao.getAirportByIdent(ident);
+    }
+
+
+    public Forecasts getForecasts() {
+        return (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
+    }
+
+
+    public List<SoundingLocation> getLocationSoundings(){
+        return (new JSONResourceReader(context.getResources(), R.raw.soundings)).constructUsingGson(Soundings.class).getSoundingLocations();
     }
 
 

@@ -3,6 +3,9 @@ package com.fisincorporated.aviationweather.soaring.forecast;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -20,7 +23,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     public static final String MASTER_FORECAST_FRAGMENT = "MASTER_FORECAST_FRAGMENT";
 
     @Inject
-    SoaringForecastViewModel soaringForecastViewModel;
+    SoaringForecastDisplay soaringForecastDisplay;
 
     public SoaringForecastFragment() {}
 
@@ -28,8 +31,9 @@ public class SoaringForecastFragment extends DaggerFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.soaring_forecast_rasp, container, false);
-        soaringForecastViewModel.setView(this, view);
+        soaringForecastDisplay.setView(this, view);
         checkForGooglePlayServices();
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -38,16 +42,44 @@ public class SoaringForecastFragment extends DaggerFragment {
         super.onResume();
         //set title
         getActivity().setTitle(R.string.rasp);
-        soaringForecastViewModel.onResume();
-
+        soaringForecastDisplay.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        soaringForecastViewModel.onPause();
-
+        soaringForecastDisplay.onPause();
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.forecast_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.forecast_menu_opacity_slider:
+                displayOpacitySlider();
+                return true;
+            case R.id.forecast_menu_toggle_sounding_points:
+                toggleSoundingPoints();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void toggleSoundingPoints() {
+        soaringForecastDisplay.toggleSoundingPoints();
+    }
+
+    private void displayOpacitySlider() {
+        soaringForecastDisplay.displayOpacitySlider();
+    }
+
     private void checkForGooglePlayServices() {
         int GooglePlayAvailableCode;
         GooglePlayAvailableCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());

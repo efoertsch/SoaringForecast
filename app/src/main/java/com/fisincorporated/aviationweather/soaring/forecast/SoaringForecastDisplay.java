@@ -11,17 +11,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.app.AppPreferences;
 import com.fisincorporated.aviationweather.app.ViewModelLifeCycle;
 import com.fisincorporated.aviationweather.common.Constants;
-import com.fisincorporated.aviationweather.common.Constants.FORECASTACTION;
+import com.fisincorporated.aviationweather.common.Constants.FORECAST_ACTION;
 import com.fisincorporated.aviationweather.databinding.SoaringForecastImageBinding;
-import com.fisincorporated.aviationweather.messages.DataLoadCompleteEvent;
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
-import com.fisincorporated.aviationweather.retrofit.SoaringForecastApi;
+import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.soaring.json.Forecast;
 import com.fisincorporated.aviationweather.soaring.json.Forecasts;
 import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
@@ -29,6 +29,7 @@ import com.fisincorporated.aviationweather.soaring.json.ModelForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.ModelLocationAndTimes;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDate;
 import com.fisincorporated.aviationweather.soaring.json.RegionForecastDates;
+import com.fisincorporated.aviationweather.soaring.json.SoundingLocation;
 import com.fisincorporated.aviationweather.utils.ViewUtilities;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,7 +38,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.cache2k.Cache;
 import org.greenrobot.eventbus.EventBus;
@@ -59,10 +63,10 @@ import timber.log.Timber;
 //@InverseBindingMethods({
 //        @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 
-public class SoaringForecastViewModel extends BaseObservable implements ViewModelLifeCycle
-        , OnMapReadyCallback {
+public class SoaringForecastDisplay extends BaseObservable implements ViewModelLifeCycle
+        , OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private static final String TAG = SoaringForecastViewModel.class.getSimpleName();
+    private static final String TAG = SoaringForecastDisplay.class.getSimpleName();
 
     private SoaringForecastImageBinding viewDataBinding;
     private ValueAnimator soaringForecastImageAnimation;
@@ -74,7 +78,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
     private List<String> forecastTimes;
     private int numberForecastTimes;
-    private SoaringForecastImageSet soaringForecastImageSet;
     private int lastImageIndex = -1;
     private Fragment parentFragment;
     private GoogleMap googleMap;
@@ -84,6 +87,10 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     private RecyclerViewAdapterModelForecastDate modelForecastDaterecyclerViewAdapter;
     private ProgressBar mapProgressBar;
     private Forecast selectedForecast;
+    private int forecastOverlayOpacity;
+    private List<Marker> soundingMarkers = new ArrayList<>();
+    private SoaringForecastImageSet soaringForecastImageSet;
+    private String forecastTime;
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -98,18 +105,21 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     public AppPreferences appPreferences;
 
     @Inject
-    public SoaringForecastApi soaringForecastApi;
+    public AppRepository appRepository;
+
+    private Forecasts forecasts;
+
+    private List<SoundingLocation> soundingLocations;
+
+    private Constants.FORECAST_SOUNDING forecastSounding;
 
     @Inject
-    public Forecasts forecasts;
-
-    @Inject
-    SoaringForecastViewModel() {
+    SoaringForecastDisplay(AppRepository appRepository) {
+        forecasts = appRepository.getForecasts();
     }
 
-    public SoaringForecastViewModel setView(Fragment fragment, View view) {
+    public SoaringForecastDisplay setView(Fragment fragment, View view) {
         parentFragment = fragment;
-        fireLoadStarted();
         bindingView = view.findViewById(R.id.soaring_forecast_constraint_layout);
         setDefaultSoaringForecast();
         bindViewModel();
@@ -121,24 +131,30 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         selectedForecast = forecasts.getForecasts().get(1);
     }
 
-    public void bindViewModel() {
+    private void bindViewModel() {
         viewDataBinding = DataBindingUtil.bind(bindingView);
         if (viewDataBinding != null) {
-            viewDataBinding.setViewModel(this);
+            viewDataBinding.setForecastDisplay(this);
             selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
             setupSoaringForecastModelsRecyclerView(soaringForecastModels);
             setupSoaringConditionRecyclerView(forecasts.getForecasts());
             mapProgressBar = viewDataBinding.soaringForecastMapProgressBar;
-            setMapProgresBarVisibility(true);
-
+            setProgressBarVisibility(true);
+            setInitialOverlayOpacity();
         }
     }
 
-    private void setMapProgresBarVisibility(boolean visible) {
+    private void setProgressBarVisibility(boolean visible) {
         if (mapProgressBar != null) {
             mapProgressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
+
+    private void setInitialOverlayOpacity() {
+        forecastOverlayOpacity = appPreferences.getForecastOverlayOpacity();
+        viewDataBinding.soaringForecastSeekbarOpacity.setProgress(forecastOverlayOpacity);
+    }
+
 
     /**
      * Set up recycler view with forecast models - gfs, rap, ...
@@ -174,8 +190,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     @Override
     public void onResume() {
-        // Setting the initial satellite region and type will cause call update images so need
-        //to bypass
         EventBus.getDefault().register(this);
         soaringForecastDownloader.loadForecastsForDay(appPreferences.getSoaringForecastRegion());
     }
@@ -225,7 +239,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         modelForecastDaterecyclerViewAdapter.setSelectedPosition(0);
         // Get whatever current date is to start
         if (modelForecastDates.size() > 0) {
-            setMapProgresBarVisibility(false);
+            setProgressBarVisibility(false);
             selectedModelForecastDate = modelForecastDates.get(0);
             // TODO - load bitmaps for hcrit for first forecast type (e.g. gfs)
             Timber.d("Ready to load bitmaps");
@@ -252,7 +266,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     }
 
     private void startLoadingSoaringForecastImages() {
-        loadSoaringForecastImages();
+        loadRaspImages();
         setMapBounds();
 
     }
@@ -264,11 +278,11 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     }
 
     @SuppressLint("CheckResult")
-    private void loadSoaringForecastImages() {
+    private void loadRaspImages() {
         stopImageAnimation();
         compositeDisposable.clear();
         imageMap.clear();
-        setMapProgresBarVisibility(true);
+        setProgressBarVisibility(true);
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
                 bindingView.getContext().getString(R.string.new_england_region)
                 , selectedModelForecastDate.getYyyymmddDate(), selectedSoaringForecastModel.getName()
@@ -279,7 +293,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
                 .subscribeWith(new DisposableObserver<SoaringForecastImage>() {
                     @Override
                     public void onStart() {
-                        fireLoadStarted();
                     }
 
                     @Override
@@ -294,7 +307,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
                     @Override
                     public void onComplete() {
-                        fireLoadComplete();
                         getForecastTimes();
                         displayMap();
                     }
@@ -330,13 +342,6 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         ViewUtilities.displayErrorDialog(viewDataBinding.getRoot(), bindingView.getContext().getString(R.string.oops), t.toString());
     }
 
-    private void fireLoadStarted() {
-        EventBus.getDefault().post(new DataLoadingEvent());
-    }
-
-    private void fireLoadComplete() {
-        EventBus.getDefault().post(new DataLoadCompleteEvent());
-    }
 
     /**
      * Selected forecast type gfs, nam, ...
@@ -352,7 +357,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             if (modelForecastDaterecyclerViewAdapter != null) {
                 modelForecastDaterecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
             }
-            loadSoaringForecastImages();
+            loadRaspImages();
         }
     }
 
@@ -364,13 +369,13 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ModelForecastDate modelForecastDate) {
         selectedModelForecastDate = modelForecastDate;
-        loadSoaringForecastImages();
+        loadRaspImages();
     }
 
     @Subscribe
-    public void onMessageEvent(Forecast forecast){
+    public void onMessageEvent(Forecast forecast) {
         selectedForecast = forecast;
-        loadSoaringForecastImages();
+        loadRaspImages();
     }
 
     private void stopImageAnimation() {
@@ -379,7 +384,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
             soaringForecastImageAnimation.cancel();
             return;
         }
-        Timber.e("soaringForecastImageanimation is null so no animation to stop");
+        Timber.e("soaringForecastImageAnimation is null so no animation to stop");
     }
 
     private void startImageAnimation() {
@@ -415,10 +420,23 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
 
     public void displayForecastImage(int index) {
         soaringForecastImageSet = imageMap.get(forecastTimes.get(index));
-        viewDataBinding.soaringForecastImageLocalTime.setText(forecastTimes.get(index));
+        forecastTime = forecastTimes.get(index);
+        switch (forecastSounding) {
+            case FORECAST:
+                displayForecastImageSet();
+                break;
+            case SOUNDING:
+                displaySoundingImageSet();
+                break;
+
+        }
+        displayForecastImageSet();
+    }
+
+    public void displayForecastImageSet() {
+        viewDataBinding.soaringForecastImageLocalTime.setText(forecastTime);
         if (soaringForecastImageSet != null) {
-            if (soaringForecastImageSet.getHeaderImage() != null
-                    && soaringForecastImageSet.getSideImage() != null
+            if (soaringForecastImageSet.getSideImage() != null
                     && soaringForecastImageSet.getBodyImage() != null) {
                 setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
                 viewDataBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
@@ -427,8 +445,7 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     }
 
     // Stepping thru forecast images
-
-    public void onStepClick(FORECASTACTION forecastaction) {
+    public void onStepClick(FORECAST_ACTION forecastaction) {
         switch (forecastaction) {
             case BACKWARD:
                 stopImageAnimation();
@@ -471,7 +488,9 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         setupMap();// do your map stuff here
-        setMapProgresBarVisibility(false);
+        setProgressBarVisibility(false);
+        displaySoundingMarkers(appPreferences.getDisplayForecastSoundings());
+        forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
         startImageAnimation();
     }
 
@@ -485,14 +504,142 @@ public class SoaringForecastViewModel extends BaseObservable implements ViewMode
         if (bitmap == null) {
             return;
         }
+
         if (forecastOverlay == null) {
             GroundOverlayOptions forecastOverlayOptions = new GroundOverlayOptions()
                     .image(BitmapDescriptorFactory.fromBitmap(bitmap))
                     .positionFromBounds(mapLatLngBounds);
-            forecastOverlayOptions.transparency(.50f);
+            forecastOverlayOptions.transparency(1.0f - forecastOverlayOpacity / 100.0f);
             forecastOverlay = googleMap.addGroundOverlay(forecastOverlayOptions);
         } else {
+            forecastOverlay.setTransparency(1.0f - forecastOverlayOpacity / 100.0f);
             forecastOverlay.setImage(BitmapDescriptorFactory.fromBitmap(bitmap));
         }
+
+    }
+
+    private GroundOverlayOptions getGroundOverlayOptions(Bitmap bitmap) {
+        GroundOverlayOptions forecastOverlayOptions = new GroundOverlayOptions()
+                .positionFromBounds(mapLatLngBounds);
+        forecastOverlayOptions.transparency(1.0f - forecastOverlayOpacity / 100.0f);
+        return forecastOverlayOptions;
+
+    }
+
+
+    public void displayOpacitySlider() {
+        viewDataBinding.soaringForecastSeekbarLayout.setVisibility(viewDataBinding.soaringForecastSeekbarLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+    }
+
+    //@BindingAdapter(value={"android:onProgressChanged"})
+    public void onOpacityValueChanged(SeekBar seekBar, int newOpacity, boolean fromUser) {
+        forecastOverlayOpacity = newOpacity;
+        appPreferences.setForecastOverlayOpacity(newOpacity);
+        stopImageAnimation();
+        displayForecastImageSet();
+    }
+
+    public void toggleSoundingPoints() {
+        boolean displaySoundings = !appPreferences.getDisplayForecastSoundings();
+        appPreferences.setDisplayForecastSoundings(displaySoundings);
+        displaySoundingMarkers(displaySoundings);
+    }
+
+    private void createSoundingMarkers() {
+        if (soundingLocations == null || soundingLocations.size() == 0) {
+            soundingLocations = appRepository.getLocationSoundings();
+        }
+        if (soundingMarkers == null || soundingMarkers.size() == 0) {
+            LatLng latLng;
+            Marker marker;
+            for (SoundingLocation soundingLocation : soundingLocations) {
+                latLng = new LatLng(soundingLocation.getLatitude(), soundingLocation.getLongitude());
+                marker = googleMap.addMarker(new MarkerOptions().position(latLng)
+                        .title(soundingLocation.getLocation()));
+                soundingMarkers.add(marker);
+                marker.setTag(soundingLocation);
+                googleMap.setOnMarkerClickListener(this);
+
+            }
+        }
+    }
+
+    private void displaySoundingMarkers(boolean display) {
+        if (display) {
+            if (soundingMarkers == null || soundingMarkers.size() == 0) {
+                createSoundingMarkers();
+            }
+        }
+        if (soundingMarkers != null && soundingMarkers.size() > 0) {
+            for (Marker marker : soundingMarkers) {
+                marker.setVisible(display);
+
+            }
+        }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        forecastSounding = Constants.FORECAST_SOUNDING.SOUNDING;
+        viewDataBinding.soaringForecastSoundingLayout.setVisibility(View.VISIBLE);
+        loadForecastSoundings((SoundingLocation) marker.getTag());
+        return true;
+    }
+
+    private void loadForecastSoundings(SoundingLocation soundingLocation) {
+        stopImageAnimation();
+        compositeDisposable.clear();
+        //imageMap.clear();
+        setProgressBarVisibility(true);
+        DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringSoundingForTypeAndDay(
+                bindingView.getContext().getString(R.string.new_england_region)
+                , selectedModelForecastDate.getYyyymmddDate(), selectedSoaringForecastModel.getName()
+                , soundingLocation.getPosition() + ""
+                , selectedModelForecastDate.getGpsLocationAndTimes().getTimes())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<SoaringForecastImage>() {
+                    @Override
+                    public void onStart() { }
+
+                    @Override
+                    public void onNext(SoaringForecastImage soaringForecastImage) {
+                        storeImage(soaringForecastImage);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        displayCallFailure(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        getForecastTimes();
+                        startImageAnimation();
+                    }
+                });
+        compositeDisposable.add(disposableObserver);
+    }
+
+    public String getForecastTime(){
+        return forecastTime;
+    }
+
+
+    public void displaySoundingImageSet() {
+        viewDataBinding.soaringForecastSoundingLayout.bringToFront();
+        viewDataBinding.soaringForecastImageLocalTime.setText(forecastTime);
+        if (soaringForecastImageSet != null) {
+            if (soaringForecastImageSet.getBodyImage() != null) {
+                viewDataBinding.soaringForecastSoundingImage.setImageBitmap(soaringForecastImageSet.getBodyImage().getBitmap());
+            }
+        }
+    }
+
+
+    public void soundingImageCloseClick(){
+        forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
+        viewDataBinding.soaringForecastSoundingLayout.setVisibility(View.GONE);
+        loadRaspImages();
     }
 }
