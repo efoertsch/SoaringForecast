@@ -250,6 +250,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+            android:visibility="gone"
             >
 
             <com.fisincorporated.aviationweather.common.TouchImageView
@@ -258,11 +259,13 @@
                 android:layout_height="match_parent"/>
 
             <ImageView
+                android:id="@+id/soaring_forecast_close_sounding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/margin_standard"
+                android:layout_marginTop="@dimen/margin_standard"
                 android:layout_alignParentTop="true"
-                android:visibility="gone"
                 app:srcCompat="@drawable/ic_close_black_24dp"
                 android:onClick="@{() -> forecastDisplay.soundingImageCloseClick()}"
                 android:contentDescription="@string/string_soaring_forecast_sounding_description"/>
