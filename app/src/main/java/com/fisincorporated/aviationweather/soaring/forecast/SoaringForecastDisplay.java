@@ -456,7 +456,13 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
                 displayForecastImage(stepImageBy(1));
                 break;
             case LOOP:
-                startImageAnimation();
+                if (soaringForecastImageAnimation.isRunning()) {
+                    viewDataBinding.soaringForecastLoopButton.setText(R.string.loop);
+                    stopImageAnimation();
+                } else {
+                    viewDataBinding.soaringForecastLoopButton.setText(R.string.pause);
+                    startImageAnimation();
+                }
                 break;
         }
     }

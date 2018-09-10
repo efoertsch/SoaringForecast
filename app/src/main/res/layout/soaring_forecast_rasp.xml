@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
     >
 
     <data class="SoaringForecastImageBinding">
@@ -106,66 +107,84 @@
             app:layout_constraintTop_toBottomOf="@+id/region_forecast_date_recycler_view"
             />
 
-        <LinearLayout
+
+        <RelativeLayout
             android:id="@+id/soaring_forecast_image_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/soaring_forecast_recycler_view"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_half"
-            android:background="@drawable/black_border"
-            android:gravity="center"
-            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
             app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_recycler_view">
 
-            <ImageView
-                android:id="@+id/soaring_forecast_time_back_arrow"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/soaring_forecast_image_looper"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_standard"
-                android:contentDescription="@string/back_arrow"
-                android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.BACKWARD)}"
-                android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_keyboard_arrow_left"/>
-
-            <TextView
-                android:id="@+id/soaring_forecast_image_local_time"
-                style="@style/forecastData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"/>
-
-            <TextView
-                android:id="@+id/soaring_forecast_time_local_label"
-                style="@style/forecastLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="@string/soaring_forecast_time_local_label"/>
-
-            <ImageView
-                android:id="@+id/soaring_forecast_time_forward_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_standard"
-                android:contentDescription="@string/forward_arrow"
-                android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.FORWARD)}"
-                android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_keyboard_arrow_right"/>
+                android:layout_marginTop="@dimen/margin_half"
+                android:background="@drawable/black_border"
+               android:gravity="center_vertical|center_horizontal"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/soaring_forecast_time_loop"
+                <ImageView
+                    android:id="@+id/soaring_forecast_time_back_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_standard"
+                    android:contentDescription="@string/back_arrow"
+                    android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.BACKWARD)}"
+                    android:tint="@color/colorPrimary"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_left"/>
+
+                <TextView
+                    android:id="@+id/soaring_forecast_image_local_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    tools:text="1500"/>
+
+                <TextView
+                    android:id="@+id/soaring_forecast_time_local_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="@string/soaring_forecast_time_local_label"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"/>
+
+                <ImageView
+                    android:id="@+id/soaring_forecast_time_forward_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_standard"
+                    android:contentDescription="@string/forward_arrow"
+                    android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.FORWARD)}"
+                    android:tint="@color/colorPrimary"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_right"/>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/soaring_forecast_loop_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/loop"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/pause_loop_toggle"
                 android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.LOOP)}"
+                android:text="@string/pause"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_sync"/>
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
 
-        </LinearLayout>
+                />
+
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/soaring_forecast_map_and_bitmap"
@@ -246,11 +265,11 @@
             android:id="@+id/soaring_forecast_sounding_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
-            android:visibility="gone"
             >
 
             <com.fisincorporated.aviationweather.common.TouchImageView
@@ -263,12 +282,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
                 android:layout_marginEnd="@dimen/margin_standard"
                 android:layout_marginTop="@dimen/margin_standard"
-                android:layout_alignParentTop="true"
-                app:srcCompat="@drawable/ic_close_black_24dp"
+                android:contentDescription="@string/string_soaring_forecast_sounding_description"
                 android:onClick="@{() -> forecastDisplay.soundingImageCloseClick()}"
-                android:contentDescription="@string/string_soaring_forecast_sounding_description"/>
+                app:srcCompat="@drawable/ic_close_black_24dp"/>
 
         </RelativeLayout>
 
