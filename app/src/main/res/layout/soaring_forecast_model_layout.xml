@@ -5,24 +5,30 @@
     <data class="SoaringForecastTypeView">
 
         <variable
+            name="position"
+            type="Integer"/>
+
+        <variable
+            name="forecastModelClickListener"
+            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterForecastModel"/>
+
+        <variable
             name="soaringForecastModel"
             type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel"/>
 
     </data>
 
-
     <TextView
-        android:id="@+id/soaring_forecast_type_label"
+        android:id="@+id/soaring_forecast_model_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_half"
         android:layout_marginStart="@dimen/margin_half"
         android:background="@drawable/selected_view"
         android:clickable="true"
+        android:onClick="@{() -> forecastModelClickListener.onModelClick(soaringForecastModel, position)}"
         android:padding="@dimen/margin_half"
         android:text="@{soaringForecastModel.name + '(' + soaringForecastModel.numberForecastDays + ')'}"
         android:textAllCaps="true"
         tools:text="GFS (7)"/>
-
-
 </layout>

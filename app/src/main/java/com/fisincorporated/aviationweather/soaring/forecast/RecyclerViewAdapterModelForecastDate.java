@@ -1,6 +1,7 @@
 package com.fisincorporated.aviationweather.soaring.forecast;
 
 import android.databinding.DataBindingUtil;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -15,11 +16,19 @@ import java.util.List;
 
 public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<RecyclerViewAdapterModelForecastDate.ViewHolder> {
     private List<ModelForecastDate> modelForecastDates;
-    private int selectedPos = RecyclerView.NO_POSITION;
+    private ModelForecastDate selectedModelForecastDate;
+    private RecyclerView recyclerView;
+    private RecyclerView.SmoothScroller smoothScroller;
 
-
-    public RecyclerViewAdapterModelForecastDate(List<ModelForecastDate> modelForecastDates) {
+    RecyclerViewAdapterModelForecastDate(List<ModelForecastDate> modelForecastDates) {
         this.modelForecastDates = modelForecastDates;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+        smoothScroller = getSmoothScroller(recyclerView);
     }
 
     public void updateModelForecastDateList(List<ModelForecastDate> modelForecastDates) {
@@ -27,8 +36,19 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
         notifyDataSetChanged();
     }
 
-    public void setSelectedPosition(int selectedPos){
-        this.selectedPos = selectedPos;
+    public void setSelectedModelForecastDate(ModelForecastDate modelForecastDate) {
+        selectedModelForecastDate = modelForecastDate;
+        notifyDataSetChanged();
+    }
+
+    public void setSelectedModelForecastDate(int position) {
+        if (position < modelForecastDates.size()){
+            selectedModelForecastDate = modelForecastDates.get(position);
+        } else {
+            if (modelForecastDates.size() > 0) {
+                selectedModelForecastDate = modelForecastDates.get(0);
+            }
+        }
         notifyDataSetChanged();
     }
 
@@ -36,23 +56,15 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
     public RecyclerViewAdapterModelForecastDate.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ModelForecastDateView binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()), ViewHolder.LAYOUT_RESOURCE, parent, false);
-        ViewHolder viewHolder = new RecyclerViewAdapterModelForecastDate.ViewHolder(binding);
-        viewHolder.itemView.setOnClickListener(v -> {
-            ModelForecastDate modelForecastDate = modelForecastDates.get(viewHolder.getAdapterPosition());
-            notifyItemChanged(selectedPos);
-            selectedPos = viewHolder.getLayoutPosition();
-            notifyItemChanged(selectedPos);
-            EventBus.getDefault().post(modelForecastDate);
-        });
-        return viewHolder;
-
+        return new RecyclerViewAdapterModelForecastDate.ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapterModelForecastDate.ViewHolder holder, int position) {
         holder.binding.setModelForecastDate(modelForecastDates.get(position));
-        holder.binding.modelForecastDateLabel.setTag(modelForecastDates.get(position));
-        holder.binding.modelForecastDateLabel.setSelected(selectedPos == position);
+        holder.binding.setPosition(position);
+        holder.binding.setDateClickListener(this);
+        holder.binding.modelForecastDateLabel.setSelected(selectedModelForecastDate == modelForecastDates.get(position));
     }
 
     @Override
@@ -60,16 +72,33 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
         return modelForecastDates.size();
     }
 
+    public void onDateClick(ModelForecastDate modelForecastDate, Integer position) {
+        if (modelForecastDate != selectedModelForecastDate) {
+            selectedModelForecastDate = modelForecastDate;
+            RecyclerViewAdapterModelForecastDate.this.notifyDataSetChanged();
+            smoothScroller.setTargetPosition(position);
+            recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
+            EventBus.getDefault().post(modelForecastDate);
+        }
+    }
+
+    private RecyclerView.SmoothScroller getSmoothScroller(RecyclerView recyclerView) {
+        return new LinearSmoothScroller(recyclerView.getContext()) {
+            @Override
+            protected int getHorizontalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         static final int LAYOUT_RESOURCE = R.layout.region_forecast_date_layout;
-
         private final ModelForecastDateView binding;
 
         ViewHolder(ModelForecastDateView bindingView) {
             super(bindingView.getRoot());
             binding = bindingView;
         }
-
 
     }
 }
