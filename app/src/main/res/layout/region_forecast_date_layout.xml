@@ -5,11 +5,18 @@
     <data class="ModelForecastDateView">
 
         <variable
+            name="position"
+            type="Integer"/>
+
+        <variable
+            name="dateClickListener"
+            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterModelForecastDate"/>
+
+        <variable
             name="modelForecastDate"
             type="com.fisincorporated.aviationweather.soaring.json.ModelForecastDate"/>
 
     </data>
-
 
     <TextView
         android:id="@+id/model_forecast_date_label"
@@ -20,9 +27,9 @@
         android:background="@drawable/selected_view"
         android:clickable="true"
         android:focusable="true"
+        android:onClick="@{()-> dateClickListener.onDateClick(modelForecastDate, position)}"
         android:padding="@dimen/margin_half"
         android:text="@{modelForecastDate.getFormattedDate}"
         android:textAllCaps="true"
         tools:text="Sat. Apr 21."/>
-
 </layout>

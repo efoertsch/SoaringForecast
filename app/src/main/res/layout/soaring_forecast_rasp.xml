@@ -59,7 +59,7 @@
             app:layout_constraintGuide_percent="1.0"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/soaring_forecast_type_recycler_view"
+            android:id="@+id/soaring_forecast_model_recycler_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_standard"
@@ -86,7 +86,7 @@
             android:orientation="horizontal"
             android:padding="@dimen/margin_half"
             app:layout_constraintEnd_toEndOf="@+id/guideline_100pct"
-            app:layout_constraintStart_toEndOf="@+id/soaring_forecast_type_recycler_view"
+            app:layout_constraintStart_toEndOf="@+id/soaring_forecast_model_recycler_view"
             app:layout_constraintTop_toTopOf="parent"
             />
 
@@ -104,7 +104,7 @@
             android:padding="@dimen/margin_half"
             app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
             app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
-            app:layout_constraintTop_toBottomOf="@+id/region_forecast_date_recycler_view"
+            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_model_recycler_view"
             />
 
 
@@ -121,12 +121,12 @@
                 android:id="@+id/soaring_forecast_image_looper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/margin_standard"
                 android:layout_marginStart="@dimen/margin_standard"
                 android:layout_marginTop="@dimen/margin_half"
                 android:background="@drawable/black_border"
-               android:gravity="center_vertical|center_horizontal"
-                android:layout_centerVertical="true"
+                android:gravity="center_vertical|center_horizontal"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -173,14 +173,14 @@
                 android:id="@+id/soaring_forecast_loop_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/pause_loop_toggle"
                 android:onClick="@{() -> forecastDisplay.onStepClick(forecastAction.LOOP)}"
                 android:text="@string/pause"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:tint="@color/colorPrimary"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
 
                 />
 

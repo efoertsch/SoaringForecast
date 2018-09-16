@@ -5,13 +5,20 @@
     <data class="SoaringConditionView">
 
         <variable
+            name="position"
+            type="Integer"/>
+
+        <variable
+            name="forecastClickListener"
+            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterSoaringForecast"/>
+        <variable
             name="forecast"
             type="com.fisincorporated.aviationweather.soaring.json.Forecast"/>
 
     </data>
 
     <TextView
-        android:id="@+id/soaring_condition_option"
+        android:id="@+id/soaring_forecast_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_half"
@@ -20,6 +27,7 @@
         android:clickable="true"
         android:focusable="true"
         android:padding="@dimen/margin_half"
+        android:onClick="@{()-> forecastClickListener.onForecastClick(forecast, position)}"
         android:text="@{forecast.forecastNameDisplay}"
         tools:text="Thermal Updraft Velocity &amp; B/S Ratio"/>
 
