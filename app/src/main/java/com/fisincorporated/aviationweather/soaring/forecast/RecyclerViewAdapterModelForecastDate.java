@@ -32,13 +32,35 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
     }
 
     public void updateModelForecastDateList(List<ModelForecastDate> modelForecastDates) {
+        int position = -1;
         this.modelForecastDates = modelForecastDates;
+        //TODO if selectedModelForecastData has been previously set, see if that date is
+        // in the new list and if so set selected to same date as previously set
+        // if not in list set to first date in list.
+        if (selectedModelForecastDate != null) {
+            position = checkForSelectedDateInNewList(selectedModelForecastDate, modelForecastDates);
+        }
+
+        if (position > -1) {
+            setSelectedModelForecastDate(position);
+        } else {
+            if (modelForecastDates.size() > 0){
+                setSelectedModelForecastDate(0);
+            }
+        }
         notifyDataSetChanged();
     }
 
-    public void setSelectedModelForecastDate(ModelForecastDate modelForecastDate) {
-        selectedModelForecastDate = modelForecastDate;
-        notifyDataSetChanged();
+    private int checkForSelectedDateInNewList(ModelForecastDate modelForecastDate, List<ModelForecastDate> newForecastDates) {
+        if (newForecastDates == null || newForecastDates.size() == 0) {
+            return -1;
+        }
+        for (int i = 0; i < newForecastDates.size() ; ++i){
+            if (newForecastDates.get(i).getYyyymmddDate().equals(modelForecastDate.getYyyymmddDate())){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void setSelectedModelForecastDate(int position) {

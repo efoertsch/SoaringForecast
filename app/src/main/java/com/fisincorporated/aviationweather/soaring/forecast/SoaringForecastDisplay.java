@@ -355,9 +355,6 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
             createForecastDateListForSelectedModel();
             if (modelForecastDateRecyclerViewAdapter != null) {
                 modelForecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
-                // TODO if new list of dates has date from prior selection, set selected date to old date
-                // else set to first date in list
-                modelForecastDateRecyclerViewAdapter.setSelectedModelForecastDate(0);
             }
             loadRaspImages();
         }
