@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ProgressBar;
@@ -22,6 +23,7 @@ import com.fisincorporated.aviationweather.databinding.SoaringForecastImageBindi
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.aviationweather.repository.AppRepository;
+import com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.soaring.json.Forecast;
 import com.fisincorporated.aviationweather.soaring.json.Forecasts;
 import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
@@ -83,8 +85,10 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private GoogleMap googleMap;
     private LatLngBounds mapLatLngBounds;
     private GroundOverlay forecastOverlay;
-    private List<ModelForecastDate> modelForecastDates;
-    private RecyclerViewAdapterModelForecastDate modelForecastDateRecyclerViewAdapter;
+    //private List<ModelForecastDate> modelForecastDates = new ArrayList<>();
+    //private RecyclerViewAdapterModelForecastDate modelForecastDateRecyclerViewAdapter;
+    // using generic adapter
+    private ForecastDateRecyclerViewAdapter forecastDateRecyclerViewAdapter;
     private ProgressBar mapProgressBar;
     private Forecast selectedForecast;
     private int forecastOverlayOpacity;
@@ -162,31 +166,35 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
      * @param soaringForecastModels
      */
     private void setupSoaringForecastModelsRecyclerView(List<SoaringForecastModel> soaringForecastModels) {
-        viewDataBinding.soaringForecastModelRecyclerView.setHasFixedSize(true);
-        viewDataBinding.soaringForecastModelRecyclerView.setLayoutManager(
-                new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
         RecyclerViewAdapterForecastModel recyclerViewAdapter = new RecyclerViewAdapterForecastModel(soaringForecastModels);
-        viewDataBinding.soaringForecastModelRecyclerView.setAdapter(recyclerViewAdapter);
+        setUpHorizontalRecyclerView(viewDataBinding.soaringForecastModelRecyclerView, recyclerViewAdapter);
+        //TODO create preference for model to use for first display
         recyclerViewAdapter.setSelectedForecastModel(soaringForecastModels.get(0));
     }
 
+
     private void setupModelForecastDateRecyclerView(List<ModelForecastDate> modelForecastDateList) {
-        viewDataBinding.regionForecastDateRecyclerView.setHasFixedSize(true);
-        viewDataBinding.regionForecastDateRecyclerView.setLayoutManager(
-                new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
-        modelForecastDateRecyclerViewAdapter = new RecyclerViewAdapterModelForecastDate(modelForecastDateList);
-        viewDataBinding.regionForecastDateRecyclerView.setAdapter(modelForecastDateRecyclerViewAdapter);
+        forecastDateRecyclerViewAdapter = new ForecastDateRecyclerViewAdapter(modelForecastDateList);
+        setUpHorizontalRecyclerView(viewDataBinding.regionForecastDateRecyclerView, forecastDateRecyclerViewAdapter);
+
+//        modelForecastDateRecyclerViewAdapter = new RecyclerViewAdapterModelForecastDate(modelForecastDateList);
+//        setUpHorizontalRecyclerView(viewDataBinding.regionForecastDateRecyclerView, modelForecastDateRecyclerViewAdapter);
     }
 
     private void setupSoaringConditionRecyclerView(List<Forecast> forecasts) {
-        viewDataBinding.soaringForecastRecyclerView.setHasFixedSize(true);
-        viewDataBinding.soaringForecastRecyclerView.setLayoutManager(
-                new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
         RecyclerViewAdapterSoaringForecast recyclerViewAdapter = new RecyclerViewAdapterSoaringForecast(forecasts);
-        viewDataBinding.soaringForecastRecyclerView.setAdapter(recyclerViewAdapter);
+        setUpHorizontalRecyclerView(viewDataBinding.soaringForecastRecyclerView, recyclerViewAdapter);
         // TODO do better way to set selected
         recyclerViewAdapter.setSelectedForecast(forecasts.get(1));
     }
+
+    private void setUpHorizontalRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter recyclerViewAdapter) {
+        //recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(viewDataBinding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(recyclerViewAdapter);
+    }
+
 
     @Override
     public void onResume() {
@@ -234,9 +242,11 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     public void onMessageEvent(ReadyToSelectSoaringForecastEvent readyToSelectSoaringForecastEvent) {
         // At this point for each date RegionForecastDates contains for each date the type of forecast available
         // So pull out the dates available for the forecast type selected.
-        createForecastDateListForSelectedModel();
+        List<ModelForecastDate> modelForecastDates = createForecastDateListForSelectedModel();
         setupModelForecastDateRecyclerView(modelForecastDates);
-        modelForecastDateRecyclerViewAdapter.setSelectedModelForecastDate(0);
+        //modelForecastDateRecyclerViewAdapter.setSelectedModelForecastDate(0);
+        // generic adapter
+        forecastDateRecyclerViewAdapter.setSelectedItem(0);
         // Get whatever current date is to start
         if (modelForecastDates.size() > 0) {
             setProgressBarVisibility(false);
@@ -249,10 +259,10 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         }
     }
 
-    private void createForecastDateListForSelectedModel() {
+    private List<ModelForecastDate>  createForecastDateListForSelectedModel() {
         ModelLocationAndTimes modelLocationAndTimes;
+        List<ModelForecastDate> modelForecastDates = new ArrayList<>();
         String model = selectedSoaringForecastModel.getName();
-        modelForecastDates = new ArrayList<>();
         for (RegionForecastDate regionForecastDate : regionForecastDates.getRegionForecastDateList()) {
             modelLocationAndTimes = regionForecastDate.getModelLocationAndTimes();
             if (modelLocationAndTimes != null && modelLocationAndTimes.getGpsLocationAndTimesForModel(model) != null) {
@@ -262,6 +272,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
                 modelForecastDates.add(modelForecastDate);
             }
         }
+        return modelForecastDates;
     }
 
     private void startLoadingSoaringForecastImages() {
@@ -352,9 +363,12 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         if (!soaringForecastModel.equals(selectedSoaringForecastModel)) {
             selectedSoaringForecastModel = soaringForecastModel;
             appPreferences.setSoaringForecastType(selectedSoaringForecastModel);
-            createForecastDateListForSelectedModel();
-            if (modelForecastDateRecyclerViewAdapter != null) {
-                modelForecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
+            List<ModelForecastDate> modelForecastDates = createForecastDateListForSelectedModel();
+//            if (modelForecastDateRecyclerViewAdapter != null) {
+//                modelForecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
+//            }
+            if (forecastDateRecyclerViewAdapter != null) {
+               forecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
             }
             loadRaspImages();
         }
@@ -599,7 +613,8 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<SoaringForecastImage>() {
                     @Override
-                    public void onStart() { }
+                    public void onStart() {
+                    }
 
                     @Override
                     public void onNext(SoaringForecastImage soaringForecastImage) {
@@ -620,7 +635,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         compositeDisposable.add(disposableObserver);
     }
 
-    public String getForecastTime(){
+    public String getForecastTime() {
         return forecastTime;
     }
 
@@ -636,7 +651,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     }
 
 
-    public void soundingImageCloseClick(){
+    public void soundingImageCloseClick() {
         forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
         viewDataBinding.soaringForecastSoundingLayout.setVisibility(View.GONE);
         loadRaspImages();

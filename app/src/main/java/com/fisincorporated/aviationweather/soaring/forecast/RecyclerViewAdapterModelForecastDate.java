@@ -85,7 +85,7 @@ public class RecyclerViewAdapterModelForecastDate extends RecyclerView.Adapter<R
     public void onBindViewHolder(RecyclerViewAdapterModelForecastDate.ViewHolder holder, int position) {
         holder.binding.setModelForecastDate(modelForecastDates.get(position));
         holder.binding.setPosition(position);
-        holder.binding.setDateClickListener(this);
+       // holder.binding.setDateClickListener(this);
         holder.binding.modelForecastDateLabel.setSelected(selectedModelForecastDate == modelForecastDates.get(position));
     }
 

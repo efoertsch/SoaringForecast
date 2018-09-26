@@ -60,7 +60,7 @@ public class RecyclerViewAdapterForecastModel extends RecyclerView.Adapter<Recyc
         if (soaringForecastModel != selectedSoaringForecastModel) {
             selectedSoaringForecastModel = soaringForecastModel;
             recyclerView.getLayoutManager().scrollToPosition(position);
-            RecyclerViewAdapterForecastModel.this.notifyDataSetChanged();
+            notifyDataSetChanged();
             smoothScroller.setTargetPosition(position);
             recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
             EventBus.getDefault().post(soaringForecastModel);
