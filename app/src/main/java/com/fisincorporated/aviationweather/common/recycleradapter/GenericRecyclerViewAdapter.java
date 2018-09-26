@@ -21,13 +21,13 @@ import java.util.List;
  * Extend the adapter for appropriate use case.
  *
  * @param <T>  type of objects, which will be used in the adapter's dataset
- * @param <VH> ViewHolder {@link BaseViewHolder}
+ * @param <VH> ViewHolder {@link GenericViewHolder}
  * @author Leonid Ustenko (Leo.Droidcoder@gmail.com)
  * @since 1.0.0
  * <p>
  * Based on https://github.com/LeoDroidCoder/generic-adapter but with modifications
  */
-public abstract class GenericRecyclerViewAdapter<T, VH extends BaseViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder> extends RecyclerView.Adapter<VH> {
 
     private List<T> items = new ArrayList<>();
     private T selectedItem;

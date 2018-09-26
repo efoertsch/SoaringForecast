@@ -8,9 +8,12 @@
             name="position"
             type="Integer"/>
 
+       <!-- <variable
+            name="forecastModelClickListener"
+            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterForecastModel"/> -->
         <variable
             name="forecastModelClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterForecastModel"/>
+            type="com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastModelRecyclerViewAdapter"/>
 
         <variable
             name="soaringForecastModel"
@@ -25,6 +28,7 @@
         android:layout_marginEnd="@dimen/margin_half"
         android:layout_marginStart="@dimen/margin_half"
         android:background="@drawable/selected_view"
+        android:focusable="true"
         android:clickable="true"
         android:onClick="@{() -> forecastModelClickListener.onModelClick(soaringForecastModel, position)}"
         android:padding="@dimen/margin_half"

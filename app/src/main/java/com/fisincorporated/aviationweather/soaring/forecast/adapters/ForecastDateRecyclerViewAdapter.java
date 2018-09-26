@@ -13,11 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
-import timber.log.Timber;
-
 public class ForecastDateRecyclerViewAdapter extends GenericRecyclerViewAdapter<ModelForecastDate, ForecastDateViewHolder> {
-
-    private ForecastDateViewHolder forecastDateViewHolder;
 
     public ForecastDateRecyclerViewAdapter(List<ModelForecastDate> items) {
         super(items);
@@ -27,20 +23,15 @@ public class ForecastDateRecyclerViewAdapter extends GenericRecyclerViewAdapter<
     public ForecastDateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ModelForecastDateView binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()), R.layout.region_forecast_date_layout, parent, false);
-        forecastDateViewHolder = new ForecastDateViewHolder(binding);
-        return forecastDateViewHolder;
+       return new ForecastDateViewHolder(binding);
     }
 
-    private int checkForSelectedDateInNewList(ModelForecastDate modelForecastDate, List<ModelForecastDate> newForecastDates) {
-        if (newForecastDates == null || newForecastDates.size() == 0) {
-            return -1;
-        }
-        for (int i = 0; i < newForecastDates.size(); ++i) {
-            if (newForecastDates.get(i).getYyyymmddDate().equals(modelForecastDate.getYyyymmddDate())) {
-                return i;
-            }
-        }
-        return -1;
+    @Override
+    public void onBindViewHolder(ForecastDateViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+        //TODO get better way to do following
+        holder.getViewDataBinding().modelForecastDateLabel.setSelected(getItems().get(position).equals(getSelectedItem()));
+        holder.getViewDataBinding().setDateClickListener(this);
     }
 
     public void updateModelForecastDateList(List<ModelForecastDate> modelForecastDates) {
@@ -65,16 +56,16 @@ public class ForecastDateRecyclerViewAdapter extends GenericRecyclerViewAdapter<
         notifyDataSetChanged();
     }
 
-    @Override
-    public void onBindViewHolder(ForecastDateViewHolder holder, int position) {
-        //super.onBindViewHolder(holder, position);
-        holder.viewDataBinding.setModelForecastDate(getItem(position));
-        holder.viewDataBinding.setPosition(position);
-        //TODO remove following commnet if switching back to this recyclerview adapter
-        forecastDateViewHolder.viewDataBinding.setDateClickListener(this);
-        forecastDateViewHolder.viewDataBinding.modelForecastDateLabel.setSelected(getSelectedItem() == getItems().get(position));
-        Timber.d("Selected date: %1s = date in list: %2s", getSelectedItem().toString(), getItems().get(position).toString() );
-        Timber.d("Selected state = %1s", forecastDateViewHolder.viewDataBinding.modelForecastDateLabel.isSelected());
+    private int checkForSelectedDateInNewList(ModelForecastDate modelForecastDate, List<ModelForecastDate> newForecastDates) {
+        if (newForecastDates == null || newForecastDates.size() == 0) {
+            return -1;
+        }
+        for (int i = 0; i < newForecastDates.size(); ++i) {
+            if (newForecastDates.get(i).getYyyymmddDate().equals(modelForecastDate.getYyyymmddDate())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void onDateClick(ModelForecastDate modelForecastDate, Integer position) {
@@ -82,7 +73,6 @@ public class ForecastDateRecyclerViewAdapter extends GenericRecyclerViewAdapter<
             setSelectedItem(modelForecastDate);
             smoothScrollToPosition(position);
             EventBus.getDefault().post(modelForecastDate);
-
         }
     }
 

@@ -12,11 +12,11 @@ import android.support.v7.widget.RecyclerView;
  *
  * Based on https://github.com/LeoDroidCoder/generic-adapter but modified
  */
-public abstract class BaseViewHolder<T, VDB extends ViewDataBinding> extends RecyclerView.ViewHolder {
+public abstract class GenericViewHolder<T, VDB extends ViewDataBinding> extends RecyclerView.ViewHolder {
 
     private final  VDB viewDataBinding;
 
-    public BaseViewHolder(VDB bindingView) {
+    public GenericViewHolder(VDB bindingView) {
         super(bindingView.getRoot());
         viewDataBinding = bindingView;
 
@@ -32,6 +32,7 @@ public abstract class BaseViewHolder<T, VDB extends ViewDataBinding> extends Rec
     public abstract void onBind(T item, int position);
 
 
+    public abstract VDB getViewDataBinding();
 
 
 }
