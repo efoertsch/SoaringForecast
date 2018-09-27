@@ -2,15 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="SoaringConditionView">
+    <data class="SoaringForecastView">
 
         <variable
             name="position"
             type="Integer"/>
-
-        <!--<variable
-            name="forecastClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterSoaringForecast"/> -->
 
         <variable
             name="forecastClickListener"

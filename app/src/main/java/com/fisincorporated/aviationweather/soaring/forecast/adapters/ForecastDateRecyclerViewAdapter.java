@@ -22,7 +22,7 @@ public class ForecastDateRecyclerViewAdapter extends GenericRecyclerViewAdapter<
     @Override
     public ForecastDateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ModelForecastDateView binding = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.getContext()), R.layout.region_forecast_date_layout, parent, false);
+                LayoutInflater.from(parent.getContext()), R.layout.soaring_forecast_date, parent, false);
        return new ForecastDateViewHolder(binding);
     }
 

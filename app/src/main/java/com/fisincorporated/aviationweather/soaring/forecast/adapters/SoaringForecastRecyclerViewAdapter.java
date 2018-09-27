@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericRecyclerViewAdapter;
-import com.fisincorporated.aviationweather.databinding.SoaringConditionView;
+import com.fisincorporated.aviationweather.databinding.SoaringForecastView;
 import com.fisincorporated.aviationweather.soaring.json.Forecast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -22,7 +22,7 @@ public class SoaringForecastRecyclerViewAdapter extends GenericRecyclerViewAdapt
 
     @Override
     public SoaringForecastViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        SoaringConditionView binding = DataBindingUtil.inflate(
+        SoaringForecastView binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()), R.layout.soaring_forecast_option, parent, false);
         return new SoaringForecastViewHolder(binding);
 

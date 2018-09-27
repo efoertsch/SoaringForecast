@@ -8,10 +8,6 @@
             name="position"
             type="Integer"/>
 
-        <!-- <variable
-            name="dateClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterModelForecastDate"/>
-        -->
          <variable
             name="dateClickListener"
             type="com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter"/>

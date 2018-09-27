@@ -1,14 +1,15 @@
 package com.fisincorporated.aviationweather.soaring.forecast.adapters;
 
+
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericViewHolder;
-import com.fisincorporated.aviationweather.databinding.SoaringConditionView;
+import com.fisincorporated.aviationweather.databinding.SoaringForecastView;
 import com.fisincorporated.aviationweather.soaring.json.Forecast;
 
-public class SoaringForecastViewHolder extends GenericViewHolder<Forecast,SoaringConditionView> {
+public class SoaringForecastViewHolder extends GenericViewHolder<Forecast,SoaringForecastView> {
 
-    private SoaringConditionView viewDataBinding;
+    private SoaringForecastView viewDataBinding;
 
-    SoaringForecastViewHolder(SoaringConditionView bindingView) {
+    SoaringForecastViewHolder(SoaringForecastView bindingView) {
         super(bindingView);
         viewDataBinding = bindingView;
     }
@@ -20,7 +21,7 @@ public class SoaringForecastViewHolder extends GenericViewHolder<Forecast,Soarin
     }
 
     @Override
-    public SoaringConditionView getViewDataBinding() {
+    public SoaringForecastView getViewDataBinding() {
         return viewDataBinding;
     }
 }
