@@ -8,9 +8,15 @@
             name="position"
             type="Integer"/>
 
+        <!--<variable
+            name="forecastClickListener"
+            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterSoaringForecast"/> -->
+
         <variable
             name="forecastClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterSoaringForecast"/>
+            type="com.fisincorporated.aviationweather.soaring.forecast.adapters.SoaringForecastRecyclerViewAdapter"/>
+
+
         <variable
             name="forecast"
             type="com.fisincorporated.aviationweather.soaring.json.Forecast"/>

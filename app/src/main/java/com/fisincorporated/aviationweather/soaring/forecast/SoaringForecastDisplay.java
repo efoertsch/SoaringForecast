@@ -25,6 +25,7 @@ import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecast
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastModelRecyclerViewAdapter;
+import com.fisincorporated.aviationweather.soaring.forecast.adapters.SoaringForecastRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.soaring.json.Forecast;
 import com.fisincorporated.aviationweather.soaring.json.Forecasts;
 import com.fisincorporated.aviationweather.soaring.json.GpsLocationAndTimes;
@@ -184,7 +185,8 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     }
 
     private void setupSoaringConditionRecyclerView(List<Forecast> forecasts) {
-        RecyclerViewAdapterSoaringForecast recyclerViewAdapter = new RecyclerViewAdapterSoaringForecast(forecasts);
+        SoaringForecastRecyclerViewAdapter recyclerViewAdapter = new SoaringForecastRecyclerViewAdapter(forecasts);
+       // RecyclerViewAdapterSoaringForecast recyclerViewAdapter = new RecyclerViewAdapterSoaringForecast(forecasts);
         setUpHorizontalRecyclerView(viewDataBinding.soaringForecastRecyclerView, recyclerViewAdapter);
         // TODO do better way to set selected
         recyclerViewAdapter.setSelectedForecast(forecasts.get(1));

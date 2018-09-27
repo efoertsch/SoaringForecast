@@ -47,8 +47,8 @@ public class RecyclerViewAdapterSoaringForecast extends RecyclerView.Adapter<Rec
     public void onBindViewHolder(RecyclerViewAdapterSoaringForecast.ViewHolder holder, int position) {
         holder.binding.setForecast(forecasts.get(position));
         holder.binding.setPosition(position);
-        holder.binding.setForecastClickListener(this);
-        holder.binding.soaringForecastLabel.setSelected((selectedForecast == forecasts.get(position)));
+       // holder.binding.setForecastClickListener(this);
+        //holder.bindingsoaringForecastLabel.setSelected((selectedForecast == forecasts.get(position)));
     }
 
     @Override
