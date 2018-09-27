@@ -11,7 +11,7 @@ import java.util.List;
 
 //GET  “current.json?(time in millisecs)
 //    e.g.  http://www.soargbsc.com/rasp/current.json?123456
-// retrives
+// retrieves
 // { "NewEngland" : [ [ "Friday March 30", "2018-03-30" ], [ "Saturday March 31", "2018-03-31" ], ... ] } “
 // You then need to parse out the formatted(Friday March 30) and yyyy-mm-dd (dates
 public class RegionForecastDates {

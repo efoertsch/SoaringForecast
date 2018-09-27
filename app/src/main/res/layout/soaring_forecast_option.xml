@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="SoaringConditionView">
+    <data class="SoaringForecastView">
 
         <variable
             name="position"
@@ -10,7 +10,9 @@
 
         <variable
             name="forecastClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterSoaringForecast"/>
+            type="com.fisincorporated.aviationweather.soaring.forecast.adapters.SoaringForecastRecyclerViewAdapter"/>
+
+
         <variable
             name="forecast"
             type="com.fisincorporated.aviationweather.soaring.json.Forecast"/>

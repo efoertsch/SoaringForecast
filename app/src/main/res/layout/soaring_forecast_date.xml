@@ -8,9 +8,9 @@
             name="position"
             type="Integer"/>
 
-        <variable
+         <variable
             name="dateClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.RecyclerViewAdapterModelForecastDate"/>
+            type="com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter"/>
 
         <variable
             name="modelForecastDate"
@@ -27,7 +27,7 @@
         android:background="@drawable/selected_view"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="@{()-> dateClickListener.onDateClick(modelForecastDate, position)}"
+        android:onClick="@{()->dateClickListener.onDateClick(modelForecastDate, position)}"
         android:padding="@dimen/margin_half"
         android:text="@{modelForecastDate.getFormattedDate}"
         android:textAllCaps="true"
