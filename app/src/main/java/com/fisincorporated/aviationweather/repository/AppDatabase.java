@@ -1,13 +1,11 @@
 package com.fisincorporated.aviationweather.repository;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 
-@Database(entities = {Airport.class, Turnpoint.class}, version = 2, exportSchema = true)
+@Database(entities = {Airport.class, Turnpoint.class, Task.class, TaskTurnpoint.class}, version = 1, exportSchema = true)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
@@ -22,7 +20,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "app_database")
-                            .addMigrations(MIGRATION_1_2)
+                            //.addMigrations(MIGRATION_1_2)
                             .build();
                 }
             }
@@ -41,13 +39,13 @@ public abstract class AppDatabase extends RoomDatabase {
      *  See https://stackoverflow.com/questions/44322178/room-schema-export-directory-is-not-provided-to-the-annotation-processor-so-we/44424908#44424908
      *  and
      */
-    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-        @Override
-        public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS `turnpoint` (`title` TEXT NOT NULL, `code` TEXT NOT NULL, `country` TEXT, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `elevation` TEXT, `style` TEXT, `direction` TEXT, `length` TEXT, `frequency` TEXT, `description` TEXT, PRIMARY KEY(`title`, `code`))");
-            database.execSQL("CREATE UNIQUE INDEX `index_Turnpoint_title_code` ON `turnpoint` (`title`, `code`)");
-            database.execSQL("CREATE  INDEX `index_Turnpoint_code` ON `turnpoint` (`code`)");
-        }
-    };
+//    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+//        @Override
+//        public void migrate(SupportSQLiteDatabase database) {
+//            database.execSQL("CREATE TABLE IF NOT EXISTS `turnpoint` (`title` TEXT NOT NULL, `code` TEXT NOT NULL, `country` TEXT, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `elevation` TEXT, `style` TEXT, `direction` TEXT, `length` TEXT, `frequency` TEXT, `description` TEXT, PRIMARY KEY(`title`, `code`))");
+//            database.execSQL("CREATE UNIQUE INDEX `index_Turnpoint_title_code` ON `turnpoint` (`title`, `code`)");
+//            database.execSQL("CREATE  INDEX `index_Turnpoint_code` ON `turnpoint` (`code`)");
+//        }
+//    };
 
 }

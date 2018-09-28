@@ -9,6 +9,11 @@ import com.fisincorporated.aviationweather.utils.CSVUtils;
 
 import java.util.List;
 
+
+
+//"id","ident","type","name","latitude_deg","longitude_deg","elevation_ft","continent","iso_country","iso_region","municipality","scheduled_service","gps_code","iata_code","local_code","home_link","wikipedia_link","keywords"
+//3756,"KORH","medium_airport","Worcester Regional Airport",42.26729965209961,-71.87570190429688,1009,"NA","US","US-MA","Worcester","no","KORH","ORH","ORH",,"http://en.wikipedia.org/wiki/Worcester-Metrowest-Boston_Airport"
+
 @Entity(indices = {@Index("name"),@Index(value={"state","name"}),@Index("municipality")})
 public class Airport {
 
@@ -29,11 +34,6 @@ public class Airport {
     private String state;
 
     private String municipality;
-
-
-//"id","ident","type","name","latitude_deg","longitude_deg","elevation_ft","continent","iso_country","iso_region","municipality","scheduled_service","gps_code","iata_code","local_code","home_link","wikipedia_link","keywords"
-//3756,"KORH","medium_airport","Worcester Regional Airport",42.26729965209961,-71.87570190429688,1009,"NA","US","US-MA","Worcester","no","KORH","ORH","ORH",,"http://en.wikipedia.org/wiki/Worcester-Metrowest-Boston_Airport"
-
 
     public Airport(){}
 

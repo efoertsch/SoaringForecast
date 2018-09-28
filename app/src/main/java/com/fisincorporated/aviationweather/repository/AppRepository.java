@@ -49,7 +49,7 @@ public class AppRepository {
 
     // --------- Airports -----------------
     public void insertAirport(Airport airport) {
-        airportDao.insertAirport(airport);
+        airportDao.insert(airport);
     }
 
     public Single<Integer> getCountOfAirports() {
@@ -84,8 +84,12 @@ public class AppRepository {
     }
 
     // --------- Turnpoints -----------------
-    public void insertTurnpoint(Turnpoint turnpoint){
-        turnpointDao.insertTurnpoint(turnpoint);
+    public long insertTurnpoint(Turnpoint turnpoint){
+        return turnpointDao.insert(turnpoint);
+    }
+
+    public long updateTurnpoint(Turnpoint turnpoint){
+        return turnpointDao.update(turnpoint);
     }
 
     public Maybe<List<Turnpoint>> findTurnpoints(String searchTerm){
@@ -94,6 +98,10 @@ public class AppRepository {
 
     public Maybe<Turnpoint>  getTurnpoint(String title, String code){
         return turnpointDao.getTurnpoint(title, code);
+    }
+
+    public int deleteAllTurnpoints(){
+        return turnpointDao.deleteAllTurnpoints();
     }
 
 

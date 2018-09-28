@@ -2,6 +2,7 @@ package com.fisincorporated.aviationweather.repository;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
+import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.fisincorporated.aviationweather.utils.CSVUtils;
@@ -12,8 +13,12 @@ import java.util.List;
 //Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description
 //"Sterling","3B3",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL"
 
-@Entity(primaryKeys = {"title", "code"}, indices = {@Index(value = {"title", "code"},unique = true), @Index("code")})
+@Entity(indices = {@Index(value = {"title", "code"},unique = true), @Index("code")})
 public class Turnpoint {
+
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    public int id;
 
     @NonNull
     private String title = "";
@@ -66,6 +71,11 @@ public class Turnpoint {
         }
         return turnpoint;
 
+    }
+
+    @NonNull
+    public int getId() {
+        return id;
     }
 
     @NonNull
@@ -156,6 +166,20 @@ public class Turnpoint {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+
+    public void updateTurnpoint(Turnpoint turnpointUpdate){
+        country = turnpointUpdate.getCountry();
+        latitudeDeg = turnpointUpdate.getLatitudeDeg();
+        longitudeDeg = turnpointUpdate.getLongitudeDeg();
+        elevation = turnpointUpdate.getElevation();
+        style = turnpointUpdate.getStyle();
+        direction = turnpointUpdate.getDirection();
+        length = turnpointUpdate.getLength();
+        frequency = turnpointUpdate.getFrequency();
+        description = turnpointUpdate.getDescription();
+
     }
 
     /**

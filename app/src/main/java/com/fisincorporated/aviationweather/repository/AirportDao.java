@@ -30,10 +30,10 @@ public interface AirportDao {
     Maybe<List<Airport>> selectIcaoIdAirports(List<String> iacoAirports);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAirport(Airport airport);
+    void insert(Airport airport);
 
     @Delete
-    void deleteAirport(Airport airport);
+    void delete(Airport airport);
 
     @Query("SELECT count(*) FROM airport")
     Single<Integer> getCountOfAirports();

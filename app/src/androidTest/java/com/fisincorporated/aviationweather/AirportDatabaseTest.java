@@ -36,6 +36,7 @@ public class AirportDatabaseTest {
                 .allowMainThreadQueries()
                 .build();
         appRepository = AppRepository.getAppRepository(context);
+
     }
 
     @After

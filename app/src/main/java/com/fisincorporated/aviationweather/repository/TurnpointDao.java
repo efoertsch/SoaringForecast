@@ -5,6 +5,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -13,11 +14,19 @@ import io.reactivex.Maybe;
 @Dao
 public interface TurnpointDao {
 
+    // If conflict strategy changes - check ramifications in TurnpointProcessor
+    // and on TaskTurnpoint records.
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertTurnpoint(Turnpoint turnpoint);
+    long insert(Turnpoint turnpoint);
+
+    @Update
+    int update(Turnpoint turnpoint);
 
     @Delete
-    void deleteTurnpoint(Turnpoint turnpoint);
+    void delete(Turnpoint turnpoint);
+
+    @Query("Delete from turnpoint")
+    int deleteAllTurnpoints();
 
     @Query("Select * from turnpoint where title like :searchTerm or code like :searchTerm collate nocase")
     Maybe<List<Turnpoint>> findTurnpoints(String searchTerm);
