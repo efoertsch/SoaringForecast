@@ -1,5 +1,6 @@
 package com.fisincorporated.aviationweather.app;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
@@ -47,6 +48,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
         checkIfAirportDownloadNeeded();
     }
 
+    @SuppressLint("CheckResult")
     void checkIfAirportDownloadNeeded() {
         appRepository.getCountOfAirports()
                 .subscribeOn(Schedulers.io())
@@ -62,11 +64,12 @@ public class SoaringWeatherApplication extends DaggerApplication {
                         }
                 );
     }
+
     private void submitAirportDownloadJob() {
-        OneTimeWorkRequest compressionWork =
+        OneTimeWorkRequest downloadWork =
                 new OneTimeWorkRequest.Builder(DownloadAirportsWorker.class)
                         .build();
-        WorkManager.getInstance().enqueue(compressionWork);
+        WorkManager.getInstance().enqueue(downloadWork);
 
     }
 

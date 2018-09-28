@@ -12,14 +12,14 @@ import java.util.List;
 //Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description
 //"Sterling","3B3",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL"
 
-@Entity(primaryKeys = {"code", "title"}, indices = {@Index("code, title"), @Index(value = {"name"})})
+@Entity(primaryKeys = {"title", "code"}, indices = {@Index(value = {"title", "code"},unique = true), @Index("code")})
 public class Turnpoint {
 
     @NonNull
-    private String title;
+    private String title = "";
 
     @NonNull
-    private String code;
+    private String code = "";
 
     private String country;
 
@@ -38,7 +38,6 @@ public class Turnpoint {
     private String frequency;
 
     private String description;
-
 
     public Turnpoint() {
     }

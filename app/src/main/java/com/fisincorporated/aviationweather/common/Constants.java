@@ -18,6 +18,8 @@ public class Constants {
         FORECAST, SOUNDING
     }
 
+    public static final String TURNPOINT_FILE_NAME = "TURNPOINT_FILE_NAME ";
+
 
 
 }

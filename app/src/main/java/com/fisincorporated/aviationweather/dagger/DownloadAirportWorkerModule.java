@@ -2,7 +2,6 @@ package com.fisincorporated.aviationweather.dagger;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -12,12 +11,6 @@ import okhttp3.OkHttpClient;
 
 @Module
 public class DownloadAirportWorkerModule {
-
-    @Provides
-    @Named("CHANNEL_ID")
-    String provideChannelId() {
-        return "Soaring Weather";
-    }
 
     @Provides
     @Singleton

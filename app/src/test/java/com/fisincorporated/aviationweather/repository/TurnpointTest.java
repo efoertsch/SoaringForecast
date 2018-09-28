@@ -15,13 +15,20 @@ public class TurnpointTest {
         assertNotNull(turnpoint);
         assertEquals("Incorrect title", "Sterling",turnpoint.getTitle());
         assertEquals("Incorrect code", "3B3",turnpoint.getCode());
+        assertEquals("Incorrect country", "US", turnpoint.getCountry());
+        assertEquals("Incorrect altitude", "459ft", turnpoint.getElevation());
+        assertEquals("Incorrect style", "5", turnpoint.getStyle());
+        assertEquals("Incorrect direction", "160", turnpoint.getDirection());
+        assertEquals("Incorrect length","3086ft", turnpoint.getLength());
+        assertEquals("Incorrect frequency", "122.900", turnpoint.getFrequency());
+        assertEquals("Incorrect description", "Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL", turnpoint.getDescription());
     }
 
     @Test
     public void northLatitudeConversionTest() throws Exception {
         float latitude = Turnpoint.convertToLat("4225.500N");
         String convertedLatString = String.format("%.5f", latitude);
-        assertEquals(" Latitude not converted correctly", "42.42500", convertedLatString );
+        assertEquals(" Latitude not converted correctly assertEquals(\"Incorrect title\", \"Sterling\",turnpoint.getTitle());", "42.42500", convertedLatString );
     }
 
     @Test
