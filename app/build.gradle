@@ -15,6 +15,13 @@ android {
 
         // to use any vector drawables
         vectorDrawables.useSupportLibrary = true
+
+        // to export room db schema - good for db validation and migration validation/checking
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -36,6 +43,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
 
 }
 
@@ -126,6 +134,7 @@ dependencies {
     implementation "com.google.dagger:dagger:$DAGGER"
     implementation "com.google.dagger:dagger-android:$DAGGER"
     implementation "com.google.dagger:dagger-android-support:$DAGGER"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     annotationProcessor "com.google.dagger:dagger-android-processor:$DAGGER"
     annotationProcessor "com.google.dagger:dagger-compiler:$DAGGER"
 
@@ -201,5 +210,3 @@ dependencies {
     //UI testing with UI Automator
     androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:$UIAUTOMATOR"
 }
-
-

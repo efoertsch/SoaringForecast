@@ -56,7 +56,7 @@ public class WeatherDrawerActivityTest extends BaseTest {
     @Test
     public void canGetToAirportListFromNavDrawer() {
         drawerExistsSwipingRight();
-        onView(withId(R.id.app_weather_drawer)).perform(NavigationViewActions.navigateTo(R.id.nav_menu_add_airport_codes));
+        onView(withId(R.id.app_weather_drawer)).perform(NavigationViewActions.navigateTo(R.id.nav_menu_airport_list));
     }
 
     @Test

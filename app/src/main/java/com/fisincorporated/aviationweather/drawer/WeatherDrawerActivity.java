@@ -31,6 +31,7 @@ import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastFragment;
+import com.fisincorporated.aviationweather.turnpoints.TurnpointsImportActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -171,8 +172,16 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_dr_jacks:
                 startDrJacksBrowser();
                 break;
+
+            case R.id.nav_menu_import_turnpoints:
+                startTurnpointsImport();
         }
         drawerLayout.closeDrawers();
+    }
+
+    private void startTurnpointsImport() {
+        Intent i = new Intent(this, TurnpointsImportActivity.class);
+        startActivity(i);
     }
 
     private void startDrJacksBrowser() {

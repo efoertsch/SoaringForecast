@@ -42,8 +42,12 @@
                     android:id="@+id/nav_menu_airport_list"
                     android:title="@string/airport_list"
                     />
+                <item
+                    android:id="@+id/nav_menu_import_turnpoints"
+                    android:title="@string/import_turnpoints"/>
 
             </menu>
+
 
         </item>
 

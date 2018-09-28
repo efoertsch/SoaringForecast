@@ -1,32 +1,32 @@
 package com.fisincorporated.aviationweather.dagger;
 
-
-
 import android.content.Context;
 
-import com.fisincorporated.aviationweather.workmanager.DownloadAirportsWorker;
+import com.fisincorporated.aviationweather.workmanager.TurnpointsImportWorker;
 
 import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
 
+
 @Singleton
-@Component(modules = {DownloadAirportWorkerModule.class
+@Component(modules = { TurnpointProcessorModule.class
         , ChannelIdModule.class
         , AppRepositoryModule.class})
-public interface DownloadAirportWorkerComponent {
+
+public interface TurnpointsImportWorkerComponent {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
         Builder context(Context context);
 
-        DownloadAirportWorkerComponent build();
+        TurnpointsImportWorkerComponent build();
     }
 
     // allow to inject into our Main class
     // method name not important
-    void inject(DownloadAirportsWorker downloadAirportsWorker);
+    void inject(TurnpointsImportWorker turnpointsImportWorker);
 
 }

@@ -163,6 +163,20 @@
     <string name="string_soaring_forecast_sounding_description">Soaring forecast sounding image by hour</string>
     <string name="pause">Pause</string>
     <string name="pause_loop_toggle">Pause/Loop toggle</string>
+    <string name="turnpoint_files">Available Turnpoint Files</string>
+    <string name="title_activity_turnpoints_import">TurnpointsImportActivity</string>
+    <string name="import_turnpoints">Import Turnpoints</string>
+    <string name="no_turnpoint_files_found">No turnpoint files found. Would you like to download turnpoint files?</string>
+    <string name="need_to_download_cup_files">A browser will be started pointing to the Worldwide Soaring Turnpoint Exchange.\nDrill down to the needed SeeYou(.cup) turnpoint file and download.\n NOTE: Select the SeeYou file(s) that are *NOT* SeeYou® [control point number placed before the name].\nReturn to the Soaring app when downloads completed.</string>
+    <string name="no_cup_files_found">Missing Turnpoints</string>
+    <string name="start_browser">Start Browser</string>
+    <string name="cancel">Cancel</string>
+    <string name="but_first">But First...</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="started_turnpoints_processing">Started processing turnpoints</string>
+    <string name="turnpoints_processed_ok">Turnpoints processed ok</string>
+    <string name="turnpoint_database_load_oops">Oops. An error occured during turpoint import. Did you download correct version of SeeYou cup file?</string>
 
 
 </resources>

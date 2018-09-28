@@ -13,8 +13,8 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Component(modules = {AppModule.class
         , AndroidSupportInjectionModule.class
         , UIBuildersModule.class
-        , DownloadAirportWorkerModule.class
         , AppRepositoryModule.class
+        , ChannelIdModule.class
         })
 
 public interface DiComponent extends

@@ -6,6 +6,8 @@ import com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsPreferenceFragment;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastFragment;
+import com.fisincorporated.aviationweather.turnpoints.TurnpointsImportActivity;
+import com.fisincorporated.aviationweather.turnpoints.TurnpointsImportFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -29,7 +31,13 @@ public abstract class UIBuildersModule {
     abstract SoaringForecastFragment bindSoaringForecastFragment();
 
     @ContributesAndroidInjector(modules = {})
-    abstract AirportListFragment binAirportListFragment();
+    abstract AirportListFragment bindAirportListFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointsImportActivity bindTurnpointsImportActivity();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointsImportFragment bindTurnpointImportFragment();
 }
 
 

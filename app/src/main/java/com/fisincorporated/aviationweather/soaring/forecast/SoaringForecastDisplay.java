@@ -168,7 +168,6 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
      * @param soaringForecastModels
      */
     private void setupSoaringForecastModelsRecyclerView(List<SoaringForecastModel> soaringForecastModels) {
-        //RecyclerViewAdapterForecastModel recyclerViewAdapter = new RecyclerViewAdapterForecastModel(soaringForecastModels);
         ForecastModelRecyclerViewAdapter recyclerViewAdapter = new ForecastModelRecyclerViewAdapter(soaringForecastModels);
         setUpHorizontalRecyclerView(viewDataBinding.soaringForecastModelRecyclerView, recyclerViewAdapter);
         //TODO create preference for model to use for first display
@@ -179,14 +178,10 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private void setupModelForecastDateRecyclerView(List<ModelForecastDate> modelForecastDateList) {
         forecastDateRecyclerViewAdapter = new ForecastDateRecyclerViewAdapter(modelForecastDateList);
         setUpHorizontalRecyclerView(viewDataBinding.regionForecastDateRecyclerView, forecastDateRecyclerViewAdapter);
-
-//        modelForecastDateRecyclerViewAdapter = new RecyclerViewAdapterModelForecastDate(modelForecastDateList);
-//        setUpHorizontalRecyclerView(viewDataBinding.regionForecastDateRecyclerView, modelForecastDateRecyclerViewAdapter);
     }
 
     private void setupSoaringConditionRecyclerView(List<Forecast> forecasts) {
         SoaringForecastRecyclerViewAdapter recyclerViewAdapter = new SoaringForecastRecyclerViewAdapter(forecasts);
-       // RecyclerViewAdapterSoaringForecast recyclerViewAdapter = new RecyclerViewAdapterSoaringForecast(forecasts);
         setUpHorizontalRecyclerView(viewDataBinding.soaringForecastRecyclerView, recyclerViewAdapter);
         // TODO do better way to set selected
         recyclerViewAdapter.setSelectedForecast(forecasts.get(1));

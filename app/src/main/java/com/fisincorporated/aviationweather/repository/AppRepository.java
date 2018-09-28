@@ -25,11 +25,14 @@ public class AppRepository {
 
     private static AppRepository appRepository;
     private AirportDao airportDao;
+    private TurnpointDao turnpointDao;
     private Context context;
+
 
     private AppRepository(Context context) {
         AppDatabase db = AppDatabase.getDatabase(context);
         airportDao = db.getAirportDao();
+        turnpointDao = db.getTurnpointDao();
         this.context = context;
     }
 
@@ -44,15 +47,9 @@ public class AppRepository {
         return appRepository;
     }
 
+    // --------- Airports -----------------
     public void insertAirport(Airport airport) {
         airportDao.insertAirport(airport);
-//        Completable completable = new Completable() {
-//            @Override
-//            protected void subscribeActual(CompletableObserver s) {
-//                airportDao.insertAirport(airport);
-//                s.onComplete();
-//            }
-//        };
     }
 
     public Single<Integer> getCountOfAirports() {
@@ -76,13 +73,27 @@ public class AppRepository {
     }
 
 
+    // --------- Forecasts -----------------
     public Forecasts getForecasts() {
         return (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
     }
 
-
+    // --------- Soundings ------------------
     public List<SoundingLocation> getLocationSoundings(){
         return (new JSONResourceReader(context.getResources(), R.raw.soundings)).constructUsingGson(Soundings.class).getSoundingLocations();
+    }
+
+    // --------- Turnpoints -----------------
+    public void insertTurnpoint(Turnpoint turnpoint){
+        turnpointDao.insertTurnpoint(turnpoint);
+    }
+
+    public Maybe<List<Turnpoint>> findTurnpoints(String searchTerm){
+        return turnpointDao.findTurnpoints(searchTerm);
+    }
+
+    public Maybe<Turnpoint>  getTurnpoint(String title, String code){
+        return turnpointDao.getTurnpoint(title, code);
     }
 
 
