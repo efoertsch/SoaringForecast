@@ -85,9 +85,6 @@ public class TurnpointTest {
         turnpoint = Turnpoint.createTurnpointFromCSVDetail(sterling);
         appRepository.insertTurnpoint(turnpoint);
 
-        float latitude = turnpoint.getLatitudeDeg();
-        float longitude = turnpoint.getLongitudeDeg();
-
         Turnpoint turnpointUpdate = Turnpoint.createTurnpointFromCSVDetail(sterlingUpdate);
 
         long result = appRepository.insertTurnpoint(turnpointUpdate);

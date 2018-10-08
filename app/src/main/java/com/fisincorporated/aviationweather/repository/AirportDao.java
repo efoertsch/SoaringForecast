@@ -1,9 +1,6 @@
 package com.fisincorporated.aviationweather.repository;
 
 import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
@@ -12,7 +9,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 @Dao
-public interface AirportDao {
+public interface AirportDao extends BaseDao<Airport> {
 
     //TODO figure out how to return LiveData results but that can also be testable under AndroidJUnit4
 
@@ -28,12 +25,6 @@ public interface AirportDao {
 
     @Query("Select * from airport where ident in (:iacoAirports)")
     Maybe<List<Airport>> selectIcaoIdAirports(List<String> iacoAirports);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Airport airport);
-
-    @Delete
-    void delete(Airport airport);
 
     @Query("SELECT count(*) FROM airport")
     Single<Integer> getCountOfAirports();

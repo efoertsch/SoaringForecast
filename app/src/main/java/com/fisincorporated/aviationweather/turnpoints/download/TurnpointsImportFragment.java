@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.turnpoints;
+package com.fisincorporated.aviationweather.turnpoints.download;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.Constants;
 import com.fisincorporated.aviationweather.messages.ImportFile;
-import com.fisincorporated.aviationweather.turnpoints.adapters.TurnpointsImportRecyclerViewAdapter;
+import com.fisincorporated.aviationweather.turnpoints.TurnpointProcessor;
 import com.fisincorporated.aviationweather.workmanager.TurnpointsImportWorker;
 
 import org.greenrobot.eventbus.EventBus;

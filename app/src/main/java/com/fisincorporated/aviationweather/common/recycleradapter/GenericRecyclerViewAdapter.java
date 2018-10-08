@@ -1,6 +1,5 @@
 package com.fisincorporated.aviationweather.common.recycleradapter;
 
-import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,6 +28,7 @@ import java.util.List;
  */
 public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder> extends RecyclerView.Adapter<VH> {
 
+    // TODO Convert to LiveData
     private List<T> items = new ArrayList<>();
     private T selectedItem;
     private LayoutInflater layoutInflater;
@@ -40,15 +40,7 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
        this.items.addAll(items);
     }
 
-    /**
-     * Base constructor.
-     * Allocate adapter-related objects here if needed.
-     *
-     * @param context Context needed to retrieve LayoutInflater
-     */
-
-    public GenericRecyclerViewAdapter(Context context) {
-        this.layoutInflater = LayoutInflater.from(context);
+    public GenericRecyclerViewAdapter() {
     }
 
     /**

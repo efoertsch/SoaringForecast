@@ -13,7 +13,7 @@ import java.util.List;
 //Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description
 //"Sterling","3B3",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL"
 
-@Entity(indices = {@Index(value = {"title", "code"},unique = true), @Index("code")})
+@Entity(indices = {@Index(value = {"title", "code"}, unique = true), @Index("code")})
 public class Turnpoint {
 
     @NonNull
@@ -169,7 +169,7 @@ public class Turnpoint {
     }
 
 
-    public void updateTurnpoint(Turnpoint turnpointUpdate){
+    public void updateTurnpoint(Turnpoint turnpointUpdate) {
         country = turnpointUpdate.getCountry();
         latitudeDeg = turnpointUpdate.getLatitudeDeg();
         longitudeDeg = turnpointUpdate.getLongitudeDeg();
@@ -183,12 +183,11 @@ public class Turnpoint {
     }
 
     /**
-     *
      * @param latitudeString is a field of length 9 (1 based), where 1-2 characters are degrees
-     *                      , 3-4 characters are minutes, 5 decimal point
-     *                      , 6-8 characters are decimal minutes
-     *                      and 9th character is either N or S
-     * eg 4225.500N
+     *                       , 3-4 characters are minutes, 5 decimal point
+     *                       , 6-8 characters are decimal minutes
+     *                       and 9th character is either N or S
+     *                       eg 4225.500N
      * @return latitude converted to decimal degrees
      * @throws Exception
      */
@@ -207,14 +206,13 @@ public class Turnpoint {
     }
 
     /**
-     *
      * @param longitudeString is a field of length 10 (1 based), where
      *                        1-3 characters are degrees
      *                        4-5 characters are minutes,
      *                        6 decimal point
      *                        7-9 characters are decimal minutes
      *                        10th character is either N or S.
-     * eg 07147.470W
+     *                        eg 07147.470W
      * @return longitude converted to decimal degrees
      * @throws Exception
      */
@@ -229,6 +227,53 @@ public class Turnpoint {
                 * (longitudeString.endsWith("E") ? 1f : -1f);
         return longitude;
 
+    }
+
+    public String getStyleName(){
+        return getStyleName(style);
+    }
+
+    public static String getStyleName(String style) {
+        switch (style) {
+            case "0":
+                return "Unknown";
+            case "1":
+                return "Waypoint";
+            case "2":
+                return "Airfield with grass surface runway";
+            case "3":
+                return "Outlanding";
+            case "4":
+                return "Gliding airfield";
+            case "5":
+                return "Airfield with solid surface runway";
+            case "6":
+                return "Mountain Pass";
+            case "7":
+                return "Mountain Top";
+            case "8":
+                return "Transmitter Mast";
+            case "9":
+                return "VOR";
+            case "10":
+                return "NDB";
+            case "11":
+                return "Cooling Tower";
+            case "12":
+                return "Dam";
+            case "13":
+                return "Tunnel";
+            case "14":
+                return "Bridge";
+            case "15":
+                return "Power Plant";
+            case "16":
+                return "Castle";
+            case "17":
+                return "Intersection";
+            default:
+                return "Unknown";
+        }
     }
 
 }

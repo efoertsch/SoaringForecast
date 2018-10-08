@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.turnpoints.adapters;
+package com.fisincorporated.aviationweather.turnpoints.download;
 
 
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericViewHolder;

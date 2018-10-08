@@ -36,6 +36,9 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
                 fm.beginTransaction().add(R.id.fragmentContainer, fragment)
                         .commit();
             }
+            else {
+                finish();
+            }
         }
 
         // implement this in superclass?

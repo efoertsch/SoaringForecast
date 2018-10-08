@@ -96,6 +96,10 @@ public class AppRepository {
         return turnpointDao.findTurnpoints(searchTerm);
     }
 
+    public Maybe<List<Turnpoint>> listAllTurnpoints(){
+        return turnpointDao.listAllTurnpoints();
+    }
+
     public Maybe<Turnpoint>  getTurnpoint(String title, String code){
         return turnpointDao.getTurnpoint(title, code);
     }
@@ -103,6 +107,7 @@ public class AppRepository {
     public int deleteAllTurnpoints(){
         return turnpointDao.deleteAllTurnpoints();
     }
+
 
 
 }

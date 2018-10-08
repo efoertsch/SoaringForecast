@@ -30,7 +30,7 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".turnpoints.TurnpointsImportActivity"
+            android:name=".turnpoints.download.TurnpointsActivity"
             android:screenOrientation="portrait"/>
 
 

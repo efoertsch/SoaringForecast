@@ -177,6 +177,11 @@
     <string name="started_turnpoints_processing">Started processing turnpoints</string>
     <string name="turnpoints_processed_ok">Turnpoints processed ok</string>
     <string name="turnpoint_database_load_oops">Oops. An error occured during turpoint import. Did you download correct version of SeeYou cup file?</string>
+    <string name="turnpoint_search">Turnpoint Search</string>
+    <string name="search_for_turnpoints_hint">Name, description, ...</string>
+    <string name="added_to_task">%1$s added to task</string>
+    <string name="create_task">Create Task</string>
+    <string name="edit_task">Edit Task</string>
 
 
 </resources>
