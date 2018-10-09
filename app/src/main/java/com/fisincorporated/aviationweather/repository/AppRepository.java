@@ -10,10 +10,12 @@ import com.fisincorporated.aviationweather.utils.JSONResourceReader;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.schedulers.Schedulers;
 
 // TODO consolidate all data access to repository
@@ -136,8 +138,23 @@ public class AppRepository {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Completable updateTaskListOrder(List<Task> taskList) {
+        Completable completable = Completable.fromAction(() -> {
+            try {
+                for (Task task: taskList) {
+                    taskDao.update(task);
+                }
+            } catch (Throwable throwable) {
+                throw Exceptions.propagate(throwable);
+            }
+        });
+        return completable;
+    }
+
     // -----------Task Turnpoints -----------
     public Maybe<List<TaskTurnpoint>> listTaskTurnpionts(long taskId) {
         return taskTurnpointDao.getTaskTurnpoints(taskId);
     }
+
+
 }

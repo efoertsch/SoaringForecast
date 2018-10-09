@@ -9,14 +9,14 @@ import android.support.annotation.NonNull;
 public class TaskTurnpoint {
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    private int id;
 
     @NonNull
-    public int taskId;
+    private int taskId;
 
     // Order in which the turnpoint is in the task
     @NonNull
-    public int taskOrder;
+    private int taskOrder;
 
     // Following 2 fields refer back to same fields as in Turnpoint
     // Doing this rather than turnpoint.id due to  OnConflictStrategy.REPLACE stategy
@@ -26,6 +26,10 @@ public class TaskTurnpoint {
 
     @NonNull
     private String code = "";
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;
@@ -66,4 +70,5 @@ public class TaskTurnpoint {
     public void setCode(@NonNull String code) {
         this.code = code;
     }
+
 }

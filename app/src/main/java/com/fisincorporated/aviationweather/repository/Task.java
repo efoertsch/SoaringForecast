@@ -9,16 +9,22 @@ import android.support.annotation.NonNull;
 public class Task {
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
-
-    //In Kilometers
-    public int distance;
+    private int id;
 
     @NonNull
     private String taskName = "";
 
+    //In Kilometers
+    private int distance;
+
+    private int taskOrder;
+
     public Task(String taskName){
         this.taskName = taskName;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {
@@ -48,5 +54,13 @@ public class Task {
      */
     public void setDistance(int distance) {
         this.distance = distance;
+    }
+
+    public int getTaskOrder() {
+        return taskOrder;
+    }
+
+    public void setTaskOrder(int taskOrder) {
+        this.taskOrder = taskOrder;
     }
 }

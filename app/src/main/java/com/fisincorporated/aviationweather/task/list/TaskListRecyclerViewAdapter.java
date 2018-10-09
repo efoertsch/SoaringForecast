@@ -8,9 +8,12 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.databinding.TaskView;
+import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
 import com.fisincorporated.aviationweather.repository.Task;
 import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperAdapter;
 import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +72,7 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
     public boolean onItemMove(int fromPosition, int toPosition) {
         Collections.swap(getItems(), fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
+        renumberTaskOrder();
         return true;
     }
 
@@ -76,5 +80,16 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
     public void onItemDismiss(int position) {
         getItems().remove(position);
         notifyItemRemoved(position);
+        renumberTaskOrder();
+
     }
+
+    private void renumberTaskOrder(){
+        int i = 0;
+        for (Task task: getItems()){
+            task.setTaskOrder(i++);
+        }
+        EventBus.getDefault().post(new RenumberedTaskList(getItems()));
+    }
+
 }

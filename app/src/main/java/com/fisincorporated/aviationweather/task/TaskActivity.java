@@ -17,6 +17,7 @@ import com.fisincorporated.aviationweather.task.edit.EditTaskFragment;
 import com.fisincorporated.aviationweather.task.list.TaskListFragment;
 import com.fisincorporated.aviationweather.task.search.TurnpointSearchFragment;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -38,6 +39,18 @@ public class TaskActivity extends MasterActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override

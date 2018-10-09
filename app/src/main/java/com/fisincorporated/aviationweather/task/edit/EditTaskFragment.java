@@ -38,7 +38,7 @@ public class EditTaskFragment extends DaggerFragment {
     public EditTaskFragment() {
     }
 
-    public static EditTaskFragment newInstance(AppRepository appRepository, long taskId){
+    public static EditTaskFragment newInstance(AppRepository appRepository, long taskId) {
         EditTaskFragment editTaskFragment = new EditTaskFragment();
         editTaskFragment.appRepository = appRepository;
         editTaskFragment.taskId = taskId;
@@ -51,7 +51,6 @@ public class EditTaskFragment extends DaggerFragment {
         View view = inflater.inflate(R.layout.edit_task_layout, container, false);
 
         editTaskViewModel = ViewModelProviders.of(this).get(EditTaskViewModel.class).setAppRepository(appRepository);
-
 
         RecyclerView recyclerView = view.findViewById(R.id.edit_task_recycler_view);
         recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskTurnpoints);
@@ -89,14 +88,16 @@ public class EditTaskFragment extends DaggerFragment {
     }
 
     private void refreshTaskTurnpointList() {
-         final long taskId = getArguments().getLong(TASK_ID, -1);
+        final long taskId = getArguments().getLong(TASK_ID, -1);
         editTaskViewModel.listTaskTurnpoints(taskId)
                 .observe(this, taskTurnpointlist ->
-                {if (taskTurnpointlist.size() == 0) {
-                    displayAddTurnpointsDialog(taskId);
-                } else {
+                {
+                    if (taskTurnpointlist.size() == 0) {
+                        displayAddTurnpointsDialog(taskId);
+                    } else {
                         recyclerViewAdapter.updateTaskTurpointList(taskTurnpointlist);
-                }});
+                    }
+                });
     }
 
     private void displayAddTurnpointsDialog(long taskId) {
@@ -135,12 +136,12 @@ public class EditTaskFragment extends DaggerFragment {
             return builder;
         }
 
-        public BundleBuilder setTaskId(long taskId){
+        public BundleBuilder setTaskId(long taskId) {
             bundle.putLong(TASK_ID, taskId);
             return this;
         }
 
-        public void assign(Fragment fragment){
+        public void assign(Fragment fragment) {
             fragment.setArguments(bundle);
         }
 
