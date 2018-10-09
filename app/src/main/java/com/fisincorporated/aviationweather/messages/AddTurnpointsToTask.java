@@ -1,6 +1,6 @@
 package com.fisincorporated.aviationweather.messages;
 
-public class AddTurnpointsToTask {
+public final class AddTurnpointsToTask {
     private long taskId;
 
     public AddTurnpointsToTask(long taskId){

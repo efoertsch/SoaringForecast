@@ -2,7 +2,7 @@ package com.fisincorporated.aviationweather.messages;
 
 import java.io.File;
 
-public class ImportFile {
+public final class ImportFile {
 
     private File file;
 

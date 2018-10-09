@@ -2,7 +2,7 @@ package com.fisincorporated.aviationweather.messages;
 
 
 // User wants to add a new task
-public class AddNewTask {
+public final class AddNewTask {
 
     private long taskId;
 

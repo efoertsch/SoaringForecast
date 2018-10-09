@@ -1,6 +1,6 @@
 package com.fisincorporated.aviationweather.messages;
 
-public class DataLoadCompleteEvent {
+public final class DataLoadCompleteEvent {
 
     public  DataLoadCompleteEvent(){}
 

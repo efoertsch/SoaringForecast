@@ -8,9 +8,12 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.databinding.TaskTurnpointView;
+import com.fisincorporated.aviationweather.messages.RenumberedTaskTurnpointList;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperAdapter;
 import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Collections;
 import java.util.List;
@@ -79,7 +82,10 @@ public class TaskTurnpointsRecyclerViewAdapter
         for (TaskTurnpoint taskTurnpoint: getItems()){
             taskTurnpoint.setTaskOrder(i++);
         }
+
+        EventBus.getDefault().post(new RenumberedTaskTurnpointList(getItems()));
     }
+
 
 
 }

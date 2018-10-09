@@ -156,5 +156,18 @@ public class AppRepository {
         return taskTurnpointDao.getTaskTurnpoints(taskId);
     }
 
+    public Completable updateTaskTurnpointOrder(List<TaskTurnpoint> taskTurnpoints){
+        Completable completable = Completable.fromAction(() -> {
+            try {
+                for(TaskTurnpoint taskTurnpoint : taskTurnpoints){
+                    taskTurnpointDao.update(taskTurnpoint);
+                }
+            } catch (Throwable throwable){
+                throw Exceptions.propagate(throwable);
+            }
+        });
+        return  completable;
+    }
+
 
 }

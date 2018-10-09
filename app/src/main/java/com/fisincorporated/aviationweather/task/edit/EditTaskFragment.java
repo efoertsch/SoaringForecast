@@ -15,14 +15,22 @@ import android.view.ViewGroup;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
+import com.fisincorporated.aviationweather.messages.RenumberedTaskTurnpointList;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
 import dagger.android.support.DaggerFragment;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class EditTaskFragment extends DaggerFragment {
 
@@ -34,6 +42,8 @@ public class EditTaskFragment extends DaggerFragment {
     private List<TaskTurnpoint> taskTurnpoints;
     private TaskTurnpointsRecyclerViewAdapter recyclerViewAdapter;
     private EditTaskViewModel editTaskViewModel;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public EditTaskFragment() {
     }
@@ -85,6 +95,7 @@ public class EditTaskFragment extends DaggerFragment {
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+        compositeDisposable.dispose();
     }
 
     private void refreshTaskTurnpointList() {
@@ -98,6 +109,21 @@ public class EditTaskFragment extends DaggerFragment {
                         recyclerViewAdapter.updateTaskTurpointList(taskTurnpointlist);
                     }
                 });
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(RenumberedTaskTurnpointList  renumberedTaskTurnpointList) {
+        Completable completable = appRepository.updateTaskTurnpointOrder(renumberedTaskTurnpointList.getTaskTurnpoints());
+        Disposable disposable = completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    //complete
+                }, throwable -> {
+                    // TODO Display some error
+
+                });
+        compositeDisposable.add(disposable);
     }
 
     private void displayAddTurnpointsDialog(long taskId) {

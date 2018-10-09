@@ -4,7 +4,7 @@ import com.fisincorporated.aviationweather.repository.Task;
 
 import java.util.List;
 
-public class RenumberedTaskList {
+public final class RenumberedTaskList {
     private List<Task> taskList;
 
     public RenumberedTaskList(List<Task> taskList){

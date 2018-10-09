@@ -1,4 +1,4 @@
 package com.fisincorporated.aviationweather.messages;
 
-public  class DataLoadingEvent {
+public  final class DataLoadingEvent {
 }
