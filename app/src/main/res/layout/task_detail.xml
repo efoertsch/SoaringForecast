@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="TaskView">
+
+        <variable
+            name="position"
+            type="Integer"/>
+
+        <variable
+            name="task"
+            type="com.fisincorporated.aviationweather.repository.Task"/>
+
+        <variable
+            name="clickListener"
+            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.aviationweather.repository.Task&gt;"
+            />
+
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="@dimen/margin_standard"
+        android:layout_marginBottom="@dimen/margin_standard"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="@{()->clickListener.onItemClick(task, position)}"
+        android:text="@{task.taskName}"
+        android:textSize="@dimen/text_size_large"
+        tools:text="Claremont-Southbridge-Sterling"/>
+
+</layout>

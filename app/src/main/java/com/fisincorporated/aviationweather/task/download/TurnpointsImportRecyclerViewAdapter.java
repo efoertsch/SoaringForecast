@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.turnpoints.download;
+package com.fisincorporated.aviationweather.task.download;
 
 import android.databinding.DataBindingUtil;
 import android.view.LayoutInflater;

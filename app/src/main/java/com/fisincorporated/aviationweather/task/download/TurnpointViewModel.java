@@ -1,10 +1,10 @@
-package com.fisincorporated.aviationweather.turnpoints.download;
+package com.fisincorporated.aviationweather.task.download;
 
 import android.arch.lifecycle.ViewModel;
 import android.view.View;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.turnpoints.TurnpointProcessor;
+import com.fisincorporated.aviationweather.task.TurnpointProcessor;
 
 import java.io.File;
 import java.util.List;

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
@@ -68,5 +69,17 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle(title);
         }
+    }
+
+    public void displayFragment(Fragment fragment, boolean addToBackstack) {
+        // Replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
+                .replace(R.id.app_frame_layout, fragment);
+        if(addToBackstack) {
+            fragmentTransaction.addToBackStack(null);
+        }
+        fragmentTransaction.commit();
+
     }
 }

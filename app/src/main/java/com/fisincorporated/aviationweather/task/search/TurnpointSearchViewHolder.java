@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.turnpoints.task;
+package com.fisincorporated.aviationweather.task.search;
 
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericViewHolder;
 import com.fisincorporated.aviationweather.databinding.TurnpointSearchView;

@@ -12,13 +12,15 @@ import java.util.List;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
-
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 // TODO consolidate all data access to repository
+
 /**
  * Use to access airport database
  * JSON soundings file
- *
  */
 
 public class AppRepository {
@@ -26,13 +28,16 @@ public class AppRepository {
     private static AppRepository appRepository;
     private AirportDao airportDao;
     private TurnpointDao turnpointDao;
+    private TaskDao taskDao;
+    private TaskTurnpointDao taskTurnpointDao;
     private Context context;
-
 
     private AppRepository(Context context) {
         AppDatabase db = AppDatabase.getDatabase(context);
         airportDao = db.getAirportDao();
         turnpointDao = db.getTurnpointDao();
+        taskDao = db.getTaskDao();
+        taskTurnpointDao = db.getTaskTurnpointDao();
         this.context = context;
     }
 
@@ -56,7 +61,7 @@ public class AppRepository {
         return airportDao.getCountOfAirports();
     }
 
-    public Maybe<List<Airport>> findAirports(String searchTerm ) {
+    public Maybe<List<Airport>> findAirports(String searchTerm) {
         return airportDao.findAirports(searchTerm);
     }
 
@@ -79,35 +84,60 @@ public class AppRepository {
     }
 
     // --------- Soundings ------------------
-    public List<SoundingLocation> getLocationSoundings(){
+    public List<SoundingLocation> getLocationSoundings() {
         return (new JSONResourceReader(context.getResources(), R.raw.soundings)).constructUsingGson(Soundings.class).getSoundingLocations();
     }
 
     // --------- Turnpoints -----------------
-    public long insertTurnpoint(Turnpoint turnpoint){
+    public long insertTurnpoint(Turnpoint turnpoint) {
         return turnpointDao.insert(turnpoint);
     }
 
-    public long updateTurnpoint(Turnpoint turnpoint){
-        return turnpointDao.update(turnpoint);
+    public void updateTurnpoint(Turnpoint turnpoint) {
+        turnpointDao.update(turnpoint);
     }
 
-    public Maybe<List<Turnpoint>> findTurnpoints(String searchTerm){
+    public Maybe<List<Turnpoint>> findTurnpoints(String searchTerm) {
         return turnpointDao.findTurnpoints(searchTerm);
     }
 
-    public Maybe<List<Turnpoint>> listAllTurnpoints(){
+    public Maybe<List<Turnpoint>> listAllTurnpoints() {
         return turnpointDao.listAllTurnpoints();
     }
 
-    public Maybe<Turnpoint>  getTurnpoint(String title, String code){
+    public Maybe<Turnpoint> getTurnpoint(String title, String code) {
         return turnpointDao.getTurnpoint(title, code);
     }
 
-    public int deleteAllTurnpoints(){
+    public int deleteAllTurnpoints() {
         return turnpointDao.deleteAllTurnpoints();
     }
 
 
+    // ---------- Task ------------------
+    public Maybe<List<Task>> listAllTasks() {
+        return taskDao.listAllTasks();
+    }
 
+    public Maybe<Task> getTask(long taskId) {
+        return taskDao.getTask(taskId);
+    }
+
+    public Single<Long> insertTask(Task task) {
+        return Single.create((SingleOnSubscribe<Long>) emitter -> {
+            try {
+                Long id = taskDao.insert(task);
+                emitter.onSuccess(id);
+            } catch (Throwable t) {
+                emitter.onError(t);
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    // -----------Task Turnpoints -----------
+    public Maybe<List<TaskTurnpoint>> listTaskTurnpionts(long taskId) {
+        return taskTurnpointDao.getTaskTurnpoints(taskId);
+    }
 }

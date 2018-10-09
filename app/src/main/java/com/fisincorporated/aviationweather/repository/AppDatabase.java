@@ -14,6 +14,10 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TurnpointDao getTurnpointDao();
 
+    public abstract TaskDao getTaskDao();
+
+    public abstract TaskTurnpointDao getTaskTurnpointDao();
+
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {

@@ -182,6 +182,13 @@
     <string name="added_to_task">%1$s added to task</string>
     <string name="create_task">Create Task</string>
     <string name="edit_task">Edit Task</string>
+    <string name="would_you_like_to_add_a_task_now">Would you like to add a task now?</string>
+    <string name="no_tasks_found">No Tasks Found</string>
+    <string name="add_turnpoints_to_task">Add Turnpoints to Task?</string>
+    <string name="no_task_turnpoints_found">No Turnpoints Found</string>
+    <string name="task_list">Task List</string>
+    <string name="error_adding_new_task">An error occurred adding a new task.</string>
+    <string name="go_back">Go Back</string>
 
 
 </resources>

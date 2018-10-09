@@ -11,7 +11,10 @@ import io.reactivex.Maybe;
 public interface TaskDao extends BaseDao<Task> {
 
     @Query("Select * from task order by taskName")
-    Maybe<List<Turnpoint>> listAllTurnpoints();
+    Maybe<List<Task>> listAllTasks();
+
+    @Query("Select * from task where id = :taskId")
+    Maybe<Task> getTask(long taskId);
 
 
 }

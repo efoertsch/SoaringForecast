@@ -11,7 +11,7 @@
             type="com.fisincorporated.aviationweather.repository.Airport"/>
     </data>
 
-    <!--  !!! In order to get swipe to work needed to put views inside RelativeLayout rather than
+    <!--  !!! In taskOrder to get swipe to work needed to put views inside RelativeLayout rather than
      just having them in ConstraintLayout -->
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

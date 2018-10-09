@@ -14,6 +14,10 @@ public class TaskTurnpoint {
     @NonNull
     public int taskId;
 
+    // Order in which the turnpoint is in the task
+    @NonNull
+    public int taskOrder;
+
     // Following 2 fields refer back to same fields as in Turnpoint
     // Doing this rather than turnpoint.id due to  OnConflictStrategy.REPLACE stategy
     // used for any turnpoint updates.
@@ -34,6 +38,15 @@ public class TaskTurnpoint {
 
     public void setTaskId(@NonNull int taskId) {
         this.taskId = taskId;
+    }
+
+    @NonNull
+    public int getTaskOrder() {
+        return taskOrder;
+    }
+
+    public void setTaskOrder(@NonNull int taskOrder) {
+        this.taskOrder = taskOrder;
     }
 
     @NonNull

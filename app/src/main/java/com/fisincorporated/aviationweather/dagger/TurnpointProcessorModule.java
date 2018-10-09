@@ -2,7 +2,7 @@ package com.fisincorporated.aviationweather.dagger;
 
 
 import com.fisincorporated.aviationweather.repository.AppRepository;
-import com.fisincorporated.aviationweather.turnpoints.TurnpointProcessor;
+import com.fisincorporated.aviationweather.task.TurnpointProcessor;
 
 import dagger.Module;
 import dagger.Provides;

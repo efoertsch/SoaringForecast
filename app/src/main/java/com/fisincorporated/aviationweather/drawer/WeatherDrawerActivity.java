@@ -28,7 +28,7 @@ import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.satellite.SatelliteImageFragment;
 import com.fisincorporated.aviationweather.settings.SettingsActivity;
 import com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastFragment;
-import com.fisincorporated.aviationweather.turnpoints.download.TurnpointsActivity;
+import com.fisincorporated.aviationweather.task.TaskActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -218,13 +218,13 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
     private void startTurnpointsImport() {
-        TurnpointsActivity.Builder builder = TurnpointsActivity.Builder.getBuilder();
+        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
         builder.displayTurnpointImport();
         startActivity(builder.build(this));
     }
 
     private void displayTurnpointSearch(){
-        TurnpointsActivity.Builder builder = TurnpointsActivity.Builder.getBuilder();
+        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
         builder.displayTurnpointSearch();
         startActivity(builder.build(this));
     }

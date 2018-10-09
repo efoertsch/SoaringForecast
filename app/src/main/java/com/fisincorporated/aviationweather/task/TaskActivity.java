@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.turnpoints.download;
+package com.fisincorporated.aviationweather.task;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,13 +7,23 @@ import android.support.v4.app.Fragment;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.MasterActivity;
+import com.fisincorporated.aviationweather.messages.AddNewTask;
+import com.fisincorporated.aviationweather.messages.AddNewTaskRefused;
+import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
+import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
 import com.fisincorporated.aviationweather.repository.AppRepository;
-import com.fisincorporated.aviationweather.turnpoints.task.TurnpointSearchFragment;
+import com.fisincorporated.aviationweather.task.download.TurnpointsImportFragment;
+import com.fisincorporated.aviationweather.task.edit.EditTaskFragment;
+import com.fisincorporated.aviationweather.task.list.TaskListFragment;
+import com.fisincorporated.aviationweather.task.search.TurnpointSearchFragment;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
 
-public class TurnpointsActivity extends MasterActivity {
+public class TaskActivity extends MasterActivity {
 
     private static final String TURNPOINT_IMPORT = "TURNPOINT_IMPORT";
     private static final String CREATE_TASK = "CREATE_TASK";
@@ -32,49 +42,53 @@ public class TurnpointsActivity extends MasterActivity {
 
     @Override
     protected Fragment createFragment() {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle == null) {
-            return null;
-        }
-        switch (bundle.getString(TURNPOINT_OP)) {
-            case TURNPOINT_IMPORT:
-                setActivityTitle(R.string.import_turnpoints);
-                return getTurnpointImportFragment();
-            case CREATE_TASK:
-                setActivityTitle(getString(R.string.create_task));
-                return getCreateTaskFragment();
-            case EDIT_TASK:
-                setActivityTitle(getString(R.string.edit_task));
-                return getEditTaskFragment();
-            case TURNPOINT_SEARCH:
-                setActivityTitle(getString(R.string.turnpoint_search));
-                return getTurnpointSearchFragment();
-                default:
-                    return null;
-        }
-
+        setActivityTitle(getString(R.string.task_list));
+        return TaskListFragment.newInstance(appRepository);
     }
 
+
     private Fragment getTurnpointSearchFragment() {
+        setActivityTitle(getString(R.string.turnpoint_search));
         return TurnpointSearchFragment.newInstance(appRepository);
     }
 
     private Fragment getTurnpointImportFragment() {
+        setActivityTitle(R.string.import_turnpoints);
         return new TurnpointsImportFragment();
     }
 
     //TODO
-    private Fragment getEditTaskFragment() {
-        return null;
+    private Fragment getEditTaskFragment(long taskId) {
+        setActivityTitle(getString(R.string.edit_task));
+        return EditTaskFragment.newInstance(appRepository, taskId);
     }
 
-    //TODO
-    private Fragment getCreateTaskFragment() {
-        return null;
+    // Bus messages
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddNewTaskRefused event) {
+        finish();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddNewTask event) {
+        setActivityTitle(getString(R.string.create_task));
+        displayFragment(EditTaskFragment.newInstance(appRepository, event.getTaskId()), true);
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddTurnpointsToTask event) {
+        // TODO display turnpoint search to add turnpoints
+        event.getTaskId();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddTurnpointsToTaskRefused event) {
+        // TODO go back to task list
+    }
 
     //TODO add menu for other options
+
 
 
     public static class Builder {
@@ -90,7 +104,7 @@ public class TurnpointsActivity extends MasterActivity {
             return builder;
         }
 
-        public Builder displayTurnpointSearch(){
+        public Builder displayTurnpointSearch() {
             bundle.putString(TURNPOINT_OP, TURNPOINT_SEARCH);
             return this;
         }
@@ -116,7 +130,7 @@ public class TurnpointsActivity extends MasterActivity {
         }
 
         public Intent build(Context context) {
-            Intent intent = new Intent(context, TurnpointsActivity.class);
+            Intent intent = new Intent(context, TaskActivity.class);
             intent.putExtras(bundle);
             return intent;
         }

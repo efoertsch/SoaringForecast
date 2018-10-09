@@ -14,8 +14,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
+        <!-- android:name=".drawer.WeatherDrawerActivity" -->
         <activity
-            android:name=".drawer.WeatherDrawerActivity"
+            android:name=".task.TaskActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -29,10 +30,10 @@
             android:name=".settings.SettingsActivity"
             android:screenOrientation="portrait"/>
 
-        <activity
-            android:name=".turnpoints.download.TurnpointsActivity"
+        <!-- <activity
+            android:name=".task.TaskActivity"
             android:screenOrientation="portrait"/>
-
+        -->
 
         <!-- <activity android:name=".drawer.WeatherDrawerActivity"/> -->
 

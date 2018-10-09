@@ -11,6 +11,9 @@ public class Task {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
+    //In Kilometers
+    public int distance;
+
     @NonNull
     private String taskName = "";
 
@@ -29,5 +32,21 @@ public class Task {
 
     public void setTaskName(@NonNull String taskName) {
         this.taskName = taskName;
+    }
+
+    /**
+     *
+     * @return task distance in kilometers
+     */
+    public int getDistance() {
+        return distance;
+    }
+
+    /**
+     *
+     * @param distance in Kilometers
+     */
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 }

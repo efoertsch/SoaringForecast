@@ -1,0 +1,290 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "38f4148c30093e3a125bbccffe93e57e",
+    "entities": [
+      {
+        "tableName": "Airport",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ident` TEXT NOT NULL, `type` TEXT, `name` TEXT, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `elevationFt` INTEGER NOT NULL, `state` TEXT, `municipality` TEXT, PRIMARY KEY(`ident`))",
+        "fields": [
+          {
+            "fieldPath": "ident",
+            "columnName": "ident",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latitudeDeg",
+            "columnName": "latitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitudeDeg",
+            "columnName": "longitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "elevationFt",
+            "columnName": "elevationFt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "municipality",
+            "columnName": "municipality",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "ident"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_Airport_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "createSql": "CREATE  INDEX `index_Airport_name` ON `${TABLE_NAME}` (`name`)"
+          },
+          {
+            "name": "index_Airport_state_name",
+            "unique": false,
+            "columnNames": [
+              "state",
+              "name"
+            ],
+            "createSql": "CREATE  INDEX `index_Airport_state_name` ON `${TABLE_NAME}` (`state`, `name`)"
+          },
+          {
+            "name": "index_Airport_municipality",
+            "unique": false,
+            "columnNames": [
+              "municipality"
+            ],
+            "createSql": "CREATE  INDEX `index_Airport_municipality` ON `${TABLE_NAME}` (`municipality`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Turnpoint",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL, `country` TEXT, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `elevation` TEXT, `style` TEXT, `direction` TEXT, `length` TEXT, `frequency` TEXT, `description` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "country",
+            "columnName": "country",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latitudeDeg",
+            "columnName": "latitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitudeDeg",
+            "columnName": "longitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "elevation",
+            "columnName": "elevation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "style",
+            "columnName": "style",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "length",
+            "columnName": "length",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "frequency",
+            "columnName": "frequency",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Turnpoint_title_code",
+            "unique": true,
+            "columnNames": [
+              "title",
+              "code"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_Turnpoint_title_code` ON `${TABLE_NAME}` (`title`, `code`)"
+          },
+          {
+            "name": "index_Turnpoint_code",
+            "unique": false,
+            "columnNames": [
+              "code"
+            ],
+            "createSql": "CREATE  INDEX `index_Turnpoint_code` ON `${TABLE_NAME}` (`code`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Task",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `distance` INTEGER NOT NULL, `taskName` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "distance",
+            "columnName": "distance",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskName",
+            "columnName": "taskName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TaskTurnpoint",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `taskOrder` INTEGER NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskOrder",
+            "columnName": "taskOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_TaskTurnpoint_taskId",
+            "unique": false,
+            "columnNames": [
+              "taskId"
+            ],
+            "createSql": "CREATE  INDEX `index_TaskTurnpoint_taskId` ON `${TABLE_NAME}` (`taskId`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"38f4148c30093e3a125bbccffe93e57e\")"
+    ]
+  }
+}

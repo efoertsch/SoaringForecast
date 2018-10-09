@@ -2,19 +2,20 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="CupFileView">
+    <data class="TaskTurnpointView">
 
         <variable
             name="position"
             type="Integer"/>
 
         <variable
-            name="cupFile"
-            type="java.io.File"/>
+            name="taskTurnpoint"
+            type="com.fisincorporated.aviationweather.repository.TaskTurnpoint"/>
 
         <variable
-            name="fileClickListener"
-            type="com.fisincorporated.aviationweather.task.download.TurnpointsImportRecyclerViewAdapter"/>
+            name="clickListener"
+            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.aviationweather.repository.TaskTurnpoint&gt;"
+            />
 
     </data>
 
@@ -24,9 +25,10 @@
         android:layout_marginStart="8dp"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="@{()->fileClickListener.onFileClick(cupFile, position)}"
-        android:text="@{cupFile.getName}"
+        android:onClick="@{()->clickListener.onItemClick(taskTurnpoint, position)}"
+        android:text="@{taskTurnpoint.title}"
         android:textSize="@dimen/text_size_large"
-        tools:text="sterling7.cup"/>
+        tools:text="Sterling Start"/>
+
 
 </layout>
