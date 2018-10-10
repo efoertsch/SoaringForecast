@@ -1,12 +1,12 @@
 package com.fisincorporated.aviationweather.messages;
 
 
-// User wants to add a new task
-public final class AddNewTask {
+// User wants to edit/add a new task
+public final class EditTask {
 
     private long taskId;
 
-    public AddNewTask(long taskId){
+    public EditTask(long taskId){
         this.taskId = taskId;
     }
 

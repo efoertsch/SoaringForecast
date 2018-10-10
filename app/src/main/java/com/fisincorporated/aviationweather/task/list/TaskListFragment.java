@@ -18,9 +18,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.common.recycleradapter.GenericEditClickListener;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
-import com.fisincorporated.aviationweather.messages.AddNewTask;
+import com.fisincorporated.aviationweather.messages.EditTask;
 import com.fisincorporated.aviationweather.messages.AddNewTaskRefused;
+import com.fisincorporated.aviationweather.messages.DeleteTask;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.Task;
@@ -34,8 +36,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -43,19 +43,15 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class TaskListFragment extends Fragment implements GenericListClickListener<Task>, OnStartDragListener {
+public class TaskListFragment extends Fragment implements GenericListClickListener<Task>, GenericEditClickListener<Task>, OnStartDragListener {
 
-    @Inject
-    AppRepository appRepository;
 
+    private AppRepository appRepository;
     private List<Task> tasks = new ArrayList<>();
-
     private TaskListRecyclerViewAdapter recyclerViewAdapter;
     private ItemTouchHelper itemTouchHelper;
-
     private TaskListViewModel taskListViewModel;
     private ProgressBar progressBar;
-
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
@@ -73,7 +69,9 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
         taskListViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class).setAppRepository(appRepository);
 
         RecyclerView recyclerView = view.findViewById(R.id.task_list_recycler_view);
-        recyclerViewAdapter = new TaskListRecyclerViewAdapter(tasks);
+        recyclerViewAdapter = new TaskListRecyclerViewAdapter(tasks)
+                .setItemClickListener(this)
+                .setEditItemClickListener(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
@@ -106,6 +104,7 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().setTitle(R.string.task_list);
         //TODO refresh file list
         refreshTaskList();
     }
@@ -153,7 +152,7 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
             @Override
             public void onSuccess(Long taskId) {
                 setProgressBarVisibility(false);
-                EventBus.getDefault().post(new AddNewTask(taskId));
+                EventBus.getDefault().post(new EditTask(taskId));
             }
 
             @Override
@@ -181,21 +180,33 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
         EventBus.getDefault().post(new AddNewTaskRefused());
     }
 
-
-    public void addItemClick() {
-        //TODO start edit task fragment
-        Toast.makeText(getActivity(), "Add task", Toast.LENGTH_SHORT).show();
-
+    @Override
+    public void onItemClick(Task task, int position) {
+        //TODO this click is to return task to caller (for plotting task on forecast)
+        Toast.makeText(getActivity(), "Clicked on task:" + task.getTaskName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemClick(Task task, int position) {
-        Toast.makeText(getActivity(), "Clicked on task:" + task.getTaskName(), Toast.LENGTH_SHORT).show();
+    public void onEditItemClick(Task task, int position) {
+        EventBus.getDefault().post(new EditTask(task.getId()));
     }
 
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DeleteTask deleteTask){
+       Completable completable = appRepository.deleteTask(deleteTask.getTask());
+        Disposable disposable = completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    //complete
+                }, throwable -> {
+                    // TODO Display some error
+                });
+        compositeDisposable.add(disposable);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -211,4 +222,5 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
                 });
         compositeDisposable.add(disposable);
     }
+
 }

@@ -81,6 +81,7 @@ public class TurnpointsImportFragment extends DaggerFragment {
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().setTitle(R.string.import_turnpoints);
         //TODO refresh file list
         files = turnpointProcessor.getCupFileList();
         if (files.size() == 0) {
@@ -101,14 +102,14 @@ public class TurnpointsImportFragment extends DaggerFragment {
         builder.setMessage(R.string.no_turnpoint_files_found)
                 .setTitle(R.string.no_cup_files_found)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    dialog.dismiss();
                     displayButFirstDialog();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
-                    dialog.dismiss();
                     cancelActivity();
                 });
-        builder.create().show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
     }
 
     private void displayButFirstDialog() {

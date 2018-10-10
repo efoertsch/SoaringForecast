@@ -5,6 +5,10 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Update;
 
+/**
+ * Base DAO
+ * @param <T>
+ */
 public interface BaseDao<T> {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -17,6 +21,6 @@ public interface BaseDao<T> {
     void update(T obj);
 
     @Delete
-    void delete(T obj);
+    int delete(T obj);
 
 }

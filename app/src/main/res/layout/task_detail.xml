@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class="TaskView">
 
@@ -17,19 +18,49 @@
             type="com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.aviationweather.repository.Task&gt;"
             />
 
+        <variable
+            name="editClickListener"
+            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericEditClickListener&lt;com.fisincorporated.aviationweather.repository.Task&gt;"
+            />
+
     </data>
 
-    <TextView
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="@dimen/margin_standard"
-        android:layout_marginBottom="@dimen/margin_standard"
-        android:clickable="true"
-        android:focusable="true"
-        android:onClick="@{()->clickListener.onItemClick(task, position)}"
-        android:text="@{task.taskName}"
-        android:textSize="@dimen/text_size_large"
-        tools:text="Claremont-Southbridge-Sterling"/>
+        android:layout_marginBottom="@dimen/margin_standard">
+
+        <TextView
+            android:id="@+id/task_edit_taskname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:onClick="@{()->clickListener.onItemClick(task, position)}"
+            android:text="@{task.taskName}"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toStartOf="@+id/task_edit_edit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sterling-Claremont-Southbridge-Sterling"
+            />
+
+        <ImageView
+            android:id="@+id/task_edit_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:gravity="center_vertical"
+            android:onClick="@{()->editClickListener.onEditItemClick(task, position)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_mode_edit"
+            />
+
+
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

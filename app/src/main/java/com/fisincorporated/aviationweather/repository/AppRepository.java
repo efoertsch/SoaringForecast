@@ -115,6 +115,13 @@ public class AppRepository {
         return turnpointDao.deleteAllTurnpoints();
     }
 
+    public Single<Integer> getCountOfTurnpoints(){
+        return turnpointDao.getTurnpointCount().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Maybe<Turnpoint> checkForAtLeastOneTurnpoint() {
+        return turnpointDao.checkForAtLeastOneTurnpoint();
+    }
 
     // ---------- Task ------------------
     public Maybe<List<Task>> listAllTasks() {
@@ -141,7 +148,7 @@ public class AppRepository {
     public Completable updateTaskListOrder(List<Task> taskList) {
         Completable completable = Completable.fromAction(() -> {
             try {
-                for (Task task: taskList) {
+                for (Task task : taskList) {
                     taskDao.update(task);
                 }
             } catch (Throwable throwable) {
@@ -151,23 +158,48 @@ public class AppRepository {
         return completable;
     }
 
+    public Completable deleteTask(Task task) {
+        Completable completable = Completable.fromAction(() -> {
+            try {
+                taskTurnpointDao.deleteTaskTurnpoints(task.getId());
+                taskDao.deleteTask(task.getId());
+            } catch (Throwable throwable) {
+                throw Exceptions.propagate(throwable);
+            }
+        });
+        return completable;
+    }
+
+
     // -----------Task Turnpoints -----------
     public Maybe<List<TaskTurnpoint>> listTaskTurnpionts(long taskId) {
         return taskTurnpointDao.getTaskTurnpoints(taskId);
     }
 
-    public Completable updateTaskTurnpointOrder(List<TaskTurnpoint> taskTurnpoints){
+    public Completable updateTaskTurnpointOrder(List<TaskTurnpoint> taskTurnpoints) {
         Completable completable = Completable.fromAction(() -> {
             try {
-                for(TaskTurnpoint taskTurnpoint : taskTurnpoints){
+                for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
                     taskTurnpointDao.update(taskTurnpoint);
                 }
-            } catch (Throwable throwable){
+            } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);
             }
         });
-        return  completable;
+        return completable;
     }
 
+    public Single<Long> addTurnpointToTask(TaskTurnpoint taskTurnpoint) {
+        return Single.create((SingleOnSubscribe<Long>) emitter -> {
+            try {
+                Long id = taskTurnpointDao.insert(taskTurnpoint);
+                emitter.onSuccess(id);
+            } catch (Throwable t) {
+                emitter.onError(t);
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
 
 }

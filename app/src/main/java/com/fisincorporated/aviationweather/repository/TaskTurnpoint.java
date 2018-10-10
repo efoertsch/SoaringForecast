@@ -9,10 +9,10 @@ import android.support.annotation.NonNull;
 public class TaskTurnpoint {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     @NonNull
-    private int taskId;
+    private long taskId;
 
     // Order in which the turnpoint is in the task
     @NonNull
@@ -27,16 +27,23 @@ public class TaskTurnpoint {
     @NonNull
     private String code = "";
 
-    public void setId(int id) {
+    public TaskTurnpoint(long taskId, String title, String code, int taskOrder ){
+        this.taskId = taskId;
+        this.title = title;
+        this.code = code;
+        this.taskOrder = taskOrder;
+    }
+
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
     @NonNull
-    public int getTaskId() {
+    public long getTaskId() {
         return taskId;
     }
 

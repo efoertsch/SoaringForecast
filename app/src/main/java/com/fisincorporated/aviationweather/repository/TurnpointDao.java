@@ -6,6 +6,7 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 @Dao
 public interface TurnpointDao extends BaseDao<Turnpoint> {
@@ -21,5 +22,11 @@ public interface TurnpointDao extends BaseDao<Turnpoint> {
 
     @Query("Select * from turnpoint where title = :title and code = :code collate nocase")
     Maybe<Turnpoint> getTurnpoint(String title, String code);
+
+    @Query("Select count(*) from turnpoint")
+    Single<Integer> getTurnpointCount();
+
+    @Query("Select * from turnpoint  ORDER BY ROWID ASC LIMIT 1")
+    Maybe<Turnpoint> checkForAtLeastOneTurnpoint();
 
 }

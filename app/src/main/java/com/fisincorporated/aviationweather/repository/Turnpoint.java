@@ -18,7 +18,7 @@ public class Turnpoint {
 
     @NonNull
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     @NonNull
     private String title = "";
@@ -73,12 +73,12 @@ public class Turnpoint {
 
     }
 
-    public void setId(@NonNull int id) {
+    public void setId(@NonNull long id) {
         this.id = id;
     }
 
     @NonNull
-    public int getId() {
+    public long getId() {
         return id;
     }
 

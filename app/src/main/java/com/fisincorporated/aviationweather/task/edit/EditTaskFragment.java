@@ -23,30 +23,29 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import dagger.android.support.DaggerFragment;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class EditTaskFragment extends DaggerFragment {
+public class EditTaskFragment extends Fragment {
 
     private static final String TASK_ID = "TASK_ID";
 
     private AppRepository appRepository;
     private long taskId;
 
-    private List<TaskTurnpoint> taskTurnpoints;
+    private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
     private TaskTurnpointsRecyclerViewAdapter recyclerViewAdapter;
     private EditTaskViewModel editTaskViewModel;
+    private boolean firstTimeCheck ;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public EditTaskFragment() {
-    }
 
     public static EditTaskFragment newInstance(AppRepository appRepository, long taskId) {
         EditTaskFragment editTaskFragment = new EditTaskFragment();
@@ -81,6 +80,7 @@ public class EditTaskFragment extends DaggerFragment {
     @Override
     public void onStart() {
         super.onStart();
+        getActivity().setTitle(R.string.create_task);
         EventBus.getDefault().register(this);
     }
 
@@ -99,16 +99,23 @@ public class EditTaskFragment extends DaggerFragment {
     }
 
     private void refreshTaskTurnpointList() {
-        final long taskId = getArguments().getLong(TASK_ID, -1);
+        firstTimeCheck = true;
         editTaskViewModel.listTaskTurnpoints(taskId)
                 .observe(this, taskTurnpointlist ->
                 {
-                    if (taskTurnpointlist.size() == 0) {
-                        displayAddTurnpointsDialog(taskId);
-                    } else {
-                        recyclerViewAdapter.updateTaskTurpointList(taskTurnpointlist);
-                    }
+                    determineAddTurnpointsDisplay(taskTurnpointlist);
                 });
+    }
+
+    private void determineAddTurnpointsDisplay(List<TaskTurnpoint> taskTurnpointlist) {
+        if (taskTurnpointlist.size() == 0) {
+                if (!firstTimeCheck) {
+                    displayAddTurnpointsDialog(taskId);
+                }
+                firstTimeCheck = false;
+            } else {
+                recyclerViewAdapter.updateTaskTurpointList(taskTurnpointlist);
+            }
     }
 
 
@@ -131,14 +138,14 @@ public class EditTaskFragment extends DaggerFragment {
         builder.setMessage(R.string.add_turnpoints_to_task)
                 .setTitle(R.string.no_task_turnpoints_found)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    dialog.dismiss();
                     goToAddTaskTurnpoints(taskId);
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
-                    dialog.dismiss();
                     doNotAddTaskTurnpoints();
                 });
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     private void goToAddTaskTurnpoints(long taskId) {
@@ -149,28 +156,28 @@ public class EditTaskFragment extends DaggerFragment {
         EventBus.getDefault().post(new AddTurnpointsToTaskRefused());
     }
 
-    public static class BundleBuilder {
-
-        private Bundle bundle;
-
-        private BundleBuilder() {
-            bundle = new Bundle();
-        }
-
-        public static EditTaskFragment.BundleBuilder getBundlerBuilder() {
-            EditTaskFragment.BundleBuilder builder = new EditTaskFragment.BundleBuilder();
-            return builder;
-        }
-
-        public BundleBuilder setTaskId(long taskId) {
-            bundle.putLong(TASK_ID, taskId);
-            return this;
-        }
-
-        public void assign(Fragment fragment) {
-            fragment.setArguments(bundle);
-        }
-
-    }
+//    public static class BundleBuilder {
+//
+//        private Bundle bundle;
+//
+//        private BundleBuilder() {
+//            bundle = new Bundle();
+//        }
+//
+//        public static EditTaskFragment.BundleBuilder getBundlerBuilder() {
+//            EditTaskFragment.BundleBuilder builder = new EditTaskFragment.BundleBuilder();
+//            return builder;
+//        }
+//
+//        public BundleBuilder setTaskId(long taskId) {
+//            bundle.putLong(TASK_ID, taskId);
+//            return this;
+//        }
+//
+//        public void assign(Fragment fragment) {
+//            fragment.setArguments(bundle);
+//        }
+//
+//    }
 
 }

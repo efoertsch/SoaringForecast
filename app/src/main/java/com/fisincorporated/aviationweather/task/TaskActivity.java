@@ -4,13 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.MasterActivity;
-import com.fisincorporated.aviationweather.messages.AddNewTask;
 import com.fisincorporated.aviationweather.messages.AddNewTaskRefused;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
+import com.fisincorporated.aviationweather.messages.EditTask;
+import com.fisincorporated.aviationweather.messages.ExitFromTurnpointSearch;
+import com.fisincorporated.aviationweather.messages.GoToTurnpointImport;
+import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.task.download.TurnpointsImportFragment;
 import com.fisincorporated.aviationweather.task.edit.EditTaskFragment;
@@ -55,22 +59,14 @@ public class TaskActivity extends MasterActivity {
 
     @Override
     protected Fragment createFragment() {
-        setActivityTitle(getString(R.string.task_list));
         return TaskListFragment.newInstance(appRepository);
     }
 
 
-    private Fragment getTurnpointSearchFragment() {
-        setActivityTitle(getString(R.string.turnpoint_search));
-        return TurnpointSearchFragment.newInstance(appRepository);
-    }
-
     private Fragment getTurnpointImportFragment() {
-        setActivityTitle(R.string.import_turnpoints);
         return new TurnpointsImportFragment();
     }
 
-    //TODO
     private Fragment getEditTaskFragment(long taskId) {
         setActivityTitle(getString(R.string.edit_task));
         return EditTaskFragment.newInstance(appRepository, taskId);
@@ -83,21 +79,39 @@ public class TaskActivity extends MasterActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AddNewTask event) {
-        setActivityTitle(getString(R.string.create_task));
+    public void onMessageEvent(EditTask event) {
         displayFragment(EditTaskFragment.newInstance(appRepository, event.getTaskId()), true);
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        // TODO display turnpoint search to add turnpoints
-        event.getTaskId();
+        displayFragment(TurnpointSearchFragment.newInstance(appRepository, event.getTaskId()), true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTaskRefused event) {
-        // TODO go back to task list
+        popCurrentFragment();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(ExitFromTurnpointSearch event) {
+        popCurrentFragment();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(GoToTurnpointImport event) {
+        displayFragment(getTurnpointImportFragment(),true);
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SnackbarMessage message) {
+        showSnackBarMessage(message.getMessage());
+    }
+
+    private void popCurrentFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        fm.popBackStack ();
     }
 
     //TODO add menu for other options

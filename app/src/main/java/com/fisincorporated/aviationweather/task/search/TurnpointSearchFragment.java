@@ -1,42 +1,53 @@
 package com.fisincorporated.aviationweather.task.search;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.support.v7.widget.SearchView;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
+import com.fisincorporated.aviationweather.messages.ExitFromTurnpointSearch;
+import com.fisincorporated.aviationweather.messages.GoToTurnpointImport;
 import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.repository.AppRepository;
+import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.repository.Turnpoint;
 
 import org.greenrobot.eventbus.EventBus;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import timber.log.Timber;
+
 public class TurnpointSearchFragment extends Fragment implements GenericListClickListener<Turnpoint> {
-    SearchView searchView;
-    AppRepository appRepository;
+    private SearchView searchView;
+    private AppRepository appRepository;
+    private long taskId;
+    private int taskOrder;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     //TODO figure out injection for view model and then also inject adapter
     TurnpointSearchViewModel turnpointSearchViewModel;
-
     TurnpointSearchListAdapter turnpointSearchListAdapter;
 
-    static public TurnpointSearchFragment newInstance(AppRepository appRepository) {
+    static public TurnpointSearchFragment newInstance(AppRepository appRepository, long taskId) {
         TurnpointSearchFragment turnpointSearchFragment = new TurnpointSearchFragment();
         turnpointSearchFragment.appRepository = appRepository;
+        turnpointSearchFragment.taskId = taskId;
         return turnpointSearchFragment;
     }
 
@@ -55,22 +66,15 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(turnpointSearchListAdapter);
         setHasOptionsMenu(true);
-//        listAllTurnpoints();
+
         return rootView;
     }
 
     @Override
-    public void onResume() {
+    public void onResume(){
         super.onResume();
-        //set title
-        getActivity().setTitle(R.string.turnpoint_search);
-        //displayKeyboard(true);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // displayKeyboard(false);
+        getActivity().setTitle(R.string.add_turnpoints);
+        checkForAtLeastOneTurnpoint();
     }
 
     @Override
@@ -83,7 +87,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         searchView.setQueryHint(getString(R.string.search_for_turnpoints_hint));
         searchView.setIconifiedByDefault(false);
         item.expandActionView();
-        searchView.requestFocus();
+//        searchView.requestFocus();
 //        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
 //            @Override
 //            public boolean onMenuItemActionExpand(MenuItem item) {
@@ -126,16 +130,6 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         turnpointSearchListAdapter.setTurnpointList(null);
     }
 
-    private void displayKeyboard(boolean show) {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (show) {
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-        } else {
-            View view = getView().getRootView();
-            imm.hideSoftInputFromInputMethod(view.getWindowToken(), 0);
-        }
-    }
-
     private void runSearch(String search) {
         turnpointSearchViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
     }
@@ -144,9 +138,61 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
 //        turnpointSearchViewModel.listAllTurnpoints().observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
 //    }
 
+    @SuppressLint("CheckResult")
     @Override
     public void onItemClick(Turnpoint turnpoint, int position) {
-        //TODO check if already added, store to task if not
-        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
+        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode(), taskOrder);
+        appRepository.addTurnpointToTask(taskTurnpoint).subscribeWith(new DisposableSingleObserver<Long>() {
+            @Override
+            public void onSuccess(Long taskId) {
+                EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
+                searchView.setQuery("",true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+               EventBus.getDefault().post(new SnackbarMessage((getString(R.string.error_adding_turnpoint_to_task))));
+
+            }
+        });
+    }
+
+    private void checkForAtLeastOneTurnpoint() {
+        Disposable disposable = appRepository.getCountOfTurnpoints()
+                .subscribe(count -> {
+                            if (count == 0) {
+                                displayImportTurnpointsDialog();
+                            }
+                        }
+                        , throwable -> {
+                            //TODO
+                            Timber.e(throwable);
+                        });
+        compositeDisposable.add(disposable);
+    }
+
+    private void displayImportTurnpointsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.no_turnpoints_found_add_some)
+                .setTitle(R.string.no_turnpoints_found)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    addTurnpoints();
+                    //TODO go to Turnpoint import
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                    returnToPreviousScreen();
+
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+    }
+
+    private void returnToPreviousScreen() {
+        EventBus.getDefault().post(new ExitFromTurnpointSearch());
+    }
+
+    private void addTurnpoints() {
+        EventBus.getDefault().post(new GoToTurnpointImport());
     }
 }

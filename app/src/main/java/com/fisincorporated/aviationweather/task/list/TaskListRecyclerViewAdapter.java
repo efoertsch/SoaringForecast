@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.common.recycleradapter.GenericEditClickListener;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.databinding.TaskView;
+import com.fisincorporated.aviationweather.messages.DeleteTask;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
 import com.fisincorporated.aviationweather.repository.Task;
 import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperAdapter;
@@ -22,6 +24,7 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
         implements ItemTouchHelperAdapter {
 
     private GenericListClickListener<Task> itemClickListener;
+    private GenericEditClickListener<Task> editClickListener;
     private OnStartDragListener dragStartListener;
 
 
@@ -30,8 +33,15 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
     }
 
 
-    public void setOnItemClickListener(GenericListClickListener<Task> genericListClickListener ) {
+    public TaskListRecyclerViewAdapter setEditItemClickListener(GenericEditClickListener<Task> genericEditClickListener ) {
+        this.editClickListener =  genericEditClickListener;
+        return this;
+
+    }
+
+    public TaskListRecyclerViewAdapter setItemClickListener(GenericListClickListener<Task> genericListClickListener ) {
         this.itemClickListener =  genericListClickListener;
+        return this;
 
     }
 
@@ -50,8 +60,12 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
     @Override
     public void onBindViewHolder(TaskListViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        //TODO get better way to do following
-        holder.getViewDataBinding().setClickListener(itemClickListener);
+       if (itemClickListener != null) {
+           holder.getViewDataBinding().setClickListener(itemClickListener);
+       }
+        if (editClickListener != null) {
+            holder.getViewDataBinding().setEditClickListener(editClickListener);
+        }
     }
 
     public void updateTaskList(List<Task> Tasks){
@@ -59,14 +73,6 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
         getItems().addAll(Tasks);
         notifyDataSetChanged();
     }
-
-
-    public void onTaskClick(Task task, Integer position){
-        // TODO edit task (task name or add/delete/change task turnpoints
-       // EventBus.getDefault().post(new ImportFile(file));
-
-    }
-
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
@@ -78,10 +84,10 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
 
     @Override
     public void onItemDismiss(int position) {
+        EventBus.getDefault().post(new DeleteTask(getItems().get(position)));
         getItems().remove(position);
         notifyItemRemoved(position);
         renumberTaskOrder();
-
     }
 
     private void renumberTaskOrder(){

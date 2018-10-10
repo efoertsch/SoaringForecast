@@ -16,5 +16,8 @@ public interface TaskDao extends BaseDao<Task> {
     @Query("Select * from task where id = :taskId")
     Maybe<Task> getTask(long taskId);
 
+    @Query("Delete from task where id = :taskId")
+    int deleteTask(long taskId);
+
 
 }

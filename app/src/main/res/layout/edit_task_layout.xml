@@ -18,7 +18,7 @@
         android:layout_marginEnd="@dimen/margin_standard"
         android:layout_marginStart="@dimen/margin_standard"
         android:layout_marginTop="@dimen/margin_double"
-        android:text="300K Sterling Claremont Southbridge"
+        tools:text="300K Sterling Claremont Southbridge"
          />
 
     <TextView

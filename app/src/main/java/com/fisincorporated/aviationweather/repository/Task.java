@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 public class Task {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     @NonNull
     private String taskName = "";
@@ -23,11 +23,11 @@ public class Task {
         this.taskName = taskName;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
