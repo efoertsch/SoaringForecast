@@ -1,6 +1,7 @@
 package com.fisincorporated.aviationweather.task.edit;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.databinding.EditTaskLayoutBinding;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskTurnpointList;
@@ -57,23 +59,43 @@ public class EditTaskFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.edit_task_layout, container, false);
+
+        EditTaskLayoutBinding editTaskLayoutBinding = DataBindingUtil.inflate(inflater, R.layout.edit_task_layout, container, false);
 
         editTaskViewModel = ViewModelProviders.of(this).get(EditTaskViewModel.class).setAppRepository(appRepository);
 
-        RecyclerView recyclerView = view.findViewById(R.id.edit_task_recycler_view);
-        recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskTurnpoints);
+        editTaskLayoutBinding.setEditTaskViewModel(editTaskViewModel);
 
+        RecyclerView recyclerView = editTaskLayoutBinding.editTaskRecyclerView;
+        recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskTurnpoints);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
                 , linearLayoutManager.getOrientation());
-
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(recyclerViewAdapter);
-        return view;
+
+
+        return editTaskLayoutBinding.getRoot();
+
+//        EditTaskView binding = DataBindingUtil.setContentView(getActivity(), R.layout.edit_task_layout);
+//
+//        editTaskViewModel = ViewModelProviders.of(this).get(EditTaskViewModel.class).setAppRepository(appRepository);
+//        binding.setEditTaskViewModel(editTaskViewModel);
+//
+//        RecyclerView recyclerView = binding.editTaskRecyclerView;
+//        recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskTurnpoints);
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+//                LinearLayoutManager.VERTICAL, false);
+//        recyclerView.setLayoutManager(linearLayoutManager);
+//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
+//                , linearLayoutManager.getOrientation());
+//        recyclerView.addItemDecoration(dividerItemDecoration);
+//        recyclerView.setAdapter(recyclerViewAdapter);
+//
+//        return binding.getRoot();
     }
 
 

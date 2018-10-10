@@ -1,65 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/turnpoint_import_files_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
 
-    <TextView
-        android:id="@+id/edit_task_task_name"
+    <data class="EditTaskView">
+
+        <variable
+            name="editTaskViewModel"
+            type="com.fisincorporated.aviationweather.task.edit.EditTaskViewModel"/>
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/turnpoint_import_files_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="@dimen/margin_standard"
-        android:layout_marginEnd="@dimen/margin_standard"
-        android:layout_marginStart="@dimen/margin_standard"
-        android:layout_marginTop="@dimen/margin_double"
-        tools:text="300K Sterling Claremont Southbridge"
-         />
-
-    <TextView
-        android:id="@+id/edit_task_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="300km"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_task_task_name"
-        android:layout_marginEnd="@dimen/margin_standard"
-        android:layout_marginStart="@dimen/margin_standard"/>
+        android:layout_height="match_parent">
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/edit_task_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_standard"
-        android:layout_marginEnd="@dimen/margin_standard"
-        android:layout_marginStart="@dimen/margin_standard"
-        android:layout_marginTop="@dimen/margin_double"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_task_distance"
-        />
+        <TextView
+            android:id="@+id/edit_task_task_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_double"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginBottom="@dimen/margin_standard"
+            android:text="@{editTaskViewModel.getTask().taskName}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sterling Claremont Southbridge"
+            />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/edit_task_add_turnpoint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_standard"
-        android:layout_marginRight="@dimen/margin_standard"
-        android:clickable="true"
-        app:fabSize="normal"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_add_white_24dp"
-        android:onClick="addTaskClick"/>
-
+        <TextView
+            android:id="@+id/edit_task_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:text="@{editTaskViewModel.getTask().distance}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_task_task_name"
+            tools:text="300km"/>
 
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/edit_task_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_double"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginBottom="@dimen/margin_standard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_task_distance"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/edit_task_add_turnpoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/margin_standard"
+            android:layout_marginBottom="@dimen/margin_standard"
+            android:clickable="true"
+            android:onClick="addTaskClick"
+            android:scaleType="fitXY"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_add_white_24dp"/>
 
 
-</android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</layout>

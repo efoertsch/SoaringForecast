@@ -59,12 +59,9 @@ public class TurnpointsImportFragment extends DaggerFragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
                 , linearLayoutManager.getOrientation());
-
         recyclerView.addItemDecoration(dividerItemDecoration);
-
         recyclerView.setAdapter(recyclerViewAdapter);
 
         return view;

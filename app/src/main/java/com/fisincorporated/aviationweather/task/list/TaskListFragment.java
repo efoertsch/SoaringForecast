@@ -110,6 +110,12 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+       setProgressBarVisibility(false);
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);

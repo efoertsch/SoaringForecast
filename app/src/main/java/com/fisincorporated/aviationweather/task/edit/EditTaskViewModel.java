@@ -56,4 +56,8 @@ public class EditTaskViewModel extends ViewModel {
                         });
         return taskTurnpoints;
     }
+
+    public Task getTask(){
+        return selectedTask.getValue();
+    }
 }
