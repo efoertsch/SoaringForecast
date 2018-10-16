@@ -3,8 +3,8 @@ package com.fisincorporated.aviationweather.task.list;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 
+import com.fisincorporated.aviationweather.common.ObservableViewModel;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.Task;
 
@@ -15,7 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class TaskListViewModel extends ViewModel {
+public class TaskListViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
     private MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
@@ -34,6 +34,7 @@ public class TaskListViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(taskList -> {
                             tasks.setValue(taskList);
+                            notifyChange();
                         },
                         t -> {
                             Timber.e(t);

@@ -193,6 +193,10 @@
     <string name="no_turnpoints_found">No Turnpoints Found</string>
     <string name="no_turnpoints_found_add_some">No turnpoints found in database. Would you like to add some?</string>
     <string name="error_adding_turnpoint_to_task">Oops. Turnpoint could not be added to task.</string>
+    <string name="task_name">Task Name:</string>
+    <string name="distance">Distance:</string>
+    <string name="task">Task:</string>
+    <string name="turnpoints">Turnpoints:</string>
 
 
 </resources>

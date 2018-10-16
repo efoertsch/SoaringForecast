@@ -48,6 +48,8 @@ public class Task {
         return distance;
     }
 
+
+
     /**
      *
      * @param distance in Kilometers

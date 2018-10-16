@@ -29,7 +29,8 @@
         android:focusable="true"
         android:onClick="@{()->clickListener.onItemClick(taskTurnpoint, position)}"
         android:text="@{taskTurnpoint.title}"
-        android:textSize="@dimen/text_size_large"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+
         tools:text="Sterling Start"/>
 
 

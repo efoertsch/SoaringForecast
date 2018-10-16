@@ -37,17 +37,18 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     private SearchView searchView;
     private AppRepository appRepository;
     private long taskId;
-    private int taskOrder;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private int maxTurnpointOrderNumber = 0;
 
     //TODO figure out injection for view model and then also inject adapter
     TurnpointSearchViewModel turnpointSearchViewModel;
     TurnpointSearchListAdapter turnpointSearchListAdapter;
 
-    static public TurnpointSearchFragment newInstance(AppRepository appRepository, long taskId) {
+    static public TurnpointSearchFragment newInstance(AppRepository appRepository, long taskId, int maxTurnpointOrderNumber) {
         TurnpointSearchFragment turnpointSearchFragment = new TurnpointSearchFragment();
         turnpointSearchFragment.appRepository = appRepository;
         turnpointSearchFragment.taskId = taskId;
+        turnpointSearchFragment.maxTurnpointOrderNumber = maxTurnpointOrderNumber;
         return turnpointSearchFragment;
     }
 
@@ -60,7 +61,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         turnpointSearchListAdapter = new TurnpointSearchListAdapter();
         turnpointSearchListAdapter.setOnItemClickListener(this);
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.turnpoint_list_recycler_view);
+        RecyclerView recyclerView = rootView.findViewById(R.id.turnpoint_search_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -87,19 +88,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         searchView.setQueryHint(getString(R.string.search_for_turnpoints_hint));
         searchView.setIconifiedByDefault(false);
         item.expandActionView();
-//        searchView.requestFocus();
-//        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-//            @Override
-//            public boolean onMenuItemActionExpand(MenuItem item) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onMenuItemActionCollapse(MenuItem item) {
-//                getActivity().getSupportFragmentManager().popBackStack();
-//                return true;
-//            }
-//        });
+
     }
 
     @NonNull
@@ -134,14 +123,10 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         turnpointSearchViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
     }
 
-//    private void listAllTurnpoints() {
-//        turnpointSearchViewModel.listAllTurnpoints().observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
-//    }
-
     @SuppressLint("CheckResult")
     @Override
     public void onItemClick(Turnpoint turnpoint, int position) {
-        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode(), taskOrder);
+        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode(), ++maxTurnpointOrderNumber);
         appRepository.addTurnpointToTask(taskTurnpoint).subscribeWith(new DisposableSingleObserver<Long>() {
             @Override
             public void onSuccess(Long taskId) {

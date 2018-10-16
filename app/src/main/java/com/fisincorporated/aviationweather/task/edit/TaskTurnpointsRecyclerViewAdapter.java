@@ -8,10 +8,10 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.databinding.TaskTurnpointView;
+import com.fisincorporated.aviationweather.messages.DeleteTaskTurnpoint;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskTurnpointList;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperAdapter;
-import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -23,8 +23,6 @@ public class TaskTurnpointsRecyclerViewAdapter
         implements ItemTouchHelperAdapter {
 
     private GenericListClickListener<TaskTurnpoint> itemClickListener;
-    private OnStartDragListener dragStartListener;
-
 
     public TaskTurnpointsRecyclerViewAdapter(List<TaskTurnpoint> items){
         super(items);
@@ -33,12 +31,6 @@ public class TaskTurnpointsRecyclerViewAdapter
 
     public void setOnItemClickListener(GenericListClickListener<TaskTurnpoint> genericListClickListener ) {
         this.itemClickListener =  genericListClickListener;
-
-    }
-
-    public TaskTurnpointsRecyclerViewAdapter setOnStartDragListener(OnStartDragListener dragStartListener) {
-        this.dragStartListener = dragStartListener;
-        return this;
     }
 
     @Override
@@ -72,6 +64,7 @@ public class TaskTurnpointsRecyclerViewAdapter
 
     @Override
     public void onItemDismiss(int position) {
+        EventBus.getDefault().post(new DeleteTaskTurnpoint(getItems().get(position)));
         getItems().remove(position);
         notifyItemRemoved(position);
         renumberTurnpoints();

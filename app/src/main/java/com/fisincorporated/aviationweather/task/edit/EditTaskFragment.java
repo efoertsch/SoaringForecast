@@ -9,17 +9,24 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
-import com.fisincorporated.aviationweather.databinding.EditTaskLayoutBinding;
+import com.fisincorporated.aviationweather.common.GenericFabClickListener;
+import com.fisincorporated.aviationweather.databinding.EditTaskView;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
+import com.fisincorporated.aviationweather.messages.DeleteTaskTurnpoint;
+import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskTurnpointList;
 import com.fisincorporated.aviationweather.repository.AppRepository;
+import com.fisincorporated.aviationweather.repository.Task;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
+import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
+import com.fisincorporated.aviationweather.touchhelper.SimpleItemTouchHelperCallback;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,7 +41,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class EditTaskFragment extends Fragment {
+public class EditTaskFragment extends Fragment implements GenericFabClickListener<Task>, OnStartDragListener {
 
     private static final String TASK_ID = "TASK_ID";
 
@@ -44,10 +51,10 @@ public class EditTaskFragment extends Fragment {
     private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
     private TaskTurnpointsRecyclerViewAdapter recyclerViewAdapter;
     private EditTaskViewModel editTaskViewModel;
-    private boolean firstTimeCheck ;
-
+    private boolean firstTimeCheck;
+    private ItemTouchHelper itemTouchHelper;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
+    private int maxTurnpointOrderNumber = 0;
 
     public static EditTaskFragment newInstance(AppRepository appRepository, long taskId) {
         EditTaskFragment editTaskFragment = new EditTaskFragment();
@@ -60,13 +67,13 @@ public class EditTaskFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        EditTaskLayoutBinding editTaskLayoutBinding = DataBindingUtil.inflate(inflater, R.layout.edit_task_layout, container, false);
+        EditTaskView editTaskView = DataBindingUtil.inflate(inflater, R.layout.edit_task_layout, container, false);
 
         editTaskViewModel = ViewModelProviders.of(this).get(EditTaskViewModel.class).setAppRepository(appRepository);
 
-        editTaskLayoutBinding.setEditTaskViewModel(editTaskViewModel);
+        editTaskView.setEditTaskViewModel(editTaskViewModel);
 
-        RecyclerView recyclerView = editTaskLayoutBinding.editTaskRecyclerView;
+        RecyclerView recyclerView = editTaskView.editTaskRecyclerView;
         recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskTurnpoints);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
@@ -77,25 +84,15 @@ public class EditTaskFragment extends Fragment {
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(recyclerViewAdapter);
 
+        //DragListener
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(recyclerViewAdapter);
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        return editTaskLayoutBinding.getRoot();
+        editTaskView.setFabClickListener(this);
 
-//        EditTaskView binding = DataBindingUtil.setContentView(getActivity(), R.layout.edit_task_layout);
-//
-//        editTaskViewModel = ViewModelProviders.of(this).get(EditTaskViewModel.class).setAppRepository(appRepository);
-//        binding.setEditTaskViewModel(editTaskViewModel);
-//
-//        RecyclerView recyclerView = binding.editTaskRecyclerView;
-//        recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskTurnpoints);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
-//                LinearLayoutManager.VERTICAL, false);
-//        recyclerView.setLayoutManager(linearLayoutManager);
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
-//                , linearLayoutManager.getOrientation());
-//        recyclerView.addItemDecoration(dividerItemDecoration);
-//        recyclerView.setAdapter(recyclerViewAdapter);
-//
-//        return binding.getRoot();
+        return editTaskView.getRoot();
+
     }
 
 
@@ -122,6 +119,7 @@ public class EditTaskFragment extends Fragment {
 
     private void refreshTaskTurnpointList() {
         firstTimeCheck = true;
+        editTaskViewModel.getTask(taskId);
         editTaskViewModel.listTaskTurnpoints(taskId)
                 .observe(this, taskTurnpointlist ->
                 {
@@ -131,18 +129,55 @@ public class EditTaskFragment extends Fragment {
 
     private void determineAddTurnpointsDisplay(List<TaskTurnpoint> taskTurnpointlist) {
         if (taskTurnpointlist.size() == 0) {
-                if (!firstTimeCheck) {
-                    displayAddTurnpointsDialog(taskId);
-                }
-                firstTimeCheck = false;
-            } else {
-                recyclerViewAdapter.updateTaskTurpointList(taskTurnpointlist);
+            if (!firstTimeCheck) {
+                displayAddTurnpointsDialog(taskId);
             }
+            firstTimeCheck = false;
+        } else {
+            recyclerViewAdapter.updateTaskTurpointList(taskTurnpointlist);
+        }
+        setTurnpointOrder(taskTurnpointlist);
+    }
+
+    private void setTurnpointOrder(List<TaskTurnpoint> taskTurnpointlist) {
+        int size = taskTurnpointlist.size();
+        if (size == 0){
+        maxTurnpointOrderNumber = 0;}
+        else {
+            maxTurnpointOrderNumber = taskTurnpointlist.get(size - 1).getTaskOrder();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DeleteTaskTurnpoint deleteTaskTurnpoint) {
+        Completable completable = appRepository.deleteTaskTurnpoint(deleteTaskTurnpoint.getTaskTurnpoint());
+        Disposable disposable = completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    //complete
+                }, throwable -> {
+                    // TODO Display some error
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(RenumberedTaskList renumberedTaskList) {
+        Completable completable = appRepository.updateTaskListOrder(renumberedTaskList.getTaskList());
+        Disposable disposable = completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    //complete
+                }, throwable -> {
+                    // TODO Display some error
+
+                });
+        compositeDisposable.add(disposable);
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(RenumberedTaskTurnpointList  renumberedTaskTurnpointList) {
+    public void onMessageEvent(RenumberedTaskTurnpointList renumberedTaskTurnpointList) {
         Completable completable = appRepository.updateTaskTurnpointOrder(renumberedTaskTurnpointList.getTaskTurnpoints());
         Disposable disposable = completable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -154,6 +189,12 @@ public class EditTaskFragment extends Fragment {
                 });
         compositeDisposable.add(disposable);
     }
+
+    @Override
+    public void onFabItemClick(Task task) {
+        goToAddTaskTurnpoints(task.getId());
+    }
+
 
     private void displayAddTurnpointsDialog(long taskId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -171,35 +212,15 @@ public class EditTaskFragment extends Fragment {
     }
 
     private void goToAddTaskTurnpoints(long taskId) {
-        EventBus.getDefault().post(new AddTurnpointsToTask(taskId));
+        EventBus.getDefault().post(new AddTurnpointsToTask(taskId, maxTurnpointOrderNumber));
     }
 
     private void doNotAddTaskTurnpoints() {
         EventBus.getDefault().post(new AddTurnpointsToTaskRefused());
     }
 
-//    public static class BundleBuilder {
-//
-//        private Bundle bundle;
-//
-//        private BundleBuilder() {
-//            bundle = new Bundle();
-//        }
-//
-//        public static EditTaskFragment.BundleBuilder getBundlerBuilder() {
-//            EditTaskFragment.BundleBuilder builder = new EditTaskFragment.BundleBuilder();
-//            return builder;
-//        }
-//
-//        public BundleBuilder setTaskId(long taskId) {
-//            bundle.putLong(TASK_ID, taskId);
-//            return this;
-//        }
-//
-//        public void assign(Fragment fragment) {
-//            fragment.setArguments(bundle);
-//        }
-//
-//    }
-
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        itemTouchHelper.startDrag(viewHolder);
+    }
 }

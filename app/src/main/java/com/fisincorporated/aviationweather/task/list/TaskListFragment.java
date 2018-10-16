@@ -2,6 +2,7 @@ package com.fisincorporated.aviationweather.task.list;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,9 +21,10 @@ import android.widget.Toast;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericEditClickListener;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
-import com.fisincorporated.aviationweather.messages.EditTask;
+import com.fisincorporated.aviationweather.databinding.TaskListView;
 import com.fisincorporated.aviationweather.messages.AddNewTaskRefused;
 import com.fisincorporated.aviationweather.messages.DeleteTask;
+import com.fisincorporated.aviationweather.messages.EditTask;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.Task;
@@ -64,11 +66,13 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.task_list_layout, container, false);
+        //TODO Use databinding
+        TaskListView taskListView = DataBindingUtil.inflate(inflater,R.layout.task_list_layout, container,false);
+        //View view = inflater.inflate(R.layout.task_list_layout, container, false);
 
         taskListViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class).setAppRepository(appRepository);
 
-        RecyclerView recyclerView = view.findViewById(R.id.task_list_recycler_view);
+        RecyclerView recyclerView = taskListView.taskListRecyclerView;
         recyclerViewAdapter = new TaskListRecyclerViewAdapter(tasks)
                 .setItemClickListener(this)
                 .setEditItemClickListener(this);
@@ -86,12 +90,13 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        FloatingActionButton fab = view.findViewById(R.id.task_list_add_button);
+
+        FloatingActionButton fab = taskListView.taskListAddButton;
         fab.setOnClickListener(v -> createNewTask());
 
-        progressBar = view.findViewById(R.id.task_list_progressBar);
+        progressBar = taskListView.taskListProgressBar;
 
-        return view;
+        return taskListView.getRoot();
     }
 
     @Override
@@ -105,7 +110,6 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.task_list);
-        //TODO refresh file list
         refreshTaskList();
     }
 
@@ -133,21 +137,6 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
     private void setProgressBarVisibility(boolean visible) {
         progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
-
-//    private void displayAddTaskDialog() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setMessage(R.string.would_you_like_to_add_a_task_now)
-//                .setTitle(R.string.no_tasks_found)
-//                .setPositiveButton(R.string.yes, (dialog, id) -> {
-//                    dialog.dismiss();
-//                    //createNewTask();
-//                })
-//                .setNegativeButton(R.string.no, (dialog, which) -> {
-//                    dialog.dismiss();
-//                   // doNotAddTask();
-//                });
-//        builder.create().show();
-//    }
 
 
     @SuppressLint("CheckResult")

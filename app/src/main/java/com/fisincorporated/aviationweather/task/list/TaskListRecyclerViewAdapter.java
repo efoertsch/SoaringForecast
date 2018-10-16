@@ -13,25 +13,22 @@ import com.fisincorporated.aviationweather.messages.DeleteTask;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
 import com.fisincorporated.aviationweather.repository.Task;
 import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperAdapter;
-import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Collections;
 import java.util.List;
 
-public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task,TaskListViewHolder>
+public class TaskListRecyclerViewAdapter
+        extends GenericRecyclerViewAdapter<Task,TaskListViewHolder>
         implements ItemTouchHelperAdapter {
 
     private GenericListClickListener<Task> itemClickListener;
     private GenericEditClickListener<Task> editClickListener;
-    private OnStartDragListener dragStartListener;
-
 
     public TaskListRecyclerViewAdapter(List<Task> items){
         super(items);
     }
-
 
     public TaskListRecyclerViewAdapter setEditItemClickListener(GenericEditClickListener<Task> genericEditClickListener ) {
         this.editClickListener =  genericEditClickListener;
@@ -41,12 +38,6 @@ public class TaskListRecyclerViewAdapter extends GenericRecyclerViewAdapter<Task
 
     public TaskListRecyclerViewAdapter setItemClickListener(GenericListClickListener<Task> genericListClickListener ) {
         this.itemClickListener =  genericListClickListener;
-        return this;
-
-    }
-
-    public TaskListRecyclerViewAdapter setOnStartDragListener(OnStartDragListener dragStartListener) {
-        this.dragStartListener = dragStartListener;
         return this;
     }
 

@@ -85,7 +85,7 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        displayFragment(TurnpointSearchFragment.newInstance(appRepository, event.getTaskId()), true);
+        displayFragment(TurnpointSearchFragment.newInstance(appRepository, event.getTaskId(), event.getMaxTurnpointOrderNumber()), true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

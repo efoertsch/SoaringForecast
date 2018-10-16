@@ -3,8 +3,8 @@ package com.fisincorporated.aviationweather.task.edit;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 
+import com.fisincorporated.aviationweather.common.ObservableViewModel;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.Task;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
@@ -16,14 +16,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class EditTaskViewModel extends ViewModel {
+public class EditTaskViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
-    private MutableLiveData<Task> selectedTask = new MutableLiveData<>();
+    private Task selectedTask = null;
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
 
 
-    public EditTaskViewModel setAppRepository(AppRepository appRepository){
+    public EditTaskViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
         taskTurnpoints = new MutableLiveData<>();
         taskTurnpoints.setValue(new ArrayList<>());
@@ -31,14 +31,16 @@ public class EditTaskViewModel extends ViewModel {
     }
 
     @SuppressLint("CheckResult")
-    public LiveData<Task> getTask(long taskId){
+    public Task getTask(long taskId) {
         appRepository.getTask(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(task -> {
-                    selectedTask.setValue(task);
-                },
-                        t -> {      Timber.e(t);
+                            selectedTask = task;
+                            notifyChange();
+                        },
+                        t -> {
+                            Timber.e(t);
                         });
         return selectedTask;
     }
@@ -50,6 +52,7 @@ public class EditTaskViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(newTaskTurnpoints -> {
                             taskTurnpoints.setValue(newTaskTurnpoints);
+                            notifyChange();
                         },
                         t -> {
                             Timber.e(t);
@@ -57,7 +60,25 @@ public class EditTaskViewModel extends ViewModel {
         return taskTurnpoints;
     }
 
-    public Task getTask(){
-        return selectedTask.getValue();
+    public String getTaskName() {
+
+        if (selectedTask != null) {
+            return selectedTask.getTaskName();
+        } else {
+            return "";
+        }
+    }
+
+    public void setTaskName(String value) {
+        if (selectedTask != null) {
+            if (!selectedTask.getTaskName().equals(value)) {
+                selectedTask.setTaskName(value);
+                appRepository.updateTask(selectedTask);
+            }
+        }
+    }
+
+    public Task getTask() {
+        return selectedTask;
     }
 }

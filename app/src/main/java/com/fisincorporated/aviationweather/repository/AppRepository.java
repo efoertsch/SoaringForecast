@@ -115,7 +115,7 @@ public class AppRepository {
         return turnpointDao.deleteAllTurnpoints();
     }
 
-    public Single<Integer> getCountOfTurnpoints(){
+    public Single<Integer> getCountOfTurnpoints() {
         return turnpointDao.getTurnpointCount().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -130,6 +130,26 @@ public class AppRepository {
 
     public Maybe<Task> getTask(long taskId) {
         return taskDao.getTask(taskId);
+    }
+
+    public void updateTask(Task task) {
+        Completable completable = Completable.fromAction(() -> {
+            try {
+                taskDao.update(task);
+            } catch (Throwable throwable) {
+                throw Exceptions.propagate(throwable);
+            }
+        });
+
+        completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    //complete
+                }, throwable -> {
+                    // TODO Display some error. But how?
+
+                });
+
     }
 
     public Single<Long> insertTask(Task task) {
@@ -202,4 +222,15 @@ public class AppRepository {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Completable deleteTaskTurnpoint(TaskTurnpoint taskTurnpoint) {
+        Completable completable = Completable.fromAction(() -> {
+            try {
+                taskTurnpointDao.deleteTaskTurnpoint(taskTurnpoint.getTaskId(), taskTurnpoint.getTitle(), taskTurnpoint.getCode());
+                taskDao.deleteTask(taskTurnpoint.getId());
+            } catch (Throwable throwable) {
+                throw Exceptions.propagate(throwable);
+            }
+        });
+        return completable;
+    }
 }

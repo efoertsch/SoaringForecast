@@ -6,54 +6,94 @@
 
     <data class="EditTaskView">
 
+
         <variable
             name="editTaskViewModel"
             type="com.fisincorporated.aviationweather.task.edit.EditTaskViewModel"/>
 
+        <variable
+            name="fabClickListener"
+            type="com.fisincorporated.aviationweather.common.GenericFabClickListener&lt;com.fisincorporated.aviationweather.repository.Task&gt;"/>
+
+        <import type="java.lang.Integer"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/turnpoint_import_files_layout"
+        android:id="@+id/edit_task_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <TextView
-            android:id="@+id/edit_task_task_name"
-            android:layout_width="match_parent"
+            android:id="@+id/edit_task_taskname_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/task"
             android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_double"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginBottom="@dimen/margin_standard"
-            android:text="@{editTaskViewModel.getTask().taskName}"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintBaseline_toBaselineOf="@+id/edit_task_task_name"
             app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/edit_task_task_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/margin_double"
+            android:text="@={editTaskViewModel.task.taskName}"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toEndOf="@+id/edit_task_taskname_label"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Sterling Claremont Southbridge"
+            />
+
+
+        <TextView
+            android:id="@+id/edit_task_distance_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/distance"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/edit_task_distance"
+
             />
 
         <TextView
             android:id="@+id/edit_task_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:text="@{editTaskViewModel.getTask().distance}"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="@{Integer.toString(editTaskViewModel.getTask().distance)}"
+            android:textSize="@dimen/text_size_large"
             app:layout_constraintTop_toBottomOf="@+id/edit_task_task_name"
+            app:layout_constraintStart_toEndOf="@+id/edit_task_distance_label"
             tools:text="300km"/>
 
+
+        <TextView
+            android:id="@+id/edit_task_turnpoints_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_task_distance"
+            app:layout_constraintStart_toEndOf="@+id/edit_task_distance_label"
+            android:text="@string/turnpoints"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/edit_task_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_double"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginBottom="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_standard"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_task_distance"
+            app:layout_constraintTop_toBottomOf="@+id/edit_task_turnpoints_label"
             />
 
         <android.support.design.widget.FloatingActionButton
@@ -63,7 +103,7 @@
             android:layout_marginRight="@dimen/margin_standard"
             android:layout_marginBottom="@dimen/margin_standard"
             android:clickable="true"
-            android:onClick="addTaskClick"
+            android:onClick="@{() -> fabClickListener.onFabItemClick(editTaskViewModel.getTask())}"
             android:scaleType="fitXY"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
