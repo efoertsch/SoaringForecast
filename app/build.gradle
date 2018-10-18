@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.fisincorporated.soaringweather"
         minSdkVersion 18
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
@@ -77,7 +77,7 @@ dependencies {
     final GSON = '2.8.2'
     final GSON_CONVERTER = '2.3.0'
     final OKHTTP = '3.8.0'
-    final DAGGER = '2.14.1'
+    final DAGGER = '2.15'
     final TIMBER = '4.7.0'
     final ESPRESSO = '2.2.2'
     final HAMCREST = '1.3'

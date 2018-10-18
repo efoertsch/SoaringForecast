@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
@@ -19,27 +20,12 @@ import com.fisincorporated.aviationweather.common.GenericFabClickListener;
 import com.fisincorporated.aviationweather.databinding.EditTaskView;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
-import com.fisincorporated.aviationweather.messages.DeleteTaskTurnpoint;
-import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
-import com.fisincorporated.aviationweather.messages.RenumberedTaskTurnpointList;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.Task;
-import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
 import com.fisincorporated.aviationweather.touchhelper.SimpleItemTouchHelperCallback;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import io.reactivex.Completable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class EditTaskFragment extends Fragment implements GenericFabClickListener<Task>, OnStartDragListener {
 
@@ -48,13 +34,12 @@ public class EditTaskFragment extends Fragment implements GenericFabClickListene
     private AppRepository appRepository;
     private long taskId;
 
-    private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
     private TaskTurnpointsRecyclerViewAdapter recyclerViewAdapter;
     private EditTaskViewModel editTaskViewModel;
-    private boolean firstTimeCheck;
     private ItemTouchHelper itemTouchHelper;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private int maxTurnpointOrderNumber = 0;
+
+    private FloatingActionButton saveFab;
+    private boolean showSaveFab = false;
 
     public static EditTaskFragment newInstance(AppRepository appRepository, long taskId) {
         EditTaskFragment editTaskFragment = new EditTaskFragment();
@@ -69,12 +54,11 @@ public class EditTaskFragment extends Fragment implements GenericFabClickListene
 
         EditTaskView editTaskView = DataBindingUtil.inflate(inflater, R.layout.edit_task_layout, container, false);
 
-        editTaskViewModel = ViewModelProviders.of(this).get(EditTaskViewModel.class).setAppRepository(appRepository);
-
+        editTaskViewModel = ViewModelProviders.of(getActivity()).get(EditTaskViewModel.class).setAppRepository(appRepository).setTaskId(taskId);
         editTaskView.setEditTaskViewModel(editTaskViewModel);
 
         RecyclerView recyclerView = editTaskView.editTaskRecyclerView;
-        recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskTurnpoints);
+        recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(editTaskViewModel);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -89,10 +73,11 @@ public class EditTaskFragment extends Fragment implements GenericFabClickListene
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        editTaskView.setFabClickListener(this);
+        saveFab = editTaskView.editTaskSaveTask;
+        saveFab.setVisibility(View.GONE);
+        saveFab.setOnClickListener(v -> editTaskViewModel.saveTask());
 
         return editTaskView.getRoot();
-
     }
 
 
@@ -106,89 +91,19 @@ public class EditTaskFragment extends Fragment implements GenericFabClickListene
     @Override
     public void onResume() {
         super.onResume();
-        //TODO refresh file list
-        refreshTaskTurnpointList();
+        editTaskViewModel.getTaskTurnpoints();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        compositeDisposable.dispose();
     }
 
-    private void refreshTaskTurnpointList() {
-        firstTimeCheck = true;
-        editTaskViewModel.getTask(taskId);
-        editTaskViewModel.listTaskTurnpoints(taskId)
-                .observe(this, taskTurnpointlist ->
-                {
-                    determineAddTurnpointsDisplay(taskTurnpointlist);
-                });
+    private void displaySaveFab(boolean b) {
+        //TODO implement
     }
 
-    private void determineAddTurnpointsDisplay(List<TaskTurnpoint> taskTurnpointlist) {
-        if (taskTurnpointlist.size() == 0) {
-            if (!firstTimeCheck) {
-                displayAddTurnpointsDialog(taskId);
-            }
-            firstTimeCheck = false;
-        } else {
-            recyclerViewAdapter.updateTaskTurpointList(taskTurnpointlist);
-        }
-        setTurnpointOrder(taskTurnpointlist);
-    }
-
-    private void setTurnpointOrder(List<TaskTurnpoint> taskTurnpointlist) {
-        int size = taskTurnpointlist.size();
-        if (size == 0){
-        maxTurnpointOrderNumber = 0;}
-        else {
-            maxTurnpointOrderNumber = taskTurnpointlist.get(size - 1).getTaskOrder();
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(DeleteTaskTurnpoint deleteTaskTurnpoint) {
-        Completable completable = appRepository.deleteTaskTurnpoint(deleteTaskTurnpoint.getTaskTurnpoint());
-        Disposable disposable = completable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    //complete
-                }, throwable -> {
-                    // TODO Display some error
-                });
-        compositeDisposable.add(disposable);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(RenumberedTaskList renumberedTaskList) {
-        Completable completable = appRepository.updateTaskListOrder(renumberedTaskList.getTaskList());
-        Disposable disposable = completable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    //complete
-                }, throwable -> {
-                    // TODO Display some error
-
-                });
-        compositeDisposable.add(disposable);
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(RenumberedTaskTurnpointList renumberedTaskTurnpointList) {
-        Completable completable = appRepository.updateTaskTurnpointOrder(renumberedTaskTurnpointList.getTaskTurnpoints());
-        Disposable disposable = completable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    //complete
-                }, throwable -> {
-                    // TODO Display some error
-
-                });
-        compositeDisposable.add(disposable);
-    }
 
     @Override
     public void onFabItemClick(Task task) {
@@ -212,7 +127,7 @@ public class EditTaskFragment extends Fragment implements GenericFabClickListene
     }
 
     private void goToAddTaskTurnpoints(long taskId) {
-        EventBus.getDefault().post(new AddTurnpointsToTask(taskId, maxTurnpointOrderNumber));
+        EventBus.getDefault().post(new AddTurnpointsToTask());
     }
 
     private void doNotAddTaskTurnpoints() {

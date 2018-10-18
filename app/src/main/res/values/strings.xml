@@ -189,6 +189,7 @@
     <string name="task_list">Task List</string>
     <string name="error_adding_new_task">An error occurred adding a new task.</string>
     <string name="go_back">Go Back</string>
+    <string name="add_turnpoint">Add Turnpoint(s)</string>
     <string name="add_turnpoints">Add Turnpoints</string>
     <string name="no_turnpoints_found">No Turnpoints Found</string>
     <string name="no_turnpoints_found_add_some">No turnpoints found in database. Would you like to add some?</string>

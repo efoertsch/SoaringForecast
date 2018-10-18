@@ -192,15 +192,19 @@ public class AppRepository {
 
 
     // -----------Task Turnpoints -----------
-    public Maybe<List<TaskTurnpoint>> listTaskTurnpionts(long taskId) {
+    public Maybe<List<TaskTurnpoint>> getTaskTurnpionts(long taskId) {
         return taskTurnpointDao.getTaskTurnpoints(taskId);
     }
 
-    public Completable updateTaskTurnpointOrder(List<TaskTurnpoint> taskTurnpoints) {
+    public Completable updateTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
         Completable completable = Completable.fromAction(() -> {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
-                    taskTurnpointDao.update(taskTurnpoint);
+                    if (taskTurnpoint.getId() == 0) {
+                        taskTurnpointDao.insert(taskTurnpoint);
+                    } else {
+                        taskTurnpointDao.update(taskTurnpoint);
+                    }
                 }
             } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);

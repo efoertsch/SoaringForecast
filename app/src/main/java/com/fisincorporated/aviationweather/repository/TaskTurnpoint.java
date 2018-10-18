@@ -27,11 +27,11 @@ public class TaskTurnpoint {
     @NonNull
     private String code = "";
 
-    public TaskTurnpoint(long taskId, String title, String code, int taskOrder ){
+    public TaskTurnpoint(long taskId, String title, String code ){
         this.taskId = taskId;
         this.title = title;
         this.code = code;
-        this.taskOrder = taskOrder;
+
     }
 
     public void setId(long id) {

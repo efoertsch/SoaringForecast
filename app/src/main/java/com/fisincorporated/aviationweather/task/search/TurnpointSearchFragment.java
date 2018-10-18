@@ -25,13 +25,11 @@ import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.repository.Turnpoint;
+import com.fisincorporated.aviationweather.task.edit.EditTaskViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableSingleObserver;
-import timber.log.Timber;
 
 public class TurnpointSearchFragment extends Fragment implements GenericListClickListener<Turnpoint> {
     private SearchView searchView;
@@ -39,16 +37,12 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     private long taskId;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private int maxTurnpointOrderNumber = 0;
+    private EditTaskViewModel editTaskViewModel;
 
-    //TODO figure out injection for view model and then also inject adapter
-    TurnpointSearchViewModel turnpointSearchViewModel;
-    TurnpointSearchListAdapter turnpointSearchListAdapter;
+    private TurnpointSearchListAdapter turnpointSearchListAdapter;
 
-    static public TurnpointSearchFragment newInstance(AppRepository appRepository, long taskId, int maxTurnpointOrderNumber) {
+    static public TurnpointSearchFragment newInstance() {
         TurnpointSearchFragment turnpointSearchFragment = new TurnpointSearchFragment();
-        turnpointSearchFragment.appRepository = appRepository;
-        turnpointSearchFragment.taskId = taskId;
-        turnpointSearchFragment.maxTurnpointOrderNumber = maxTurnpointOrderNumber;
         return turnpointSearchFragment;
     }
 
@@ -57,7 +51,10 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.turnpoint_search_layout, null);
 
-        turnpointSearchViewModel = ViewModelProviders.of(this).get(TurnpointSearchViewModel.class).setAppRepository(appRepository);
+        // Shared with EditTaskFragment and
+        // should already be 'initialized' with AppRepository... before getting here
+        editTaskViewModel = ViewModelProviders.of(getActivity()).get(EditTaskViewModel.class);
+
         turnpointSearchListAdapter = new TurnpointSearchListAdapter();
         turnpointSearchListAdapter.setOnItemClickListener(this);
 
@@ -72,7 +69,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.add_turnpoints);
         checkForAtLeastOneTurnpoint();
@@ -120,40 +117,25 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     }
 
     private void runSearch(String search) {
-        turnpointSearchViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
+        editTaskViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
     }
 
     @SuppressLint("CheckResult")
     @Override
     public void onItemClick(Turnpoint turnpoint, int position) {
-        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode(), ++maxTurnpointOrderNumber);
-        appRepository.addTurnpointToTask(taskTurnpoint).subscribeWith(new DisposableSingleObserver<Long>() {
-            @Override
-            public void onSuccess(Long taskId) {
-                EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
-                searchView.setQuery("",true);
-            }
+        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode());
+        editTaskViewModel.addTaskTurnpoint(taskTurnpoint);
+        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
+        searchView.setQuery("", true);
 
-            @Override
-            public void onError(Throwable e) {
-               EventBus.getDefault().post(new SnackbarMessage((getString(R.string.error_adding_turnpoint_to_task))));
-
-            }
-        });
     }
 
     private void checkForAtLeastOneTurnpoint() {
-        Disposable disposable = appRepository.getCountOfTurnpoints()
-                .subscribe(count -> {
-                            if (count == 0) {
-                                displayImportTurnpointsDialog();
-                            }
-                        }
-                        , throwable -> {
-                            //TODO
-                            Timber.e(throwable);
-                        });
-        compositeDisposable.add(disposable);
+        editTaskViewModel.getNumberOfSearchableTurnpoints().observe(this, count -> {
+            if (count == 0) {
+                displayImportTurnpointsDialog();
+            }
+        });
     }
 
     private void displayImportTurnpointsDialog() {
