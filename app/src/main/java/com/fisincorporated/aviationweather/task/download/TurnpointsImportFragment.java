@@ -1,4 +1,4 @@
-package com.fisincorporated.aviationweather.turnpoints;
+package com.fisincorporated.aviationweather.task.download;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.Constants;
 import com.fisincorporated.aviationweather.messages.ImportFile;
-import com.fisincorporated.aviationweather.turnpoints.adapters.TurnpointsImportRecyclerViewAdapter;
+import com.fisincorporated.aviationweather.task.TurnpointProcessor;
 import com.fisincorporated.aviationweather.workmanager.TurnpointsImportWorker;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,12 +59,9 @@ public class TurnpointsImportFragment extends DaggerFragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
                 , linearLayoutManager.getOrientation());
-
         recyclerView.addItemDecoration(dividerItemDecoration);
-
         recyclerView.setAdapter(recyclerViewAdapter);
 
         return view;
@@ -81,6 +78,7 @@ public class TurnpointsImportFragment extends DaggerFragment {
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().setTitle(R.string.import_turnpoints);
         //TODO refresh file list
         files = turnpointProcessor.getCupFileList();
         if (files.size() == 0) {
@@ -101,14 +99,14 @@ public class TurnpointsImportFragment extends DaggerFragment {
         builder.setMessage(R.string.no_turnpoint_files_found)
                 .setTitle(R.string.no_cup_files_found)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    dialog.dismiss();
                     displayButFirstDialog();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
-                    dialog.dismiss();
                     cancelActivity();
                 });
-        builder.create().show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
     }
 
     private void displayButFirstDialog() {

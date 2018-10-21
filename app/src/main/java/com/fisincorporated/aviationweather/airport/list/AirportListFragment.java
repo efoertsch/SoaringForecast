@@ -45,7 +45,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
 
     private AirportListAdapter airportListAdapter;
 
-    private ItemTouchHelper mItemTouchHelper;
+    private ItemTouchHelper itemTouchHelper;
 
 
     @Inject
@@ -71,8 +71,8 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
 
         airportListAdapter.setOnStartDragListener(this).setNewAirportListListener(this);
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(airportListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         return view;
     }
@@ -88,7 +88,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
     private void refreshAirports() {
         List<String> airportList = appPreferences.getSelectedAirportCodesList();
         airportListViewModel.listSelectedAirports(airportList).observe(this, airports -> {
-            // airports may not be in preferred order so order them now
+            // airports may not be in preferred taskOrder so taskOrder them now
             for (int i = 0; i < airportList.size(); ++i) {
                 for (int j = 0; j < airports.size(); ++j){
                     if (airportList.get(i).equalsIgnoreCase(airports.get(j).getIdent())
@@ -103,7 +103,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
 
    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-        mItemTouchHelper.startDrag(viewHolder);
+        itemTouchHelper.startDrag(viewHolder);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

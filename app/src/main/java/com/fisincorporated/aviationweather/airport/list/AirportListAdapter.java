@@ -23,9 +23,10 @@ import java.util.List;
 public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.BindingHolder>
         implements ItemTouchHelperAdapter {
 
+    // TODO convert to use GenericRecyclerViewAdapter
     private List<Airport> airports;
     private AirportListAdapter.OnItemClickListener onItemClickListener;
-    private OnStartDragListener mDragStartListener;
+    private OnStartDragListener dragStartListener;
     private NewAirportListListener newAirportListListener;
 
     public interface OnItemClickListener {
@@ -45,7 +46,7 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
     }
 
     public AirportListAdapter setOnStartDragListener(OnStartDragListener dragStartListener) {
-        mDragStartListener = dragStartListener;
+        this.dragStartListener = dragStartListener;
         return this;
     }
 
@@ -70,11 +71,11 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
     public void onBindViewHolder(BindingHolder holder, int position) {
         holder.binding.setAirport(airports.get(position));
 
-        if (mDragStartListener != null) {
+        if (dragStartListener != null) {
             // Start a drag whenever the handle view it touched
             holder.itemView.setOnTouchListener((v, event) -> {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    mDragStartListener.onStartDrag(holder);
+                    dragStartListener.onStartDrag(holder);
                 }
                 return false;
             });

@@ -1,6 +1,6 @@
 package com.fisincorporated.aviationweather.messages;
 
-public class SnackbarMessage {
+public final class SnackbarMessage {
 
     private final String message;
 

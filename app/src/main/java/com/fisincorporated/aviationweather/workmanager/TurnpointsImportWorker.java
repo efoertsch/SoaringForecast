@@ -10,7 +10,7 @@ import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.Constants;
 import com.fisincorporated.aviationweather.dagger.DaggerTurnpointsImportWorkerComponent;
 import com.fisincorporated.aviationweather.repository.AppRepository;
-import com.fisincorporated.aviationweather.turnpoints.TurnpointProcessor;
+import com.fisincorporated.aviationweather.task.TurnpointProcessor;
 
 import java.io.IOException;
 

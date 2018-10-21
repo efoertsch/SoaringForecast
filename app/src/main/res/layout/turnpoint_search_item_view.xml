@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="TurnpointSearchView">
+
+        <variable
+            name="position"
+            type="Integer"/>
+
+        <variable
+            name="clickListener"
+            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.aviationweather.repository.Turnpoint&gt;"
+            />
+
+        <variable
+            name="turnpoint"
+            type="com.fisincorporated.aviationweather.repository.Turnpoint"/>
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/turnpoint_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{()->clickListener.onItemClick(turnpoint, position)}"
+        android:clickable="true"
+        android:focusable="true"
+        >
+
+        <TextView
+            android:id="@+id/turnpoint_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_half"
+            android:layout_marginEnd="@dimen/margin_half"
+            android:maxEms="5"
+            android:padding="@dimen/margin_half"
+            android:text="@{turnpoint.getCode}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="3B3"/>
+
+        <TextView
+            android:id="@+id/turnpoint_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_half"
+            android:layout_marginEnd="@dimen/margin_half"
+            android:padding="@dimen/margin_half"
+            android:text="@{turnpoint.getTitle}"
+            android:textAllCaps="true"
+            app:layout_constraintStart_toEndOf="@+id/turnpoint_code"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sterling"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_double"
+            android:layout_marginBottom="@dimen/margin_standard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/turnpoint_code"
+            android:text="@{turnpoint.getStyleName()}"
+            tools:text="small airport"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</layout>

@@ -14,7 +14,7 @@
 
         <variable
             name="fileClickListener"
-            type="com.fisincorporated.aviationweather.turnpoints.adapters.TurnpointsImportRecyclerViewAdapter"/>
+            type="com.fisincorporated.aviationweather.task.download.TurnpointsImportRecyclerViewAdapter"/>
 
     </data>
 
@@ -26,7 +26,7 @@
         android:focusable="true"
         android:onClick="@{()->fileClickListener.onFileClick(cupFile, position)}"
         android:text="@{cupFile.getName}"
-        android:textSize="@dimen/text_size_large"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         tools:text="sterling7.cup"/>
 
 </layout>
