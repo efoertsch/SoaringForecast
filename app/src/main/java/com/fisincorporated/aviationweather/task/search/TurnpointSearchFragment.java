@@ -123,7 +123,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     @SuppressLint("CheckResult")
     @Override
     public void onItemClick(Turnpoint turnpoint, int position) {
-        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode());
+        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
         taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
         EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
         searchView.setQuery("", true);

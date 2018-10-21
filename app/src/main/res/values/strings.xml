@@ -198,6 +198,10 @@
     <string name="distance">Distance:</string>
     <string name="task">Task:</string>
     <string name="turnpoints">Turnpoints:</string>
+    <string name= "start">Start</string>
+    <string name="display_km_from_prior_turnpoint">From prior point: %.2fkm</string>
+    <string name="display_km_from_start">From start: %.1fkm</string>
+    <string name="distance_km">%.1fkm</string>
 
 
 </resources>

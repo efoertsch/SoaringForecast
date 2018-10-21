@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data class="TaskTurnpointView">
+
+        <import type="android.view.View"/>
 
         <variable
             name="position"
@@ -19,17 +22,70 @@
 
     </data>
 
-    <TextView
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_standard"
-        android:layout_marginBottom="@dimen/margin_standard"
-        android:clickable="true"
-        android:focusable="true"
-        android:onClick="@{()->clickListener.onItemClick(taskTurnpoint, position)}"
-        android:text="@{taskTurnpoint.title}"
-        android:textSize="@dimen/text_size_large"
-        tools:text="Sterling Start"/>
+        android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/task_turnpoint_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:focusable="true"
+            android:onClick="@{()->clickListener.onItemClick(taskTurnpoint, position)}"
+            android:text="@{taskTurnpoint.title}"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toStartOf="@id/task_turnpoint_start_finish"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sterling Start"/>
+
+        <TextView
+            android:id="@+id/task_turnpoint_start_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:clickable="true"
+            android:focusable="true"
+            android:ellipsize="end"
+            android:text="@{taskTurnpoint.lastTurnpoint ? @string/start : @string/finish}"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Start"/>
+
+        <TextView
+            android:id="@+id/task_turnpoint_distance_from_prior_turnpoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="@dimen/margin_double"
+            android:text="@{@string/display_km_from_prior_turnpoint(taskTurnpoint.distanceFromPriorTurnpoint)}"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_name"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"
+            tools:text="From prior point: 50.1km"/>
+
+        <TextView
+            android:id="@+id/task_turnpoint_distance_from_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="8dp"
+            android:text="@{@string/display_km_from_start(taskTurnpoint.distanceFromStartingPoint)}"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toEndOf="@+id/task_turnpoint_distance_from_prior_turnpoint"
+            app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_name"
+            android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"
+            tools:text="From start: 100.1km"/>
+
+
+    </android.support.constraint.ConstraintLayout>
 
 </layout>
