@@ -11,15 +11,18 @@ import com.fisincorporated.aviationweather.databinding.TaskTurnpointView;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.touchhelper.ItemTouchHelperAdapter;
 
+import java.util.Collections;
+
 public class TaskTurnpointsRecyclerViewAdapter
         extends GenericRecyclerViewAdapter<TaskTurnpoint, TaskTurnpointViewHolder>
         implements ItemTouchHelperAdapter {
 
     private GenericListClickListener<TaskTurnpoint> itemClickListener;
-    private EditTaskViewModel editTaskViewModel;
+    private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
 
-    public TaskTurnpointsRecyclerViewAdapter(EditTaskViewModel editTaskViewModel){
-        super(editTaskViewModel.getTaskTurnpoints().getValue());
+    public TaskTurnpointsRecyclerViewAdapter(TaskAndTurnpointsViewModel taskAndTurnpointsViewModel) {
+        super(taskAndTurnpointsViewModel.getTaskTurnpoints().getValue());
+        this.taskAndTurnpointsViewModel = taskAndTurnpointsViewModel;
     }
 
 
@@ -40,18 +43,17 @@ public class TaskTurnpointsRecyclerViewAdapter
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
-        editTaskViewModel.swapTurnpoints(fromPosition, toPosition);
+        Collections.swap(getItems(), fromPosition, toPosition);
+        taskAndTurnpointsViewModel.renumberTurnpoints();
         notifyItemMoved(fromPosition, toPosition);
         return true;
     }
 
     @Override
     public void onItemDismiss(int position) {
-       editTaskViewModel.deleteTaskTurnpoint(position);
+        taskAndTurnpointsViewModel.deleteTaskTurnpoint(position);
         getItems().remove(position);
         notifyItemRemoved(position);
     }
-
-
 
 }

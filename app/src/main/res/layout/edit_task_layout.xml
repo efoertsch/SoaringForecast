@@ -7,14 +7,9 @@
 
     <data class="EditTaskView">
 
-
         <variable
-            name="editTaskViewModel"
-            type="com.fisincorporated.aviationweather.task.edit.EditTaskViewModel"/>
-
-        <variable
-            name="fabClickListener"
-            type="com.fisincorporated.aviationweather.common.GenericFabClickListener&lt;com.fisincorporated.aviationweather.repository.Task&gt;"/>
+            name="taskAndTurnpointsViewModel"
+            type="com.fisincorporated.aviationweather.task.edit.TaskAndTurnpointsViewModel"/>
 
         <import type="java.lang.Integer"/>
 
@@ -43,7 +38,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/margin_double"
-            android:text="@={editTaskViewModel.task.taskName}"
+            android:hint="@string/task_name"
+            android:inputType="text"
+            android:text="@={taskAndTurnpointsViewModel.taskName}"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintStart_toEndOf="@+id/edit_task_taskname_label"
             app:layout_constraintTop_toTopOf="parent"
@@ -60,7 +57,6 @@
             android:textSize="@dimen/text_size_large"
             app:layout_constraintBottom_toBottomOf="@+id/edit_task_distance"
             app:layout_constraintStart_toStartOf="parent"
-
             />
 
         <TextView
@@ -69,12 +65,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_standard"
-            android:text="@{Integer.toString(editTaskViewModel.getTask().distance)}"
+            android:text="@{Integer.toString(taskAndTurnpointsViewModel.getTask().distance)}"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintStart_toEndOf="@+id/edit_task_distance_label"
             app:layout_constraintTop_toBottomOf="@+id/edit_task_task_name"
             tools:text="300km"/>
-
 
         <TextView
             android:id="@+id/edit_task_turnpoints_label"
@@ -88,7 +83,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_task_distance"/>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/edit_task_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_double"
+            android:layout_marginTop="@dimen/margin_standard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_task_turnpoints_label"
+            />
+
         <TextView
+            android:id="@+id/edit_task_add_turnpoints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -102,16 +108,6 @@
             app:layout_constraintTop_toBottomOf="@+id/edit_task_recycler_view"
             />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/edit_task_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_double"
-            android:layout_marginTop="@dimen/margin_standard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_task_turnpoints_label"
-            />
-
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/edit_task_save_task"
             android:layout_width="wrap_content"
@@ -120,13 +116,13 @@
             android:layout_marginBottom="@dimen/margin_standard"
             android:clickable="true"
             android:focusable="true"
-            android:onClick="@{() -> fabClickListener.onFabItemClick(editTaskViewModel.getTask())}"
+            android:onClick="@{() -> taskAndTurnpointsViewModel.saveTask()}"
             android:scaleType="fitXY"
+            android:visibility="gone"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_save"/>
-
 
 
     </android.support.constraint.ConstraintLayout>

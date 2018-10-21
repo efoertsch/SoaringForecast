@@ -25,10 +25,10 @@ import java.util.List;
  * @since 1.0.0
  * <p>
  * Based on https://github.com/LeoDroidCoder/generic-adapter but with modifications
+ * Copy is NOT made from list passed in.
  */
 public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder> extends RecyclerView.Adapter<VH> {
 
-    // TODO Convert to LiveData
     private List<T> items = new ArrayList<>();
     private T selectedItem;
     private LayoutInflater layoutInflater;
@@ -37,7 +37,9 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
 
 
     public GenericRecyclerViewAdapter(List<T> items) {
-       this.items.addAll(items);
+
+        //this.items.addAll(items);
+        this.items = items;
     }
 
     public GenericRecyclerViewAdapter() {
@@ -47,7 +49,7 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
      * To be implemented in as specific adapter.
      * Here you should return new ViewHolder instance.
      * You may also return different ViewHolders according to a view type.
-     * In this case you shoulf also override {@link RecyclerView.Adapter#getItemViewType(int)}
+     * In this case you should also override {@link RecyclerView.Adapter#getItemViewType(int)}
      *
      * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
      * @param viewType The view type of the new View.
@@ -145,8 +147,9 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
         if (items == null) {
             throw new IllegalArgumentException("Cannot set `null` item to the Recycler adapter");
         }
-        this.items.clear();
-        this.items.addAll(items);
+//        this.items.clear();
+//        this.items.addAll(items);
+        this.items = items;
         if (notifyChanges) {
             notifyDataSetChanged();
         }

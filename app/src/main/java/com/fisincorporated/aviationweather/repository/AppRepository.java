@@ -1,5 +1,6 @@
 package com.fisincorporated.aviationweather.repository;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.fisincorporated.aviationweather.R;
@@ -132,7 +133,7 @@ public class AppRepository {
         return taskDao.getTask(taskId);
     }
 
-    public void updateTask(Task task) {
+    public Completable updateTask(Task task) {
         Completable completable = Completable.fromAction(() -> {
             try {
                 taskDao.update(task);
@@ -140,15 +141,7 @@ public class AppRepository {
                 throw Exceptions.propagate(throwable);
             }
         });
-
-        completable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    //complete
-                }, throwable -> {
-                    // TODO Display some error. But how?
-
-                });
+        return completable;
 
     }
 
@@ -213,28 +206,35 @@ public class AppRepository {
         return completable;
     }
 
-    public Single<Long> addTurnpointToTask(TaskTurnpoint taskTurnpoint) {
-        return Single.create((SingleOnSubscribe<Long>) emitter -> {
-            try {
-                Long id = taskTurnpointDao.insert(taskTurnpoint);
-                emitter.onSuccess(id);
-            } catch (Throwable t) {
-                emitter.onError(t);
-            }
-        })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-    }
 
-    public Completable deleteTaskTurnpoint(TaskTurnpoint taskTurnpoint) {
+    public Completable deleteTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
         Completable completable = Completable.fromAction(() -> {
             try {
-                taskTurnpointDao.deleteTaskTurnpoint(taskTurnpoint.getTaskId(), taskTurnpoint.getTitle(), taskTurnpoint.getCode());
-                taskDao.deleteTask(taskTurnpoint.getId());
+                for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
+                    taskTurnpointDao.deleteTaskTurnpoint(taskTurnpoint.getTaskId(), taskTurnpoint.getTitle(), taskTurnpoint.getCode());
+                }
             } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);
             }
         });
         return completable;
+    }
+
+    // ---------- Update Task and Turnpoints --------------------------------
+    @SuppressLint("CheckResult")
+    public void updateTaskAndTurnpoints(Task task, List<TaskTurnpoint> taskTurnpoints, List<TaskTurnpoint> deleteTurnpoints){
+        updateTask(task)
+                .andThen(updateTaskTurnpoints(taskTurnpoints))
+                .andThen(deleteTaskTurnpoints(deleteTurnpoints))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    // all done
+                }, throwable -> {
+                    // TODO Display some error. But how?
+
+                });
+
+
     }
 }

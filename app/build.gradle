@@ -69,7 +69,7 @@ android.sourceSets {
 dependencies {
     final SUPPORT_LIBRARY_VERSION = '26.1.0'
     final CONSTRAINT_LIBRARY_VERSION = '1.1.3'
-    final GOOGLE_MAPS_VERSION = '15.0.1'
+    final GOOGLE_MAPS_VERSION = '16.0.0'
     final RX_ANDROID = '2.0.2'
     final RX_JAVA = '2.1.12'
     final RETROFIT = '2.2.0'
