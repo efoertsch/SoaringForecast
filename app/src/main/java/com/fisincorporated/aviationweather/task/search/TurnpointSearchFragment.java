@@ -22,23 +22,15 @@ import com.fisincorporated.aviationweather.common.recycleradapter.GenericListCli
 import com.fisincorporated.aviationweather.messages.ExitFromTurnpointSearch;
 import com.fisincorporated.aviationweather.messages.GoToTurnpointImport;
 import com.fisincorporated.aviationweather.messages.SnackbarMessage;
-import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.repository.Turnpoint;
 import com.fisincorporated.aviationweather.task.edit.TaskAndTurnpointsViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 
-import io.reactivex.disposables.CompositeDisposable;
-
 public class TurnpointSearchFragment extends Fragment implements GenericListClickListener<Turnpoint> {
     private SearchView searchView;
-    private AppRepository appRepository;
-    private long taskId;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private int maxTurnpointOrderNumber = 0;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
-
     private TurnpointSearchListAdapter turnpointSearchListAdapter;
 
     static public TurnpointSearchFragment newInstance() {
@@ -52,7 +44,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         View rootView = inflater.inflate(R.layout.turnpoint_search_layout, null);
 
         // Shared with EditTaskFragment and
-        // should already be 'initialized' with AppRepository... before getting here
+        // should already be 'initialized' with AppRepository, taskId, ... before getting here
         taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
 
         turnpointSearchListAdapter = new TurnpointSearchListAdapter();
@@ -123,7 +115,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     @SuppressLint("CheckResult")
     @Override
     public void onItemClick(Turnpoint turnpoint, int position) {
-        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskId, turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
+        TaskTurnpoint taskTurnpoint = new TaskTurnpoint( taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
         taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
         EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
         searchView.setQuery("", true);
