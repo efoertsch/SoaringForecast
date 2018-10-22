@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "eb1d622aa2d33be2e85dc463be7fb84e",
+    "identityHash": "fa48c0856fae0a48cf957a96a3b23b17",
     "entities": [
       {
         "tableName": "Airport",
@@ -198,7 +198,7 @@
       },
       {
         "tableName": "Task",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskName` TEXT NOT NULL, `distance` INTEGER NOT NULL, `taskOrder` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskName` TEXT NOT NULL, `distance` REAL NOT NULL, `taskOrder` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -215,7 +215,7 @@
           {
             "fieldPath": "distance",
             "columnName": "distance",
-            "affinity": "INTEGER",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -236,7 +236,7 @@
       },
       {
         "tableName": "TaskTurnpoint",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `taskOrder` INTEGER NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `taskOrder` INTEGER NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `distanceFromPriorTurnpoint` REAL NOT NULL, `distanceFromStartingPoint` REAL NOT NULL, `lastTurnpoint` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -267,6 +267,36 @@
             "columnName": "code",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "latitudeDeg",
+            "columnName": "latitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitudeDeg",
+            "columnName": "longitudeDeg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "distanceFromPriorTurnpoint",
+            "columnName": "distanceFromPriorTurnpoint",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "distanceFromStartingPoint",
+            "columnName": "distanceFromStartingPoint",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastTurnpoint",
+            "columnName": "lastTurnpoint",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -290,7 +320,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"eb1d622aa2d33be2e85dc463be7fb84e\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"fa48c0856fae0a48cf957a96a3b23b17\")"
     ]
   }
 }

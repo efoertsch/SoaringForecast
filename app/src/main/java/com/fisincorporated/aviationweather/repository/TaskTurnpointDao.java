@@ -22,4 +22,5 @@ public interface TaskTurnpointDao extends BaseDao<TaskTurnpoint> {
     @Query("Delete from taskturnpoint where taskId = :taskId and title = :title and code = :code")
     int deleteTaskTurnpoint(long taskId, String title, String code);
 
+
 }

@@ -27,10 +27,24 @@ public class TaskTurnpoint {
     @NonNull
     private String code = "";
 
-    public TaskTurnpoint(long taskId, String title, String code ){
+    // For convenience store lat/long so can recalc distances w/o having to get it from turnpoint table
+    private float latitudeDeg;
+
+    private float longitudeDeg;
+
+    private float distanceFromPriorTurnpoint;
+
+    private float distanceFromStartingPoint;
+
+    // used for taskTurnpoint display
+    private boolean lastTurnpoint;
+
+    public TaskTurnpoint(long taskId, String title, String code, float latitudeDeg, float longitudeDeg) {
         this.taskId = taskId;
         this.title = title;
         this.code = code;
+        this.latitudeDeg = latitudeDeg;
+        this.longitudeDeg = longitudeDeg;
 
     }
 
@@ -76,6 +90,47 @@ public class TaskTurnpoint {
 
     public void setCode(@NonNull String code) {
         this.code = code;
+    }
+
+    public float getLatitudeDeg() {
+        return latitudeDeg;
+    }
+
+    public void setLatitudeDeg(float latitudeDeg) {
+        this.latitudeDeg = latitudeDeg;
+    }
+
+    public float getLongitudeDeg() {
+        return longitudeDeg;
+    }
+
+    public void setLongitudeDeg(float longitudeDeg) {
+        this.longitudeDeg = longitudeDeg;
+    }
+
+
+    public float getDistanceFromPriorTurnpoint() {
+        return distanceFromPriorTurnpoint;
+    }
+
+    public void setDistanceFromPriorTurnpoint(float distanceFromPriorTurnpoint) {
+        this.distanceFromPriorTurnpoint = distanceFromPriorTurnpoint;
+    }
+
+    public float getDistanceFromStartingPoint() {
+        return distanceFromStartingPoint;
+    }
+
+    public void setDistanceFromStartingPoint(float distanceFromStartingPoint) {
+        this.distanceFromStartingPoint = distanceFromStartingPoint;
+    }
+
+    public boolean isLastTurnpoint() {
+        return lastTurnpoint;
+    }
+
+    public void setLastTurnpoint(boolean lastTurnpoint) {
+        this.lastTurnpoint = lastTurnpoint;
     }
 
 }

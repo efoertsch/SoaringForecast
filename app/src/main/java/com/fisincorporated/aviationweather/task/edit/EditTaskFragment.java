@@ -72,6 +72,13 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
             recyclerViewAdapter.notifyDataSetChanged();
         });
 
+        // Could not get taskDistance in xml to update with new distance automagice on task distance change
+        // so set text this way
+        taskAndTurnpointsViewModel.getTaskDistance().observe(this, taskDistance ->{
+            editTaskView.editTaskDistance.setText(getString(R.string.distance_km,taskDistance));
+        });
+
+
         //TODO DRY
         //DragListener
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(recyclerViewAdapter);
@@ -82,6 +89,7 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
 
         saveFab = editTaskView.editTaskSaveTask;
         saveFab.setOnClickListener(v -> taskAndTurnpointsViewModel.saveTask());
+
 
         taskAndTurnpointsViewModel.getNeedToSaveUpdates().observe(this, needToSaveUpdates -> {
             saveFab.setVisibility(needToSaveUpdates ? View.VISIBLE : View.GONE);

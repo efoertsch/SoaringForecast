@@ -15,7 +15,7 @@ public class Task {
     private String taskName = "";
 
     //In Kilometers
-    private int distance;
+    private float distance;
 
     private int taskOrder;
 
@@ -44,17 +44,15 @@ public class Task {
      *
      * @return task distance in kilometers
      */
-    public int getDistance() {
+    public float getDistance() {
         return distance;
     }
-
-
 
     /**
      *
      * @param distance in Kilometers
      */
-    public void setDistance(int distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 
