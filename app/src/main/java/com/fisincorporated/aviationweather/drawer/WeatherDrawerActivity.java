@@ -244,10 +244,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         displayFragment(airportSearchFragment, true);
     }
 
-//    public void loadRunning(final boolean dataLoading) {
-//        loadingProgressBar.setVisibility(dataLoading ? View.VISIBLE : View.GONE);
-//    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SnackbarMessage message) {
         Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(),

@@ -93,6 +93,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             long taskId = data.getExtras().getLong(Constants.SELECTED_TASK);
             if (taskId != 0) {
                 EventBus.getDefault().post(new SnackbarMessage("Selected Task:" + taskId));
+                soaringForecastDisplay.displayTask(taskId);
             }
         }
     }
