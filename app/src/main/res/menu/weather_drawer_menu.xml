@@ -25,7 +25,7 @@
 
         <item
             android:id="@+id/nav_menu_airport_weather"
-            android:title="@string/action_airport_weather"
+            android:title="@string/action_airport_metar_taf"
             />
 
         <item
@@ -43,9 +43,10 @@
                     android:title="@string/airport_list"
                     />
                 <item
-                    android:id="@+id/nav_menu_search_turnpoints"
-                    android:title="@string/turnpoint_search"
+                    android:id="@+id/nav_menu_task_list"
+                    android:title="@string/task_list"
                     />
+
                 <item
                     android:id="@+id/nav_menu_import_turnpoints"
                     android:title="@string/import_turnpoints"/>

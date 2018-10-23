@@ -71,9 +71,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
-        //displaySoaringForecasts();
-        displayTurnpointSearch();
-
+        displaySoaringForecasts();
     }
 
     @Override
@@ -169,11 +167,11 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_dr_jacks:
                 startDrJacksBrowser();
                 break;
-            case R.id.nav_menu_search_turnpoints:
-                displayTurnpointSearch();
+            case R.id.nav_menu_task_list:
+                displayTaskList();
                 break;
             case R.id.nav_menu_import_turnpoints:
-                startTurnpointsImport();
+                displayTurnpointsImport();
         }
         drawerLayout.closeDrawers();
     }
@@ -217,15 +215,15 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         displayFragment(fragment, false);
     }
 
-    private void startTurnpointsImport() {
+    private void displayTaskList(){
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
-        builder.displayTurnpointImport();
+        builder.displayTaskList();
         startActivity(builder.build(this));
     }
 
-    private void displayTurnpointSearch(){
+    private void displayTurnpointsImport() {
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
-        builder.displayTurnpointSearch();
+        builder.displayTurnpointImport();
         startActivity(builder.build(this));
     }
 
@@ -238,16 +236,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://skysight.io/secure/#"));
         startActivity(browserIntent);
     }
-
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onMessageEvent(DataLoadingEvent event) {
-//        loadRunning(true);
-//    }
-//
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onMessageEvent(DataLoadCompleteEvent event) {
-//        loadRunning(false);
-//    }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)

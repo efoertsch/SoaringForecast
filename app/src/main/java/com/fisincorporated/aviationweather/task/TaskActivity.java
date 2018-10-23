@@ -6,14 +6,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.common.Constants;
 import com.fisincorporated.aviationweather.common.MasterActivity;
 import com.fisincorporated.aviationweather.messages.AddNewTaskRefused;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
 import com.fisincorporated.aviationweather.messages.EditTask;
-import com.fisincorporated.aviationweather.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.aviationweather.messages.GoToTurnpointImport;
+import com.fisincorporated.aviationweather.messages.PopThisFragmentFromBackStack;
+import com.fisincorporated.aviationweather.messages.SelectedTask;
 import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.task.download.TurnpointsImportFragment;
@@ -35,7 +36,9 @@ public class TaskActivity extends MasterActivity {
     private static final String EDIT_TASK = "EDIT_TASK";
     private static final String TURNPOINT_OP = "TURNPOINT_OP";
     private static final String TURNPOINT_SEARCH = "TURNPOINT_SEARCH";
+    private static final String LIST_TASKS = "LIST_TASKS";
     private static final String TASK_NAME = "TASK_NAME";
+    private static final String TASK_ID = "TASK_ID";
 
     @Inject
     AppRepository appRepository;
@@ -59,18 +62,29 @@ public class TaskActivity extends MasterActivity {
 
     @Override
     protected Fragment createFragment() {
-        return TaskListFragment.newInstance(appRepository);
+        String turnpointOp = getIntent().getExtras().getString(TURNPOINT_OP);
+        if (turnpointOp != null) {
+            switch (turnpointOp) {
+                case LIST_TASKS:
+                    return getTaskListFragment();
+                case EDIT_TASK:
+                case TURNPOINT_IMPORT:
+                    return getTurnpointImportFragment();
+                default:
+                    return getTaskListFragment();
+            }
+        }
+        return getTaskListFragment();
     }
-
 
     private Fragment getTurnpointImportFragment() {
-        return new TurnpointsImportFragment();
+        return TurnpointsImportFragment.newInstance();
     }
 
-    private Fragment getEditTaskFragment(long taskId) {
-        setActivityTitle(getString(R.string.edit_task));
-        return EditTaskFragment.newInstance(appRepository, taskId);
+    private Fragment getTaskListFragment() {
+        return  TaskListFragment.newInstance(appRepository);
     }
+
 
     // Bus messages
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -103,6 +117,17 @@ public class TaskActivity extends MasterActivity {
         displayFragment(getTurnpointImportFragment(),true);
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SelectedTask selectedTask){
+        Intent intent = getIntent();
+        Bundle bundle = new Bundle();
+        bundle.putLong(Constants.SELECTED_TASK, selectedTask.getTaskId());
+        intent.putExtras(bundle);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SnackbarMessage message) {
         showSnackBarMessage(message.getMessage());
@@ -128,6 +153,11 @@ public class TaskActivity extends MasterActivity {
         public static Builder getBuilder() {
             Builder builder = new Builder();
             return builder;
+        }
+
+        public Builder displayTaskList() {
+            bundle.putString(TURNPOINT_OP, LIST_TASKS);
+            return this;
         }
 
         public Builder displayTurnpointSearch() {

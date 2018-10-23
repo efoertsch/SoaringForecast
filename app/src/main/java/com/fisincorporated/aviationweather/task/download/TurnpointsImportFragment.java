@@ -56,6 +56,11 @@ public class TurnpointsImportFragment extends DaggerFragment {
     public TurnpointsImportFragment() {
     }
 
+    public static TurnpointsImportFragment newInstance() {
+        TurnpointsImportFragment turnpointsImportFragment = new TurnpointsImportFragment();
+        return turnpointsImportFragment;
+    }
+
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

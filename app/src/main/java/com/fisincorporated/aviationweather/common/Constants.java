@@ -8,6 +8,8 @@ public class Constants {
     public static final String SIDE = "side";
     public static final String FOOT = "foot";
 
+    public static final String SELECTED_TASK = "SELECTED_TASK";
+
     public enum FORECAST_ACTION {
         FORWARD,
         BACKWARD,

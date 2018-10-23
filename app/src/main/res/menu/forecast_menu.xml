@@ -3,14 +3,19 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/forecast_menu_opacity_slider"
-        android:title="@string/opacity_slider"
-        app:showAsAction="never"/>
+        android:id="@+id/forecast_menu_select_task"
+        android:title="@string/forecast_menu_select_task"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/forecast_menu_toggle_sounding_points"
         android:title="@string/forecast_menu_toggle_sounds"
         app:showAsAction="ifRoom"
         />
+
+    <item
+        android:id="@+id/forecast_menu_opacity_slider"
+        android:title="@string/opacity_slider"
+        app:showAsAction="never"/>
 
 </menu>

@@ -21,6 +21,7 @@
     <string name="action_add_airports">Add airports</string>
     <string name="action_satellite_images">Satellite</string>
     <string name="action_airport_weather">Airport Weather</string>
+    <string name="action_airport_metar_taf">Airport Metar/TAF</string>
     <string name="action_soaring_forecasts">Soaring Forecasts</string>
 
     <!-- Metar/TAF -->
@@ -204,6 +205,7 @@
     <string name="distance_km">%.1fkm</string>
     <string name="import_failed">Import of %1s failed.</string>
     <string name="import_successful">Import of %1s successful.</string>
+    <string name="forecast_menu_select_task">Select Task</string>
 
 
 </resources>

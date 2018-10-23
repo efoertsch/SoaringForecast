@@ -26,6 +26,7 @@ import com.fisincorporated.aviationweather.messages.AddNewTaskRefused;
 import com.fisincorporated.aviationweather.messages.DeleteTask;
 import com.fisincorporated.aviationweather.messages.EditTask;
 import com.fisincorporated.aviationweather.messages.RenumberedTaskList;
+import com.fisincorporated.aviationweather.messages.SelectedTask;
 import com.fisincorporated.aviationweather.repository.AppRepository;
 import com.fisincorporated.aviationweather.repository.Task;
 import com.fisincorporated.aviationweather.touchhelper.OnStartDragListener;
@@ -179,6 +180,7 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
     public void onItemClick(Task task, int position) {
         //TODO this click is to return task to caller (for plotting task on forecast)
         Toast.makeText(getActivity(), "Clicked on task:" + task.getTaskName(), Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new SelectedTask(task.getId()));
     }
 
     @Override
