@@ -12,7 +12,7 @@ import com.fisincorporated.aviationweather.messages.AddNewTaskRefused;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTask;
 import com.fisincorporated.aviationweather.messages.AddTurnpointsToTaskRefused;
 import com.fisincorporated.aviationweather.messages.EditTask;
-import com.fisincorporated.aviationweather.messages.ExitFromTurnpointSearch;
+import com.fisincorporated.aviationweather.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.aviationweather.messages.GoToTurnpointImport;
 import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.repository.AppRepository;
@@ -94,7 +94,7 @@ public class TaskActivity extends MasterActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(ExitFromTurnpointSearch event) {
+    public void onMessageEvent(PopThisFragmentFromBackStack event) {
         popCurrentFragment();
     }
 

@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener;
-import com.fisincorporated.aviationweather.messages.ExitFromTurnpointSearch;
+import com.fisincorporated.aviationweather.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.aviationweather.messages.GoToTurnpointImport;
 import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
@@ -32,6 +32,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     private SearchView searchView;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
     private TurnpointSearchListAdapter turnpointSearchListAdapter;
+    private AlertDialog noTurnpointsDialog;
 
     static public TurnpointSearchFragment newInstance() {
         TurnpointSearchFragment turnpointSearchFragment = new TurnpointSearchFragment();
@@ -115,7 +116,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     @SuppressLint("CheckResult")
     @Override
     public void onItemClick(Turnpoint turnpoint, int position) {
-        TaskTurnpoint taskTurnpoint = new TaskTurnpoint( taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
+        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
         taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
         EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
         searchView.setQuery("", true);
@@ -126,6 +127,11 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         taskAndTurnpointsViewModel.getNumberOfSearchableTurnpoints().observe(this, count -> {
             if (count == 0) {
                 displayImportTurnpointsDialog();
+            } else {
+                if (noTurnpointsDialog != null) {
+                    noTurnpointsDialog.dismiss();
+                    noTurnpointsDialog = null;
+                }
             }
         });
     }
@@ -137,18 +143,19 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     addTurnpoints();
                     //TODO go to Turnpoint import
+                    noTurnpointsDialog = null;
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
                     returnToPreviousScreen();
 
                 });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
+        noTurnpointsDialog = builder.create();
+        noTurnpointsDialog.setCanceledOnTouchOutside(false);
+        noTurnpointsDialog.show();
     }
 
     private void returnToPreviousScreen() {
-        EventBus.getDefault().post(new ExitFromTurnpointSearch());
+        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
     }
 
     private void addTurnpoints() {

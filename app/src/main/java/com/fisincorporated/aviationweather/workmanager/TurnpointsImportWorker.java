@@ -46,8 +46,8 @@ public class TurnpointsImportWorker extends Worker {
         context = getApplicationContext();
         DaggerTurnpointsImportWorkerComponent.builder().context(context).build().inject(this);
 
-        notificationManager = NotificationManagerCompat.from(context);
-        displayStartNotification();
+//        notificationManager = NotificationManagerCompat.from(context);
+//        displayStartNotification();
 
         //TODO process turnpoint file
         String fileName = getInputData().getString(Constants.TURNPOINT_FILE_NAME);
@@ -56,7 +56,7 @@ public class TurnpointsImportWorker extends Worker {
         } catch (IOException ioe) {
 
         }
-        displayCompletionNotification(success);
+        //displayCompletionNotification(success);
 
         // Indicate success or failure with your return value:
         return success ? Result.SUCCESS : Result.FAILURE;

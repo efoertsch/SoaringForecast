@@ -35,9 +35,7 @@ public class TurnpointsImportRecyclerViewAdapter extends GenericRecyclerViewAdap
     }
 
     public void updateFileList(List<File> files){
-        getItems().clear();
-        getItems().addAll(files);
-        notifyDataSetChanged();
+        setItems(files,true);
     }
 
 

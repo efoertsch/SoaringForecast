@@ -202,6 +202,8 @@
     <string name="display_km_from_prior_turnpoint">From prior point: %.1fkm</string>
     <string name="display_km_from_start">From start: %.1fkm</string>
     <string name="distance_km">%.1fkm</string>
+    <string name="import_failed">Import of %1s failed.</string>
+    <string name="import_successful">Import of %1s successful.</string>
 
 
 </resources>

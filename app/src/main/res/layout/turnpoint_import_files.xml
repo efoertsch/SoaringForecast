@@ -1,34 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/turnpoint_import_files_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/turnpoint_imports_title"
+    <data class="TurnpointsImportView">
+
+        <variable
+            name="turnpointsImportViewModel"
+            type="com.fisincorporated.aviationweather.task.download.TurnpointsImportViewModel"/>
+
+    </data>
+
+
+    <android.support.constraint.ConstraintLayout
+
+        android:id="@+id/turnpoint_import_files_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_double"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:gravity="center_horizontal"
+        android:layout_height="match_parent">
 
-        android:text="@string/turnpoint_files"
-        android:textSize="@dimen/text_size_large"/>
+        <TextView
+            android:id="@+id/turnpoint_imports_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_double"
+            android:gravity="center_horizontal"
+            android:text="@string/turnpoint_files"
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/turnpoint_imports_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_standard"
-        android:layout_marginEnd="@dimen/margin_standard"
-        android:layout_marginStart="@dimen/margin_standard"
-        android:layout_marginTop="@dimen/margin_double"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/turnpoint_imports_title"
-        app:layout_goneMarginTop="@dimen/margin_standard"
-        />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="@dimen/text_size_large"/>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/turnpoint_imports_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_double"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginBottom="@dimen/margin_standard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/turnpoint_imports_title"
+            app:layout_goneMarginTop="@dimen/margin_standard"
+            />
 
-</android.support.constraint.ConstraintLayout>
+        <ProgressBar
+            android:id="@+id/turnpoint_imports_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

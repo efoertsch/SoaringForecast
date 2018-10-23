@@ -1,6 +1,8 @@
 package com.fisincorporated.aviationweather.task.download;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +16,10 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.Constants;
+import com.fisincorporated.aviationweather.databinding.TurnpointsImportView;
 import com.fisincorporated.aviationweather.messages.ImportFile;
+import com.fisincorporated.aviationweather.messages.PopThisFragmentFromBackStack;
+import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.task.TurnpointProcessor;
 import com.fisincorporated.aviationweather.workmanager.TurnpointsImportWorker;
 
@@ -30,6 +35,7 @@ import javax.inject.Inject;
 
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.State;
 import androidx.work.WorkManager;
 import dagger.android.support.DaggerFragment;
 
@@ -38,8 +44,9 @@ public class TurnpointsImportFragment extends DaggerFragment {
     @Inject
     TurnpointProcessor turnpointProcessor;
 
-    @Inject
-    TurnpointViewModel turnpointViewModel;
+    TurnpointsImportView turnpointsImportView;
+
+    TurnpointsImportViewModel turnpointsImportViewModel;
 
     private List<File> files = new ArrayList<>();
 
@@ -52,9 +59,16 @@ public class TurnpointsImportFragment extends DaggerFragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.turnpoint_import_files, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.turnpoint_imports_recycler_view);
-        recyclerViewAdapter = new TurnpointsImportRecyclerViewAdapter(files);
+
+        turnpointsImportView = DataBindingUtil.inflate(inflater,R.layout.turnpoint_import_files, container, false);
+
+        turnpointsImportViewModel = ViewModelProviders.of(this)
+                .get(TurnpointsImportViewModel.class)
+                .setTurnpointProcessor(turnpointProcessor);
+
+
+        RecyclerView recyclerView = turnpointsImportView.turnpointImportsRecyclerView;
+        recyclerViewAdapter = new TurnpointsImportRecyclerViewAdapter(turnpointsImportViewModel.getCupFiles());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
@@ -64,7 +78,7 @@ public class TurnpointsImportFragment extends DaggerFragment {
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        return view;
+        return turnpointsImportView.getRoot();
     }
 
 
@@ -80,7 +94,7 @@ public class TurnpointsImportFragment extends DaggerFragment {
         super.onResume();
         getActivity().setTitle(R.string.import_turnpoints);
         //TODO refresh file list
-        files = turnpointProcessor.getCupFileList();
+        files = turnpointsImportViewModel.getCupFiles();
         if (files.size() == 0) {
             displayNoTurnpointFilesDialog();
         } else {
@@ -102,7 +116,7 @@ public class TurnpointsImportFragment extends DaggerFragment {
                     displayButFirstDialog();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
-                    cancelActivity();
+                    exitThisFragment();
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
@@ -119,7 +133,7 @@ public class TurnpointsImportFragment extends DaggerFragment {
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
                     dialog.dismiss();
-                    cancelActivity();
+                    exitThisFragment();
                 });
         builder.create().show();
 
@@ -130,21 +144,35 @@ public class TurnpointsImportFragment extends DaggerFragment {
         startActivity(browserIntent);
     }
 
-    private void cancelActivity() {
-        getActivity().finish();
+    private void exitThisFragment() {
+            EventBus.getDefault().post(new PopThisFragmentFromBackStack());
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ImportFile importFile) {
-        //TODO - set up Work Observer and display(?) snackbar when import done?
+        turnpointsImportView.turnpointImportsProgressBar.setVisibility(View.VISIBLE);
+
         Data.Builder builder = new Data.Builder();
         builder.putString(Constants.TURNPOINT_FILE_NAME, importFile.getFile().getName());
-
         OneTimeWorkRequest importTurnpointFileWorker =
                 new OneTimeWorkRequest.Builder(TurnpointsImportWorker.class)
                         .setInputData(builder.build())
                         .build();
         WorkManager.getInstance().enqueue(importTurnpointFileWorker);
+        WorkManager.getInstance().getStatusById(importTurnpointFileWorker.getId())
+                .observe(this, workStatus -> {
+                    // Do something with the status
+                    if (workStatus != null && workStatus.getState().isFinished()) {
+                        turnpointsImportView.turnpointImportsProgressBar.setVisibility(View.GONE);
+                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_successful, importFile.getFile().getName())));
+                        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    } else {
+                        if (workStatus != null && workStatus.getState().equals(State.FAILED)){
+                            EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_failed, importFile.getFile().getName())));
+                        }
+                    }
+                });
+
     }
 }
