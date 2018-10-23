@@ -27,7 +27,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     private List<TaskTurnpoint> deletedTaskTurnpoints = new ArrayList<>();
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<List<Turnpoint>> turnpoints = new MutableLiveData<>();
-    private MutableLiveData<Integer> numberSearchableTurnpoints;
+    private MutableLiveData<Integer> numberSearchableTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> needToSaveUpdates = new MutableLiveData<>();
     private MutableLiveData<Float> taskDistance = new MutableLiveData<>();
     private boolean retrievedTask = false;
@@ -220,8 +220,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     }
 
     public MutableLiveData<Integer> getNumberOfSearchableTurnpoints() {
-        if (numberSearchableTurnpoints == null) {
-            numberSearchableTurnpoints = new MutableLiveData<>();
+        if  (numberSearchableTurnpoints.getValue() == null || numberSearchableTurnpoints.getValue() == 0 ) {
             getTotalSearchableTurnpoints();
         }
         return numberSearchableTurnpoints;
@@ -244,6 +243,5 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     public MutableLiveData<Boolean> getNeedToSaveUpdates() {
         return needToSaveUpdates;
     }
-
 
 }
