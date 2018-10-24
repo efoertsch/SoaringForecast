@@ -1,5 +1,6 @@
 package com.fisincorporated.aviationweather.soaring.forecast;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.fisincorporated.aviationweather.R;
+import com.fisincorporated.aviationweather.common.Constants;
+import com.fisincorporated.aviationweather.task.TaskActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -25,12 +28,18 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Inject
     SoaringForecastDisplay soaringForecastDisplay;
 
-    public SoaringForecastFragment() {}
+    private MenuItem clearTaskMenuItem;
+
+    // TODO replace with livedata in viewmodel
+    private boolean showClearTaskMenuItem;
+
+    public SoaringForecastFragment() {
+    }
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.soaring_forecast_rasp, container, false);
+        View view = inflater.inflate(R.layout.soaring_forecast_rasp, container, false);
         soaringForecastDisplay.setView(this, view);
         checkForGooglePlayServices();
         setHasOptionsMenu(true);
@@ -55,12 +64,25 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecast_menu, menu);
+        clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
+       if ( clearTaskMenuItem != null){
+           clearTaskMenuItem.setVisible(showClearTaskMenuItem);
+       }
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.forecast_menu_select_task:
+                selectTask();
+                return true;
+            case R.id.forecast_menu_clear_task:
+                soaringForecastDisplay.removeTaskTurnpoints();
+                showClearTaskMenuItem = false;
+                getActivity().invalidateOptionsMenu();
+                return true;
             case R.id.forecast_menu_opacity_slider:
                 displayOpacitySlider();
                 return true;
@@ -69,6 +91,26 @@ public class SoaringForecastFragment extends DaggerFragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void selectTask() {
+        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
+        builder.displayTaskList();
+        startActivityForResult(builder.build(this.getContext()), 999);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bundle bundle;
+        if (requestCode == 999 && data != null) {
+            if ((bundle = data.getExtras()) != null) {
+                long taskId = bundle.getLong(Constants.SELECTED_TASK);
+                if (taskId != 0) {
+                    soaringForecastDisplay.displayTask(taskId);
+                    showClearTaskMenuItem = true;
+                    getActivity().invalidateOptionsMenu();
+                }
+            }
         }
     }
 
@@ -89,4 +131,5 @@ public class SoaringForecastFragment extends DaggerFragment {
             getActivity().finish();
         }
     }
+
 }

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ import com.fisincorporated.aviationweather.databinding.SoaringForecastImageBindi
 import com.fisincorporated.aviationweather.messages.DataLoadingEvent;
 import com.fisincorporated.aviationweather.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.aviationweather.repository.AppRepository;
+import com.fisincorporated.aviationweather.repository.TaskTurnpoint;
 import com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastModelRecyclerViewAdapter;
 import com.fisincorporated.aviationweather.soaring.forecast.adapters.SoaringForecastRecyclerViewAdapter;
@@ -46,6 +48,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.cache2k.Cache;
 import org.greenrobot.eventbus.EventBus;
@@ -60,13 +64,14 @@ import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 //@InverseBindingMethods({
 //        @InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
-
+// TODO refactor - convert to correct ViewModel and simplify
 public class SoaringForecastDisplay extends BaseObservable implements ViewModelLifeCycle
         , OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -97,6 +102,9 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private List<Marker> soundingMarkers = new ArrayList<>();
     private SoaringForecastImageSet soaringForecastImageSet;
     private String forecastTime;
+    private List<TaskTurnpoint> taskTurnpoints;
+    private List<Marker> taskTurnpointMarkers = new ArrayList<>();
+    private List<Polyline> taskTurnpointLines = new ArrayList<>();
 
     @Inject
     public SoaringForecastDownloader soaringForecastDownloader;
@@ -118,6 +126,16 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private List<SoundingLocation> soundingLocations;
 
     private Constants.FORECAST_SOUNDING forecastSounding;
+
+    /**
+     * Use to center task route in googleMap frame
+     */
+    private LatLng southwest = null;
+    private double swLat = 0;
+    private double swLong = 0;
+    private double neLat = 0;
+    private double neLong = 0;
+    private boolean drawingTask;
 
     @Inject
     SoaringForecastDisplay(AppRepository appRepository) {
@@ -258,7 +276,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         }
     }
 
-    private List<ModelForecastDate>  createForecastDateListForSelectedModel() {
+    private List<ModelForecastDate> createForecastDateListForSelectedModel() {
         ModelLocationAndTimes modelLocationAndTimes;
         List<ModelForecastDate> modelForecastDates = new ArrayList<>();
         String model = selectedSoaringForecastModel.getName();
@@ -367,7 +385,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 //                modelForecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
 //            }
             if (forecastDateRecyclerViewAdapter != null) {
-               forecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
+                forecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);
             }
             loadRaspImages();
         }
@@ -517,8 +535,12 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
 
     private void setupMap() {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
         googleMap.setLatLngBoundsForCameraTarget(mapLatLngBounds);
+        if (!drawingTask) {
+            // if drawing task use the task latlng bounds for map positioning
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
+
+        }
     }
 
     private void setGroundOverlay(Bitmap bitmap) {
@@ -654,5 +676,113 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
         viewDataBinding.soaringForecastSoundingLayout.setVisibility(View.GONE);
         loadRaspImages();
+    }
+
+    @SuppressLint("CheckResult")
+    public void displayTask(long taskId) {
+        removeTaskTurnpoints();
+        drawingTask = true;
+        Disposable disposable = appRepository.getTaskTurnpionts(taskId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(taskTurnpoints -> {
+                            plotTurnpointsOnForecast(taskTurnpoints);
+
+                        },
+                        t -> {
+                            Timber.e(t);
+                        });
+        compositeDisposable.add(disposable);
+    }
+
+    private void plotTurnpointsOnForecast(List<TaskTurnpoint> taskTurnpoints) {
+        TaskTurnpoint taskTurnpoint;
+        LatLng fromLatLng = new LatLng(0d, 0d); // to get rid of syntax checker
+        LatLng toLatLng;
+
+        if (googleMap != null) {
+
+            if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
+                int numberTurnpoints = taskTurnpoints.size();
+                for (int i = 0; i < taskTurnpoints.size(); ++i) {
+                    taskTurnpoint = taskTurnpoints.get(i);
+                    if (i == 0) {
+                        fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
+                        placeMarker(taskTurnpoint.getTitle(), "Start", fromLatLng);
+
+                    } else {
+                        toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
+                        placeMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ? taskTurnpoint.getDistanceFromStartingPoint() + "km" : "Finish"), toLatLng);
+                        drawLine(fromLatLng, toLatLng);
+                        fromLatLng = toLatLng;
+                    }
+                    updateMapLatLongCorners(fromLatLng);
+                }
+                LatLng southwest = new LatLng(swLat, swLong);
+                LatLng northeast = new LatLng(neLat, neLong);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
+                        southwest, northeast), 700, 700, 0));
+            }
+
+        }
+    }
+
+    /**
+     * Find the most southwest and northeast task lat/long
+     *
+     * @param latLng
+     */
+    private void updateMapLatLongCorners(LatLng latLng) {
+        if (southwest == null) {
+            southwest = latLng;
+            swLat = latLng.latitude;
+            swLong = latLng.longitude;
+
+            neLat = latLng.latitude;
+            neLong = latLng.longitude;
+        }
+        if (latLng.latitude < swLat) {
+            swLat = latLng.latitude;
+        }
+        if (latLng.longitude < swLong) {
+            swLong = latLng.longitude;
+        }
+        if (latLng.latitude > neLat) {
+            neLat = latLng.latitude;
+        }
+        if (latLng.longitude > neLong) {
+            neLong = latLng.longitude;
+        }
+
+    }
+
+
+    private void drawLine(LatLng fromLatLng, LatLng toLatLng) {
+        Polyline polyline = googleMap.addPolyline(new PolylineOptions().add(fromLatLng, toLatLng)
+                .width(5).color(Color.RED));
+        taskTurnpointLines.add(polyline);
+    }
+
+    private void placeMarker(String title, String snippet, LatLng latLng) {
+        Marker marker = googleMap.addMarker(new MarkerOptions()
+                .title(title)
+                .snippet(snippet)
+                .position(latLng));
+        taskTurnpointMarkers.add(marker);
+    }
+
+
+    public void removeTaskTurnpoints() {
+        drawingTask = false;
+        for (Polyline polyline : taskTurnpointLines) {
+            polyline.remove();
+        }
+
+        taskTurnpointLines.clear();
+        for (Marker marker : taskTurnpointMarkers) {
+            marker.remove();
+        }
+        taskTurnpointMarkers.clear();
+
     }
 }
