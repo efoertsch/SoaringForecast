@@ -34,7 +34,7 @@
 
         <TextView
             android:id="@+id/task_edit_taskname"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
@@ -45,7 +45,7 @@
             app:layout_constraintEnd_toStartOf="@+id/task_edit_edit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Sterling-Claremont-Southbridge-Sterling"
+            tools:text="Sterling Start-Claremont-Southbridge-Sterling Start"
             />
 
         <ImageView

@@ -32,6 +32,7 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
     private TaskTurnpointsRecyclerViewAdapter recyclerViewAdapter;
     private FloatingActionButton saveFab;
     private ItemTouchHelper itemTouchHelper;
+    private EditTaskView editTaskView;
 
 
     public static EditTaskFragment newInstance(AppRepository appRepository, long taskId) {
@@ -45,7 +46,7 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        EditTaskView editTaskView = DataBindingUtil.inflate(inflater, R.layout.edit_task_layout, container, false);
+        editTaskView = DataBindingUtil.inflate(inflater, R.layout.edit_task_layout, container, false);
 
         taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity())
                 .get(TaskAndTurnpointsViewModel.class)
@@ -72,7 +73,7 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
             recyclerViewAdapter.notifyDataSetChanged();
         });
 
-        // Could not get taskDistance in xml to update with new distance automagice on task distance change
+        // Could not get taskDistance in xml to update with new distance automagically on task distance change
         // so set text this way
         taskAndTurnpointsViewModel.getTaskDistance().observe(this, taskDistance ->{
             editTaskView.editTaskDistance.setText(getString(R.string.distance_km,taskDistance));
@@ -102,6 +103,9 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.edit_task);
+        // if just added all turnpoints via search, the task distance will not be updated by observer in createView
+        // ( as this fragment paused while adding turnpoints, so make sure ui update occurs.
+        editTaskView.editTaskDistance.setText(getString(R.string.distance_km,taskAndTurnpointsViewModel.getTaskDistance().getValue()));
     }
 
     private void goToAddTaskTurnpoints() {

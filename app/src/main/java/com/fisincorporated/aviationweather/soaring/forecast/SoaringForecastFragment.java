@@ -89,11 +89,14 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bundle bundle;
         if (requestCode == 999) {
-            long taskId = data.getExtras().getLong(Constants.SELECTED_TASK);
-            if (taskId != 0) {
-                EventBus.getDefault().post(new SnackbarMessage("Selected Task:" + taskId));
-                soaringForecastDisplay.displayTask(taskId);
+            if ((bundle = data.getExtras()) != null) {
+                long taskId = bundle.getLong(Constants.SELECTED_TASK);
+                if (taskId != 0) {
+                    EventBus.getDefault().post(new SnackbarMessage("Selected Task:" + taskId));
+                    soaringForecastDisplay.displayTask(taskId);
+                }
             }
         }
     }
