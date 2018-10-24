@@ -702,20 +702,21 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
                     if (i == 0) {
                         fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
                         placeMarker(taskTurnpoint.getTitle(), "Start", fromLatLng);
-                        updateMapLatLongCorners(fromLatLng);
+
                     } else {
                         toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
                         placeMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ? taskTurnpoint.getDistanceFromStartingPoint() + "km" : "Finish"), toLatLng);
                         drawLine(fromLatLng, toLatLng);
                         fromLatLng = toLatLng;
-                        updateMapLatLongCorners(fromLatLng);
                     }
+                    updateMapLatLongCorners(fromLatLng);
                 }
+                LatLng southwest = new LatLng(swLat, swLong);
+                LatLng northeast = new LatLng(neLat, neLong);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
+                        southwest, northeast), 700, 700, 0));
             }
-            LatLng southwest = new LatLng(swLat, swLong);
-            LatLng northeast = new LatLng(neLat, neLong);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
-                    southwest, northeast), 500, 500, 0));
+
         }
     }
 

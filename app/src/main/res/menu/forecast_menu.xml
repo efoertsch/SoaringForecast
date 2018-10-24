@@ -10,7 +10,7 @@
     <item
         android:id="@+id/forecast_menu_toggle_sounding_points"
         android:title="@string/forecast_menu_toggle_sounds"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         />
 
     <item
