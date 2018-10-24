@@ -135,6 +135,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private double swLong = 0;
     private double neLat = 0;
     private double neLong = 0;
+    private boolean drawingTask;
 
     @Inject
     SoaringForecastDisplay(AppRepository appRepository) {
@@ -534,8 +535,12 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
 
     private void setupMap() {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
         googleMap.setLatLngBoundsForCameraTarget(mapLatLngBounds);
+        if (!drawingTask) {
+            // if drawing task use the task latlng bounds for map positioning
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
+
+        }
     }
 
     private void setGroundOverlay(Bitmap bitmap) {
@@ -675,6 +680,8 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
     @SuppressLint("CheckResult")
     public void displayTask(long taskId) {
+        removeTaskTurnpoints();
+        drawingTask = true;
         Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -694,7 +701,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         LatLng toLatLng;
 
         if (googleMap != null) {
-            clearPriorTurnpointsAndLines();
+
             if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
                 int numberTurnpoints = taskTurnpoints.size();
                 for (int i = 0; i < taskTurnpoints.size(); ++i) {
@@ -751,9 +758,9 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
 
     private void drawLine(LatLng fromLatLng, LatLng toLatLng) {
-       Polyline polyline = googleMap.addPolyline(new PolylineOptions().add(fromLatLng, toLatLng)
+        Polyline polyline = googleMap.addPolyline(new PolylineOptions().add(fromLatLng, toLatLng)
                 .width(5).color(Color.RED));
-       taskTurnpointLines.add(polyline);
+        taskTurnpointLines.add(polyline);
     }
 
     private void placeMarker(String title, String snippet, LatLng latLng) {
@@ -764,18 +771,18 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         taskTurnpointMarkers.add(marker);
     }
 
-    private void clearPriorTurnpointsAndLines(){
-        for (Polyline polyline : taskTurnpointLines){
+
+    public void removeTaskTurnpoints() {
+        drawingTask = false;
+        for (Polyline polyline : taskTurnpointLines) {
             polyline.remove();
         }
 
         taskTurnpointLines.clear();
-        for (Marker marker : taskTurnpointMarkers){
+        for (Marker marker : taskTurnpointMarkers) {
             marker.remove();
         }
         taskTurnpointMarkers.clear();
-
-
 
     }
 }

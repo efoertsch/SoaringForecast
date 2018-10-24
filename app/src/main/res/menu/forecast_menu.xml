@@ -8,6 +8,11 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/forecast_menu_clear_task"
+        android:title="@string/forecast_menu_clear_task"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/forecast_menu_toggle_sounding_points"
         android:title="@string/forecast_menu_toggle_sounds"
         app:showAsAction="never"

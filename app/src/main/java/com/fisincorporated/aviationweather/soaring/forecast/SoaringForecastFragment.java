@@ -13,12 +13,9 @@ import android.widget.Toast;
 
 import com.fisincorporated.aviationweather.R;
 import com.fisincorporated.aviationweather.common.Constants;
-import com.fisincorporated.aviationweather.messages.SnackbarMessage;
 import com.fisincorporated.aviationweather.task.TaskActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
-import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
@@ -30,6 +27,11 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     @Inject
     SoaringForecastDisplay soaringForecastDisplay;
+
+    private MenuItem clearTaskMenuItem;
+
+    // TODO replace with livedata in viewmodel
+    private boolean showClearTaskMenuItem;
 
     public SoaringForecastFragment() {
     }
@@ -62,6 +64,11 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecast_menu, menu);
+        clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
+       if ( clearTaskMenuItem != null){
+           clearTaskMenuItem.setVisible(showClearTaskMenuItem);
+       }
+
     }
 
     @Override
@@ -70,6 +77,11 @@ public class SoaringForecastFragment extends DaggerFragment {
         switch (item.getItemId()) {
             case R.id.forecast_menu_select_task:
                 selectTask();
+                return true;
+            case R.id.forecast_menu_clear_task:
+                soaringForecastDisplay.removeTaskTurnpoints();
+                showClearTaskMenuItem = false;
+                getActivity().invalidateOptionsMenu();
                 return true;
             case R.id.forecast_menu_opacity_slider:
                 displayOpacitySlider();
@@ -90,12 +102,13 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bundle bundle;
-        if (requestCode == 999) {
+        if (requestCode == 999 && data != null) {
             if ((bundle = data.getExtras()) != null) {
                 long taskId = bundle.getLong(Constants.SELECTED_TASK);
                 if (taskId != 0) {
-                    EventBus.getDefault().post(new SnackbarMessage("Selected Task:" + taskId));
                     soaringForecastDisplay.displayTask(taskId);
+                    showClearTaskMenuItem = true;
+                    getActivity().invalidateOptionsMenu();
                 }
             }
         }
@@ -118,4 +131,5 @@ public class SoaringForecastFragment extends DaggerFragment {
             getActivity().finish();
         }
     }
+
 }

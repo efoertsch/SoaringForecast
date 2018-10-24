@@ -206,6 +206,7 @@
     <string name="import_failed">Import of %1s failed.</string>
     <string name="import_successful">Import of %1s successful.</string>
     <string name="forecast_menu_select_task">Select Task</string>
+    <string name="forecast_menu_clear_task">Clear Task</string>
 
 
 </resources>
