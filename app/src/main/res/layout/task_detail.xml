@@ -11,16 +11,16 @@
 
         <variable
             name="task"
-            type="com.fisincorporated.aviationweather.repository.Task"/>
+            type="com.fisincorporated.soaringforecast.repository.Task"/>
 
         <variable
             name="clickListener"
-            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.aviationweather.repository.Task&gt;"
+            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.soaringforecast.repository.Task&gt;"
             />
 
         <variable
             name="editClickListener"
-            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericEditClickListener&lt;com.fisincorporated.aviationweather.repository.Task&gt;"
+            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericEditClickListener&lt;com.fisincorporated.soaringforecast.repository.Task&gt;"
             />
 
     </data>

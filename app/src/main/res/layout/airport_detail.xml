@@ -8,7 +8,7 @@
 
         <variable
             name="airport"
-            type="com.fisincorporated.aviationweather.repository.Airport"/>
+            type="com.fisincorporated.soaringforecast.repository.Airport"/>
     </data>
 
     <!--  !!! In taskOrder to get swipe to work needed to put views inside RelativeLayout rather than

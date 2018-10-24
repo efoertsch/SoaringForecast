@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.fisincorporated.aviationweather">
+          package="com.fisincorporated.soaringforecast">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:name=".app.SoaringWeatherApplication"
+        android:name="com.fisincorporated.soaringforecast.app.SoaringWeatherApplication"
         android:allowBackup="true"
         android:icon="@mipmap/glider_app_icon"
         android:label="@string/app_name"
@@ -18,7 +18,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".drawer.WeatherDrawerActivity"
+            android:name="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -29,19 +29,19 @@
         </activity>
 
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name="com.fisincorporated.soaringforecast.settings.SettingsActivity"
             android:screenOrientation="portrait">
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".drawer.WeatherDrawerActivity"/>
+            android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
          </activity>
 
        <activity
-            android:name=".task.TaskActivity"
+            android:name="com.fisincorporated.soaringforecast.task.TaskActivity"
             android:screenOrientation="portrait">
            <meta-data
                android:name="android.support.PARENT_ACTIVITY"
-               android:value=".drawer.WeatherDrawerActivity"/>
+               android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
        </activity>
 
         <!-- <activity android:name=".drawer.WeatherDrawerActivity"/> -->

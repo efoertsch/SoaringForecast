@@ -10,11 +10,11 @@
 
         <variable
             name="forecastAction"
-            type="com.fisincorporated.aviationweather.common.Constants.FORECAST_ACTION"/>
+            type="com.fisincorporated.soaringforecast.common.Constants.FORECAST_ACTION"/>
 
         <variable
             name="forecastDisplay"
-            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastDisplay"/>
+            type="com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastDisplay"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -205,7 +205,7 @@
 
         </FrameLayout>
 
-        <com.fisincorporated.aviationweather.common.TouchImageView
+        <com.fisincorporated.soaringforecast.common.TouchImageView
             android:id="@+id/soaring_forecast_scale_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -272,7 +272,7 @@
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
             >
 
-            <com.fisincorporated.aviationweather.common.TouchImageView
+            <com.fisincorporated.soaringforecast.common.TouchImageView
                 android:id="@+id/soaring_forecast_sounding_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

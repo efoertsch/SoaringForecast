@@ -10,11 +10,11 @@
 
          <variable
             name="dateClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter"/>
+            type="com.fisincorporated.soaringforecast.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter"/>
 
         <variable
             name="modelForecastDate"
-            type="com.fisincorporated.aviationweather.soaring.json.ModelForecastDate"/>
+            type="com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate"/>
 
     </data>
 

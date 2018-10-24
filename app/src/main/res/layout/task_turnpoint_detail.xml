@@ -13,11 +13,11 @@
 
         <variable
             name="taskTurnpoint"
-            type="com.fisincorporated.aviationweather.repository.TaskTurnpoint"/>
+            type="com.fisincorporated.soaringforecast.repository.TaskTurnpoint"/>
 
         <variable
             name="clickListener"
-            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.aviationweather.repository.TaskTurnpoint&gt;"
+            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.soaringforecast.repository.TaskTurnpoint&gt;"
             />
 
     </data>

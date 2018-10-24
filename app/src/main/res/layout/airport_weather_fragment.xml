@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.fisincorporated.aviationweather.drawer.WeatherDrawerActivity">
+        tools:context="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity">
 
     <data>
 
@@ -10,7 +10,7 @@
 
         <variable
             name="viewmodel"
-            type="com.fisincorporated.aviationweather.airportweather.AirportWeatherViewModel"/>
+            type="com.fisincorporated.soaringforecast.airportweather.AirportWeatherViewModel"/>
     </data>
 
 

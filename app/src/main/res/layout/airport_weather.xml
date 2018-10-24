@@ -7,23 +7,23 @@
 
         <import type="android.view.View"/>
 
-        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+        <import type="com.fisincorporated.soaringforecast.utils.ConversionUtils"/>
 
         <variable
             name="displayPrefs"
-            type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
+            type="com.fisincorporated.soaringforecast.airportweather.WeatherDisplayPreferences"/>
 
         <variable
             name="airportWeather"
-            type="com.fisincorporated.aviationweather.data.AirportWeather"/>
+            type="com.fisincorporated.soaringforecast.data.AirportWeather"/>
 
         <variable
             name="metar"
-            type="com.fisincorporated.aviationweather.data.metars.Metar"/>
+            type="com.fisincorporated.soaringforecast.data.metars.Metar"/>
 
         <variable
             name="taf"
-            type="com.fisincorporated.aviationweather.data.taf.TAF"/>
+            type="com.fisincorporated.soaringforecast.data.taf.TAF"/>
 
     </data>
 
