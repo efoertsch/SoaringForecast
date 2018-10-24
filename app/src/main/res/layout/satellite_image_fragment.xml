@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.aviationweather.satellite.SatelliteViewModel"/>
+            type="com.fisincorporated.soaringforecast.satellite.SatelliteViewModel"/>
     </data>
 
     <RelativeLayout
@@ -119,14 +119,14 @@
         </LinearLayout>
 
 
-        <com.fisincorporated.aviationweather.common.TouchImageView
+        <com.fisincorporated.soaringforecast.common.TouchImageView
             android:id="@+id/satellite_image_imageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/satellite_image_time"
             android:layout_margin="@dimen/margin_standard">
-        </com.fisincorporated.aviationweather.common.TouchImageView>
+        </com.fisincorporated.soaringforecast.common.TouchImageView>
 
     </RelativeLayout>
 

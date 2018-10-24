@@ -6,15 +6,15 @@
 
         <import type="android.view.View"/>
 
-        <import type="com.fisincorporated.aviationweather.utils.ConversionUtils"/>
+        <import type="com.fisincorporated.soaringforecast.utils.ConversionUtils"/>
 
         <variable
             name="taf"
-            type="com.fisincorporated.aviationweather.data.taf.TAF"/>
+            type="com.fisincorporated.soaringforecast.data.taf.TAF"/>
 
         <variable
             name="displayPrefs"
-            type="com.fisincorporated.aviationweather.airportweather.WeatherDisplayPreferences"/>
+            type="com.fisincorporated.soaringforecast.airportweather.WeatherDisplayPreferences"/>
     </data>
 
     <LinearLayout

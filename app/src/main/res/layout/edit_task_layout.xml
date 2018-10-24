@@ -8,7 +8,7 @@
 
         <variable
             name="taskAndTurnpointsViewModel"
-            type="com.fisincorporated.aviationweather.task.edit.TaskAndTurnpointsViewModel"/>
+            type="com.fisincorporated.soaringforecast.task.edit.TaskAndTurnpointsViewModel"/>
 
         <import type="java.lang.Integer"/>
 

@@ -6,7 +6,7 @@
 
         <variable
             name="turnpointsImportViewModel"
-            type="com.fisincorporated.aviationweather.task.download.TurnpointsImportViewModel"/>
+            type="com.fisincorporated.soaringforecast.task.download.TurnpointsImportViewModel"/>
 
     </data>
 

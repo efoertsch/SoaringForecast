@@ -11,12 +11,12 @@
 
         <variable
             name="clickListener"
-            type="com.fisincorporated.aviationweather.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.aviationweather.repository.Turnpoint&gt;"
+            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.soaringforecast.repository.Turnpoint&gt;"
             />
 
         <variable
             name="turnpoint"
-            type="com.fisincorporated.aviationweather.repository.Turnpoint"/>
+            type="com.fisincorporated.soaringforecast.repository.Turnpoint"/>
 
     </data>
 

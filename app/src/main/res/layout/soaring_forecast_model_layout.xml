@@ -10,11 +10,11 @@
 
         <variable
             name="forecastModelClickListener"
-            type="com.fisincorporated.aviationweather.soaring.forecast.adapters.ForecastModelRecyclerViewAdapter"/>
+            type="com.fisincorporated.soaringforecast.soaring.forecast.adapters.ForecastModelRecyclerViewAdapter"/>
 
         <variable
             name="soaringForecastModel"
-            type="com.fisincorporated.aviationweather.soaring.forecast.SoaringForecastModel"/>
+            type="com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastModel"/>
 
     </data>
 
