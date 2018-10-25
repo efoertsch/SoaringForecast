@@ -1,0 +1,35 @@
+package com.fisincorporated.soaringforecast.task.json;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
+public class Region {
+
+    @SerializedName("region")
+    @Expose
+    private String region;
+    @SerializedName("turnpointFiles")
+    @Expose
+    private List<TurnpointFile> turnpointFiles = null;
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public List<TurnpointFile> getTurnpointFiles() {
+        return turnpointFiles;
+    }
+
+    public void setTurnpointFiles(List<TurnpointFile> turnpointFiles) {
+        this.turnpointFiles = turnpointFiles;
+    }
+
+
+
+}

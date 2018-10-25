@@ -7,7 +7,7 @@ import com.fisincorporated.soaringforecast.satellite.SatelliteImageFragment;
 import com.fisincorporated.soaringforecast.settings.SettingsPreferenceFragment;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
-import com.fisincorporated.soaringforecast.task.download.TurnpointsImportFragment;
+import com.fisincorporated.soaringforecast.task.download.TurnpointsDownloadFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
 import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
 
@@ -40,7 +40,7 @@ public abstract class UIBuildersModule {
     abstract TaskActivity bindTaskActivity();
 
     @ContributesAndroidInjector(modules = {})
-    abstract TurnpointsImportFragment bindTurnpointsImportFragment();
+    abstract TurnpointsDownloadFragment bindTurnpointsImportFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointSearchFragment bindTurnpointSearchFragment();

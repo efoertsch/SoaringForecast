@@ -1,0 +1,37 @@
+{
+  "turnpointregions":[
+  "region": "NewEngland",
+  "turnpointfiles": [
+    {
+      "state": "MA",
+      "location": "Sterling",
+      "filename": "sterling7.cup",
+      "date":"08/27/2017"
+    },
+    {
+      "state": "NH",
+      "location": "Franconia",
+      "filename": "fancon3.cup",
+      "date":"09/02/2103"
+    },
+    {
+      "state": "NH",
+      "location": "Gorham",
+      "filename": "gorham13.cup",
+      "date":"09/02/2103"
+    },
+    {
+      "state": "VT",
+      "location": "PostMills",
+      "filename": "postmll3.cup",
+      "date":"09/02/2013"
+    },
+    {
+      "state": "VT",
+      "location": "Springfield(Region 1)",
+      "filename": "sprngfl6.cup",
+      "date":"09/18/2016"
+    }
+  ]
+  ]
+}

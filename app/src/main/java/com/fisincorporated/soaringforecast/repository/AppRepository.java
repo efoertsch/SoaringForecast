@@ -7,6 +7,8 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
 import com.fisincorporated.soaringforecast.soaring.json.Soundings;
+import com.fisincorporated.soaringforecast.task.json.Region;
+import com.fisincorporated.soaringforecast.task.json.TurnpointFiles;
 import com.fisincorporated.soaringforecast.utils.JSONResourceReader;
 
 import java.util.List;
@@ -89,6 +91,26 @@ public class AppRepository {
     // --------- Soundings ------------------
     public List<SoundingLocation> getLocationSoundings() {
         return (new JSONResourceReader(context.getResources(), R.raw.soundings)).constructUsingGson(Soundings.class).getSoundingLocations();
+    }
+
+    // ----------- Turnpoint download (SeeYou cup files) ------------------
+    public Maybe<List<Region>> getTurnpointFiles() {
+        Maybe<List<Region>> maybe =
+        Maybe.create(emitter -> {
+            try {
+                List<Region> regions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
+                        .constructUsingGson((TurnpointFiles.class)).getRegions();
+                if(regions != null && !regions.isEmpty()) {
+                    emitter.onSuccess(regions);
+                } else {
+                    emitter.onComplete();
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+        return maybe;
+
     }
 
     // --------- Turnpoints -----------------
