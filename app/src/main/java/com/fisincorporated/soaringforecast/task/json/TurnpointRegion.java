@@ -5,12 +5,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Region {
+public class TurnpointRegion {
 
     @SerializedName("region")
     @Expose
     private String region;
-    @SerializedName("turnpointFiles")
+    @SerializedName("turnpointfiles")
     @Expose
     private List<TurnpointFile> turnpointFiles = null;
 
@@ -30,6 +30,5 @@ public class Region {
         this.turnpointFiles = turnpointFiles;
     }
 
-
-
 }
+

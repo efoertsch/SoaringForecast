@@ -14,20 +14,17 @@ import android.view.ViewGroup;
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.TurnpointsImportView;
-import com.fisincorporated.soaringforecast.messages.ImportFile;
+import com.fisincorporated.soaringforecast.messages.ImportSeeYouFile;
 import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
-import com.fisincorporated.soaringforecast.task.TurnpointProcessor;
-import com.fisincorporated.soaringforecast.task.download.TurnpointsDownloadViewModel;
+import com.fisincorporated.soaringforecast.repository.AppRepository;
+import com.fisincorporated.soaringforecast.task.download.TurnpointsImporterViewModel;
 import com.fisincorporated.soaringforecast.task.json.TurnpointFile;
 import com.fisincorporated.soaringforecast.workmanager.TurnpointsImportWorker;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -40,13 +37,11 @@ import dagger.android.support.DaggerFragment;
 public class SeeYouImportFragment extends DaggerFragment {
 
     @Inject
-    TurnpointProcessor turnpointProcessor;
+    AppRepository appRepository;
 
     TurnpointsImportView turnpointsImportView;
 
-    TurnpointsDownloadViewModel turnpointsDownloadViewModel;
-
-    private List<TurnpointFile> turnpointFiles = new ArrayList<>();
+    TurnpointsImporterViewModel turnpointsImporterViewModel;
 
     private SeeYouImportRecyclerViewAdapter recyclerViewAdapter;
 
@@ -63,15 +58,14 @@ public class SeeYouImportFragment extends DaggerFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        turnpointsImportView = DataBindingUtil.inflate(inflater,R.layout.turnpoint_import_files, container, false);
+        turnpointsImportView = DataBindingUtil.inflate(inflater, R.layout.turnpoint_import_files, container, false);
 
-        turnpointsDownloadViewModel = ViewModelProviders.of(this)
-                .get(TurnpointsDownloadViewModel.class)
-                .setTurnpointProcessor(turnpointProcessor);
-
+        turnpointsImporterViewModel = ViewModelProviders.of(this)
+                .get(TurnpointsImporterViewModel.class)
+                .setAppRepository(appRepository);
 
         RecyclerView recyclerView = turnpointsImportView.turnpointImportsRecyclerView;
-        recyclerViewAdapter = new SeeYouImportRecyclerViewAdapter(turnpointsDownloadViewModel.getTurnpointFiles());
+        recyclerViewAdapter = new SeeYouImportRecyclerViewAdapter(null);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
@@ -80,6 +74,9 @@ public class SeeYouImportFragment extends DaggerFragment {
                 , linearLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(recyclerViewAdapter);
+        turnpointsImporterViewModel.getTurnpointFiles().observe(this, turnpointFiles -> {
+            recyclerViewAdapter.setItems(turnpointFiles, true);
+        });
 
         return turnpointsImportView.getRoot();
     }
@@ -105,18 +102,17 @@ public class SeeYouImportFragment extends DaggerFragment {
     }
 
 
-
     private void exitThisFragment() {
         EventBus.getDefault().post(new PopThisFragmentFromBackStack());
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(ImportFile importFile) {
+    public void onMessageEvent(ImportSeeYouFile importSeeYouFile) {
         turnpointsImportView.turnpointImportsProgressBar.setVisibility(View.VISIBLE);
-
+        TurnpointFile turnpointFile = importSeeYouFile.getTurnpointFile();
         Data.Builder builder = new Data.Builder();
-        builder.putString(Constants.TURNPOINT_FILE_NAME, importFile.getFile().getName());
+        builder.putString(Constants.TURNPOINT_FILE_URL, turnpointFile.getLocation() + "/" + turnpointFile.getFilename());
         OneTimeWorkRequest importTurnpointFileWorker =
                 new OneTimeWorkRequest.Builder(TurnpointsImportWorker.class)
                         .setInputData(builder.build())
@@ -125,13 +121,14 @@ public class SeeYouImportFragment extends DaggerFragment {
         WorkManager.getInstance().getStatusById(importTurnpointFileWorker.getId())
                 .observe(this, workStatus -> {
                     // Do something with the status
-                    if (workStatus != null && workStatus.getState().isFinished()) {
+                    if (workStatus != null && workStatus.getState().isFinished() && workStatus.getState().equals(State.SUCCEEDED)) {
                         turnpointsImportView.turnpointImportsProgressBar.setVisibility(View.GONE);
-                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_successful, importFile.getFile().getName())));
+                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_successful, turnpointFile.getLocation())));
                         EventBus.getDefault().post(new PopThisFragmentFromBackStack());
                     } else {
-                        if (workStatus != null && workStatus.getState().equals(State.FAILED)){
-                            EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_failed, importFile.getFile().getName())));
+                        if (workStatus != null && workStatus.getState().equals(State.FAILED)) {
+                            turnpointsImportView.turnpointImportsProgressBar.setVisibility(View.GONE);
+                            EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_failed, turnpointFile.getLocation())));
                         }
                     }
                 });

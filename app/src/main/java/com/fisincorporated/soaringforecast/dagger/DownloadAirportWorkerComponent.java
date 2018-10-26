@@ -12,7 +12,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {DownloadAirportWorkerModule.class
+@Component(modules = {OkHttpClientModule.class
         , ChannelIdModule.class
         , AppRepositoryModule.class})
 public interface DownloadAirportWorkerComponent {

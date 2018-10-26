@@ -170,6 +170,7 @@
     <string name="no_turnpoint_files_found">No turnpoint files found. Would you like to download turnpoint files?</string>
     <string name="need_to_download_cup_files">A browser will be started pointing to the Worldwide Soaring Turnpoint Exchange.\nDrill down to the needed SeeYou(.cup) turnpoint file and download.\n NOTE: Select the SeeYou file(s) that are *NOT* SeeYou® [control point number placed before the name].\nReturn to the Soaring app when downloads completed.</string>
     <string name="no_cup_files_found">Missing Turnpoints</string>
+    <string name="importable_files">Importable Files</string>
     <string name="start_browser">Start Browser</string>
     <string name="cancel">Cancel</string>
     <string name="but_first">But First...</string>

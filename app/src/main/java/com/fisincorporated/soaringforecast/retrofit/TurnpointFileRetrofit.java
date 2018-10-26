@@ -4,13 +4,13 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
-public class TurnpointFileDownloadRetrofit {
+public class TurnpointFileRetrofit {
 
     public static final String TURNPOINTS_URL = "http://soaringweb.org/TP/";
 
     private Retrofit retrofit;
 
-    public TurnpointFileDownloadRetrofit(OkHttpClient okHttpClient ){
+    public TurnpointFileRetrofit(OkHttpClient okHttpClient ){
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(TURNPOINTS_URL)
                 .client(okHttpClient)

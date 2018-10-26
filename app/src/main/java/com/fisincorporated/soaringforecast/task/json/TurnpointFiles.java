@@ -7,16 +7,17 @@ import java.util.List;
 
 public class TurnpointFiles {
 
-    @SerializedName("regions")
-    @Expose
-    private List<Region> regions = null;
 
-    public List<Region> getRegions() {
-        return regions;
+    @SerializedName("turnpointregions")
+    @Expose
+    private List<TurnpointRegion> turnpointRegions = null;
+
+    public List<TurnpointRegion> getTurnpointRegions() {
+        return turnpointRegions;
     }
 
-    public void setRegions(List<Region> regions) {
-        this.regions = regions;
+    public void setTurnpointRegions(List<TurnpointRegion> turnpointRegions) {
+        this.turnpointRegions = turnpointRegions;
     }
 
 }

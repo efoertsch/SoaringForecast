@@ -10,6 +10,7 @@ import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.fisincorporated.soaringforecast.task.download.TurnpointsDownloadFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
 import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
+import com.fisincorporated.soaringforecast.task.seeyou.SeeYouImportFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -47,6 +48,9 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract TaskListFragment bindTaskListFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract SeeYouImportFragment bindSeeYouImportFragment();
 
 
 }

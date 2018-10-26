@@ -5,8 +5,8 @@
     <data class="TurnpointsImportView">
 
         <variable
-            name="turnpointsDownloadViewModel"
-            type="com.fisincorporated.soaringforecast.task.download.TurnpointsDownloadViewModel"/>
+            name="turnpointsImporterViewModel"
+            type="com.fisincorporated.soaringforecast.task.download.TurnpointsImporterViewModel"/>
 
     </data>
 

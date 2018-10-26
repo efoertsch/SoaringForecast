@@ -8,9 +8,9 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.Constants;
-import com.fisincorporated.soaringforecast.dagger.DaggerTurnpointsImportWorkerComponent;
+import com.fisincorporated.soaringforecast.dagger.DaggerTurnpointsImportComponent;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.task.TurnpointProcessor;
+import com.fisincorporated.soaringforecast.task.TurnpointsImporter;
 
 import java.io.IOException;
 
@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import androidx.work.Worker;
+import okhttp3.OkHttpClient;
 
 public class TurnpointsImportWorker extends Worker {
 
@@ -30,10 +31,13 @@ public class TurnpointsImportWorker extends Worker {
     String CHANNEL_ID;
 
     @Inject
-    AppRepository appRepository;
+    OkHttpClient okHttpClient;
 
     @Inject
-    TurnpointProcessor turnpointProcessor;
+    TurnpointsImporter turnpointsImporter;
+
+    @Inject
+    AppRepository appRepository;
 
     private NotificationManagerCompat notificationManager;
 
@@ -44,23 +48,37 @@ public class TurnpointsImportWorker extends Worker {
         boolean success = false;
 
         context = getApplicationContext();
-        DaggerTurnpointsImportWorkerComponent.builder().context(context).build().inject(this);
+        DaggerTurnpointsImportComponent.builder().context(context).build().inject(this);
 
-//        notificationManager = NotificationManagerCompat.from(context);
-//        displayStartNotification();
+        notificationManager = NotificationManagerCompat.from(context);
+        displayStartNotification();
 
         //TODO process turnpoint file
         String fileName = getInputData().getString(Constants.TURNPOINT_FILE_NAME);
-        try {
-           success = turnpointProcessor.importTurnpointFile(fileName);
-        } catch (IOException ioe) {
-
+        if (fileName != null) {
+            try {
+                success = turnpointsImporter.importTurnpointsFromDownloadDirectory(fileName);
+            } catch (IOException ioe) {
+                // TODO send import error
+                success = false;
+            }
+        } else {
+            fileName = getInputData().getString(Constants.TURNPOINT_FILE_URL);
+            if (fileName != null) {
+                try {
+                    turnpointsImporter.setOkHttpClient(okHttpClient);
+                    success = (turnpointsImporter.importTurnpointsFromUrl(fileName).blockingGet() > 0);
+                } catch (Exception e) {
+                    // TODO send import error
+                   success = false;
+                }
+            }
         }
-        //displayCompletionNotification(success);
+        displayCompletionNotification(success);
 
-        // Indicate success or failure with your return value:
-        return success ? Result.SUCCESS : Result.FAILURE;
-    }
+    // Indicate success or failure with your return value:
+        return success ?Result.SUCCESS :Result.FAILURE;
+}
 
     private void displayStartNotification() {
 

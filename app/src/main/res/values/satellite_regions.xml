@@ -3,7 +3,7 @@
 
     <string name="satellite_region">Satellite Region</string>
 
-    <!-- Satellite regions.Make sure numbers in order of array string below -->
+    <!-- Satellite turnpointRegion.Make sure numbers in order of array string below -->
     <string name="satellite_region_us" translatable="false">0,us,CONUS US</string>
     <string name="satellite_region_alb" translatable="false">1,alb,Albany NY</string>
     <string name="satellite_region_bwi" translatable="false">2,bwi,Baltimore MD</string>

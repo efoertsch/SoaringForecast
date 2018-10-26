@@ -7,10 +7,12 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
 import com.fisincorporated.soaringforecast.soaring.json.Soundings;
-import com.fisincorporated.soaringforecast.task.json.Region;
+import com.fisincorporated.soaringforecast.task.json.TurnpointRegion;
+import com.fisincorporated.soaringforecast.task.json.TurnpointFile;
 import com.fisincorporated.soaringforecast.task.json.TurnpointFiles;
 import com.fisincorporated.soaringforecast.utils.JSONResourceReader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
@@ -94,14 +96,14 @@ public class AppRepository {
     }
 
     // ----------- Turnpoint download (SeeYou cup files) ------------------
-    public Maybe<List<Region>> getTurnpointFiles() {
-        Maybe<List<Region>> maybe =
+    public Maybe<List<TurnpointFile>> getTurnpointFiles(String regionName) {
+        Maybe<List<TurnpointFile>> maybe =
         Maybe.create(emitter -> {
             try {
-                List<Region> regions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
-                        .constructUsingGson((TurnpointFiles.class)).getRegions();
-                if(regions != null && !regions.isEmpty()) {
-                    emitter.onSuccess(regions);
+                List<TurnpointRegion> turnpointRegions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
+                        .constructUsingGson((TurnpointFiles.class)).getTurnpointRegions();
+                if(turnpointRegions != null && !turnpointRegions.isEmpty()) {
+                    emitter.onSuccess(getRegionFiles(turnpointRegions, regionName));
                 } else {
                     emitter.onComplete();
                 }
@@ -110,6 +112,15 @@ public class AppRepository {
             }
         });
         return maybe;
+    }
+
+    private List<TurnpointFile> getRegionFiles(List<TurnpointRegion> turnpointRegions, String regionName) {
+        for (TurnpointRegion turnpointRegion : turnpointRegions){
+            if (turnpointRegion.getRegion().equals(regionName)){
+                return turnpointRegion.getTurnpointFiles();
+            }
+        }
+        return new ArrayList<>();
 
     }
 

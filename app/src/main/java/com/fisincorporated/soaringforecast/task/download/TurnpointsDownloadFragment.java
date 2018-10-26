@@ -20,7 +20,7 @@ import com.fisincorporated.soaringforecast.databinding.TurnpointsImportView;
 import com.fisincorporated.soaringforecast.messages.ImportFile;
 import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
-import com.fisincorporated.soaringforecast.task.TurnpointProcessor;
+import com.fisincorporated.soaringforecast.task.TurnpointsImporter;
 import com.fisincorporated.soaringforecast.workmanager.TurnpointsImportWorker;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,11 +42,11 @@ import dagger.android.support.DaggerFragment;
 public class TurnpointsDownloadFragment extends DaggerFragment {
 
     @Inject
-    TurnpointProcessor turnpointProcessor;
+    TurnpointsImporter turnpointsImporter;
 
     TurnpointsImportView turnpointsImportView;
 
-    TurnpointsDownloadViewModel turnpointsDownloadViewModel;
+    TurnpointsImporterViewModel turnpointsImporterViewModel;
 
     private List<File> files = new ArrayList<>();
 
@@ -67,13 +67,13 @@ public class TurnpointsDownloadFragment extends DaggerFragment {
 
         turnpointsImportView = DataBindingUtil.inflate(inflater,R.layout.turnpoint_import_files, container, false);
 
-        turnpointsDownloadViewModel = ViewModelProviders.of(this)
-                .get(TurnpointsDownloadViewModel.class)
-                .setTurnpointProcessor(turnpointProcessor);
+        turnpointsImporterViewModel = ViewModelProviders.of(this)
+                .get(TurnpointsImporterViewModel.class)
+                .setTurnpointsImporter(turnpointsImporter);
 
 
         RecyclerView recyclerView = turnpointsImportView.turnpointImportsRecyclerView;
-        recyclerViewAdapter = new TurnpointsDownloadRecyclerViewAdapter(turnpointsDownloadViewModel.getCupFiles());
+        recyclerViewAdapter = new TurnpointsDownloadRecyclerViewAdapter(turnpointsImporterViewModel.getCupFiles());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
@@ -99,7 +99,7 @@ public class TurnpointsDownloadFragment extends DaggerFragment {
         super.onResume();
         getActivity().setTitle(R.string.import_turnpoints);
         //TODO refresh file list
-        files = turnpointsDownloadViewModel.getCupFiles();
+        files = turnpointsImporterViewModel.getCupFiles();
         if (files.size() == 0) {
             displayNoTurnpointFilesDialog();
         } else {
@@ -116,7 +116,7 @@ public class TurnpointsDownloadFragment extends DaggerFragment {
     private void displayNoTurnpointFilesDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.no_turnpoint_files_found)
-                .setTitle(R.string.no_cup_files_found)
+                .setTitle(R.string.importable_files)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     displayButFirstDialog();
                 })
