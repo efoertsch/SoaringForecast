@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.task.seeyou;
+package com.fisincorporated.soaringforecast.task.turnpoints.seeyou;
 
 import android.databinding.DataBindingUtil;
 import android.view.LayoutInflater;

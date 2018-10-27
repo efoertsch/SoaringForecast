@@ -15,7 +15,7 @@
 
         <variable
             name="fileClickListener"
-            type="com.fisincorporated.soaringforecast.task.seeyou.SeeYouImportRecyclerViewAdapter"/>
+            type="com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportRecyclerViewAdapter"/>
 
     </data>
 
@@ -26,7 +26,9 @@
         android:clickable="true"
         android:focusable="true"
         android:onClick="@{()->fileClickListener.onFileClick(turnpointFile, position)}"
-        android:layout_marginTop="@dimen/margin_double">
+        android:layout_marginTop="@dimen/margin_double"
+        android:layout_marginBottom="@dimen/margin_double"
+        android:background="?selectableItemBackground">
 
         <TextView
             android:id="@+id/turnpoint_select_state"

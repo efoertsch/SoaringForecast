@@ -205,6 +205,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         if (turnpointNumber == 0){
             fromTaskTurnpoint = taskTurnpointList.get(0);
             fromTaskTurnpoint.setDistanceFromPriorTurnpoint(0);
+            fromTaskTurnpoint.setDistanceFromStartingPoint(0);
             return;
         }
         else {

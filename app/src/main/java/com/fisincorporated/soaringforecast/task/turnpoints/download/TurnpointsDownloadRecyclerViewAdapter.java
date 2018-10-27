@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.task.download;
+package com.fisincorporated.soaringforecast.task.turnpoints.download;
 
 import android.databinding.DataBindingUtil;
 import android.view.LayoutInflater;

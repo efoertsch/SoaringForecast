@@ -9,13 +9,9 @@ import com.fisincorporated.soaringforecast.retrofit.TurnpointFileRetrofit;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -46,30 +42,6 @@ public class TurnpointsImporter {
         return this;
     }
 
-    public List<File> getDownloadedCupFileList() {
-        ArrayList<File> cupFileList = new ArrayList<>();
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File filesInDirectory[] = path.listFiles(new ImageFileFilter());
-        cupFileList.addAll(new ArrayList<>(Arrays.asList(filesInDirectory)));
-        return cupFileList;
-    }
-
-    public class ImageFileFilter implements FileFilter {
-        private final String[] cupFileExtensions = new String[]{"cup"};
-
-        public boolean accept(File file) {
-            for (String extension : cupFileExtensions) {
-                if (file.getName().toLowerCase().endsWith(extension)) {
-                    // make sure not version with control number placed before name.
-                    if (file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm")) {
-                        return false;
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
 
     public Completable importTurnpointFileCompletable(final String fileName) {
         return new Completable() {

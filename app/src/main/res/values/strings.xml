@@ -200,6 +200,7 @@
     <string name="distance">Distance:</string>
     <string name="task">Task:</string>
     <string name="turnpoints">Turnpoints:</string>
+    <string name="turnpoints_no_hyphen">Turnpoints</string>
     <string name= "start">Start</string>
     <string name="display_km_from_prior_turnpoint">From prior point: %.1fkm</string>
     <string name="display_km_from_start">From start: %.1fkm</string>
@@ -208,6 +209,11 @@
     <string name="import_successful">Import of %1s successful.</string>
     <string name="forecast_menu_select_task">Select Task</string>
     <string name="forecast_menu_clear_task">Clear Task</string>
+    <string name="turnpoint_menu_clear_turnpoint_database">Clear Turnpoint Database</string>
+    <string name="turnpoint_menu_import_from_download">Custom import</string>
+    <string name="turnpoints_cleared">Turnpoints Cleared</string>
+    <string name="turnpoints_have_been_cleared">All turnpoints have been deleted. Defined tasks are unaffected.</string>
+    <string name="clearing_turnpoints_information">This option will delete all turnpoints. Turnpoints in defined tasks will not be affected. Do you wish to proceed?</string>
 
 
 </resources>

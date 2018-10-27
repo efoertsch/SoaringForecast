@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.task.seeyou;
+package com.fisincorporated.soaringforecast.task.turnpoints.seeyou;
 
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericViewHolder;
 import com.fisincorporated.soaringforecast.databinding.SeeYouFileView;

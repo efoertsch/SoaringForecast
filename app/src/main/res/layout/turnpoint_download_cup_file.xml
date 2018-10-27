@@ -14,7 +14,7 @@
 
         <variable
             name="fileClickListener"
-            type="com.fisincorporated.soaringforecast.task.download.TurnpointsDownloadRecyclerViewAdapter"/>
+            type="com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadRecyclerViewAdapter"/>
 
     </data>
 
@@ -27,6 +27,7 @@
         android:onClick="@{()->fileClickListener.onFileClick(cupFile, position)}"
         android:text="@{cupFile.getName}"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="sterling7.cup"/>
+        tools:text="sterling7.cup"
+        android:background="?selectableItemBackground"/>
 
 </layout>

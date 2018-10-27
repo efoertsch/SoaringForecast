@@ -27,6 +27,7 @@
         android:onClick="@{()->clickListener.onItemClick(turnpoint, position)}"
         android:clickable="true"
         android:focusable="true"
+        android:background="?selectableItemBackground"
         >
 
         <TextView

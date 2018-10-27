@@ -46,6 +46,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Sterling Start-Claremont-Southbridge-Sterling Start"
+            android:background="?selectableItemBackground"
             />
 
         <ImageView
@@ -58,6 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_mode_edit"
+            android:background="?selectableItemBackground"
             />
 
 

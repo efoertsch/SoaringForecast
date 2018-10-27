@@ -7,10 +7,10 @@ import com.fisincorporated.soaringforecast.satellite.SatelliteImageFragment;
 import com.fisincorporated.soaringforecast.settings.SettingsPreferenceFragment;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
-import com.fisincorporated.soaringforecast.task.download.TurnpointsDownloadFragment;
+import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
 import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
-import com.fisincorporated.soaringforecast.task.seeyou.SeeYouImportFragment;
+import com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
