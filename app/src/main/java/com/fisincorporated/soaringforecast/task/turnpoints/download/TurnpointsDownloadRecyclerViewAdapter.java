@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.task.download;
+package com.fisincorporated.soaringforecast.task.turnpoints.download;
 
 import android.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
@@ -14,30 +14,25 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.List;
 
-public class TurnpointsImportRecyclerViewAdapter extends GenericRecyclerViewAdapter<File, TurnpointsImportViewHolder> {
+public class TurnpointsDownloadRecyclerViewAdapter extends GenericRecyclerViewAdapter<File, TurnpointsDownloadViewHolder> {
 
-    public TurnpointsImportRecyclerViewAdapter(List<File> items){
+    public TurnpointsDownloadRecyclerViewAdapter(List<File> items){
         super(items);
     }
 
     @Override
-    public TurnpointsImportViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TurnpointsDownloadViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CupFileView binding = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.getContext()), R.layout.turnpoint_import_cup_file, parent, false);
-        return new TurnpointsImportViewHolder(binding);
+                LayoutInflater.from(parent.getContext()), R.layout.turnpoint_download_cup_file, parent, false);
+        return new TurnpointsDownloadViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(TurnpointsImportViewHolder holder, int position) {
+    public void onBindViewHolder(TurnpointsDownloadViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         //TODO get better way to do following
         holder.getViewDataBinding().setFileClickListener(this);
     }
-
-    public void updateFileList(List<File> files){
-        setItems(files,true);
-    }
-
 
     public void onFileClick(File file, Integer position){
         EventBus.getDefault().post(new ImportFile(file));

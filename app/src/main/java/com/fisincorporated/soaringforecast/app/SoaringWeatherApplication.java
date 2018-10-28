@@ -11,7 +11,7 @@ import com.fisincorporated.soaringforecast.dagger.AppModule;
 import com.fisincorporated.soaringforecast.dagger.DaggerDiComponent;
 import com.fisincorporated.soaringforecast.dagger.DiComponent;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.workmanager.DownloadAirportsWorker;
+import com.fisincorporated.soaringforecast.workmanager.AirportsImportWorker;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -67,7 +67,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
 
     private void submitAirportDownloadJob() {
         OneTimeWorkRequest downloadWork =
-                new OneTimeWorkRequest.Builder(DownloadAirportsWorker.class)
+                new OneTimeWorkRequest.Builder(AirportsImportWorker.class)
                         .build();
         WorkManager.getInstance().enqueue(downloadWork);
 

@@ -4,7 +4,7 @@ package com.fisincorporated.soaringforecast.dagger;
 
 import android.content.Context;
 
-import com.fisincorporated.soaringforecast.workmanager.DownloadAirportsWorker;
+import com.fisincorporated.soaringforecast.workmanager.AirportsImportWorker;
 
 import javax.inject.Singleton;
 
@@ -12,21 +12,21 @@ import dagger.BindsInstance;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {DownloadAirportWorkerModule.class
+@Component(modules = {OkHttpClientModule.class
         , ChannelIdModule.class
         , AppRepositoryModule.class})
-public interface DownloadAirportWorkerComponent {
+public interface AirportsImportWorkerComponent {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
         Builder context(Context context);
 
-        DownloadAirportWorkerComponent build();
+        AirportsImportWorkerComponent build();
     }
 
     // allow to inject into our Main class
     // method name not important
-    void inject(DownloadAirportsWorker downloadAirportsWorker);
+    void inject(AirportsImportWorker airportsImportWorker);
 
 }

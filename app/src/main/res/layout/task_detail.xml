@@ -7,7 +7,7 @@
 
         <variable
             name="position"
-            type="Integer"/>
+            type="int"/>
 
         <variable
             name="task"
@@ -41,11 +41,12 @@
             android:gravity="center_vertical"
             android:onClick="@{()->clickListener.onItemClick(task, position)}"
             android:text="@{task.taskName}"
-            android:textSize="@dimen/text_size_large"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toStartOf="@+id/task_edit_edit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Sterling Start-Claremont-Southbridge-Sterling Start"
+            android:background="?selectableItemBackground"
             />
 
         <ImageView
@@ -58,6 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_mode_edit"
+            android:background="?selectableItemBackground"
             />
 
 

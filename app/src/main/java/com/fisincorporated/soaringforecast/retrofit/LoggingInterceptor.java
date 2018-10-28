@@ -41,8 +41,7 @@ public class LoggingInterceptor implements Interceptor {
         if (!contentType.startsWith("image")) {
             String bodyString = response.body().string();
             if (BuildConfig.DEBUG) {
-                Timber.d("response only" + "\n" + bodyString);
-
+            //    Timber.d("response only" + "\n" + bodyString);
                 Timber.d("response" + "\n" + responseLog + "\n" + bodyString);
             }
             return response.newBuilder()

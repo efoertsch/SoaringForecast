@@ -170,14 +170,17 @@
     <string name="no_turnpoint_files_found">No turnpoint files found. Would you like to download turnpoint files?</string>
     <string name="need_to_download_cup_files">A browser will be started pointing to the Worldwide Soaring Turnpoint Exchange.\nDrill down to the needed SeeYou(.cup) turnpoint file and download.\n NOTE: Select the SeeYou file(s) that are *NOT* SeeYou® [control point number placed before the name].\nReturn to the Soaring app when downloads completed.</string>
     <string name="no_cup_files_found">Missing Turnpoints</string>
+    <string name="importable_files">Importable Files</string>
     <string name="start_browser">Start Browser</string>
     <string name="cancel">Cancel</string>
     <string name="but_first">But First...</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="started_turnpoints_processing">Started processing turnpoints</string>
+    <string name="number_turnpoints_imported">%1$d turnpoints imported.</string>
     <string name="turnpoints_processed_ok">Turnpoints processed ok</string>
-    <string name="turnpoint_database_load_oops">Oops. An error occured during turpoint import. Did you download correct version of SeeYou cup file?</string>
+    <string name="turnpoints_import_from_download_oops">Oops. An error occured during turpoint import. Did you download correct version of SeeYou cup file?</string>
+    <string name="turnpoint_database_load_oops">Oops. An error occured during turnpoint import. Newer version of turnpoint file may be available.</string>
     <string name="turnpoint_search">Turnpoint Search</string>
     <string name="search_for_turnpoints_hint">Name, description, ...</string>
     <string name="added_to_task">%1$s added to task</string>
@@ -199,6 +202,7 @@
     <string name="distance">Distance:</string>
     <string name="task">Task:</string>
     <string name="turnpoints">Turnpoints:</string>
+    <string name="turnpoints_no_hyphen">Turnpoints</string>
     <string name= "start">Start</string>
     <string name="display_km_from_prior_turnpoint">From prior point: %.1fkm</string>
     <string name="display_km_from_start">From start: %.1fkm</string>
@@ -207,6 +211,11 @@
     <string name="import_successful">Import of %1s successful.</string>
     <string name="forecast_menu_select_task">Select Task</string>
     <string name="forecast_menu_clear_task">Clear Task</string>
+    <string name="turnpoint_menu_clear_turnpoint_database">Clear Turnpoint Database</string>
+    <string name="turnpoint_menu_import_from_download">Custom import</string>
+    <string name="turnpoints_cleared">Turnpoints Cleared</string>
+    <string name="turnpoints_have_been_cleared">All turnpoints have been deleted. Defined tasks are unaffected.</string>
+    <string name="clearing_turnpoints_information">This option will delete all turnpoints. Turnpoints in defined tasks will not be affected. Do you wish to proceed?</string>
 
 
 </resources>

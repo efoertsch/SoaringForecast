@@ -25,7 +25,7 @@ import timber.log.Timber;
 /**
  * Download the airport list
  * Only process US airports
- * Read file and process in Realm database
+ * Read file and process in Room database
  */
 public class AirportListDownloader {
 

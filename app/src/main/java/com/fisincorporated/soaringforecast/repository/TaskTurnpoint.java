@@ -28,6 +28,7 @@ public class TaskTurnpoint {
     private String code = "";
 
     // For convenience store lat/long so can recalc distances w/o having to get it from turnpoint table
+    // Also in case turnpoints deleted still can plot task
     private float latitudeDeg;
 
     private float longitudeDeg;

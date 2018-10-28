@@ -166,7 +166,7 @@ public class AppModule {
         return satelliteImageTypes;
     }
 
-    @Provides
+    @Provides @Named("interceptor")
     @Singleton
     public OkHttpClient getOkHttpClient(Interceptor interceptor) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -179,7 +179,7 @@ public class AppModule {
         return httpClient.build();
     }
 
-    @Provides
+    @Provides @Named("no_interceptor")
     @Singleton
     public OkHttpClient getOkHttpClientNoInterceptor() {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();

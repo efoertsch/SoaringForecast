@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.task.download;
+package com.fisincorporated.soaringforecast.task.turnpoints.download;
 
 
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericViewHolder;
@@ -6,11 +6,11 @@ import com.fisincorporated.soaringforecast.databinding.CupFileView;
 
 import java.io.File;
 
-public class TurnpointsImportViewHolder extends GenericViewHolder<File, CupFileView> {
+public class TurnpointsDownloadViewHolder extends GenericViewHolder<File, CupFileView> {
 
     private CupFileView viewDataBinding;
 
-    TurnpointsImportViewHolder(CupFileView bindingView) {
+    TurnpointsDownloadViewHolder(CupFileView bindingView) {
         super(bindingView);
         viewDataBinding = bindingView;
     }

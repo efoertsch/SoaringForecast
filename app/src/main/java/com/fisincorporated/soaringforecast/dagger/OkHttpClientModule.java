@@ -10,7 +10,7 @@ import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
 @Module
-public class DownloadAirportWorkerModule {
+public class OkHttpClientModule {
 
     @Provides
     @Singleton
@@ -24,5 +24,7 @@ public class DownloadAirportWorkerModule {
         return httpClient.build();
 
     }
+
+
 
 }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="SeeYouFileView">
+
+        <variable
+            name="position"
+            type="int"/>
+
+        <variable
+            name="turnpointFile"
+            type="com.fisincorporated.soaringforecast.task.json.TurnpointFile"/>
+
+        <variable
+            name="fileClickListener"
+            type="com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportRecyclerViewAdapter"/>
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/turnpoint_select_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="@{()->fileClickListener.onFileClick(turnpointFile, position)}"
+        android:paddingTop="@dimen/margin_double"
+        android:paddingBottom="@dimen/margin_double">
+
+        <TextView
+            android:id="@+id/turnpoint_select_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:text="@{turnpointFile.getState}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="MA"/>
+
+        <TextView
+            android:id="@+id/turnpoint_select_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_double"
+            android:text="@{turnpointFile.getLocation}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintStart_toEndOf="@+id/turnpoint_select_state"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sterling"/>
+
+        <TextView
+            android:id="@+id/turnpoint_select_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_double"
+            android:text="@{turnpointFile.getDate}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintStart_toEndOf="@+id/turnpoint_select_location"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="09/02/2016"/>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

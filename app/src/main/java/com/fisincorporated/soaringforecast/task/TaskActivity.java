@@ -12,15 +12,17 @@ import com.fisincorporated.soaringforecast.messages.AddNewTaskRefused;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTask;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTaskRefused;
 import com.fisincorporated.soaringforecast.messages.EditTask;
+import com.fisincorporated.soaringforecast.messages.GoToDownloadImport;
 import com.fisincorporated.soaringforecast.messages.GoToTurnpointImport;
 import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SelectedTask;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.task.download.TurnpointsImportFragment;
 import com.fisincorporated.soaringforecast.task.edit.EditTaskFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
 import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
+import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadFragment;
+import com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -67,9 +69,8 @@ public class TaskActivity extends MasterActivity {
             switch (turnpointOp) {
                 case LIST_TASKS:
                     return getTaskListFragment();
-                case EDIT_TASK:
                 case TURNPOINT_IMPORT:
-                    return getTurnpointImportFragment();
+                    return getSeeYouImportFragment();
                 default:
                     return getTaskListFragment();
             }
@@ -77,8 +78,12 @@ public class TaskActivity extends MasterActivity {
         return getTaskListFragment();
     }
 
-    private Fragment getTurnpointImportFragment() {
-        return TurnpointsImportFragment.newInstance();
+    private Fragment getSeeYouImportFragment() {
+        return SeeYouImportFragment.newInstance();
+    }
+
+    private Fragment getTurnpointsDownloadFragment() {
+        return TurnpointsDownloadFragment.newInstance();
     }
 
     private Fragment getTaskListFragment() {
@@ -114,9 +119,13 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToTurnpointImport event) {
-        displayFragment(getTurnpointImportFragment(),true);
+        displayFragment(getSeeYouImportFragment(),true);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(GoToDownloadImport event) {
+        displayFragment(getTurnpointsDownloadFragment(), true);
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SelectedTask selectedTask){

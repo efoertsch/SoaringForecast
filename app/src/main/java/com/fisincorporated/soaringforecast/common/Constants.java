@@ -21,6 +21,9 @@ public class Constants {
     }
 
     public static final String TURNPOINT_FILE_NAME = "TURNPOINT_FILE_NAME ";
+    public static final String TURNPOINT_FILE_URL = "TURNPOINT_FILE_URL";
+
+    public static final String NEWENGLAND_REGION = "NewEngland";
 
 
 

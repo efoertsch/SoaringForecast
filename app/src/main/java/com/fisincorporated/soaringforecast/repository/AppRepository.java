@@ -2,13 +2,21 @@ package com.fisincorporated.soaringforecast.repository;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Environment;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
 import com.fisincorporated.soaringforecast.soaring.json.Soundings;
+import com.fisincorporated.soaringforecast.task.json.TurnpointFile;
+import com.fisincorporated.soaringforecast.task.json.TurnpointFiles;
+import com.fisincorporated.soaringforecast.task.json.TurnpointRegion;
 import com.fisincorporated.soaringforecast.utils.JSONResourceReader;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.Completable;
@@ -91,6 +99,72 @@ public class AppRepository {
         return (new JSONResourceReader(context.getResources(), R.raw.soundings)).constructUsingGson(Soundings.class).getSoundingLocations();
     }
 
+    // ----------- Turnpoints in Download directory
+
+    public Maybe<List<File>> getDownloadedCupFileList() {
+        Maybe<List<File>> maybe =
+                Maybe.create(emitter -> {
+                    try {
+                        ArrayList<File> cupFileList = new ArrayList<>();
+                        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                        File filesInDirectory[] = path.listFiles(new AppRepository.ImageFileFilter());
+                        cupFileList.addAll(new ArrayList<>(Arrays.asList(filesInDirectory)));
+                        emitter.onSuccess(cupFileList);
+                        emitter.onComplete();
+                    } catch (Exception e) {
+                        emitter.onError(e);
+                    }
+                });
+        return maybe;
+    }
+
+    public class ImageFileFilter implements FileFilter {
+        private final String[] cupFileExtensions = new String[]{"cup"};
+
+        public boolean accept(File file) {
+            for (String extension : cupFileExtensions) {
+                if (file.getName().toLowerCase().endsWith(extension)) {
+                    // make sure not version with control number placed before name.
+                    if (file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm")) {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    // ----------- Turnpoint download (SeeYou cup files) ------------------
+    public Maybe<List<TurnpointFile>> getTurnpointFiles(String regionName) {
+        Maybe<List<TurnpointFile>> maybe =
+                Maybe.create(emitter -> {
+                    try {
+                        List<TurnpointRegion> turnpointRegions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
+                                .constructUsingGson((TurnpointFiles.class)).getTurnpointRegions();
+                        if (turnpointRegions != null && !turnpointRegions.isEmpty()) {
+                            emitter.onSuccess(getRegionFiles(turnpointRegions, regionName));
+                        } else {
+                            emitter.onComplete();
+                        }
+                    } catch (Exception e) {
+                        emitter.onError(e);
+                    }
+                });
+        return maybe;
+    }
+
+    private List<TurnpointFile> getRegionFiles
+            (List<TurnpointRegion> turnpointRegions, String regionName) {
+        for (TurnpointRegion turnpointRegion : turnpointRegions) {
+            if (turnpointRegion.getRegion().equals(regionName)) {
+                return turnpointRegion.getTurnpointFiles();
+            }
+        }
+        return new ArrayList<>();
+
+    }
+
     // --------- Turnpoints -----------------
     public long insertTurnpoint(Turnpoint turnpoint) {
         return turnpointDao.insert(turnpoint);
@@ -112,8 +186,17 @@ public class AppRepository {
         return turnpointDao.getTurnpoint(title, code);
     }
 
-    public int deleteAllTurnpoints() {
-        return turnpointDao.deleteAllTurnpoints();
+    public Single<Integer> deleteAllTurnpoints() {
+        return Single.create((SingleOnSubscribe<Integer>) emitter -> {
+            try {
+                int numberDeleted = turnpointDao.deleteAllTurnpoints();
+                emitter.onSuccess(numberDeleted);
+            } catch (Throwable t) {
+                emitter.onError(t);
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
     }
 
     public Single<Integer> getCountOfTurnpoints() {
@@ -183,7 +266,6 @@ public class AppRepository {
         return completable;
     }
 
-
     // -----------Task Turnpoints -----------
     public Maybe<List<TaskTurnpoint>> getTaskTurnpionts(long taskId) {
         return taskTurnpointDao.getTaskTurnpoints(taskId);
@@ -206,7 +288,6 @@ public class AppRepository {
         return completable;
     }
 
-
     public Completable deleteTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
         Completable completable = Completable.fromAction(() -> {
             try {
@@ -222,7 +303,8 @@ public class AppRepository {
 
     // ---------- Update Task and Turnpoints --------------------------------
     @SuppressLint("CheckResult")
-    public void updateTaskAndTurnpoints(Task task, List<TaskTurnpoint> taskTurnpoints, List<TaskTurnpoint> deleteTurnpoints){
+    public void updateTaskAndTurnpoints(Task
+                                                task, List<TaskTurnpoint> taskTurnpoints, List<TaskTurnpoint> deleteTurnpoints) {
         updateTask(task)
                 .andThen(updateTaskTurnpoints(taskTurnpoints))
                 .andThen(deleteTaskTurnpoints(deleteTurnpoints))
@@ -234,7 +316,6 @@ public class AppRepository {
                     // TODO Display some error. But how?
 
                 });
-
 
     }
 

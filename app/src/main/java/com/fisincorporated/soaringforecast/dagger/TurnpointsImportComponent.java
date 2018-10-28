@@ -11,22 +11,21 @@ import dagger.Component;
 
 
 @Singleton
-@Component(modules = { TurnpointProcessorModule.class
+@Component(modules = { TurnpointsImporterModule.class
+        ,OkHttpClientModule.class
         , ChannelIdModule.class
         , AppRepositoryModule.class})
 
-public interface TurnpointsImportWorkerComponent {
+public interface TurnpointsImportComponent {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
         Builder context(Context context);
 
-        TurnpointsImportWorkerComponent build();
+        TurnpointsImportComponent build();
     }
 
-    // allow to inject into our Main class
-    // method name not important
     void inject(TurnpointsImportWorker turnpointsImportWorker);
 
 }
