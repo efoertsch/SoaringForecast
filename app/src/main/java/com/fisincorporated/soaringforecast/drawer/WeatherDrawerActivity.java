@@ -247,7 +247,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SnackbarMessage message) {
         Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(),
-                Snackbar.LENGTH_SHORT)
+                Snackbar.LENGTH_INDEFINITE)
                 .show();
     }
 

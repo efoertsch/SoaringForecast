@@ -8,7 +8,7 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.airport.AirportListDownloader;
-import com.fisincorporated.soaringforecast.dagger.DaggerDownloadAirportWorkerComponent;
+import com.fisincorporated.soaringforecast.dagger.DaggerAirportsImportWorkerComponent;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 
 import javax.inject.Inject;
@@ -17,7 +17,7 @@ import javax.inject.Named;
 import androidx.work.Worker;
 import okhttp3.OkHttpClient;
 
-public class DownloadAirportsWorker extends Worker {
+public class AirportsImportWorker extends Worker {
 
     private static final int NOTIFICATION_ID = 1234;
 
@@ -43,7 +43,7 @@ public class DownloadAirportsWorker extends Worker {
     public Result doWork() {
 
         context = getApplicationContext();
-        DaggerDownloadAirportWorkerComponent.builder().context(context).build().inject(this);
+        DaggerAirportsImportWorkerComponent.builder().context(context).build().inject(this);
 
         notificationManager = NotificationManagerCompat.from(context);
         displayStartNotification();
@@ -59,7 +59,7 @@ public class DownloadAirportsWorker extends Worker {
     private void displayStartNotification() {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                //.setSmallIcon(R.drawable.notification_icon)
+                .setSmallIcon(R.drawable.glider_notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(context.getString(R.string.download_of_airports_started))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -69,7 +69,7 @@ public class DownloadAirportsWorker extends Worker {
     private void displayCompletionNotification(boolean loadedOK) {
         Context context = getApplicationContext();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                //.setSmallIcon(R.drawable.notification_icon)
+                .setSmallIcon(R.drawable.glider_notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(loadedOK ? context.getString(R.string.airport_database_loaded_ok) :
                         context.getString(R.string.airport_database_load_oops))

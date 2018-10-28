@@ -6,7 +6,7 @@
 
         <variable
             name="position"
-            type="Integer"/>
+            type="int"/>
 
         <variable
             name="cupFile"
@@ -22,12 +22,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:background="?selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:onClick="@{()->fileClickListener.onFileClick(cupFile, position)}"
+        android:paddingTop="@dimen/margin_double"
+        android:paddingBottom="@dimen/margin_double"
         android:text="@{cupFile.getName}"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="sterling7.cup"
-        android:background="?selectableItemBackground"/>
+        tools:text="sterling7.cup"/>
 
 </layout>

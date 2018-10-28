@@ -51,4 +51,8 @@ public class TurnpointFile {
         this.date = date;
     }
 
+    public String getRelativeUrl(){
+        return new StringBuilder().append(getLocation()).append("/").append(getFilename()).toString();
+    }
+
 }

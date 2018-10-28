@@ -37,7 +37,7 @@ public class TurnpointsImporter {
         this.appRepository = appRepository;
     }
 
-    public TurnpointsImporter setOkHttpClient(OkHttpClient okHttpClient){
+    public TurnpointsImporter setOkHttpClient(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
         return this;
     }
@@ -91,7 +91,6 @@ public class TurnpointsImporter {
     }
 
     /**
-     *
      * @param responseBody
      * @return
      * @throws IOException

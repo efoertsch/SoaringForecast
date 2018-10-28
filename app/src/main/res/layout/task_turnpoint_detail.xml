@@ -9,7 +9,7 @@
 
         <variable
             name="position"
-            type="Integer"/>
+            type="int"/>
 
         <variable
             name="taskTurnpoint"
@@ -37,7 +37,7 @@
             android:focusable="true"
             android:onClick="@{()->clickListener.onItemClick(taskTurnpoint, position)}"
             android:text="@{taskTurnpoint.title}"
-            android:textSize="@dimen/text_size_large"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toStartOf="@id/task_turnpoint_start_finish"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -54,7 +54,7 @@
             android:focusable="true"
             android:ellipsize="end"
             android:text='@{position == 0 ?  @string/start : (taskTurnpoint.lastTurnpoint ? @string/finish : "" )}'
-            android:textSize="@dimen/text_size_large"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Start"/>
@@ -66,7 +66,7 @@
             android:layout_marginTop="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_double"
             android:text="@{@string/display_km_from_prior_turnpoint(taskTurnpoint.distanceFromPriorTurnpoint)}"
-            android:textSize="@dimen/text_size_large"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_name"
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"
@@ -80,7 +80,7 @@
             android:layout_marginTop="@dimen/margin_standard"
             android:layout_marginEnd="@dimen/margin_standard"
             android:text="@{@string/display_km_from_start(taskTurnpoint.distanceFromStartingPoint)}"
-            android:textSize="@dimen/text_size_large"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_distance_from_prior_turnpoint"
             android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"

@@ -1,5 +1,6 @@
 package com.fisincorporated.soaringforecast.task.turnpoints.seeyou;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -11,31 +12,29 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
-import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericRecyclerViewAdapter;
 import com.fisincorporated.soaringforecast.messages.GoToDownloadImport;
 import com.fisincorporated.soaringforecast.messages.ImportSeeYouFile;
-import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.task.json.TurnpointFile;
 import com.fisincorporated.soaringforecast.task.turnpoints.CommonTurnpointsImportFragment;
-import com.fisincorporated.soaringforecast.workmanager.TurnpointsImportWorker;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.State;
-import androidx.work.WorkManager;
-import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
 
 public class SeeYouImportFragment extends CommonTurnpointsImportFragment<TurnpointFile, SeeYouImportViewHolder> {
 
-    private CompositeDisposable disposable = new CompositeDisposable();
+    @Inject @Named("interceptor")
+    OkHttpClient okHttpClient;
 
     @Inject
     public SeeYouImportFragment() {
@@ -50,22 +49,19 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        return super.onCreateView(inflater,container,savedInstanceState);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-
-     protected GenericRecyclerViewAdapter<TurnpointFile, SeeYouImportViewHolder> getRecyclerViewAdapter()  {
+    protected GenericRecyclerViewAdapter<TurnpointFile, SeeYouImportViewHolder> getRecyclerViewAdapter() {
         return new SeeYouImportRecyclerViewAdapter(null);
     }
 
-
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         turnpointsImporterViewModel.getTurnpointFiles().observe(this, turnpointFiles -> {
             recyclerViewAdapter.setItems(turnpointFiles, true);
         });
-
     }
 
     @Override
@@ -73,7 +69,6 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
         super.onPause();
         turnpointsImporterViewModel.getTurnpointFiles().removeObservers(this);
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -109,20 +104,24 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
         alertDialog.show();
     }
 
+    @SuppressLint("CheckResult")
     private void clearTurnpointDatabase() {
         showProgressBar(true);
         turnpointsImporterViewModel.clearTurnpointDatabase()
                 .subscribe(numberDeleted -> {
-            postNumberDeleted(numberDeleted);
+                    postNumberDeleted(numberDeleted);
                     showProgressBar(false);
-         });
+                });
 
     }
 
     private void postNumberDeleted(Integer numberDeleted) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.turnpoints_no_hyphen)
-                .setMessage(R.string.turnpoints_have_been_cleared);
+                .setMessage(R.string.turnpoints_have_been_cleared)
+                .setPositiveButton(R.string.ok, (dialog, id) -> {
+                    // continue
+                });
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
@@ -132,31 +131,24 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
         EventBus.getDefault().post(new GoToDownloadImport());
     }
 
+    @SuppressLint("CheckResult")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ImportSeeYouFile importSeeYouFile) {
         showProgressBar(true);
         TurnpointFile turnpointFile = importSeeYouFile.getTurnpointFile();
-        Data.Builder builder = new Data.Builder();
-        builder.putString(Constants.TURNPOINT_FILE_URL, turnpointFile.getLocation() + "/" + turnpointFile.getFilename());
-        OneTimeWorkRequest importTurnpointFileWorker =
-                new OneTimeWorkRequest.Builder(TurnpointsImportWorker.class)
-                        .setInputData(builder.build())
-                        .build();
-        WorkManager.getInstance().enqueue(importTurnpointFileWorker);
-        WorkManager.getInstance().getStatusById(importTurnpointFileWorker.getId())
-                .observe(this, workStatus -> {
-                    // Do something with the status
-                    if (workStatus != null && workStatus.getState().isFinished() && workStatus.getState().equals(State.SUCCEEDED)) {
-                        showProgressBar(false);
-                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_successful, turnpointFile.getLocation())));
-                        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
-                    } else {
-                        if (workStatus != null && workStatus.getState().equals(State.FAILED)) {
+        Single<Integer> single = turnpointsImporterViewModel.setOkHttpClient(okHttpClient)
+                .importTurnpointsFromUrl(turnpointFile.getRelativeUrl());
+        single.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(numberTurnpoints -> {
                             showProgressBar(false);
-                            EventBus.getDefault().post(new SnackbarMessage(getString(R.string.import_failed, turnpointFile.getLocation())));
-                        }
-                    }
-                });
-
+                            post(new SnackbarMessage(getString(R.string.number_turnpoints_imported, numberTurnpoints)));
+                        },
+                        t -> {
+                            showProgressBar(false);
+                            post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops)));
+                            // TODO mail crash
+                        });
     }
+
 }

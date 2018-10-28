@@ -88,4 +88,8 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
         turnpointsImportView.turnpointImportsProgressBar.setVisibility(setVisible ? View.VISIBLE: View.GONE) ;
     }
 
+    protected void post(Object object){
+        EventBus.getDefault().post(object);
+    }
+
 }

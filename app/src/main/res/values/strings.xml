@@ -177,8 +177,10 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="started_turnpoints_processing">Started processing turnpoints</string>
+    <string name="number_turnpoints_imported">%1$d turnpoints imported.</string>
     <string name="turnpoints_processed_ok">Turnpoints processed ok</string>
-    <string name="turnpoint_database_load_oops">Oops. An error occured during turpoint import. Did you download correct version of SeeYou cup file?</string>
+    <string name="turnpoints_import_from_download_oops">Oops. An error occured during turpoint import. Did you download correct version of SeeYou cup file?</string>
+    <string name="turnpoint_database_load_oops">Oops. An error occured during turnpoint import. Newer version of turnpoint file may be available.</string>
     <string name="turnpoint_search">Turnpoint Search</string>
     <string name="search_for_turnpoints_hint">Name, description, ...</string>
     <string name="added_to_task">%1$s added to task</string>

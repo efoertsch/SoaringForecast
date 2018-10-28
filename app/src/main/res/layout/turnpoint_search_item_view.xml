@@ -7,7 +7,7 @@
 
         <variable
             name="position"
-            type="Integer"/>
+            type="int"/>
 
         <variable
             name="clickListener"

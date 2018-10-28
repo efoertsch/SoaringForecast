@@ -36,22 +36,21 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract AirportListFragment bindAirportListFragment();
 
-    // ---- Turnpoints ----
+    // ---- Task/Turnpoints ----
     @ContributesAndroidInjector(modules = {})
     abstract TaskActivity bindTaskActivity();
-
-    @ContributesAndroidInjector(modules = {})
-    abstract TurnpointsDownloadFragment bindTurnpointsImportFragment();
-
-    @ContributesAndroidInjector(modules = {})
-    abstract TurnpointSearchFragment bindTurnpointSearchFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract TaskListFragment bindTaskListFragment();
 
     @ContributesAndroidInjector(modules = {})
+    abstract TurnpointSearchFragment bindTurnpointSearchFragment();
+
+    @ContributesAndroidInjector(modules = {})
     abstract SeeYouImportFragment bindSeeYouImportFragment();
 
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointsDownloadFragment bindTurnpointsImportFragment();
 
 }
 

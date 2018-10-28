@@ -83,7 +83,7 @@ public class TurnpointsImportWorker extends Worker {
     private void displayStartNotification() {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                //.setSmallIcon(R.drawable.notification_icon)
+                .setSmallIcon(R.drawable.glider_notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(context.getString(R.string.started_turnpoints_processing))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -93,7 +93,7 @@ public class TurnpointsImportWorker extends Worker {
     private void displayCompletionNotification(boolean loadedOK) {
         Context context = getApplicationContext();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                //.setSmallIcon(R.drawable.notification_icon)
+                .setSmallIcon(R.drawable.glider_notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(loadedOK ? context.getString(R.string.turnpoints_processed_ok) :
                         context.getString(R.string.turnpoint_database_load_oops))

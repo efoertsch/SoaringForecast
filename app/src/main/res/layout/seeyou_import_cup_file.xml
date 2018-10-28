@@ -7,7 +7,7 @@
 
         <variable
             name="position"
-            type="Integer"/>
+            type="int"/>
 
         <variable
             name="turnpointFile"
@@ -23,12 +23,12 @@
         android:id="@+id/turnpoint_select_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:onClick="@{()->fileClickListener.onFileClick(turnpointFile, position)}"
-        android:layout_marginTop="@dimen/margin_double"
-        android:layout_marginBottom="@dimen/margin_double"
-        android:background="?selectableItemBackground">
+        android:paddingTop="@dimen/margin_double"
+        android:paddingBottom="@dimen/margin_double">
 
         <TextView
             android:id="@+id/turnpoint_select_state"
