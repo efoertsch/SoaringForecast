@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.satellite;
+package com.fisincorporated.soaringforecast.satellite.noaa;
 
 import android.animation.ValueAnimator;
 import android.databinding.BaseObservable;
@@ -18,9 +18,10 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.app.ViewModelLifeCycle;
 import com.fisincorporated.soaringforecast.common.TouchImageView;
-import com.fisincorporated.soaringforecast.databinding.SatelliteImageBinding;
+import com.fisincorporated.soaringforecast.databinding.NoaaSatelliteImageBinding;
 import com.fisincorporated.soaringforecast.messages.DataLoadCompleteEvent;
 import com.fisincorporated.soaringforecast.messages.DataLoadingEvent;
+import com.fisincorporated.soaringforecast.satellite.SatelliteImageDownloader;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImage;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageInfo;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
@@ -36,11 +37,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 @InverseBindingMethods({@InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
-public class SatelliteViewModel extends BaseObservable implements ViewModelLifeCycle {
+public class NoaaSatelliteViewModel extends BaseObservable implements ViewModelLifeCycle {
 
-    private static final String TAG = SatelliteViewModel.class.getSimpleName();
+    private static final String TAG = NoaaSatelliteViewModel.class.getSimpleName();
 
-    private SatelliteImageBinding viewDataBinding;
+    private NoaaSatelliteImageBinding viewDataBinding;
     private TouchImageView satelliteImageView;
     private TextView utcTimeTextView;
     private TextView localTimeTextView;
@@ -70,10 +71,10 @@ public class SatelliteViewModel extends BaseObservable implements ViewModelLifeC
     public AppPreferences appPreferences;
 
     @Inject
-    SatelliteViewModel() {
+    NoaaSatelliteViewModel() {
     }
 
-    public SatelliteViewModel setView(View view) {
+    public NoaaSatelliteViewModel setView(View view) {
         View bindingView = view.findViewById(R.id.satellite_image_layout);
         selectedSatelliteRegion = appPreferences.getSatelliteRegion();
         selectedSatelliteImageType = appPreferences.getSatelliteImageType();

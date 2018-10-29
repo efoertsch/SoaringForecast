@@ -25,7 +25,7 @@ import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.messages.AddAirportEvent;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.satellite.SatelliteImageFragment;
+import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
@@ -155,8 +155,11 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_display_options:
                 displaySettingsActivity();
                 break;
-            case R.id.nav_menu_satellite_images:
-                displaySatelliteImages();
+            case R.id.nav_menu_noaa_satellite:
+                displayNoaaSatelliteFragment();
+                break;
+            case R.id.nav_menu_geos_satellite:
+                displayGeossSatelliteFragment();
                 break;
             case R.id.nav_menu_rasp:
                 displaySoaringForecasts();
@@ -172,6 +175,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
                 break;
             case R.id.nav_menu_import_turnpoints:
                 displayTurnpointsImport();
+                break;
         }
         drawerLayout.closeDrawers();
     }
@@ -205,9 +209,16 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         startActivity(i);
     }
 
-    private void displaySatelliteImages() {
-        SatelliteImageFragment fragment = new SatelliteImageFragment();
-        displayFragment(fragment, true);
+    private void displayNoaaSatelliteFragment() {
+        SatelliteActivity.Builder builder = SatelliteActivity.Builder.getBuilder();
+        builder.displayNoaaSatellite();
+        startActivity(builder.build(this));
+    }
+
+    private void displayGeossSatelliteFragment() {
+        SatelliteActivity.Builder builder = SatelliteActivity.Builder.getBuilder();
+        builder.displayGeosSatellite();
+        startActivity(builder.build(this));
     }
 
     private void displaySoaringForecasts() {

@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.satellite;
+package com.fisincorporated.soaringforecast.satellite.noaa;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,15 +12,20 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class SatelliteImageFragment extends DaggerFragment {
+public class NoaaSatelliteImageFragment extends DaggerFragment {
 
     @Inject
-    SatelliteViewModel satelliteViewModel;
+    NoaaSatelliteViewModel satelliteViewModel;
+
+    public static NoaaSatelliteImageFragment newInstance() {
+        NoaaSatelliteImageFragment noaaSatelliteImageFragment = new NoaaSatelliteImageFragment();
+        return noaaSatelliteImageFragment;
+    }
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.satellite_image_fragment, container, false);
+        View view =  inflater.inflate(R.layout.satellite_image_fragment_noaa, container, false);
         satelliteViewModel.setView(view);
         return view;
     }
@@ -29,7 +34,7 @@ public class SatelliteImageFragment extends DaggerFragment {
     public void onResume() {
         super.onResume();
         //set title
-        getActivity().setTitle(R.string.satellite);
+        getActivity().setTitle(R.string.noaa_satellite);
         satelliteViewModel.onResume();
 
     }

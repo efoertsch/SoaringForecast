@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data class="GeosSatelliteImageBinding">
+
+        <import type="android.view.View"/>
+
+        <import type="android.widget.Spinner"/>
+
+        <variable
+            name="viewModel"
+            type="com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteViewModel"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/geos_satellite_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+            <com.fisincorporated.soaringforecast.common.TouchImageView
+                android:id="@+id/geos_satellite_image_imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/satellite_image_time"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="@dimen/margin_standard">
+            </com.fisincorporated.soaringforecast.common.TouchImageView>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
+
+

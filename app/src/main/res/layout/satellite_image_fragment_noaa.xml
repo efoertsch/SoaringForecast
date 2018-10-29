@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:bind="http://schemas.android.com/apk/res-auto">
 
-    <data class="SatelliteImageBinding">
+    <data class="NoaaSatelliteImageBinding">
 
         <import type="android.view.View"/>
 
@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.satellite.SatelliteViewModel"/>
+            type="com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteViewModel"/>
     </data>
 
     <RelativeLayout

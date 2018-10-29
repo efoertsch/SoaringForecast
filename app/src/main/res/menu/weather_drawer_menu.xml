@@ -29,9 +29,19 @@
             />
 
         <item
-            android:id="@+id/nav_menu_satellite_images"
+            android:id="@+id/nav_menu_satellite"
             android:title="@string/action_satellite_images"
-            />
+            >
+            <menu>
+                <item
+                    android:id="@+id/nav_menu_noaa_satellite"
+                    android:title="@string/action_satellite_noaa"/>
+
+                <item
+                    android:id="@+id/nav_menu_geos_satellite"
+                    android:title="@string/action_satellite_geos"/>
+            </menu>
+        </item>
 
         <item
             android:id="@+id/nav_menu_options"

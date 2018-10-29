@@ -156,7 +156,7 @@ public class SatelliteImageDownloader {
     }
 
 
-    SatelliteImageInfo getSatelliteImageInfo() {
+    public SatelliteImageInfo getSatelliteImageInfo() {
         return satelliteImageInfo;
     }
 }
