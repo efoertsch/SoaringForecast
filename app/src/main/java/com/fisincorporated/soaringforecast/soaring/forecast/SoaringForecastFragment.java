@@ -9,13 +9,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
@@ -41,7 +38,6 @@ public class SoaringForecastFragment extends DaggerFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.soaring_forecast_rasp, container, false);
         soaringForecastDisplay.setView(this, view);
-        checkForGooglePlayServices();
         setHasOptionsMenu(true);
         return view;
     }
@@ -65,9 +61,9 @@ public class SoaringForecastFragment extends DaggerFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecast_menu, menu);
         clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
-       if ( clearTaskMenuItem != null){
-           clearTaskMenuItem.setVisible(showClearTaskMenuItem);
-       }
+        if (clearTaskMenuItem != null) {
+            clearTaskMenuItem.setVisible(showClearTaskMenuItem);
+        }
 
     }
 
@@ -120,16 +116,6 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private void displayOpacitySlider() {
         soaringForecastDisplay.displayOpacitySlider();
-    }
-
-    private void checkForGooglePlayServices() {
-        int GooglePlayAvailableCode;
-        GooglePlayAvailableCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());
-        if (ConnectionResult.SUCCESS != GooglePlayAvailableCode) {
-            Toast.makeText(getContext(), "GooglePlayServices not available",
-                    Toast.LENGTH_LONG).show();
-            getActivity().finish();
-        }
     }
 
 }

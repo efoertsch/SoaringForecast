@@ -38,7 +38,7 @@ public class GeosSatelliteFragment extends Fragment {
         super.onResume();
         //set title
         getActivity().setTitle(R.string.geos_northeast);
-        geosViewModel.setGeosImageUrl(geosGif);
+        geosViewModel.setGeosImageUrl(currentGeos);
         binding.executePendingBindings();
 
     }

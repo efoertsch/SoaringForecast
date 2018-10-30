@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,8 @@ import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -71,7 +74,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
-        displaySoaringForecasts();
+        checkForGooglePlayServices();
     }
 
     @Override
@@ -260,6 +263,28 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(),
                 Snackbar.LENGTH_INDEFINITE)
                 .show();
+    }
+
+    private void checkForGooglePlayServices() {
+        int GooglePlayAvailableCode;
+        GooglePlayAvailableCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS == GooglePlayAvailableCode) {
+            displaySoaringForecasts();
+        } else {
+            displayNoGoogleServicesAlert();
+        }
+    }
+
+    private void displayNoGoogleServicesAlert() {
+        AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle(R.string.oops)
+                .setMessage(R.string.need_google_play_services)
+                .setPositiveButton(R.string.exit, (dialog, id) -> {
+                   finish();
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
     }
 
 }

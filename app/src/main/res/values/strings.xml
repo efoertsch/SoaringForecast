@@ -218,8 +218,10 @@
     <string name="turnpoints_have_been_cleared">All turnpoints have been deleted. Defined tasks are unaffected.</string>
     <string name="clearing_turnpoints_information">This option will delete all turnpoints. Turnpoints in defined tasks will not be affected. Do you wish to proceed?</string>
     <string name="action_satellite_noaa">NOAA</string>
-    <string name="action_satellite_geos">GEOS</string>
+    <string name="action_satellite_geos">GEOS NE</string>
     <string name="geos_northeast">GEOS Northeast</string>
+    <string name="need_google_play_services">GooglePlay Services is needed but is either missing or out of date.</string>
+    <string name="exit">Exit</string>
 
 
 </resources>
