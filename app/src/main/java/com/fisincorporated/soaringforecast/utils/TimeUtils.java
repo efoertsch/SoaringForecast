@@ -13,6 +13,8 @@ public class TimeUtils {
     public static final SimpleDateFormat satelliteImageDateFormat = new SimpleDateFormat("yyyyMMdd/HH/yyyyMMdd_HHmm");
     public static final TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
+    public static final SimpleDateFormat geosCacheSimpleDateFormat = new SimpleDateFormat("yyMMddHHmm");
+
     /**
      * Round down calendar to quarter hour
      * @param calendar
@@ -62,6 +64,11 @@ public class TimeUtils {
 
     public static Calendar getUtcRightNow() {
         return Calendar.getInstance(utcTimeZone);
+    }
+
+    public static String getGeosCacheKey(){
+        return geosCacheSimpleDateFormat.format(TimeUtils.setCalendarToQuarterHour(TimeUtils.getUtcRightNow()).getTime());
+
     }
 
 }

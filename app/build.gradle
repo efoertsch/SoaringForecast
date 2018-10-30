@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     //buildToolsVersion "25.0.2" - Android Gradle Plugin now includes default version of build tools
     defaultConfig {
         applicationId "com.fisincorporated.soaringweather"
@@ -90,7 +90,7 @@ dependencies {
     final DISK_CACHE = '2.0.2'
     final ROOM_VERSION = '1.1.1'
     final ARCH_LIFE_CYCLE_VERSION = '1.1.1'
-    final work_version = "1.0.0-alpha06"
+    final work_version = "1.0.0-alpha10"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Android compat/support libraries
@@ -146,7 +146,6 @@ dependencies {
     implementation "org.cache2k:cache2k-core:$MEMORY_CACHE"
 
     //Room
-    // Room components
     implementation "android.arch.persistence.room:runtime:$ROOM_VERSION"
     implementation "android.arch.persistence.room:rxjava2:$ROOM_VERSION"
     annotationProcessor "android.arch.persistence.room:compiler:$ROOM_VERSION"

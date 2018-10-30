@@ -219,6 +219,7 @@
     <string name="clearing_turnpoints_information">This option will delete all turnpoints. Turnpoints in defined tasks will not be affected. Do you wish to proceed?</string>
     <string name="action_satellite_noaa">NOAA</string>
     <string name="action_satellite_geos">GEOS</string>
+    <string name="geos_northeast">GEOS Northeast</string>
 
 
 </resources>

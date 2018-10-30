@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data class="GeosSatelliteImageBinding">
 
-        <import type="android.view.View"/>
-
-        <import type="android.widget.Spinner"/>
-
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteViewModel"/>
+            type="com.fisincorporated.soaringforecast.satellite.geos.GeosViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -18,14 +15,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-            <com.fisincorporated.soaringforecast.common.TouchImageView
-                android:id="@+id/geos_satellite_image_imageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/satellite_image_time"
-                android:layout_alignParentBottom="true"
-                android:layout_margin="@dimen/margin_standard">
-            </com.fisincorporated.soaringforecast.common.TouchImageView>
+        <TextView
+            android:id="@+id/geos_satellite_image_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_double"
+            android:text="@string/geos_northeast"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <com.fisincorporated.soaringforecast.common.TouchImageView
+            android:id="@+id/geos_satellite_image_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_standard"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            bind:geosImageUrl="@{viewModel.geosImageUrl}"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintTop_toBottomOf="@id/geos_satellite_image_text">
+        </com.fisincorporated.soaringforecast.common.TouchImageView>
+
 
     </android.support.constraint.ConstraintLayout>
 </layout>
