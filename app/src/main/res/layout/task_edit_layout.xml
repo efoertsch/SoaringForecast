@@ -97,23 +97,20 @@
             app:layout_constraintTop_toBottomOf="@+id/edit_task_turnpoints_label"
             />
 
-        <TextView
+        <Button
             android:id="@+id/edit_task_add_turnpoints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/ButtonPrimaryWhite"
+            android:textColor="@android:color/white"
             android:clickable="true"
             android:focusable="true"
-            android:gravity="center_horizontal"
-            android:layout_margin="@dimen/margin_standard"
-            android:padding="@dimen/margin_standard"
             android:text="@string/add_turnpoint"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/offwhite"
+            android:layout_margin="@dimen/margin_standard"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/edit_task_save_task"

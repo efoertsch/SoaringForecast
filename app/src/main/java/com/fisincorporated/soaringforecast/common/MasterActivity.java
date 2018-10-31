@@ -59,6 +59,15 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         }
     }
 
+    public void displayNewFragment(Fragment fragment){
+        FragmentManager fm = getSupportFragmentManager();
+        if (fragment != null) {
+            fm.beginTransaction().replace(R.id.fragmentContainer, fragment)
+                    .commit();
+        }
+
+    }
+
     public void setActionBarBackgroundColorToDefault() {
         if (actionBar != null) {
             actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));

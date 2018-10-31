@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 import okhttp3.OkHttpClient;
 
 public class TurnpointsImportWorker extends Worker {
@@ -40,6 +41,10 @@ public class TurnpointsImportWorker extends Worker {
     AppRepository appRepository;
 
     private NotificationManagerCompat notificationManager;
+
+    public TurnpointsImportWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
+    }
 
     @NonNull
     @Override

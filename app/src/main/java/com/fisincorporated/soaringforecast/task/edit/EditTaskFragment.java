@@ -46,7 +46,7 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        editTaskView = DataBindingUtil.inflate(inflater, R.layout.edit_task_layout, container, false);
+        editTaskView = DataBindingUtil.inflate(inflater, R.layout.task_edit_layout, container, false);
 
         taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity())
                 .get(TaskAndTurnpointsViewModel.class)

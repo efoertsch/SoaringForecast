@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 import okhttp3.OkHttpClient;
 
 public class AirportsImportWorker extends Worker {
@@ -37,6 +38,10 @@ public class AirportsImportWorker extends Worker {
     AirportListDownloader airportListDownloader;
 
     private NotificationManagerCompat notificationManager;
+
+    public AirportsImportWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
+    }
 
     @NonNull
     @Override

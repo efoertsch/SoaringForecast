@@ -13,6 +13,8 @@ public class TimeUtils {
     public static final SimpleDateFormat satelliteImageDateFormat = new SimpleDateFormat("yyyyMMdd/HH/yyyyMMdd_HHmm");
     public static final TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
+    public static final SimpleDateFormat geosCacheSimpleDateFormat = new SimpleDateFormat("yyMMddHHmm");
+
     /**
      * Round down calendar to quarter hour
      * @param calendar
@@ -31,6 +33,21 @@ public class TimeUtils {
         }
         return calendar;
     }
+
+    public static Calendar roundDownCalenderToXMinInterval(Calendar calendar, int interval) {
+        int minutesPastHour = calendar.get(Calendar.MINUTE);
+        int i = 0;
+        while (i <= 59 ) {
+            if (minutesPastHour < i + interval) {
+                calendar.set(Calendar.MINUTE, i);
+                break;
+            }
+            i = i + interval;
+        }
+        return calendar;
+    }
+
+
 
     @SuppressLint("DefaultLocale")
     public static String formatCalendarToSatelliteImageUtcDate(Calendar calendar) {
@@ -63,5 +80,15 @@ public class TimeUtils {
     public static Calendar getUtcRightNow() {
         return Calendar.getInstance(utcTimeZone);
     }
+
+    public static String getGeosLoopCacheKey(){
+        return geosCacheSimpleDateFormat.format(TimeUtils.setCalendarToQuarterHour(TimeUtils.getUtcRightNow()).getTime());
+    }
+
+    public static String getGeosLoopCacheKey(int interval){
+        return geosCacheSimpleDateFormat.format(TimeUtils.roundDownCalenderToXMinInterval(TimeUtils.getUtcRightNow(), interval).getTime());
+    }
+
+
 
 }

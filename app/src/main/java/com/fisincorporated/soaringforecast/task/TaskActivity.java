@@ -147,10 +147,6 @@ public class TaskActivity extends MasterActivity {
         fm.popBackStack ();
     }
 
-    //TODO add menu for other options
-
-
-
     public static class Builder {
 
         private Bundle bundle;

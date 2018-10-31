@@ -3,13 +3,14 @@ package com.fisincorporated.soaringforecast.dagger;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
 import com.fisincorporated.soaringforecast.airportweather.AirportWeatherFragment;
 import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
-import com.fisincorporated.soaringforecast.satellite.SatelliteImageFragment;
+import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
+import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
 import com.fisincorporated.soaringforecast.settings.SettingsPreferenceFragment;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
-import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
 import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
+import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadFragment;
 import com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportFragment;
 
 import dagger.Module;
@@ -26,9 +27,6 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();
-
-    @ContributesAndroidInjector(modules = {})
-    abstract SatelliteImageFragment bindSatelliteImageFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract SoaringForecastFragment bindSoaringForecastFragment();
@@ -51,6 +49,16 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointsDownloadFragment bindTurnpointsImportFragment();
+
+
+    // ---- Satellite ----
+    @ContributesAndroidInjector(modules = {})
+    abstract SatelliteActivity bindSatelliteActivity();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract NoaaSatelliteImageFragment bindNoaaSatelliteImageFragment();
+
+
 
 }
 

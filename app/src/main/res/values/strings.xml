@@ -151,7 +151,8 @@
     <string name="search_for_airports_hint">ICAO code, name, city, state</string>
     <string name="icao_added_for_metar_taf">%1$s added for METAR/TAF</string>
     <string name="rasp">RASP</string>
-    <string name="satellite">Satellite</string>
+    <string name="noaa_satellite">NOAA Satellite</string>
+    <string name="geos_satellite">GEOS Satellite</string>
     <string name="metar_taf_airports">METAR/TAF Airports</string>
     <string name="action_soaring_forecast_rasp">RASP</string>
     <string name="action_soaring_forecast_skysight">SkySight</string>
@@ -216,6 +217,14 @@
     <string name="turnpoints_cleared">Turnpoints Cleared</string>
     <string name="turnpoints_have_been_cleared">All turnpoints have been deleted. Defined tasks are unaffected.</string>
     <string name="clearing_turnpoints_information">This option will delete all turnpoints. Turnpoints in defined tasks will not be affected. Do you wish to proceed?</string>
+    <string name="action_satellite_noaa">NOAA</string>
+    <string name="action_satellite_geos">GEOS NE</string>
+    <string name="geos_northeast">GEOS Northeast</string>
+    <string name="need_google_play_services">GooglePlay Services is needed but is either missing or out of date.</string>
+    <string name="exit">Exit</string>
+    <string name="latestImage">Latest Image</string>
+    <string name="noaa">NOAA</string>
+    <string name="geos_ne">GEOS NE</string>
 
 
 </resources>

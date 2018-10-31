@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="GeosSatelliteImageBinding">
+
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/geos_satellite_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.fisincorporated.soaringforecast.common.TouchImageView
+            android:id="@+id/geos_satellite_image_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/margin_standard"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            bind:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/satellite_image_fragment_geos_loop_btn">
+        </com.fisincorporated.soaringforecast.common.TouchImageView>
+
+        <Button
+            android:id="@+id/satellite_image_fragment_geos_loop_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/ButtonPrimaryWhite"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/loop"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
+
+

@@ -28,12 +28,13 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/margin_standard"
         android:layout_marginStart="8dp"
         android:layout_marginTop="@dimen/margin_standard"
         android:layout_marginBottom="@dimen/margin_standard">
 
         <TextView
-            android:id="@+id/task_edit_taskname"
+            android:id="@+id/task_detail_taskname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -42,7 +43,7 @@
             android:onClick="@{()->clickListener.onItemClick(task, position)}"
             android:text="@{task.taskName}"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintEnd_toStartOf="@+id/task_edit_edit"
+            app:layout_constraintEnd_toStartOf="@+id/task_detail_edit_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Sterling Start-Claremont-Southbridge-Sterling Start"
@@ -50,7 +51,7 @@
             />
 
         <ImageView
-            android:id="@+id/task_edit_edit"
+            android:id="@+id/task_detail_edit_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_standard"
