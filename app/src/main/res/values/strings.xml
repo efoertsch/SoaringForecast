@@ -222,6 +222,7 @@
     <string name="geos_northeast">GEOS Northeast</string>
     <string name="need_google_play_services">GooglePlay Services is needed but is either missing or out of date.</string>
     <string name="exit">Exit</string>
+    <string name="latestImage">Latest Image</string>
 
 
 </resources>

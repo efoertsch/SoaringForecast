@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:bind="http://schemas.android.com/apk/res-auto">
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data class="GeosSatelliteImageBinding">
 
-        <variable
-            name="viewModel"
-            type="com.fisincorporated.soaringforecast.satellite.geos.GeosViewModel"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -33,7 +31,6 @@
             android:layout_margin="@dimen/margin_standard"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            bind:geosImageUrl="@{viewModel.geosImageUrl}"
             bind:layout_constraintBottom_toTopOf="@+id/satelite_image_fragment_geos_loop_btn"
             bind:layout_constraintTop_toBottomOf="@id/geos_satellite_image_text">
         </com.fisincorporated.soaringforecast.common.TouchImageView>
@@ -42,12 +39,12 @@
             android:id="@+id/satelite_image_fragment_geos_loop_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/colorPrimary"
+            android:background="@color/colorPrimary"
             android:clickable="true"
             android:focusable="true"
-            tools:text="Loop"
-            android:background="@android:color/transparent"
+            android:text="@string/loop"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white "
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"/>

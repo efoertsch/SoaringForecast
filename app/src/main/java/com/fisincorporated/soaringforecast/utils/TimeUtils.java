@@ -34,6 +34,21 @@ public class TimeUtils {
         return calendar;
     }
 
+    public static Calendar roundDownCalenderToXMinInterval(Calendar calendar, int interval) {
+        int minutesPastHour = calendar.get(Calendar.MINUTE);
+        int i = 0;
+        while (i <= 59 ) {
+            if (minutesPastHour < i + interval) {
+                calendar.set(Calendar.MINUTE, i);
+                break;
+            }
+            i = i + interval;
+        }
+        return calendar;
+    }
+
+
+
     @SuppressLint("DefaultLocale")
     public static String formatCalendarToSatelliteImageUtcDate(Calendar calendar) {
         satelliteImageDateFormat.setTimeZone(utcTimeZone);
@@ -66,9 +81,14 @@ public class TimeUtils {
         return Calendar.getInstance(utcTimeZone);
     }
 
-    public static String getGeosCacheKey(){
+    public static String getGeosLoopCacheKey(){
         return geosCacheSimpleDateFormat.format(TimeUtils.setCalendarToQuarterHour(TimeUtils.getUtcRightNow()).getTime());
-
     }
+
+    public static String getGeosLoopCacheKey(int interval){
+        return geosCacheSimpleDateFormat.format(TimeUtils.roundDownCalenderToXMinInterval(TimeUtils.getUtcRightNow(), interval).getTime());
+    }
+
+
 
 }
