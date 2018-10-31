@@ -35,7 +35,7 @@ public class GeosSatelliteFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.satellite_image_fragment_geos, container, false);
         touchImageView = binding.geosSatelliteImageImageView;
-        loopButton = binding.sateliteImageFragmentGeosLoopBtn;
+        loopButton = binding.satelliteImageFragmentGeosLoopBtn;
         loopButton.setOnClickListener(view -> toggleGeosDisplay());
         displayGeosImage(currentGeos);
         return binding.getRoot();

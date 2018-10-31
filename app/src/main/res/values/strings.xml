@@ -224,7 +224,7 @@
     <string name="exit">Exit</string>
     <string name="latestImage">Latest Image</string>
     <string name="noaa">NOAA</string>
-    <string name="geos">GEOS</string>
+    <string name="geos_ne">GEOS NE</string>
 
 
 </resources>
