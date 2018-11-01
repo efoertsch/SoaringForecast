@@ -1,8 +1,8 @@
 package com.fisincorporated.soaringforecast.test;
 
 
-import com.fisincorporated.soaringforecast.airportweather.AirportWeatherAdapter;
-import com.fisincorporated.soaringforecast.airportweather.AirportWeatherViewModel;
+import com.fisincorporated.soaringforecast.airportweather.AirportMetarTafAdapter;
+import com.fisincorporated.soaringforecast.airportweather.AirportMetarTafViewModel;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.data.metars.Metar;
 import com.fisincorporated.soaringforecast.data.taf.TAF;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AirportWeatherViewModelTest {
+public class AirportMetarTafViewModelTest {
 
     public OkHttpClient getOkHttpClientWithMockingInterceptor(){
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -48,26 +48,26 @@ public class AirportWeatherViewModelTest {
     public AppPreferences appPreferences;
 
     @Mock
-    public AirportWeatherAdapter airportWeatherAdapter;
+    public AirportMetarTafAdapter airportMetarTafAdapter;
 
 
     // Note to self. Make sure method public else test not found.
     @Test
     public void getAirportCodesFromSharedPreferences() {
         when(appPreferences.getAirportList()).thenReturn("KORH KORD");
-        AirportWeatherViewModel airportWeatherViewModel = new AirportWeatherViewModel();
-        airportWeatherViewModel.appPreferences = appPreferences;
-        airportWeatherViewModel.airportWeatherAdapter = airportWeatherAdapter;
+        AirportMetarTafViewModel airportMetarTafViewModel = new AirportMetarTafViewModel();
+        airportMetarTafViewModel.appPreferences = appPreferences;
+        airportMetarTafViewModel.airportMetarTafAdapter = airportMetarTafAdapter;
         // This MockInterceptor always returns same canned Metar and Taf info
         Retrofit retrofit = new AviationWeatherGovRetrofit(getOkHttpClientWithMockingInterceptor()).getRetrofit();
         retrofit.callbackExecutor();
-        airportWeatherViewModel.aviationWeatherApi = retrofit.create(AviationWeatherApi.class);
+        airportMetarTafViewModel.aviationWeatherApi = retrofit.create(AviationWeatherApi.class);
 
-        airportWeatherViewModel.refresh();
+        airportMetarTafViewModel.refresh();
 
         // TODO not working due to async nature of retrofit calls. Find way to test.
-        verify(airportWeatherAdapter).updateMetarList(Matchers.anyListOf(Metar.class));
-        verify(airportWeatherAdapter).updateTafList(Matchers.anyListOf(TAF.class));
+        verify(airportMetarTafAdapter).updateMetarList(Matchers.anyListOf(Metar.class));
+        verify(airportMetarTafAdapter).updateTafList(Matchers.anyListOf(TAF.class));
 
 
     }

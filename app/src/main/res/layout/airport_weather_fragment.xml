@@ -10,7 +10,7 @@
 
         <variable
             name="viewmodel"
-            type="com.fisincorporated.soaringforecast.airportweather.AirportWeatherViewModel"/>
+            type="com.fisincorporated.soaringforecast.airportweather.AirportMetarTafViewModel"/>
     </data>
 
 
@@ -33,14 +33,6 @@
                 android:layout_height="match_parent"/>
 
         </RelativeLayout>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fragment_airport_weather_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_refresh"/>
 
 
     </android.support.design.widget.CoordinatorLayout>

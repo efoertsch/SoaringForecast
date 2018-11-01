@@ -66,9 +66,7 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        //TODO Use databinding
         TaskListView taskListView = DataBindingUtil.inflate(inflater,R.layout.task_list_layout, container,false);
-        //View view = inflater.inflate(R.layout.task_list_layout, container, false);
 
         taskListViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class).setAppRepository(appRepository);
 

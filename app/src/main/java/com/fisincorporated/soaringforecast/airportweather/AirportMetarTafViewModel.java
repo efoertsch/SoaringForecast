@@ -16,12 +16,8 @@ import com.fisincorporated.soaringforecast.data.common.AviationWeatherResponse;
 import com.fisincorporated.soaringforecast.data.metars.MetarResponse;
 import com.fisincorporated.soaringforecast.data.taf.TafResponse;
 import com.fisincorporated.soaringforecast.databinding.AirportWeatherFragmentBinding;
-import com.fisincorporated.soaringforecast.messages.DataLoadCompleteEvent;
-import com.fisincorporated.soaringforecast.messages.DataLoadingEvent;
 import com.fisincorporated.soaringforecast.retrofit.AviationWeatherApi;
 import com.fisincorporated.soaringforecast.utils.ViewUtilities;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -31,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AirportWeatherViewModel extends BaseObservable implements ViewModelLifeCycle, WeatherDisplayPreferences {
+public class AirportMetarTafViewModel extends BaseObservable implements ViewModelLifeCycle, WeatherMetarTafPreferences {
 
     private static final int MAX_CALLS = 2;
 
@@ -65,31 +61,24 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     public AppPreferences appPreferences;
 
     @Inject
-    public AirportWeatherAdapter airportWeatherAdapter;
+    public AirportMetarTafAdapter airportMetarTafAdapter;
 
     @Inject
     public AviationWeatherApi aviationWeatherApi;
 
     @Inject
-    public AirportWeatherViewModel() {
+    public AirportMetarTafViewModel() {
     }
 
-    public AirportWeatherViewModel setView(View view) {
+    public AirportMetarTafViewModel setView(View view) {
 
         bindingView = view.findViewById(R.id.fragment_airport_weather_layout);
         viewDataBinding = DataBindingUtil.bind(bindingView);
         setupRecyclerView(viewDataBinding.fragmentAirportWeatherRecyclerView);
         viewDataBinding.setViewmodel(this);
-        fab = viewDataBinding.fragmentAirportWeatherFab;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                refresh();
-            }
-        });
         setAirportWeatherOrder();
-        airportWeatherAdapter.setAirportWeatherList(airportWeatherList).setWeatherDisplayPreferences(this);
-        viewDataBinding.fragmentAirportWeatherRecyclerView.setAdapter(airportWeatherAdapter);
+        airportMetarTafAdapter.setAirportWeatherList(airportWeatherList).setWeatherMetarTafPreferences(this);
+        viewDataBinding.fragmentAirportWeatherRecyclerView.setAdapter(airportMetarTafAdapter);
         return this;
     }
 
@@ -114,7 +103,7 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     public void onResume() {
         assignDisplayOptions();
         setAirportWeatherOrder();
-        airportWeatherAdapter.setAirportWeatherList(airportWeatherList);
+        airportMetarTafAdapter.setAirportWeatherList(airportWeatherList);
         refresh();
     }
 
@@ -122,30 +111,17 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
     public void onPause() {
         if (metarCall != null) {
             metarCall.cancel();
-            fireLoadComplete();
         }
-
         if (tafCall != null) {
             tafCall.cancel();
-            fireLoadComplete();
         }
-
     }
 
     @Override
     public void onDestroy() {
     }
 
-    private void fireLoadStarted() {
-        EventBus.getDefault().post(new DataLoadingEvent());
-    }
-
-    private void fireLoadComplete() {
-        EventBus.getDefault().post(new DataLoadCompleteEvent());
-    }
-
     public void refresh() {
-        fireLoadStarted();
         String airportList = getAirportCodes();
         if (airportList != null & airportList.trim().length() != 0) {
             callForMetar(airportList);
@@ -159,17 +135,15 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
                 if (isGoodResponse(response)) {
-                    airportWeatherAdapter.updateMetarList(response.body().getData().getMetars());
+                    airportMetarTafAdapter.updateMetarList(response.body().getData().getMetars());
                 } else {
                     displayResponseError(response);
                 }
-                fireLoadComplete();
             }
 
             @Override
             public void onFailure(Call<MetarResponse> call, Throwable t) {
                 displayCallFailure(call, t);
-                fireLoadComplete();
             }
         });
     }
@@ -180,17 +154,15 @@ public class AirportWeatherViewModel extends BaseObservable implements ViewModel
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {
                 if (isGoodResponse(response)) {
-                    airportWeatherAdapter.updateTafList(response.body().getData().getTAFs());
+                    airportMetarTafAdapter.updateTafList(response.body().getData().getTAFs());
                 } else {
                     displayResponseError(response);
                 }
-                fireLoadComplete();
             }
 
             @Override
             public void onFailure(Call<TafResponse> call, Throwable t) {
                 displayCallFailure(call, t);
-                fireLoadComplete();
             }
         });
     }

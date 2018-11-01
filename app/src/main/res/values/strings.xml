@@ -225,6 +225,9 @@
     <string name="latestImage">Latest Image</string>
     <string name="noaa">NOAA</string>
     <string name="geos_ne">GEOS NE</string>
+    <string name="airport_menu_list">List</string>
+    <string name="airport_menu_add">Add</string>
+    <string name="airport_menu_metar_options">Options</string>
 
 
 </resources>

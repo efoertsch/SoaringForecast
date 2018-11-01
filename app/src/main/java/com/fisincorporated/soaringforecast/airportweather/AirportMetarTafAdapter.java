@@ -27,20 +27,20 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAdapter.BindingHolder> {
+public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTafAdapter.BindingHolder> {
 
     private List<AirportWeather> airportWeatherList = Collections.synchronizedList(new ObservableArrayList<AirportWeather>());
 
-    public WeatherDisplayPreferences weatherDisplayPreferences;
+    public WeatherMetarTafPreferences weatherMetarTafPreferences;
 
     @Inject
     public AppPreferences appPreferences;
 
     @Inject
-    public AirportWeatherAdapter() {
+    public AirportMetarTafAdapter() {
     }
 
-    public AirportWeatherAdapter setAirportWeatherList(@NonNull List<AirportWeather> selectedAirports) {
+    public AirportMetarTafAdapter setAirportWeatherList(@NonNull List<AirportWeather> selectedAirports) {
         synchronized (airportWeatherList) {
             if (airportWeatherList.size() == 0) {
                 airportWeatherList.addAll(selectedAirports);
@@ -68,8 +68,8 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
 
     }
 
-    public AirportWeatherAdapter setWeatherDisplayPreferences(@NonNull WeatherDisplayPreferences weatherDisplayPreferences) {
-        this.weatherDisplayPreferences = weatherDisplayPreferences;
+    public AirportMetarTafAdapter setWeatherMetarTafPreferences(@NonNull WeatherMetarTafPreferences weatherMetarTafPreferences) {
+        this.weatherMetarTafPreferences = weatherMetarTafPreferences;
         return this;
     }
 
@@ -143,7 +143,7 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
     @Override
     public void onBindViewHolder(BindingHolder holder, int position) {
         holder.binding.setAirportWeather(airportWeatherList.get(position));
-        holder.binding.setDisplayPrefs(weatherDisplayPreferences);
+        holder.binding.setDisplayPrefs(weatherMetarTafPreferences);
         addTafForecasts(holder, airportWeatherList.get(position).getTaf());
         holder.binding.executePendingBindings();
     }
@@ -156,7 +156,7 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
             for (Forecast forecast : forecastList) {
                 TafForecastBinding binding = DataBindingUtil.inflate(inflater, R.layout.taf_forecast, layout, false);
                 binding.setForecast(forecast);
-                binding.setDisplayPrefs(weatherDisplayPreferences);
+                binding.setDisplayPrefs(weatherMetarTafPreferences);
                 binding.getRoot().setLayoutParams(new LinearLayoutCompat.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT));
@@ -174,7 +174,7 @@ public class AirportWeatherAdapter extends RecyclerView.Adapter<AirportWeatherAd
             for (SkyCondition skyCondition : skyConditionList) {
                 SkyConditionBinding binding = DataBindingUtil.inflate(inflater, R.layout.sky_condition, layout, false);
                 binding.setSkyCondition(skyCondition);
-                binding.setDisplayPrefs(weatherDisplayPreferences);
+                binding.setDisplayPrefs(weatherMetarTafPreferences);
                 binding.getRoot().setLayoutParams(new LinearLayoutCompat.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));

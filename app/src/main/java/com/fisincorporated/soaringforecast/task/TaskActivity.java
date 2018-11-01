@@ -16,7 +16,6 @@ import com.fisincorporated.soaringforecast.messages.GoToDownloadImport;
 import com.fisincorporated.soaringforecast.messages.GoToTurnpointImport;
 import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SelectedTask;
-import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.task.edit.EditTaskFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
@@ -24,7 +23,6 @@ import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
 import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadFragment;
 import com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportFragment;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -48,18 +46,6 @@ public class TaskActivity extends MasterActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -135,11 +121,6 @@ public class TaskActivity extends MasterActivity {
         intent.putExtras(bundle);
         setResult(RESULT_OK, intent);
         finish();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SnackbarMessage message) {
-        showSnackBarMessage(message.getMessage());
     }
 
     private void popCurrentFragment() {

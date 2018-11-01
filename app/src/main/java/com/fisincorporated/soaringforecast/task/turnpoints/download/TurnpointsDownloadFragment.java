@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,11 +114,11 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
                 .subscribeOn(Schedulers.io())
                 .subscribe(numberTurnpoints -> {
                             showProgressBar(false);
-                            post(new SnackbarMessage(getString(R.string.number_turnpoints_imported, numberTurnpoints)));
+                            post(new SnackbarMessage(getString(R.string.number_turnpoints_imported, numberTurnpoints), Snackbar.LENGTH_LONG));
                         },
                         t -> {
                             showProgressBar(false);
-                            post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops)));
+                            post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops), Snackbar.LENGTH_INDEFINITE));
                             //TODO mail crash
                         });
     }

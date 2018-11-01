@@ -14,7 +14,7 @@
 
         <variable
             name="displayPrefs"
-            type="com.fisincorporated.soaringforecast.airportweather.WeatherDisplayPreferences"/>
+            type="com.fisincorporated.soaringforecast.airportweather.WeatherMetarTafPreferences"/>
     </data>
 
     <LinearLayout

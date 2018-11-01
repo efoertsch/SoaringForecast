@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/airport_activity_menu_list"
+        android:title="@string/airport_menu_list"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/airport_activity_menu_add"
+        android:title="@string/airport_menu_add"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/airport_activity_metar_options"
+        android:title="@string/airport_menu_metar_options"
+        app:showAsAction="never"/>
+
+</menu>

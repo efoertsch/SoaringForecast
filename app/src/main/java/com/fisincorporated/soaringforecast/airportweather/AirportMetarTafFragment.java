@@ -12,22 +12,18 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class AirportWeatherFragment extends DaggerFragment {
-
-    public static final String METAR_LIST = "METAR_LIST";
+public class AirportMetarTafFragment extends DaggerFragment {
 
     @Inject
-    public AirportWeatherViewModel airportWeatherViewModel;
+    public AirportMetarTafViewModel airportMetarTafViewModel;
 
-    public AirportWeatherFragment() {}
+    public AirportMetarTafFragment() {}
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.airport_weather_fragment, container, false);
-        airportWeatherViewModel.setView(view);
-        //set title
-        getActivity().setTitle(R.string.action_airport_weather);
+        airportMetarTafViewModel.setView(view);
         return view;
     }
 
@@ -36,14 +32,14 @@ public class AirportWeatherFragment extends DaggerFragment {
         super.onResume();
         //set title
         getActivity().setTitle(R.string.nav_drawer_metar_taf_label);
-        airportWeatherViewModel.onResume();
+        airportMetarTafViewModel.onResume();
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        airportWeatherViewModel.onPause();
+        airportMetarTafViewModel.onPause();
 
     }
 }

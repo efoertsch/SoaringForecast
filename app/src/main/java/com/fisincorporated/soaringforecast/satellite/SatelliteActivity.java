@@ -16,9 +16,9 @@ import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFrag
 
 public class SatelliteActivity extends MasterActivity {
 
-    private static final String SATELITTE_DISPLAY = "SATELITTE_DISPLAY";
-    private static final String NOAA_SATELLITE = "NOAA_SATELITTE";
-    private static final String GEOS_SATELLITE = "GEOS_SATELITTE";
+    private static final String SATELLITE_DISPLAY = "SATELLITE_DISPLAY";
+    private static final String NOAA_SATELLITE = "NOAA_SATELLITE";
+    private static final String GEOS_SATELLITE = "GEOS_SATELLITE";
 
     private MenuItem geosMenuItem;
     private MenuItem noaaMenuItem;
@@ -42,7 +42,7 @@ public class SatelliteActivity extends MasterActivity {
 
     @Override
     protected Fragment createFragment() {
-        satelliteType = getIntent().getExtras().getString(SATELITTE_DISPLAY);
+        satelliteType = getIntent().getExtras().getString(SATELLITE_DISPLAY);
         return getSatelliteFragment();
     }
 
@@ -122,12 +122,12 @@ public class SatelliteActivity extends MasterActivity {
         }
 
         public SatelliteActivity.Builder displayNoaaSatellite() {
-            bundle.putString(SATELITTE_DISPLAY, NOAA_SATELLITE);
+            bundle.putString(SATELLITE_DISPLAY, NOAA_SATELLITE);
             return this;
         }
 
         public SatelliteActivity.Builder displayGeosSatellite() {
-            bundle.putString(SATELITTE_DISPLAY, GEOS_SATELLITE);
+            bundle.putString(SATELLITE_DISPLAY, GEOS_SATELLITE);
             return this;
         }
 
