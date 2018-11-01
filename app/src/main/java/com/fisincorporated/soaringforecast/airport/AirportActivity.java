@@ -102,6 +102,7 @@ public class AirportActivity extends MasterActivity {
                 return true;
             case R.id.airport_activity_metar_options:
                 displaySettingsActivity();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
