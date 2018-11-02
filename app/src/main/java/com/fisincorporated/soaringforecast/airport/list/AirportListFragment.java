@@ -42,6 +42,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
     private AirportListAdapter airportListAdapter;
     private ItemTouchHelper itemTouchHelper;
     private Observer<List<Airport>> airportListObserver;
+    private boolean firstTime = true;
 
     public static AirportListFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
         AirportListFragment airportListFragment = new AirportListFragment();
@@ -82,29 +83,25 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        airportListViewModel.getSelectedAirports().observe(this, airportListObserver);
+
         return airportListView.getRoot();
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        // force update as may be returning from search and have added new airports to list
-        airportListViewModel.getSelectedAirports().observe(this, airportListObserver);
-    }
+
 
     @Override
     public void onResume(){
         super.onResume();
         //set title
         getActivity().setTitle(R.string.metar_taf_airports);
+        if (firstTime) {
+            firstTime = false;
+        } else {
+            // force update as may be returning from search/add and have new airports
+            airportListViewModel.refreshSelectedAirportsList();
+        }
     }
-
-    @Override
-    public  void onStop(){
-        super.onStop();
-        airportListViewModel.getSelectedAirports().removeObservers(this);
-    }
-
 
    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {

@@ -95,7 +95,6 @@ public class AirportMetarTafViewModel extends BaseObservable implements ViewMode
     }
 
     public void setupRecyclerView(RecyclerView recyclerView) {
-        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
     }
 

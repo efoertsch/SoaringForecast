@@ -31,10 +31,13 @@ public class AirportListViewModel extends ViewModel {
     public MutableLiveData<List<Airport>> getSelectedAirports(){
         if (airports == null) {
             airports = new MutableLiveData<>();
-            List<String> airportCodeList = appPreferences.getSelectedAirportCodesList();
-            listSelectedAirports(airportCodeList);
+            refreshSelectedAirportsList();
         }
         return airports;
+    }
+
+    public void refreshSelectedAirportsList() {
+        listSelectedAirports(appPreferences.getSelectedAirportCodesList());
     }
 
 
