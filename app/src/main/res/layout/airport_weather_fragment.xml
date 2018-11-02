@@ -10,7 +10,7 @@
 
         <variable
             name="viewmodel"
-            type="com.fisincorporated.soaringforecast.airportweather.AirportMetarTafViewModel"/>
+            type="com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafViewModel"/>
     </data>
 
 

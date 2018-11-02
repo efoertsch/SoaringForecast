@@ -11,7 +11,7 @@
 
         <variable
             name="displayPrefs"
-            type="com.fisincorporated.soaringforecast.airportweather.WeatherMetarTafPreferences"/>
+            type="com.fisincorporated.soaringforecast.airport.airportweather.WeatherMetarTafPreferences"/>
 
         <variable
             name="airportWeather"
