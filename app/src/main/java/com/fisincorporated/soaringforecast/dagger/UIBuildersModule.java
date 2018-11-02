@@ -2,7 +2,7 @@ package com.fisincorporated.soaringforecast.dagger;
 
 import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
-import com.fisincorporated.soaringforecast.airportweather.AirportMetarTafFragment;
+import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;

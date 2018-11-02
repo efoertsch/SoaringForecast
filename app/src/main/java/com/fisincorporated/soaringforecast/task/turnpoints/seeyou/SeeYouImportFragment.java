@@ -46,6 +46,11 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
         return seeYouImportFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

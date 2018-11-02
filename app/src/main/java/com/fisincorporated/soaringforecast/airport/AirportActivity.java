@@ -5,17 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
 import com.fisincorporated.soaringforecast.airport.search.AirportSearchFragment;
-import com.fisincorporated.soaringforecast.airportweather.AirportMetarTafFragment;
+import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.MasterActivity;
 import com.fisincorporated.soaringforecast.messages.AddAirportEvent;
+import com.fisincorporated.soaringforecast.messages.DisplayAirportList;
+import com.fisincorporated.soaringforecast.messages.DisplaySettings;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 
@@ -31,9 +29,6 @@ public class AirportActivity extends MasterActivity {
     private static final String AIRPORT_SEARCH = "AIRPORT_SEARCH";
     private static final String AIRPORT_LIST_MAINTENANCE = "AIRPORT_LIST_MAINTENANCE";
 
-    private MenuItem airportListItem;
-    private MenuItem airportAddItem;
-
     public String airportFragmentOption;
 
     @Inject
@@ -47,15 +42,6 @@ public class AirportActivity extends MasterActivity {
         super.onCreate(savedInstanceState);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
 
     @Override
     protected Fragment createFragment() {
@@ -72,54 +58,29 @@ public class AirportActivity extends MasterActivity {
                 case AIRPORT_SEARCH:
                     return getAirportSearchFragment();
                 case AIRPORT_LIST_MAINTENANCE:
-                    return airportListFragment();
+                    return getAirportListFragment();
             }
         }
         return getAirportMetarTafFragment();
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.airport_activity_menu, menu);
-        airportListItem = menu.findItem(R.id.airport_activity_menu_list);
-        airportAddItem = menu.findItem(R.id.airport_activity_menu_add);
-        return true;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddAirportEvent event) {
+        displayFragment(getAirportSearchFragment(),true);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.airport_activity_menu_add:
-                airportFragmentOption =  AIRPORT_SEARCH;
-                toggleAirportMenuOptions();
-                displayFragment(getAirportSearchFragment(),true);
-                return true;
-            case R.id.airport_activity_menu_list:
-                airportFragmentOption =  AIRPORT_LIST_MAINTENANCE;
-                toggleAirportMenuOptions();
-                displayFragment(airportListFragment(),true);
-                return true;
-            case R.id.airport_activity_metar_options:
-                displaySettingsActivity();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DisplayAirportList event) {
+        displayFragment(getAirportListFragment(), true);
     }
 
-    private void toggleAirportMenuOptions() {
-        boolean displayAdd = (AIRPORT_SEARCH.equals(airportFragmentOption));
-        // toggle satellite menu options for display of other satellite
-        if (airportAddItem != null) {
-            airportListItem.setVisible(!displayAdd);
-        }
-        if (airportListItem!= null) {
-            airportListItem.setVisible(displayAdd);
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DisplaySettings event) {
+        displaySettingsActivity();
     }
 
-    private Fragment airportListFragment() {
+    private Fragment getAirportListFragment() {
         return  AirportListFragment.newInstance(appRepository, appPreferences);
     }
 
@@ -136,10 +97,6 @@ public class AirportActivity extends MasterActivity {
         startActivity(i);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AddAirportEvent event) {
-        displayNewFragment(getAirportSearchFragment());
-    }
 
     public static class Builder {
 

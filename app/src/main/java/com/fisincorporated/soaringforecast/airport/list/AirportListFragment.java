@@ -1,5 +1,6 @@
 package com.fisincorporated.soaringforecast.airport.list;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
     private AirportListViewModel airportListViewModel;
     private AirportListAdapter airportListAdapter;
     private ItemTouchHelper itemTouchHelper;
+    private Observer<List<Airport>> airportListObserver;
 
     public static AirportListFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
         AirportListFragment airportListFragment = new AirportListFragment();
@@ -48,12 +50,22 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
         return airportListFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        airportListViewModel = ViewModelProviders.of(this).get(AirportListViewModel.class)
+                .setRepositoryAndPreferences(appRepository, appPreferences);
+
+        airportListObserver = airports -> {
+            if (airportListAdapter != null) {
+                airportListAdapter.setAirportList(airports);
+            }
+        };
+    }
+
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         AirportListView airportListView = DataBindingUtil.inflate(inflater, R.layout.airport_list_layout, container,false);
-        airportListViewModel = ViewModelProviders.of(this).get(AirportListViewModel.class)
-                .setRepositoryAndPreferences(appRepository, appPreferences);
 
         airportListAdapter = new AirportListAdapter();
         RecyclerView recyclerView = airportListView.airportListRecyclerView;
@@ -74,23 +86,25 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        // force update as may be returning from search and have added new airports to list
+        airportListViewModel.getSelectedAirports().observe(this, airportListObserver);
+    }
+
+    @Override
     public void onResume(){
         super.onResume();
         //set title
         getActivity().setTitle(R.string.metar_taf_airports);
-        refreshAirports();
     }
 
-    private void refreshAirports() {
-        airportListViewModel.getSelectedAirports().observe(this, airports -> {
-            airportListAdapter.setAirportList(airports);
-        });
+    @Override
+    public  void onStop(){
+        super.onStop();
+        airportListViewModel.getSelectedAirports().removeObservers(this);
     }
 
-    public void onPause(){
-        super.onPause();
-
-    }
 
    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {

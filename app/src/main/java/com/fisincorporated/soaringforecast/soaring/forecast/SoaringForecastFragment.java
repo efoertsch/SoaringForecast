@@ -33,12 +33,17 @@ public class SoaringForecastFragment extends DaggerFragment {
     public SoaringForecastFragment() {
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.soaring_forecast_rasp, container, false);
         soaringForecastDisplay.setView(this, view);
-        setHasOptionsMenu(true);
+
         return view;
     }
 

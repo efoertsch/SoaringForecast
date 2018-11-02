@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.airportweather;
+package com.fisincorporated.soaringforecast.airport.airportweather;
 
 
 import android.databinding.BaseObservable;

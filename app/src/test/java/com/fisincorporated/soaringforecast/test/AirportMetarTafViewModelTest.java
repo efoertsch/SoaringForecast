@@ -1,8 +1,8 @@
 package com.fisincorporated.soaringforecast.test;
 
 
-import com.fisincorporated.soaringforecast.airportweather.AirportMetarTafAdapter;
-import com.fisincorporated.soaringforecast.airportweather.AirportMetarTafViewModel;
+import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafAdapter;
+import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafViewModel;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.data.metars.Metar;
 import com.fisincorporated.soaringforecast.data.taf.TAF;

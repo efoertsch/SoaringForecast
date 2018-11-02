@@ -33,15 +33,18 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
     protected GenericRecyclerViewAdapter<T, VH > recyclerViewAdapter;
 
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        turnpointsImporterViewModel = ViewModelProviders.of(this)
+                .get(TurnpointsImporterViewModel.class)
+                .setAppRepository(appRepository);
+    }
+
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
         turnpointsImportView = DataBindingUtil.inflate(inflater, R.layout.turnpoint_import_files, container, false);
-
-        turnpointsImporterViewModel = ViewModelProviders.of(this)
-                .get(TurnpointsImporterViewModel.class)
-                .setAppRepository(appRepository);
 
         RecyclerView recyclerView = turnpointsImportView.turnpointImportsRecyclerView;
 

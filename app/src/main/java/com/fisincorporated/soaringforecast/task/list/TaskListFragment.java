@@ -63,12 +63,15 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
         return taskListFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        taskListViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class).setAppRepository(appRepository);
+    }
+
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         TaskListView taskListView = DataBindingUtil.inflate(inflater,R.layout.task_list_layout, container,false);
-
-        taskListViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class).setAppRepository(appRepository);
 
         RecyclerView recyclerView = taskListView.taskListRecyclerView;
         recyclerViewAdapter = new TaskListRecyclerViewAdapter(tasks)

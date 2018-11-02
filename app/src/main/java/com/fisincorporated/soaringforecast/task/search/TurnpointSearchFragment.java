@@ -20,8 +20,8 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener;
-import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.GoToTurnpointImport;
+import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
 import com.fisincorporated.soaringforecast.repository.Turnpoint;
@@ -40,14 +40,18 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         return turnpointSearchFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Shared with EditTaskFragment and
+        // should already be 'initialized' with AppRepository, taskId, ... before getting here
+        taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.turnpoint_search_layout, null);
-
-        // Shared with EditTaskFragment and
-        // should already be 'initialized' with AppRepository, taskId, ... before getting here
-        taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
 
         turnpointSearchListAdapter = new TurnpointSearchListAdapter();
         turnpointSearchListAdapter.setOnItemClickListener(this);
@@ -57,8 +61,6 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(turnpointSearchListAdapter);
-        setHasOptionsMenu(true);
-
         return rootView;
     }
 

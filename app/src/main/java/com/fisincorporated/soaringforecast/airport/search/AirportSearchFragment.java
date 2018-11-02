@@ -48,11 +48,18 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
         return airportSearchFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        airportSearchViewModel = ViewModelProviders.of(this).get(AirportSearchViewModel.class)
+                .setAppRepository(appRepository)
+                .setAppPreferences(appPreferences);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        AirportSearchView airportSearchView = DataBindingUtil.inflate(inflater,R.layout.airport_search_layout, container,false);
-        airportSearchViewModel = ViewModelProviders.of(this).get(AirportSearchViewModel.class).setAppRepository(appRepository);
+        AirportSearchView airportSearchView = DataBindingUtil.inflate(inflater, R.layout.airport_search_layout, container, false);
 
         airportListAdapter = new AirportListAdapter();
         airportListAdapter.setOnItemClickListener(this);
@@ -63,7 +70,9 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(airportListAdapter);
 
-        setHasOptionsMenu(true);
+
+
+        airportSearchViewModel.getSearchAirports("").observe(this, airports -> airportListAdapter.setAirportList(airports));
 
         return airportSearchView.getRoot();
     }
@@ -80,7 +89,7 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
     @Override
     public void onPause() {
         super.onPause();
-       // displayKeyboard(false);
+        // displayKeyboard(false);
     }
 
     @Override
@@ -139,12 +148,13 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
     }
 
     private void runSearch(String search) {
-        airportSearchViewModel.searchAirports(search).observe(this, airports -> airportListAdapter.setAirportList(airports));
+        // run search and trigger observer to update list of airports
+        airportSearchViewModel.searchAirports(search);
     }
 
     @Override
     public void onItemClick(Airport airport) {
-        appPreferences.addAirportCodeToSelectedIcaoCodes(airport.getIdent());
+        airportSearchViewModel.addAirportIcaoCodeToSelectedAirports(airport.getIdent());
         EventBus.getDefault().post(new SnackbarMessage(getString(R.string.icao_added_for_metar_taf, airport.getIdent()), Snackbar.LENGTH_SHORT));
     }
 }
