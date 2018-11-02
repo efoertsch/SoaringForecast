@@ -42,16 +42,19 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
         return editTaskFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity())
+                .get(TaskAndTurnpointsViewModel.class)
+                .setAppRepository(appRepository)
+                .setTaskId(taskId);
+    }
+
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
         editTaskView = DataBindingUtil.inflate(inflater, R.layout.task_edit_layout, container, false);
-
-        taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity())
-                .get(TaskAndTurnpointsViewModel.class)
-                .setAppRepository(appRepository)
-                .setTaskId(taskId);
 
         editTaskView.setTaskAndTurnpointsViewModel(taskAndTurnpointsViewModel);
 

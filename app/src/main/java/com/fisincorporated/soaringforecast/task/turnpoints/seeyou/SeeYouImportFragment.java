@@ -3,6 +3,7 @@ package com.fisincorporated.soaringforecast.task.turnpoints.seeyou;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +44,11 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
     public static SeeYouImportFragment newInstance() {
         SeeYouImportFragment seeYouImportFragment = new SeeYouImportFragment();
         return seeYouImportFragment;
+    }
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -142,11 +148,11 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
                 .subscribeOn(Schedulers.io())
                 .subscribe(numberTurnpoints -> {
                             showProgressBar(false);
-                            post(new SnackbarMessage(getString(R.string.number_turnpoints_imported, numberTurnpoints)));
+                            post(new SnackbarMessage(getString(R.string.number_turnpoints_imported, numberTurnpoints), Snackbar.LENGTH_LONG));
                         },
                         t -> {
                             showProgressBar(false);
-                            post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops)));
+                            post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops), Snackbar.LENGTH_INDEFINITE));
                             // TODO mail crash
                         });
     }

@@ -19,11 +19,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.fisincorporated.soaringforecast.R;
-import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
-import com.fisincorporated.soaringforecast.airport.search.AirportSearchFragment;
-import com.fisincorporated.soaringforecast.airportweather.AirportWeatherFragment;
+import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
-import com.fisincorporated.soaringforecast.messages.AddAirportEvent;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
@@ -153,7 +150,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
                 displayAirportListFragment();
                 break;
             case R.id.nav_menu_airport_weather:
-                displayAirportWeather();
+                displayAirportMetarTaf();
                 break;
             case R.id.nav_menu_display_options:
                 displaySettingsActivity();
@@ -198,13 +195,15 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
 
 
     private void displayAirportListFragment() {
-        AirportListFragment fragment = new AirportListFragment();
-        displayFragment(fragment, true);
+        AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
+        builder.displayAirportListMaintenace();
+        startActivity(builder.build(this));
     }
 
-    private void displayAirportWeather() {
-        AirportWeatherFragment fragment = new AirportWeatherFragment();
-        displayFragment(fragment, true);
+    private void displayAirportMetarTaf() {
+        AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
+        builder.displayMetarTaf();
+        startActivity(builder.build(this));
     }
 
     private void displaySettingsActivity() {
@@ -249,13 +248,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     private void startSkySightBrowser() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://skysight.io/secure/#"));
         startActivity(browserIntent);
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AddAirportEvent event) {
-        AirportSearchFragment airportSearchFragment = AirportSearchFragment.newInstance(appRepository, appPreferences);
-        displayFragment(airportSearchFragment, true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

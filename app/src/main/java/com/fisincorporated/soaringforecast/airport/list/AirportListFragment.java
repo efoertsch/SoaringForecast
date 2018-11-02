@@ -1,6 +1,8 @@
 package com.fisincorporated.soaringforecast.airport.list;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.databinding.AirportListView;
 import com.fisincorporated.soaringforecast.messages.AddAirportEvent;
 import com.fisincorporated.soaringforecast.messages.AirportOrderEvent;
 import com.fisincorporated.soaringforecast.repository.Airport;
@@ -25,48 +28,54 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Collections;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
 public class AirportListFragment extends DaggerFragment implements OnStartDragListener, AirportListAdapter.NewAirportListListener {
 
-    @Inject
-    public AppPreferences appPreferences;
+    private AppRepository appRepository;
+    private AppPreferences appPreferences;
 
-    @Inject
-    AppRepository appRepository;
-
-    //TODO figure out injection for view model and then also inject adapter
+    //TODO figure out injection for view model
     private AirportListViewModel airportListViewModel;
-
     private AirportListAdapter airportListAdapter;
-
     private ItemTouchHelper itemTouchHelper;
+    private Observer<List<Airport>> airportListObserver;
+    private boolean firstTime = true;
 
+    public static AirportListFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
+        AirportListFragment airportListFragment = new AirportListFragment();
+        airportListFragment.appRepository = appRepository;
+        airportListFragment.appPreferences = appPreferences;
+        return airportListFragment;
+    }
 
-    @Inject
-    public AirportListFragment() {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        airportListViewModel = ViewModelProviders.of(this).get(AirportListViewModel.class)
+                .setRepositoryAndPreferences(appRepository, appPreferences);
+
+        airportListObserver = airports -> {
+            if (airportListAdapter != null) {
+                airportListAdapter.setAirportList(airports);
+            }
+        };
     }
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.airport_list, container, false);
+        AirportListView airportListView = DataBindingUtil.inflate(inflater, R.layout.airport_list_layout, container,false);
 
-        airportListViewModel = ViewModelProviders.of(this).get(AirportListViewModel.class).setAppRepository(appRepository);
         airportListAdapter = new AirportListAdapter();
-
-        RecyclerView recyclerView = view.findViewById(R.id.airport_list_recycler_view);
+        RecyclerView recyclerView = airportListView.airportListRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(airportListAdapter);
 
-        FloatingActionButton button = view.findViewById(R.id.airport_list_add_button);
+        FloatingActionButton button = airportListView.airportListAddButton;
         button.setOnClickListener(v -> EventBus.getDefault().post(new AddAirportEvent()));
 
         airportListAdapter.setOnStartDragListener(this).setNewAirportListListener(this);
@@ -74,31 +83,24 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
         itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        return view;
+        airportListViewModel.getSelectedAirports().observe(this, airportListObserver);
+
+        return airportListView.getRoot();
     }
+
+
 
     @Override
     public void onResume(){
         super.onResume();
         //set title
         getActivity().setTitle(R.string.metar_taf_airports);
-        refreshAirports();
-    }
-
-    private void refreshAirports() {
-        List<String> airportList = appPreferences.getSelectedAirportCodesList();
-        airportListViewModel.listSelectedAirports(airportList).observe(this, airports -> {
-            // airports may not be in preferred taskOrder so taskOrder them now
-            for (int i = 0; i < airportList.size(); ++i) {
-                for (int j = 0; j < airports.size(); ++j){
-                    if (airportList.get(i).equalsIgnoreCase(airports.get(j).getIdent())
-                            && i != j && i < j) {
-                        Collections.swap(airports, i, j);
-                    }
-                }
-            }
-            airportListAdapter.setAirportList(airports);
-        });
+        if (firstTime) {
+            firstTime = false;
+        } else {
+            // force update as may be returning from search/add and have new airports
+            airportListViewModel.refreshSelectedAirportsList();
+        }
     }
 
    @Override

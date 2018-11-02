@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.repository.Airport;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 
@@ -17,28 +18,48 @@ import timber.log.Timber;
 
 public class AirportSearchViewModel extends ViewModel {
 
-        private MutableLiveData<List<Airport>> airports = new MutableLiveData<>();
-        private AppRepository appRepository;
+    private MutableLiveData<List<Airport>> searchAirports;
+    private AppRepository appRepository;
+    private AppPreferences appPreferences;
 
-        public AirportSearchViewModel setAppRepository(AppRepository appRepository) {
-            this.appRepository = appRepository;
-            airports = new MutableLiveData<>();
-            airports.setValue(new ArrayList<>());
-            return this;
+    public AirportSearchViewModel setAppRepository(AppRepository appRepository) {
+        this.appRepository = appRepository;
+        return this;
+    }
+
+    public AirportSearchViewModel setAppPreferences(AppPreferences appPreferences) {
+        this.appPreferences = appPreferences;
+        return this;
+    }
+
+    public LiveData<List<Airport>> getSearchAirports(String search) {
+        if (searchAirports == null){
+            searchAirports = new MutableLiveData<>();
+            searchAirports.setValue(new ArrayList<>());
         }
+        return searchAirports(search);
+    }
 
-        @SuppressLint("CheckResult")
-        public LiveData<List<Airport>> searchAirports(String search) {
+    @SuppressLint("CheckResult")
+    public LiveData<List<Airport>> searchAirports(String search) {
+        if (search == null || search.isEmpty()) {
+            searchAirports.getValue().clear();
+        } else {
             appRepository.findAirports("%" + search + "%")
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(airportList -> {
-                                airports.setValue(airportList);
+                                searchAirports.setValue(airportList);
                             },
                             t -> {
                                 Timber.e(t);
                             });
-            return airports;
         }
-
+        return searchAirports;
     }
+
+    public void addAirportIcaoCodeToSelectedAirports(String icaoId) {
+        appPreferences.addAirportCodeToSelectedIcaoCodes(icaoId);
+    }
+
+}

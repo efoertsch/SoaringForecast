@@ -52,6 +52,13 @@
                 android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
         </activity>
 
+        <activity
+            android:name="com.fisincorporated.soaringforecast.airport.AirportActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
+        </activity>
         <!-- <activity android:name=".drawer.WeatherDrawerActivity"/> -->
 
         <meta-data

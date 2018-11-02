@@ -1,7 +1,8 @@
 package com.fisincorporated.soaringforecast.dagger;
 
+import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
-import com.fisincorporated.soaringforecast.airportweather.AirportWeatherFragment;
+import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
@@ -23,16 +24,18 @@ public abstract class UIBuildersModule {
     abstract WeatherDrawerActivity bindWeatherDrawerActivity();
 
     @ContributesAndroidInjector(modules = {})
-    abstract AirportWeatherFragment bindAirportWeatherFragment();
-
-    @ContributesAndroidInjector(modules = {})
-    abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();
-
-    @ContributesAndroidInjector(modules = {})
     abstract SoaringForecastFragment bindSoaringForecastFragment();
+
+    // --- Weather Metar/Taf -------------------
+    @ContributesAndroidInjector(modules = {})
+    abstract AirportActivity bindAirportActivity();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract AirportMetarTafFragment bindAirportMetarTafFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract AirportListFragment bindAirportListFragment();
+
 
     // ---- Task/Turnpoints ----
     @ContributesAndroidInjector(modules = {})
@@ -57,6 +60,10 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract NoaaSatelliteImageFragment bindNoaaSatelliteImageFragment();
+
+    // ----- Settings ------------
+    @ContributesAndroidInjector(modules = {})
+    abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();
 
 
 

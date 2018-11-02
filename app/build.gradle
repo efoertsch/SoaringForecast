@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     //buildToolsVersion "25.0.2" - Android Gradle Plugin now includes default version of build tools
     defaultConfig {
         applicationId "com.fisincorporated.soaringweather"
         minSdkVersion 18
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
@@ -67,7 +67,7 @@ android.sourceSets {
 
 
 dependencies {
-    final SUPPORT_LIBRARY_VERSION = '27.1.1'
+    final SUPPORT_LIBRARY_VERSION = '28.0.0'
     final CONSTRAINT_LIBRARY_VERSION = '1.1.3'
     final GOOGLE_MAPS_VERSION = '16.0.0'
     final RX_ANDROID = '2.0.2'

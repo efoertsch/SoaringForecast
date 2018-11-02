@@ -1,7 +1,7 @@
-package com.fisincorporated.soaringforecast.airportweather;
+package com.fisincorporated.soaringforecast.airport.airportweather;
 
 
-public interface WeatherDisplayPreferences {
+public interface WeatherMetarTafPreferences {
 
     boolean isDisplayRawTafMetar();
 

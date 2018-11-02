@@ -2,8 +2,10 @@ package com.fisincorporated.soaringforecast.airport.search;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +22,7 @@ import android.widget.SearchView;
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.airport.list.AirportListAdapter;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.databinding.AirportSearchView;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.Airport;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
@@ -36,7 +39,6 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
 
     //TODO figure out injection for view model and then also inject adapter
     AirportSearchViewModel airportSearchViewModel;
-
     AirportListAdapter airportListAdapter;
 
     static public AirportSearchFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
@@ -46,24 +48,33 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
         return airportSearchFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        airportSearchViewModel = ViewModelProviders.of(this).get(AirportSearchViewModel.class)
+                .setAppRepository(appRepository)
+                .setAppPreferences(appPreferences);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.airport_search_layout, null);
+        AirportSearchView airportSearchView = DataBindingUtil.inflate(inflater, R.layout.airport_search_layout, container, false);
 
-        airportSearchViewModel = ViewModelProviders.of(this).get(AirportSearchViewModel.class).setAppRepository(appRepository);
         airportListAdapter = new AirportListAdapter();
         airportListAdapter.setOnItemClickListener(this);
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.airport_list_recycler_view);
+        RecyclerView recyclerView = airportSearchView.airportSearchRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(airportListAdapter);
 
-        setHasOptionsMenu(true);
 
-        return rootView;
+
+        airportSearchViewModel.getSearchAirports("").observe(this, airports -> airportListAdapter.setAirportList(airports));
+
+        return airportSearchView.getRoot();
     }
 
     @Override
@@ -71,14 +82,14 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
         super.onResume();
         //set title
         getActivity().setTitle(R.string.airport_search);
-        displayKeyboard(true);
+        //displayKeyboard(true);
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        displayKeyboard(false);
+        // displayKeyboard(false);
     }
 
     @Override
@@ -137,12 +148,13 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
     }
 
     private void runSearch(String search) {
-        airportSearchViewModel.searchAirports(search).observe(this, airports -> airportListAdapter.setAirportList(airports));
+        // run search and trigger observer to update list of airports
+        airportSearchViewModel.searchAirports(search);
     }
 
     @Override
     public void onItemClick(Airport airport) {
-        appPreferences.addAirportCodeToSelectedIcaoCodes(airport.getIdent());
-        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.icao_added_for_metar_taf, airport.getIdent())));
+        airportSearchViewModel.addAirportIcaoCodeToSelectedAirports(airport.getIdent());
+        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.icao_added_for_metar_taf, airport.getIdent()), Snackbar.LENGTH_SHORT));
     }
 }

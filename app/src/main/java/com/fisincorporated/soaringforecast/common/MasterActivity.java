@@ -12,6 +12,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
@@ -52,20 +57,22 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
             if (fragment != null) {
                 fm.beginTransaction().add(R.id.fragmentContainer, fragment)
                         .commit();
-            }
-            else {
+            } else {
                 finish();
             }
         }
     }
 
-    public void displayNewFragment(Fragment fragment){
-        FragmentManager fm = getSupportFragmentManager();
-        if (fragment != null) {
-            fm.beginTransaction().replace(R.id.fragmentContainer, fragment)
-                    .commit();
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     public void setActionBarBackgroundColorToDefault() {
@@ -88,19 +95,32 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         }
     }
 
+    public void displayNewFragment(Fragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fragment != null) {
+            fm.beginTransaction().replace(R.id.fragmentContainer, fragment)
+                    .commit();
+        }
+    }
+
+
     public void displayFragment(Fragment fragment, boolean addToBackstack) {
         // Replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment);
-        if(addToBackstack) {
+        if (addToBackstack) {
             fragmentTransaction.addToBackStack(null);
         }
         fragmentTransaction.commit();
-
     }
 
-    public void showSnackBarMessage(String message){
-        Snackbar.make(rootView,message, Snackbar.LENGTH_INDEFINITE).show();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SnackbarMessage message) {
+        showSnackBarMessage(message.getMessage(), message.getDuration());
+    }
+
+    public void showSnackBarMessage(String message, int duration) {
+        Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE).show();
     }
 }

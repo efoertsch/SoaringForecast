@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,8 +20,8 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener;
-import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.GoToTurnpointImport;
+import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
 import com.fisincorporated.soaringforecast.repository.Turnpoint;
@@ -39,14 +40,18 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         return turnpointSearchFragment;
     }
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Shared with EditTaskFragment and
+        // should already be 'initialized' with AppRepository, taskId, ... before getting here
+        taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.turnpoint_search_layout, null);
-
-        // Shared with EditTaskFragment and
-        // should already be 'initialized' with AppRepository, taskId, ... before getting here
-        taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
 
         turnpointSearchListAdapter = new TurnpointSearchListAdapter();
         turnpointSearchListAdapter.setOnItemClickListener(this);
@@ -56,8 +61,6 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(turnpointSearchListAdapter);
-        setHasOptionsMenu(true);
-
         return rootView;
     }
 
@@ -118,7 +121,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     public void onItemClick(Turnpoint turnpoint, int position) {
         TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
         taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
-        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle())));
+        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle()), Snackbar.LENGTH_SHORT));
         searchView.setQuery("", true);
 
     }
