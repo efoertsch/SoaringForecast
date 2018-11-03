@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,7 +22,6 @@ import com.fisincorporated.soaringforecast.messages.CallFailure;
 import com.fisincorporated.soaringforecast.messages.DisplayAirportList;
 import com.fisincorporated.soaringforecast.messages.DisplaySettings;
 import com.fisincorporated.soaringforecast.messages.ResponseError;
-import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.retrofit.AviationWeatherApi;
 import com.fisincorporated.soaringforecast.utils.ViewUtilities;
 
@@ -33,29 +33,19 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class AirportMetarTafFragment extends DaggerFragment implements WeatherMetarTafPreferences {
+public class AirportMetarTafFragment extends DaggerFragment {
 
     private AirportMetarTafViewModel airportMetarTafViewModel;
 
-    private AppRepository appRepository;
     private AppPreferences appPreferences;
     private AirportMetarTafView airportMetarTafView;
     private boolean firstTime = true;
 
-    // used for display of Metar/Taf
-    private boolean displayRawTafMetar;
-    private boolean decodeTafMetar;
-    private String temperatureUnits;
-    private String altitudeUnits;
-    private String windSpeedUnits;
-    private String distanceUnits;
-
     @Inject
     public AviationWeatherApi aviationWeatherApi;
 
-    public static AirportMetarTafFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
+    public static AirportMetarTafFragment newInstance(AppPreferences appPreferences) {
         AirportMetarTafFragment airportMetarTafFragment = new AirportMetarTafFragment();
-        airportMetarTafFragment.appRepository = appRepository;
         airportMetarTafFragment.appPreferences = appPreferences;
         return airportMetarTafFragment;
     }
@@ -66,7 +56,6 @@ public class AirportMetarTafFragment extends DaggerFragment implements WeatherMe
         setHasOptionsMenu(true);
         airportMetarTafViewModel = ViewModelProviders.of(this).get(AirportMetarTafViewModel.class)
                 .setAppPreferences(appPreferences).setAviationWeaterApi(aviationWeatherApi);
-
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -77,8 +66,7 @@ public class AirportMetarTafFragment extends DaggerFragment implements WeatherMe
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         AirportMetarTafAdapter airportMetarTafAdapter = new AirportMetarTafAdapter();
         recyclerView.setAdapter(airportMetarTafAdapter);
-        airportMetarTafAdapter.setWeatherMetarTafPreferences(this);
-        assignDisplayOptions();
+        airportMetarTafAdapter.setWeatherMetarTafPreferences(airportMetarTafViewModel);
         airportMetarTafViewModel.getAirportWeatherList().observe(this, airportWeatherList -> {
             airportMetarTafAdapter.setAirportWeatherList(airportWeatherList);
         });
@@ -110,6 +98,7 @@ public class AirportMetarTafFragment extends DaggerFragment implements WeatherMe
             airportMetarTafViewModel.refresh();
         }
         firstTime = false;
+        checkForSomeAirports();
     }
 
     @Override
@@ -135,6 +124,14 @@ public class AirportMetarTafFragment extends DaggerFragment implements WeatherMe
         }
     }
 
+    private void checkForSomeAirports() {
+        // if no airports go to search to add some
+        String airportCode = appPreferences.getAirportList();
+        if (airportCode == null || airportCode.isEmpty()) {
+            displayAddAirportsDialog();
+        }
+    }
+
     private void displayAirportSearchFragment() {
         EventBus.getDefault().post(new AddAirportEvent());
     }
@@ -157,32 +154,18 @@ public class AirportMetarTafFragment extends DaggerFragment implements WeatherMe
         ViewUtilities.displayErrorDialog(airportMetarTafView.getRoot(), getString(R.string.oops), callFailure.getcallFailure());
     }
 
-    private void assignDisplayOptions() {
-        displayRawTafMetar = appPreferences.isDisplayRawTafMetar();
-        decodeTafMetar = appPreferences.isDecodeTafMetar();
-        temperatureUnits = appPreferences.getTemperatureDisplay();
-        altitudeUnits = appPreferences.getAltitudeDisplay();
-        windSpeedUnits = appPreferences.getWindSpeedDisplay();
-        distanceUnits = appPreferences.getDistanceUnits();
+    private void displayAddAirportsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.metar_taf_airports)
+                .setMessage(R.string.no_metar_taf_airports_selected)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    displayAirportSearchFragment();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                    getActivity().finish();
+                });
+        builder.create().show();
+
     }
 
-    public boolean isDisplayRawTafMetar() {
-        return displayRawTafMetar;
-    }
-
-    public boolean isDecodeTafMetar() {
-        return decodeTafMetar;
-    }
-
-    public String getAltitudeUnits() {
-        return altitudeUnits;
-    }
-
-    public String getWindSpeedUnits() {
-        return windSpeedUnits;
-    }
-
-    public String getDistanceUnits() {
-        return distanceUnits;
-    }
 }

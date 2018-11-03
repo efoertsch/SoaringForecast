@@ -27,7 +27,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 //TODO clean up and execute api calls in more RxJava sort of way
-public class AirportMetarTafViewModel extends ViewModel {
+public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarTafPreferences {
 
     private AppPreferences appPreferences;
     private Call<MetarResponse> metarCall;
@@ -38,6 +38,14 @@ public class AirportMetarTafViewModel extends ViewModel {
     private MutableLiveData<List<Metar>> metarList;
 
     public AviationWeatherApi aviationWeatherApi;
+
+    // used for display of Metar/Taf
+    private boolean displayRawTafMetar;
+    private boolean decodeTafMetar;
+    private String temperatureUnits;
+    private String altitudeUnits;
+    private String windSpeedUnits;
+    private String distanceUnits;
 
 
     public AirportMetarTafViewModel setAppPreferences(AppPreferences appPreferences) {
@@ -54,6 +62,7 @@ public class AirportMetarTafViewModel extends ViewModel {
         if (airportWeatherList == null) {
             airportWeatherList = new MutableLiveData<>();
             airportWeatherList.setValue(new ArrayList<>());
+            assignDisplayOptions();
             setAirportWeatherOrder();
 
         }
@@ -97,12 +106,48 @@ public class AirportMetarTafViewModel extends ViewModel {
 
     public void refresh() {
         String airportList = getAirportCodes();
-        if (airportList != null & airportList.trim().length() != 0) {
+        assignDisplayOptions();
+        if (airportList == null || airportList.trim().length() == 0) {
+            airportWeatherList.setValue(new ArrayList<>());
+            tafList.setValue(new ArrayList<>());
+            metarList.setValue(new ArrayList<>());
+        }
+        else {
             setAirportWeatherOrder();
             callForMetar(airportList);
             callForTaf(airportList);
         }
     }
+
+    private void assignDisplayOptions() {
+        displayRawTafMetar = appPreferences.isDisplayRawTafMetar();
+        decodeTafMetar = appPreferences.isDecodeTafMetar();
+        temperatureUnits = appPreferences.getTemperatureDisplay();
+        altitudeUnits = appPreferences.getAltitudeDisplay();
+        windSpeedUnits = appPreferences.getWindSpeedDisplay();
+        distanceUnits = appPreferences.getDistanceUnits();
+    }
+
+    public boolean isDisplayRawTafMetar() {
+        return displayRawTafMetar;
+    }
+
+    public boolean isDecodeTafMetar() {
+        return decodeTafMetar;
+    }
+
+    public String getAltitudeUnits() {
+        return altitudeUnits;
+    }
+
+    public String getWindSpeedUnits() {
+        return windSpeedUnits;
+    }
+
+    public String getDistanceUnits() {
+        return distanceUnits;
+    }
+
 
     private void callForMetar(String airportList) {
         metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
