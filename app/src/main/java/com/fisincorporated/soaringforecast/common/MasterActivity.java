@@ -121,6 +121,6 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
     public void showSnackBarMessage(String message, int duration) {
-        Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE).show();
+        Snackbar.make(rootView, message, duration).show();
     }
 }

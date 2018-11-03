@@ -1,7 +1,11 @@
 package com.fisincorporated.soaringforecast.airport.airportweather;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,36 +14,85 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.databinding.AirportMetarTafView;
 import com.fisincorporated.soaringforecast.messages.AddAirportEvent;
+import com.fisincorporated.soaringforecast.messages.CallFailure;
 import com.fisincorporated.soaringforecast.messages.DisplayAirportList;
 import com.fisincorporated.soaringforecast.messages.DisplaySettings;
+import com.fisincorporated.soaringforecast.messages.ResponseError;
+import com.fisincorporated.soaringforecast.repository.AppRepository;
+import com.fisincorporated.soaringforecast.retrofit.AviationWeatherApi;
+import com.fisincorporated.soaringforecast.utils.ViewUtilities;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class AirportMetarTafFragment extends DaggerFragment {
+public class AirportMetarTafFragment extends DaggerFragment implements WeatherMetarTafPreferences {
+
+    private AirportMetarTafViewModel airportMetarTafViewModel;
+
+    private AppRepository appRepository;
+    private AppPreferences appPreferences;
+    private AirportMetarTafView airportMetarTafView;
+    private boolean firstTime = true;
+
+    // used for display of Metar/Taf
+    private boolean displayRawTafMetar;
+    private boolean decodeTafMetar;
+    private String temperatureUnits;
+    private String altitudeUnits;
+    private String windSpeedUnits;
+    private String distanceUnits;
 
     @Inject
-    public AirportMetarTafViewModel airportMetarTafViewModel;
+    public AviationWeatherApi aviationWeatherApi;
 
-    public AirportMetarTafFragment() {}
-
+    public static AirportMetarTafFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
+        AirportMetarTafFragment airportMetarTafFragment = new AirportMetarTafFragment();
+        airportMetarTafFragment.appRepository = appRepository;
+        airportMetarTafFragment.appPreferences = appPreferences;
+        return airportMetarTafFragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        airportMetarTafViewModel = ViewModelProviders.of(this).get(AirportMetarTafViewModel.class)
+                .setAppPreferences(appPreferences).setAviationWeaterApi(aviationWeatherApi);
+
     }
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.airport_weather_fragment, container, false);
-        airportMetarTafViewModel.setView(view);
-        return view;
+        airportMetarTafView = DataBindingUtil.inflate(inflater, R.layout.airport_metar_taf_fragment, container, false);
+        RecyclerView recyclerView = airportMetarTafView.airportMetarTafRecyclerView;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        AirportMetarTafAdapter airportMetarTafAdapter = new AirportMetarTafAdapter();
+        recyclerView.setAdapter(airportMetarTafAdapter);
+        airportMetarTafAdapter.setWeatherMetarTafPreferences(this);
+        assignDisplayOptions();
+        airportMetarTafViewModel.getAirportWeatherList().observe(this, airportWeatherList -> {
+            airportMetarTafAdapter.setAirportWeatherList(airportWeatherList);
+        });
+
+        airportMetarTafViewModel.getAirportMetars().observe(this, metars -> {
+            airportMetarTafAdapter.updateMetarList(metars);
+        });
+
+        airportMetarTafViewModel.getAirportTaf().observe(this, tafs -> {
+            airportMetarTafAdapter.updateTafList(tafs);
+        });
+
+        airportMetarTafViewModel.refresh();
+        return airportMetarTafView.getRoot();
     }
 
     @Override
@@ -53,13 +106,15 @@ public class AirportMetarTafFragment extends DaggerFragment {
         super.onResume();
         //set title
         getActivity().setTitle(R.string.nav_drawer_metar_taf_label);
-        airportMetarTafViewModel.onResume();
+        if (!firstTime) {
+            airportMetarTafViewModel.refresh();
+        }
+        firstTime = false;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        airportMetarTafViewModel.onPause();
     }
 
     @Override
@@ -70,7 +125,7 @@ public class AirportMetarTafFragment extends DaggerFragment {
                 displayAirportSearchFragment();
                 return true;
             case R.id.airport_activity_menu_list:
-               airportListFragment();
+                airportListFragment();
                 return true;
             case R.id.airport_activity_metar_options:
                 displaySettingsMenu();
@@ -90,5 +145,44 @@ public class AirportMetarTafFragment extends DaggerFragment {
 
     private void displaySettingsMenu() {
         EventBus.getDefault().post(new DisplaySettings());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    private void displayResponseError(ResponseError responseError) {
+        ViewUtilities.displayErrorDialog(airportMetarTafView.getRoot(), getString(R.string.oops), responseError.getResponseError());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    private void displayCallFailure(CallFailure callFailure) {
+        ViewUtilities.displayErrorDialog(airportMetarTafView.getRoot(), getString(R.string.oops), callFailure.getcallFailure());
+    }
+
+    private void assignDisplayOptions() {
+        displayRawTafMetar = appPreferences.isDisplayRawTafMetar();
+        decodeTafMetar = appPreferences.isDecodeTafMetar();
+        temperatureUnits = appPreferences.getTemperatureDisplay();
+        altitudeUnits = appPreferences.getAltitudeDisplay();
+        windSpeedUnits = appPreferences.getWindSpeedDisplay();
+        distanceUnits = appPreferences.getDistanceUnits();
+    }
+
+    public boolean isDisplayRawTafMetar() {
+        return displayRawTafMetar;
+    }
+
+    public boolean isDecodeTafMetar() {
+        return decodeTafMetar;
+    }
+
+    public String getAltitudeUnits() {
+        return altitudeUnits;
+    }
+
+    public String getWindSpeedUnits() {
+        return windSpeedUnits;
+    }
+
+    public String getDistanceUnits() {
+        return distanceUnits;
     }
 }

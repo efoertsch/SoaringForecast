@@ -4,37 +4,25 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:context="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity">
 
-    <data>
+    <data  class="AirportMetarTafView">
 
         <import type="android.view.View"/>
 
         <variable
             name="viewmodel"
-            type="com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafViewModelOld"/>
+            type="com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafViewModel"/>
     </data>
 
-
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/fragment_airport_weather_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
         <RelativeLayout
-            android:id="@+id/fragment_airport_weather_view"
+            android:id="@+id/airport_metar_taf_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:backgroundTint="@color/colorScreenBackground"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/fragment_airport_weather_recycler_view"
+                android:id="@+id/airport_metar_taf_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
         </RelativeLayout>
-
-
-    </android.support.design.widget.CoordinatorLayout>
-
 </layout>
