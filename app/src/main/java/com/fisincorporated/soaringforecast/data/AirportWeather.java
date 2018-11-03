@@ -4,6 +4,9 @@ import com.fisincorporated.soaringforecast.data.metars.Metar;
 import com.fisincorporated.soaringforecast.data.taf.TAF;
 
 public class AirportWeather {
+
+    private String airportName;
+
     private Metar metar;
 
     private TAF taf;
@@ -44,4 +47,11 @@ public class AirportWeather {
         this.elevationM = elevationM;
     }
 
+    public String getAirportName() {
+        return airportName;
+    }
+
+    public void setAirportName(String airportName) {
+        this.airportName = airportName;
+    }
 }

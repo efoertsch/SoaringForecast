@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 
 import org.greenrobot.eventbus.EventBus;
@@ -104,7 +105,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
 
-    public void displayFragment(Fragment fragment, boolean addToBackstack) {
+    public void replaceWithThisFragment(Fragment fragment, boolean addToBackstack) {
         // Replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
@@ -121,6 +122,19 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
     public void showSnackBarMessage(String message, int duration) {
-        Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE).show();
+        Snackbar.make(rootView, message, duration).show();
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(PopThisFragmentFromBackStack event) {
+        //popCurrentFragment();
+    }
+
+//    public void popCurrentFragment() {
+//        FragmentManager fm = getSupportFragmentManager();
+//        fm.popBackStack();
+//        if (fm.getFragments().size() == 0){
+//            finish();
+//        }
+//    }
 }

@@ -67,12 +67,12 @@ public class AirportActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddAirportEvent event) {
-        displayFragment(getAirportSearchFragment(),true);
+        replaceWithThisFragment(getAirportSearchFragment(),true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplayAirportList event) {
-        displayFragment(getAirportListFragment(), true);
+        replaceWithThisFragment(getAirportListFragment(), true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -89,7 +89,7 @@ public class AirportActivity extends MasterActivity {
     }
 
     private Fragment getAirportMetarTafFragment() {
-        return new AirportMetarTafFragment();
+        return AirportMetarTafFragment.newInstance(appPreferences);
     }
 
     private void displaySettingsActivity() {

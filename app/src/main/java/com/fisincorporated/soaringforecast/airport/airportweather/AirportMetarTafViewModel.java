@@ -1,197 +1,122 @@
 package com.fisincorporated.soaringforecast.airport.airportweather;
 
-
-import android.databinding.BaseObservable;
-import android.databinding.DataBindingUtil;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
+import android.content.res.Resources;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
-import com.fisincorporated.soaringforecast.app.ViewModelLifeCycle;
 import com.fisincorporated.soaringforecast.data.AirportWeather;
 import com.fisincorporated.soaringforecast.data.common.AviationWeatherResponse;
+import com.fisincorporated.soaringforecast.data.metars.Metar;
 import com.fisincorporated.soaringforecast.data.metars.MetarResponse;
+import com.fisincorporated.soaringforecast.data.taf.TAF;
 import com.fisincorporated.soaringforecast.data.taf.TafResponse;
-import com.fisincorporated.soaringforecast.databinding.AirportWeatherFragmentBinding;
+import com.fisincorporated.soaringforecast.messages.CallFailure;
+import com.fisincorporated.soaringforecast.messages.ResponseError;
 import com.fisincorporated.soaringforecast.retrofit.AviationWeatherApi;
-import com.fisincorporated.soaringforecast.utils.ViewUtilities;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-
-import javax.inject.Inject;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AirportMetarTafViewModel extends BaseObservable implements ViewModelLifeCycle, WeatherMetarTafPreferences {
+//TODO clean up and execute api calls in more RxJava sort of way
+public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarTafPreferences {
 
-    private static final int MAX_CALLS = 2;
-
-    private int numberCallsComplete = 0;
-
+    private AppPreferences appPreferences;
     private Call<MetarResponse> metarCall;
-
     private Call<TafResponse> tafCall;
 
-    private AirportWeatherFragmentBinding viewDataBinding;
+    private MutableLiveData<List<AirportWeather>> airportWeatherList;
+    private MutableLiveData<List<TAF>> tafList;
+    private MutableLiveData<List<Metar>> metarList;
 
-    private View bindingView;
-
-    private FloatingActionButton fab;
-
-    private ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
-
-    private boolean displayRawTafMetar;
-
-    private boolean decodeTafMetar;
-
-    private String temperatureUnits;
-
-    private String altitudeUnits;
-
-    private String windSpeedUnits;
-
-    private String distanceUnits;
-
-    @Inject
-    public AppPreferences appPreferences;
-
-    @Inject
-    public AirportMetarTafAdapter airportMetarTafAdapter;
-
-    @Inject
     public AviationWeatherApi aviationWeatherApi;
 
-    @Inject
-    public AirportMetarTafViewModel() {
-    }
+    // used for display of Metar/Taf
+    private boolean displayRawTafMetar;
+    private boolean decodeTafMetar;
+    private String temperatureUnits;
+    private String altitudeUnits;
+    private String windSpeedUnits;
+    private String distanceUnits;
 
-    public AirportMetarTafViewModel setView(View view) {
 
-        bindingView = view.findViewById(R.id.fragment_airport_weather_layout);
-        viewDataBinding = DataBindingUtil.bind(bindingView);
-        setupRecyclerView(viewDataBinding.fragmentAirportWeatherRecyclerView);
-        viewDataBinding.setViewmodel(this);
-        setAirportWeatherOrder();
-        airportMetarTafAdapter.setAirportWeatherList(airportWeatherList).setWeatherMetarTafPreferences(this);
-        viewDataBinding.fragmentAirportWeatherRecyclerView.setAdapter(airportMetarTafAdapter);
+    public AirportMetarTafViewModel setAppPreferences(AppPreferences appPreferences) {
+        this.appPreferences = appPreferences;
         return this;
     }
 
+    public AirportMetarTafViewModel setAviationWeaterApi(AviationWeatherApi aviationWeatherApi) {
+        this.aviationWeatherApi = aviationWeatherApi;
+        return this;
+    }
+
+    public LiveData<List<AirportWeather>> getAirportWeatherList() {
+        if (airportWeatherList == null) {
+            airportWeatherList = new MutableLiveData<>();
+            airportWeatherList.setValue(new ArrayList<>());
+            assignDisplayOptions();
+            setAirportWeatherOrder();
+
+        }
+        return airportWeatherList;
+    }
+
+    public LiveData<List<TAF>> getAirportTaf() {
+        if (tafList == null) {
+            tafList = new MutableLiveData<>();
+            tafList.setValue(new ArrayList<>());
+        }
+        return tafList;
+    }
+
+    public LiveData<List<Metar>> getAirportMetars() {
+        if (metarList == null) {
+            metarList = new MutableLiveData<>();
+            metarList.setValue(new ArrayList<>());
+        }
+        return metarList;
+    }
+
+    // Order display of metar/tafs in same order as in list
     private void setAirportWeatherOrder() {
         AirportWeather airportWeather;
-        airportWeatherList.clear();
+        List<AirportWeather> newAirportWeatherList = new ArrayList<>();
         String airportList = getAirportCodes();
         String[] airports = airportList.trim().split("\\s+");
         for (int i = 0; i < airports.length; ++i) {
             airportWeather = new AirportWeather();
             airportWeather.setIcaoId(airports[i]);
-            airportWeatherList.add(airportWeather);
+            newAirportWeatherList.add(airportWeather);
         }
-    }
+        airportWeatherList.setValue(newAirportWeatherList);
 
-    public void setupRecyclerView(RecyclerView recyclerView) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-    }
-
-    @Override
-    public void onResume() {
-        assignDisplayOptions();
-        setAirportWeatherOrder();
-        airportMetarTafAdapter.setAirportWeatherList(airportWeatherList);
-        refresh();
-    }
-
-    @Override
-    public void onPause() {
-        if (metarCall != null) {
-            metarCall.cancel();
-        }
-        if (tafCall != null) {
-            tafCall.cancel();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-    }
-
-    public void refresh() {
-        String airportList = getAirportCodes();
-        if (airportList != null & airportList.trim().length() != 0) {
-            callForMetar(airportList);
-            callForTaf(airportList);
-        }
-    }
-
-    private void callForMetar(String airportList) {
-        metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
-        metarCall.enqueue(new Callback<MetarResponse>() {
-            @Override
-            public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
-                if (isGoodResponse(response)) {
-                    airportMetarTafAdapter.updateMetarList(response.body().getData().getMetars());
-                } else {
-                    displayResponseError(response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MetarResponse> call, Throwable t) {
-                displayCallFailure(call, t);
-            }
-        });
-    }
-
-    private void callForTaf(String airportList) {
-        tafCall = aviationWeatherApi.mostRecentTafForEachAirport(airportList, AviationWeatherApi.TAF_HOURS_BEFORE_NOW);
-        tafCall.enqueue(new Callback<TafResponse>() {
-            @Override
-            public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {
-                if (isGoodResponse(response)) {
-                    airportMetarTafAdapter.updateTafList(response.body().getData().getTAFs());
-                } else {
-                    displayResponseError(response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TafResponse> call, Throwable t) {
-                displayCallFailure(call, t);
-            }
-        });
-    }
-
-    private boolean isGoodResponse(Response<? extends AviationWeatherResponse> response) {
-        return response != null
-                && response.body() != null
-                && response.body().getErrors() != null && response.body().getErrors().getError() == null;
-    }
-
-    private void displayResponseError(Response<? extends AviationWeatherResponse> response) {
-        if (response != null && response.body() != null) {
-            ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
-                    .getString(R.string.oops), response.body().getErrors().getError());
-        } else {
-            ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext()
-                    .getString(R.string.oops), bindingView.getContext().getString
-                    (R.string.aviation_gov_unspecified_error));
-        }
-    }
-
-    private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable t) {
-        if (t.getCause() != null && !t.getCause().equals("Canceled")) {
-            ViewUtilities.displayErrorDialog(bindingView, bindingView.getContext().getString
-                    (R.string.oops), t.toString());
-        }
     }
 
     private String getAirportCodes() {
         return appPreferences.getAirportList();
+    }
+
+    public void refresh() {
+        String airportList = getAirportCodes();
+        assignDisplayOptions();
+        if (airportList == null || airportList.trim().length() == 0) {
+            airportWeatherList.setValue(new ArrayList<>());
+            tafList.setValue(new ArrayList<>());
+            metarList.setValue(new ArrayList<>());
+        }
+        else {
+            setAirportWeatherOrder();
+            callForMetar(airportList);
+            callForTaf(airportList);
+        }
     }
 
     private void assignDisplayOptions() {
@@ -223,4 +148,62 @@ public class AirportMetarTafViewModel extends BaseObservable implements ViewMode
         return distanceUnits;
     }
 
+
+    private void callForMetar(String airportList) {
+        metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
+        metarCall.enqueue(new Callback<MetarResponse>() {
+            @Override
+            public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
+                if (isGoodResponse(response)) {
+                    metarList.setValue(response.body().getData().getMetars());
+                } else {
+                    displayResponseError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MetarResponse> call, Throwable t) {
+                displayCallFailure(call, t);
+            }
+        });
+    }
+
+    private void callForTaf(String airportList) {
+        tafCall = aviationWeatherApi.mostRecentTafForEachAirport(airportList, AviationWeatherApi.TAF_HOURS_BEFORE_NOW);
+        tafCall.enqueue(new Callback<TafResponse>() {
+            @Override
+            public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {
+                if (isGoodResponse(response)) {
+                    tafList.setValue(response.body().getData().getTAFs());
+                } else {
+                    displayResponseError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TafResponse> call, Throwable t) {
+                displayCallFailure(call, t);
+            }
+        });
+    }
+
+    private boolean isGoodResponse(Response<? extends AviationWeatherResponse> response) {
+        return response != null
+                && response.body() != null
+                && response.body().getErrors() != null && response.body().getErrors().getError() == null;
+    }
+
+    private void displayResponseError(Response<? extends AviationWeatherResponse> response) {
+        if (response != null && response.body() != null) {
+            EventBus.getDefault().post(new ResponseError(response.body().getErrors().getError()));
+
+        } else {
+            EventBus.getDefault().post(new ResponseError(Resources.getSystem().getString(R.string.aviation_gov_unspecified_error)));
+        }
+    }
+
+    private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable t) {
+        EventBus.getDefault().post(new CallFailure(t.toString()));
+
+    }
 }

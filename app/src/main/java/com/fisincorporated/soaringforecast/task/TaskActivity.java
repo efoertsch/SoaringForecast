@@ -4,17 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.MasterActivity;
 import com.fisincorporated.soaringforecast.messages.AddNewTaskRefused;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTask;
-import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTaskRefused;
 import com.fisincorporated.soaringforecast.messages.EditTask;
 import com.fisincorporated.soaringforecast.messages.GoToDownloadImport;
 import com.fisincorporated.soaringforecast.messages.GoToTurnpointImport;
-import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.messages.SelectedTask;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.task.edit.EditTaskFragment;
@@ -85,32 +82,27 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTask event) {
-        displayFragment(EditTaskFragment.newInstance(appRepository, event.getTaskId()), true);
+        replaceWithThisFragment(EditTaskFragment.newInstance(appRepository, event.getTaskId()), true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        displayFragment(TurnpointSearchFragment.newInstance(), true);
+        replaceWithThisFragment(TurnpointSearchFragment.newInstance(), true);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AddTurnpointsToTaskRefused event) {
-        popCurrentFragment();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(PopThisFragmentFromBackStack event) {
-        popCurrentFragment();
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onMessageEvent(AddTurnpointsToTaskRefused event) {
+//        //popCurrentFragment();
+//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToTurnpointImport event) {
-        displayFragment(getSeeYouImportFragment(),true);
+        replaceWithThisFragment(getSeeYouImportFragment(),true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToDownloadImport event) {
-        displayFragment(getTurnpointsDownloadFragment(), true);
+        replaceWithThisFragment(getTurnpointsDownloadFragment(), true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -121,11 +113,6 @@ public class TaskActivity extends MasterActivity {
         intent.putExtras(bundle);
         setResult(RESULT_OK, intent);
         finish();
-    }
-
-    private void popCurrentFragment() {
-        FragmentManager fm = getSupportFragmentManager();
-        fm.popBackStack ();
     }
 
     public static class Builder {
