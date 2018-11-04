@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -14,8 +14,8 @@
             type="com.fisincorporated.soaringforecast.airport.airportweather.WeatherMetarTafPreferences"/>
 
         <variable
-            name="airportWeather"
-            type="com.fisincorporated.soaringforecast.data.AirportWeather"/>
+            name="airportMetarTaf"
+            type="com.fisincorporated.soaringforecast.data.AirportMetarTaf"/>
 
         <variable
             name="metar"
@@ -33,79 +33,85 @@
         android:layout_marginBottom="@dimen/margin_standard"
         android:layout_marginEnd="@dimen/margin_double"
         android:layout_marginStart="@dimen/margin_double"
-        android:layout_marginTop="@dimen/margin_standard">
+        android:layout_marginTop="@dimen/margin_standard"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_standard"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <LinearLayout
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline_50pct"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.50"/>
 
-                    <TextView
-                        android:id="@+id/airport_station_id"
-                        style="@style/forecastData"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:text="@{airportWeather.icaoId}"
-                        android:textSize="@dimen/text_size_large"
-                        tools:text="KORH"/>
+                <TextView
+                    android:id="@+id/airport_station_name"
+                    style="@style/forecastData"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_standard"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@{airportMetarTaf.airportName}"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintEnd_toEndOf="@+id/guideline_50pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Worcester Regional Airport"
+                    />
 
-                    <LinearLayout
-                        android:id="@+id/airport_elevation_layout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="@{airportWeather.elevationM != null ? View.VISIBLE : View.GONE}">
+                <TextView
+                    android:id="@+id/airport_station_id"
+                    style="@style/forecastData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_standard"
+                    android:text="@{airportMetarTaf.icaoId}"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintStart_toStartOf="@+id/guideline_50pct"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="KORH"/>
 
-                        <TextView
-                            style="@style/forecastLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/metar_elevation"/>
+                <TextView
+                    style="@style/forecastLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.format(@string/metar_elevation,ConversionUtils.convertMetersToFeet(airportMetarTaf.elevationM),displayPrefs.altitudeUnits )}"
+                    android:visibility="@{airportMetarTaf.elevationM != null ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="@+id/airport_station_id"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/airport_station_id"
+                    app:layout_constraintTop_toTopOf="@+id/airport_station_id"
+                    tools:text="El: 999ft"/>
 
-                        <TextView
-                            style="@style/forecastData"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{Integer.toString(ConversionUtils.convertMetersToFeet(airportWeather.elevationM))}"
-                            tools:text="999"/>
-
-                        <TextView
-                            style="@style/forecastLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@{displayPrefs.altitudeUnits}"
-                            tools:text="Ft"/>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
+            </android.support.constraint.ConstraintLayout>
 
             <include
                 android:id="@+id/airport_weather_include_metar"
                 layout="@layout/airport_metar"
-                bind:displayPrefs="@{displayPrefs}"
-                bind:metar="@{airportWeather.metar}"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:displayPrefs="@{displayPrefs}"
+                app:metar="@{airportMetarTaf.metar}"/>
 
             <include
                 android:id="@+id/airport_weather_include_taf"
                 layout="@layout/airport_taf"
-                bind:displayPrefs="@{displayPrefs}"
-                bind:taf="@{airportWeather.taf}"/>
-
+                app:displayPrefs="@{displayPrefs}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:taf="@{airportMetarTaf.taf}"/>
         </LinearLayout>
+
+
     </android.support.v7.widget.CardView>
 
 </layout>

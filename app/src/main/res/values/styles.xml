@@ -7,6 +7,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!-- cardviewStyle added hear to get past rendering problem on view layout -->
+        <item name="cardViewStyle">@style/CardView</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -46,6 +48,8 @@
         <item name="android:layout_margin">@dimen/margin_standard</item>
         <item name="android:background">@drawable/rounded_rectangle_primary</item>
     </style>
+
+
 
 
 </resources>

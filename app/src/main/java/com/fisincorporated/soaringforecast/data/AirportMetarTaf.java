@@ -3,7 +3,7 @@ package com.fisincorporated.soaringforecast.data;
 import com.fisincorporated.soaringforecast.data.metars.Metar;
 import com.fisincorporated.soaringforecast.data.taf.TAF;
 
-public class AirportWeather {
+public class AirportMetarTaf {
 
     private String airportName;
 

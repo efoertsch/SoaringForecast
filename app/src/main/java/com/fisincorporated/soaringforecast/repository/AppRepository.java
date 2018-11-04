@@ -80,8 +80,14 @@ public class AppRepository {
         return airportDao.listAllAirports();
     }
 
-    public Maybe<List<Airport>> selectIcaoIdAirports(List<String> iacoAirports) {
-        return airportDao.selectIcaoIdAirports(iacoAirports);
+    public Maybe<List<Airport>> selectIcaoIdAirports(List<String> icaoAirports) {
+        return airportDao.selectIcaoIdAirports(icaoAirports);
+    }
+
+    public Maybe<List<Airport>> getAirportsByIcaoIdAirports(List<String> icaoIds){
+        return selectIcaoIdAirports(icaoIds)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Maybe<Airport> getAirport(String ident) {

@@ -89,7 +89,7 @@ public class AirportActivity extends MasterActivity {
     }
 
     private Fragment getAirportMetarTafFragment() {
-        return AirportMetarTafFragment.newInstance(appPreferences);
+        return AirportMetarTafFragment.newInstance(appRepository, appPreferences);
     }
 
     private void displaySettingsActivity() {
