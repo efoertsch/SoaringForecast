@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.databinding.EditTaskView;
+import com.fisincorporated.soaringforecast.messages.AddNewTaskRefused;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTask;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.touchhelper.OnStartDragListener;
@@ -94,21 +96,24 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
         saveFab = editTaskView.editTaskSaveTask;
         saveFab.setOnClickListener(v -> taskAndTurnpointsViewModel.saveTask());
 
-
-        taskAndTurnpointsViewModel.getNeedToSaveUpdates().observe(this, needToSaveUpdates -> {
-            saveFab.setVisibility(needToSaveUpdates ? View.VISIBLE : View.GONE);
-        });
-
         return editTaskView.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().setTitle(R.string.edit_task);
+        displayTitle();
         // if just added all turnpoints via search, the task distance will not be updated by observer in createView
         // ( as this fragment paused while adding turnpoints, so make sure ui update occurs.
         editTaskView.editTaskDistance.setText(getString(R.string.distance_km,taskAndTurnpointsViewModel.getTaskDistance().getValue()));
+    }
+
+    private void displayTitle() {
+        if (taskId == -1){
+            getActivity().setTitle(R.string.add_task);
+        } else {
+            getActivity().setTitle(R.string.edit_task);
+        }
     }
 
     private void goToAddTaskTurnpoints() {
@@ -119,4 +124,23 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
     }
+
+
+
+    //TODO - bug report.
+    private void displayAddTaskErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.error_adding_new_task)
+                .setTitle(R.string.oops)
+                .setPositiveButton(R.string.go_back, (dialog, id) -> {
+                    dialog.dismiss();
+                    doNotAddTask();
+                });
+        builder.create().show();
+    }
+
+    private void doNotAddTask() {
+        EventBus.getDefault().post(new AddNewTaskRefused());
+    }
+
 }

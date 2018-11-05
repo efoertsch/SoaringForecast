@@ -27,10 +27,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.schedulers.Schedulers;
 
-// TODO consolidate all data access to repository
+// TODO consolidate all data access to repository(ies)
 
 /**
- * Use to access airport database
+ * Use to access Room database
  * JSON soundings file
  */
 
@@ -84,7 +84,7 @@ public class AppRepository {
         return airportDao.selectIcaoIdAirports(icaoAirports);
     }
 
-    public Maybe<List<Airport>> getAirportsByIcaoIdAirports(List<String> icaoIds){
+    public Maybe<List<Airport>> getAirportsByIcaoIdAirports(List<String> icaoIds) {
         return selectIcaoIdAirports(icaoIds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -234,19 +234,6 @@ public class AppRepository {
 
     }
 
-    public Single<Long> insertTask(Task task) {
-        return Single.create((SingleOnSubscribe<Long>) emitter -> {
-            try {
-                Long id = taskDao.insert(task);
-                emitter.onSuccess(id);
-            } catch (Throwable t) {
-                emitter.onError(t);
-            }
-        })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-    }
-
     public Completable updateTaskListOrder(List<Task> taskList) {
         Completable completable = Completable.fromAction(() -> {
             try {
@@ -308,20 +295,47 @@ public class AppRepository {
     }
 
     // ---------- Update Task and Turnpoints --------------------------------
+
+    public Single<Long> insertTask(Task task) {
+        return Single.create((SingleOnSubscribe<Long>) emitter -> {
+            try {
+                Long id = taskDao.insert(task);
+                emitter.onSuccess(id);
+            } catch (Throwable t) {
+                emitter.onError(t);
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
     @SuppressLint("CheckResult")
-    public void updateTaskAndTurnpoints(Task
-                                                task, List<TaskTurnpoint> taskTurnpoints, List<TaskTurnpoint> deleteTurnpoints) {
-        updateTask(task)
+    public Single<Long> addNewTaskAndTurnpoints(Task task, List<TaskTurnpoint> taskTurnpoints){
+        return Single.create((SingleOnSubscribe<Long>) emitter -> {
+            try {
+                long taskId = taskDao.insert(task);
+                for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
+                    taskTurnpoint.setTaskId(taskId);
+                }
+                taskTurnpointDao.insertAll(taskTurnpoints);
+                emitter.onSuccess(taskId);
+            } catch (Throwable throwable) {
+                throw Exceptions.propagate(throwable);
+            }
+        })  .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+
+    }
+
+    @SuppressLint("CheckResult")
+    public Completable updateTaskAndTurnpoints(Task task, List<TaskTurnpoint> taskTurnpoints
+            , List<TaskTurnpoint> deleteTurnpoints) {
+        return updateTask(task)
                 .andThen(updateTaskTurnpoints(taskTurnpoints))
                 .andThen(deleteTaskTurnpoints(deleteTurnpoints))
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    // all done
-                }, throwable -> {
-                    // TODO Display some error. But how?
+                .observeOn(AndroidSchedulers.mainThread());
 
-                });
 
     }
 

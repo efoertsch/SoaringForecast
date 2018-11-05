@@ -6,6 +6,8 @@
 
     <data class="EditTaskView">
 
+        <import type="android.view.View"/>
+
         <variable
             name="taskAndTurnpointsViewModel"
             type="com.fisincorporated.soaringforecast.task.edit.TaskAndTurnpointsViewModel"/>
@@ -122,11 +124,21 @@
             android:focusable="true"
             android:onClick="@{() -> taskAndTurnpointsViewModel.saveTask()}"
             android:scaleType="fitXY"
-            android:visibility="gone"
+            android:visibility="@{safeUnbox(taskAndTurnpointsViewModel.needToSaveUpdates) ? View.VISIBLE : View.GONE}"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_save"/>
+            app:srcCompat="@drawable/ic_save"
+            />
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:visibility="@{safeUnbox(taskAndTurnpointsViewModel.working) ? View.VISIBLE : View.GONE}"
+            />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

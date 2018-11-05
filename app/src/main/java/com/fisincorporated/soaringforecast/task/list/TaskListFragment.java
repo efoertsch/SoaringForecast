@@ -1,13 +1,11 @@
 package com.fisincorporated.soaringforecast.task.list;
 
-import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +19,6 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericEditClickListener;
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener;
 import com.fisincorporated.soaringforecast.databinding.TaskListView;
-import com.fisincorporated.soaringforecast.messages.AddNewTaskRefused;
 import com.fisincorporated.soaringforecast.messages.DeleteTask;
 import com.fisincorporated.soaringforecast.messages.EditTask;
 import com.fisincorporated.soaringforecast.messages.RenumberedTaskList;
@@ -42,7 +39,6 @@ import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class TaskListFragment extends Fragment implements GenericListClickListener<Task>, GenericEditClickListener<Task>, OnStartDragListener {
@@ -93,7 +89,8 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
 
 
         FloatingActionButton fab = taskListView.taskListAddButton;
-        fab.setOnClickListener(v -> createNewTask());
+        fab.setOnClickListener(v ->
+                EventBus.getDefault().post(new EditTask(-1)));
 
         progressBar = taskListView.taskListProgressBar;
 
@@ -139,42 +136,6 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
         progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-
-    @SuppressLint("CheckResult")
-    private void createNewTask() {
-        setProgressBarVisibility(true);
-        Task task = new Task("New Task");
-        appRepository.insertTask(task).subscribeWith(new DisposableSingleObserver<Long>() {
-            @Override
-            public void onSuccess(Long taskId) {
-                setProgressBarVisibility(false);
-                EventBus.getDefault().post(new EditTask(taskId));
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                setProgressBarVisibility(false);
-                displayAddTaskErrorDialog();
-
-            }
-        });
-    }
-
-    //TODO - bug report.
-    private void displayAddTaskErrorDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.error_adding_new_task)
-                .setTitle(R.string.oops)
-                .setPositiveButton(R.string.go_back, (dialog, id) -> {
-                    dialog.dismiss();
-                    doNotAddTask();
-                });
-        builder.create().show();
-    }
-
-    private void doNotAddTask() {
-        EventBus.getDefault().post(new AddNewTaskRefused());
-    }
 
     @Override
     public void onItemClick(Task task, int position) {

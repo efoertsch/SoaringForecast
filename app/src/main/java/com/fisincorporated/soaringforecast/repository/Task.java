@@ -19,9 +19,7 @@ public class Task {
 
     private int taskOrder;
 
-    public Task(String taskName){
-        this.taskName = taskName;
-    }
+    public Task(){ }
 
     public void setId(long id) {
         this.id = id;
