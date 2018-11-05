@@ -614,6 +614,12 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (marker.getTag() == null) {
+            // a click on task marker causes onMarkerClick to fire, even though task marker
+            // onClickListener not assigned. Go figure.
+            return false;
+        }
+
         forecastSounding = Constants.FORECAST_SOUNDING.SOUNDING;
         viewDataBinding.soaringForecastSoundingLayout.setVisibility(View.VISIBLE);
         loadForecastSoundings((SoundingLocation) marker.getTag());
@@ -712,7 +718,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
                     } else {
                         toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                        placeMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ? taskTurnpoint.getDistanceFromStartingPoint() + "km" : "Finish"), toLatLng);
+                        placeMarker(taskTurnpoint.getTitle(),  (i < numberTurnpoints - 1 ?  String.format("%1$.1fkm%", taskTurnpoint.getDistanceFromStartingPoint()): "Finish"), toLatLng);
                         drawLine(fromLatLng, toLatLng);
                         fromLatLng = toLatLng;
                     }

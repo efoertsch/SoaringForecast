@@ -28,10 +28,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/margin_standard"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="@dimen/margin_standard"
-        android:layout_marginBottom="@dimen/margin_standard">
+        android:padding="@dimen/margin_standard">
 
         <TextView
             android:id="@+id/task_detail_taskname"
@@ -40,6 +37,9 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:layout_marginBottom="@dimen/margin_standard"
             android:onClick="@{()->clickListener.onItemClick(task, position)}"
             android:text="@{task.taskName}"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -58,7 +58,8 @@
             android:gravity="center_vertical"
             android:onClick="@{()->editClickListener.onEditItemClick(task, position)}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/task_detail_taskname"
+            app:layout_constraintBottom_toBottomOf="@+id/task_detail_taskname"
             app:srcCompat="@drawable/ic_mode_edit"
             android:background="?selectableItemBackground"
             />
