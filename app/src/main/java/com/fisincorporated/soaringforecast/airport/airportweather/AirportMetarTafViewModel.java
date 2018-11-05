@@ -7,7 +7,7 @@ import android.content.res.Resources;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
-import com.fisincorporated.soaringforecast.data.AirportWeather;
+import com.fisincorporated.soaringforecast.data.AirportMetarTaf;
 import com.fisincorporated.soaringforecast.data.common.AviationWeatherResponse;
 import com.fisincorporated.soaringforecast.data.metars.Metar;
 import com.fisincorporated.soaringforecast.data.metars.MetarResponse;
@@ -15,6 +15,8 @@ import com.fisincorporated.soaringforecast.data.taf.TAF;
 import com.fisincorporated.soaringforecast.data.taf.TafResponse;
 import com.fisincorporated.soaringforecast.messages.CallFailure;
 import com.fisincorporated.soaringforecast.messages.ResponseError;
+import com.fisincorporated.soaringforecast.repository.Airport;
+import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.retrofit.AviationWeatherApi;
 
 import org.greenrobot.eventbus.EventBus;
@@ -22,22 +24,26 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 //TODO clean up and execute api calls in more RxJava sort of way
 public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarTafPreferences {
 
     private AppPreferences appPreferences;
+    private AppRepository appRepository;
+
+    public AviationWeatherApi aviationWeatherApi;
     private Call<MetarResponse> metarCall;
     private Call<TafResponse> tafCall;
 
-    private MutableLiveData<List<AirportWeather>> airportWeatherList;
+    private MutableLiveData<List<AirportMetarTaf>> airportMetarTafs;
     private MutableLiveData<List<TAF>> tafList;
     private MutableLiveData<List<Metar>> metarList;
-
-    public AviationWeatherApi aviationWeatherApi;
 
     // used for display of Metar/Taf
     private boolean displayRawTafMetar;
@@ -47,9 +53,15 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
     private String windSpeedUnits;
     private String distanceUnits;
 
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportMetarTafViewModel setAppPreferences(AppPreferences appPreferences) {
         this.appPreferences = appPreferences;
+        return this;
+    }
+
+    public AirportMetarTafViewModel setAppRepository(AppRepository appRepository) {
+        this.appRepository = appRepository;
         return this;
     }
 
@@ -58,15 +70,15 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
         return this;
     }
 
-    public LiveData<List<AirportWeather>> getAirportWeatherList() {
-        if (airportWeatherList == null) {
-            airportWeatherList = new MutableLiveData<>();
-            airportWeatherList.setValue(new ArrayList<>());
+    public LiveData<List<AirportMetarTaf>> getAirportMetarTafs() {
+        if (airportMetarTafs == null) {
+            airportMetarTafs = new MutableLiveData<>();
+            airportMetarTafs.setValue(new ArrayList<>());
             assignDisplayOptions();
             setAirportWeatherOrder();
-
+            addAirportNames();
         }
-        return airportWeatherList;
+        return airportMetarTafs;
     }
 
     public LiveData<List<TAF>> getAirportTaf() {
@@ -87,16 +99,16 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
 
     // Order display of metar/tafs in same order as in list
     private void setAirportWeatherOrder() {
-        AirportWeather airportWeather;
-        List<AirportWeather> newAirportWeatherList = new ArrayList<>();
+        AirportMetarTaf airportMetarTaf;
+        List<AirportMetarTaf> newAirportMetarTafList = new ArrayList<>();
         String airportList = getAirportCodes();
         String[] airports = airportList.trim().split("\\s+");
         for (int i = 0; i < airports.length; ++i) {
-            airportWeather = new AirportWeather();
-            airportWeather.setIcaoId(airports[i]);
-            newAirportWeatherList.add(airportWeather);
+            airportMetarTaf = new AirportMetarTaf();
+            airportMetarTaf.setIcaoId(airports[i]);
+            newAirportMetarTafList.add(airportMetarTaf);
         }
-        airportWeatherList.setValue(newAirportWeatherList);
+        airportMetarTafs.setValue(newAirportMetarTafList);
 
     }
 
@@ -108,11 +120,10 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
         String airportList = getAirportCodes();
         assignDisplayOptions();
         if (airportList == null || airportList.trim().length() == 0) {
-            airportWeatherList.setValue(new ArrayList<>());
+            airportMetarTafs.setValue(new ArrayList<>());
             tafList.setValue(new ArrayList<>());
             metarList.setValue(new ArrayList<>());
-        }
-        else {
+        } else {
             setAirportWeatherOrder();
             callForMetar(airportList);
             callForTaf(airportList);
@@ -148,6 +159,35 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
         return distanceUnits;
     }
 
+    private void addAirportNames() {
+        Disposable disposable = appRepository.getAirportsByIcaoIdAirports(appPreferences.getSelectedAirportCodesList())
+                .subscribe(airportList -> {
+                            if (airportList != null) {
+                                addAirportNameToAirportWeather(airportList);
+                            }
+                        },
+                        t -> {
+                            Timber.e(t);
+                        });
+        compositeDisposable.add(disposable);
+    }
+
+    private void addAirportNameToAirportWeather(List<Airport> airportList) {
+        synchronized (airportMetarTafs) {
+            List<AirportMetarTaf> airportweathers = airportMetarTafs.getValue();
+            for (int i = 0; i < airportList.size(); ++i) {
+                for (int j = 0; j < airportweathers.size(); ++j) {
+                    if (airportList.get(i).getIdent().equals(airportweathers.get(j).getIcaoId())) {
+                        airportweathers.get(j).setAirportName(airportList.get(i).getName());
+                        break;
+                    }
+                }
+            }
+            // just so it triggers update
+            airportMetarTafs.setValue(airportMetarTafs.getValue());
+        }
+
+    }
 
     private void callForMetar(String airportList) {
         metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
@@ -202,8 +242,16 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
         }
     }
 
-    private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable t) {
+    private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable
+            t) {
         EventBus.getDefault().post(new CallFailure(t.toString()));
+
+    }
+
+    @Override
+    public void onCleared(){
+        compositeDisposable.dispose();
+        super.onCleared();
 
     }
 }

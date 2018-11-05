@@ -11,7 +11,7 @@ import android.view.View;
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.app.ViewModelLifeCycle;
-import com.fisincorporated.soaringforecast.data.AirportWeather;
+import com.fisincorporated.soaringforecast.data.AirportMetarTaf;
 import com.fisincorporated.soaringforecast.data.common.AviationWeatherResponse;
 import com.fisincorporated.soaringforecast.data.metars.MetarResponse;
 import com.fisincorporated.soaringforecast.data.taf.TafResponse;
@@ -43,7 +43,7 @@ public class AirportMetarTafViewModelOld extends BaseObservable implements ViewM
 
     private FloatingActionButton fab;
 
-    private ArrayList<AirportWeather> airportWeatherList = new ArrayList<>();
+    private ArrayList<AirportMetarTaf> airportMetarTafList = new ArrayList<>();
 
     private boolean displayRawTafMetar;
 
@@ -77,20 +77,20 @@ public class AirportMetarTafViewModelOld extends BaseObservable implements ViewM
         setupRecyclerView(viewDataBinding.fragmentAirportWeatherRecyclerView);
         viewDataBinding.setViewmodel(this);
         setAirportWeatherOrder();
-        airportMetarTafAdapter.setAirportWeatherList(airportWeatherList).setWeatherMetarTafPreferences(this);
+        airportMetarTafAdapter.setAirportMetarTafList(airportMetarTafList).setWeatherMetarTafPreferences(this);
         viewDataBinding.fragmentAirportWeatherRecyclerView.setAdapter(airportMetarTafAdapter);
         return this;
     }
 
     private void setAirportWeatherOrder() {
-        AirportWeather airportWeather;
-        airportWeatherList.clear();
+        AirportMetarTaf airportMetarTaf;
+        airportMetarTafList.clear();
         String airportList = getAirportCodes();
         String[] airports = airportList.trim().split("\\s+");
         for (int i = 0; i < airports.length; ++i) {
-            airportWeather = new AirportWeather();
-            airportWeather.setIcaoId(airports[i]);
-            airportWeatherList.add(airportWeather);
+            airportMetarTaf = new AirportMetarTaf();
+            airportMetarTaf.setIcaoId(airports[i]);
+            airportMetarTafList.add(airportMetarTaf);
         }
     }
 
@@ -102,7 +102,7 @@ public class AirportMetarTafViewModelOld extends BaseObservable implements ViewM
     public void onResume() {
         assignDisplayOptions();
         setAirportWeatherOrder();
-        airportMetarTafAdapter.setAirportWeatherList(airportWeatherList);
+        airportMetarTafAdapter.setAirportMetarTafList(airportMetarTafList);
         refresh();
     }
 

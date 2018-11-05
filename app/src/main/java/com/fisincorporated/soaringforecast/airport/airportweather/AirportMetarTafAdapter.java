@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
-import com.fisincorporated.soaringforecast.data.AirportWeather;
+import com.fisincorporated.soaringforecast.data.AirportMetarTaf;
 import com.fisincorporated.soaringforecast.data.metars.Metar;
 import com.fisincorporated.soaringforecast.data.taf.Forecast;
 import com.fisincorporated.soaringforecast.data.taf.SkyCondition;
@@ -29,7 +29,7 @@ import javax.inject.Inject;
 
 public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTafAdapter.BindingHolder> {
 
-    private List<AirportWeather> airportWeatherList = Collections.synchronizedList(new ObservableArrayList<AirportWeather>());
+    private List<AirportMetarTaf> airportMetarTafList = Collections.synchronizedList(new ObservableArrayList<AirportMetarTaf>());
 
     public WeatherMetarTafPreferences weatherMetarTafPreferences;
 
@@ -40,17 +40,17 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
     public AirportMetarTafAdapter() {
     }
 
-    public AirportMetarTafAdapter setAirportWeatherList(@NonNull List<AirportWeather> selectedAirports) {
-        synchronized (airportWeatherList) {
-            if (airportWeatherList.size() == 0) {
-                airportWeatherList.addAll(selectedAirports);
+    public AirportMetarTafAdapter setAirportMetarTafList(@NonNull List<AirportMetarTaf> selectedAirports) {
+        synchronized (airportMetarTafList) {
+            if (airportMetarTafList.size() == 0) {
+                airportMetarTafList.addAll(selectedAirports);
             } else {
                 // Make sure list of airports ordered (and w/ weather info) based on list passed in
-                ArrayList<AirportWeather> newOrderedList = new ArrayList<>();
+                ArrayList<AirportMetarTaf> newOrderedList = new ArrayList<>();
                 boolean airportAdded;
-                for(AirportWeather selectedAirport : selectedAirports) {
+                for(AirportMetarTaf selectedAirport : selectedAirports) {
                     airportAdded = false;
-                    for (AirportWeather existingAirport : airportWeatherList) {
+                    for (AirportMetarTaf existingAirport : airportMetarTafList) {
                         if (selectedAirport.getIcaoId().equals(existingAirport.getIcaoId())) {
                             newOrderedList.add(existingAirport);
                             airportAdded = true;
@@ -60,8 +60,8 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
                         newOrderedList.add(selectedAirport);
                     }
                 }
-                airportWeatherList.clear();
-                airportWeatherList.addAll(newOrderedList);
+                airportMetarTafList.clear();
+                airportMetarTafList.addAll(newOrderedList);
             }
         }
         return this;
@@ -76,27 +76,27 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
     //TODO DRY
     public void updateMetarList(@NonNull List<Metar> metarList) {
         if (metarList != null) {
-            synchronized (airportWeatherList) {
+            synchronized (airportMetarTafList) {
                 boolean metarFound;
                 for (Metar newMetar : metarList) {
                     metarFound = false;
-                    for (int i = 0; i < airportWeatherList.size(); ++i) {
-                        AirportWeather airportWeather = airportWeatherList.get(i);
-                        if (airportWeather.getIcaoId().equals(newMetar.getStationId())) {
-                            airportWeather.setElevationM(newMetar.getElevationM());
-                            airportWeather.setMetar(newMetar);
+                    for (int i = 0; i < airportMetarTafList.size(); ++i) {
+                        AirportMetarTaf airportMetarTaf = airportMetarTafList.get(i);
+                        if (airportMetarTaf.getIcaoId().equals(newMetar.getStationId())) {
+                            airportMetarTaf.setElevationM(newMetar.getElevationM());
+                            airportMetarTaf.setMetar(newMetar);
                             notifyItemChanged(i);
                             metarFound = true;
                             break;
                         }
                     }
                     if (!metarFound) {
-                        AirportWeather airportWeather = new AirportWeather();
-                        airportWeather.setMetar(newMetar);
-                        airportWeather.setIcaoId(newMetar.getStationId());
-                        airportWeather.setElevationM(newMetar.getElevationM());
-                        airportWeatherList.add(airportWeather);
-                        notifyItemInserted(airportWeatherList.size() - 1);
+                        AirportMetarTaf airportMetarTaf = new AirportMetarTaf();
+                        airportMetarTaf.setMetar(newMetar);
+                        airportMetarTaf.setIcaoId(newMetar.getStationId());
+                        airportMetarTaf.setElevationM(newMetar.getElevationM());
+                        airportMetarTafList.add(airportMetarTaf);
+                        notifyItemInserted(airportMetarTafList.size() - 1);
                     }
                 }
             }
@@ -106,27 +106,27 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
     //TODO DRY
     public void updateTafList(List<TAF> tafs) {
         if (tafs != null && tafs.size() > 0) {
-            synchronized (airportWeatherList) {
+            synchronized (airportMetarTafList) {
                 boolean tafFound;
                 for (TAF newTaf : tafs) {
                     tafFound = false;
-                    for (int i = 0; i < airportWeatherList.size(); ++i) {
-                        AirportWeather airportWeather = airportWeatherList.get(i);
-                        if (airportWeather.getIcaoId().equals(newTaf.getStationId())) {
-                            airportWeather.setElevationM(newTaf.getElevationM());
-                            airportWeather.setTaf(newTaf);
+                    for (int i = 0; i < airportMetarTafList.size(); ++i) {
+                        AirportMetarTaf airportMetarTaf = airportMetarTafList.get(i);
+                        if (airportMetarTaf.getIcaoId().equals(newTaf.getStationId())) {
+                            airportMetarTaf.setElevationM(newTaf.getElevationM());
+                            airportMetarTaf.setTaf(newTaf);
                             notifyItemChanged(i);
                             tafFound = true;
                             break;
                         }
                     }
                     if (!tafFound) {
-                        AirportWeather airportWeather = new AirportWeather();
-                        airportWeather.setTaf(newTaf);
-                        airportWeather.setIcaoId(newTaf.getStationId());
-                        airportWeather.setElevationM(newTaf.getElevationM());
-                        airportWeatherList.add(airportWeather);
-                        notifyItemInserted(airportWeatherList.size() - 1);
+                        AirportMetarTaf airportMetarTaf = new AirportMetarTaf();
+                        airportMetarTaf.setTaf(newTaf);
+                        airportMetarTaf.setIcaoId(newTaf.getStationId());
+                        airportMetarTaf.setElevationM(newTaf.getElevationM());
+                        airportMetarTafList.add(airportMetarTaf);
+                        notifyItemInserted(airportMetarTafList.size() - 1);
                     }
                 }
             }
@@ -142,9 +142,9 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
 
     @Override
     public void onBindViewHolder(BindingHolder holder, int position) {
-        holder.binding.setAirportWeather(airportWeatherList.get(position));
+        holder.binding.setAirportMetarTaf(airportMetarTafList.get(position));
         holder.binding.setDisplayPrefs(weatherMetarTafPreferences);
-        addTafForecasts(holder, airportWeatherList.get(position).getTaf());
+        addTafForecasts(holder, airportMetarTafList.get(position).getTaf());
         holder.binding.executePendingBindings();
     }
 
@@ -186,7 +186,7 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
 
     @Override
     public int getItemCount() {
-        return airportWeatherList.size();
+        return airportMetarTafList.size();
     }
 
     public static class BindingHolder extends RecyclerView.ViewHolder {

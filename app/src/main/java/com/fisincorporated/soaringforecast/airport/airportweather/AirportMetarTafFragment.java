@@ -22,6 +22,7 @@ import com.fisincorporated.soaringforecast.messages.CallFailure;
 import com.fisincorporated.soaringforecast.messages.DisplayAirportList;
 import com.fisincorporated.soaringforecast.messages.DisplaySettings;
 import com.fisincorporated.soaringforecast.messages.ResponseError;
+import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.retrofit.AviationWeatherApi;
 import com.fisincorporated.soaringforecast.utils.ViewUtilities;
 
@@ -38,14 +39,16 @@ public class AirportMetarTafFragment extends DaggerFragment {
     private AirportMetarTafViewModel airportMetarTafViewModel;
 
     private AppPreferences appPreferences;
+    private AppRepository appRepository;
     private AirportMetarTafView airportMetarTafView;
     private boolean firstTime = true;
 
     @Inject
     public AviationWeatherApi aviationWeatherApi;
 
-    public static AirportMetarTafFragment newInstance(AppPreferences appPreferences) {
+    public static AirportMetarTafFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
         AirportMetarTafFragment airportMetarTafFragment = new AirportMetarTafFragment();
+        airportMetarTafFragment.appRepository = appRepository;
         airportMetarTafFragment.appPreferences = appPreferences;
         return airportMetarTafFragment;
     }
@@ -55,7 +58,9 @@ public class AirportMetarTafFragment extends DaggerFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         airportMetarTafViewModel = ViewModelProviders.of(this).get(AirportMetarTafViewModel.class)
-                .setAppPreferences(appPreferences).setAviationWeaterApi(aviationWeatherApi);
+                .setAppPreferences(appPreferences)
+                .setAviationWeaterApi(aviationWeatherApi)
+                .setAppRepository(appRepository);
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -67,8 +72,8 @@ public class AirportMetarTafFragment extends DaggerFragment {
         AirportMetarTafAdapter airportMetarTafAdapter = new AirportMetarTafAdapter();
         recyclerView.setAdapter(airportMetarTafAdapter);
         airportMetarTafAdapter.setWeatherMetarTafPreferences(airportMetarTafViewModel);
-        airportMetarTafViewModel.getAirportWeatherList().observe(this, airportWeatherList -> {
-            airportMetarTafAdapter.setAirportWeatherList(airportWeatherList);
+        airportMetarTafViewModel.getAirportMetarTafs().observe(this, airportWeatherList -> {
+            airportMetarTafAdapter.setAirportMetarTafList(airportWeatherList);
         });
 
         airportMetarTafViewModel.getAirportMetars().observe(this, metars -> {

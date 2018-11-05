@@ -40,13 +40,9 @@ public class AirportListViewModel extends ViewModel {
         listSelectedAirports(appPreferences.getSelectedAirportCodesList());
     }
 
-
-
     @SuppressLint("CheckResult")
     public void listSelectedAirports( List<String> icaoIds) {
-        appRepository.selectIcaoIdAirports(icaoIds)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        appRepository.getAirportsByIcaoIdAirports(icaoIds)
                 .subscribe(airportList -> {
                             airports.setValue(sortAirports(icaoIds, airportList));
                         },

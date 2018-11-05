@@ -42,7 +42,7 @@
     <string name="metar_threeHrPressureTendencyMb">3 Hr Pressure Trend(Mb):</string>
     <string name="metar_seaLevelPressureMb">SeaLevel Pressure(Mb):</string>
     <string name="metar_wxString">WxString:</string>
-    <string name="metar_elevation">Elevation:</string>
+    <string name="metar_elevation">El: %1$d%2$s</string>
     <string name="metar_temp">Temp:</string>
     <string name="metar_dewpoint">DewPoint:</string>
     <string name="metar_not_available">METAR not available or received</string>
