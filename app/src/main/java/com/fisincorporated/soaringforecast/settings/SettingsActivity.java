@@ -20,9 +20,9 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_fragment);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Settings");
+        toolbar.setTitle(R.string.settings);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -34,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new
                 SettingsPreferenceFragment()).commit();
     }
 
