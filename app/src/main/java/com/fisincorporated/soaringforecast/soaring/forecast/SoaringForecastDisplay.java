@@ -718,7 +718,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
                     } else {
                         toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                        placeMarker(taskTurnpoint.getTitle(),  (i < numberTurnpoints - 1 ?  String.format("%1$.1fkm%", taskTurnpoint.getDistanceFromStartingPoint()): "Finish"), toLatLng);
+                        placeMarker(taskTurnpoint.getTitle(),  (i < numberTurnpoints - 1 ?  String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()): "Finish"), toLatLng);
                         drawLine(fromLatLng, toLatLng);
                         fromLatLng = toLatLng;
                     }

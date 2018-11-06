@@ -174,16 +174,16 @@
     <string name="importable_files">Importable Files</string>
     <string name="start_browser">Start Browser</string>
     <string name="cancel">Cancel</string>
-    <string name="but_first">But First...</string>
+    <string name="but_first">But First…</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="started_turnpoints_processing">Started processing turnpoints</string>
     <string name="number_turnpoints_imported">%1$d turnpoints imported.</string>
-    <string name="turnpoints_processed_ok">Turnpoints processed ok</string>
-    <string name="turnpoints_import_from_download_oops">Oops. An error occured during turpoint import. Did you download correct version of SeeYou cup file?</string>
-    <string name="turnpoint_database_load_oops">Oops. An error occured during turnpoint import. Newer version of turnpoint file may be available.</string>
+    <string name="turnpoints_processed_ok">Turnpoints processed OK</string>
+    <string name="turnpoints_import_from_download_oops">Oops. An error occurred during turpoint import. Did you download correct version of SeeYou cup file?</string>
+    <string name="turnpoint_database_load_oops">Oops. An error occurred during turnpoint import. Newer version of turnpoint file may be available.</string>
     <string name="turnpoint_search">Turnpoint Search</string>
-    <string name="search_for_turnpoints_hint">Name, description, ...</string>
+    <string name="search_for_turnpoints_hint">Name, description, …</string>
     <string name="added_to_task">%1$s added to task</string>
     <string name="create_task">Create Task</string>
     <string name="edit_task">Edit Task</string>
@@ -229,6 +229,13 @@
     <string name="airport_menu_add">Add</string>
     <string name="airport_menu_metar_options">Options</string>
     <string name="no_metar_taf_airports_selected">No airports have been selected yet. Would you like to add some?</string>
+    <string name="new_task_name">New Task</string>
+    <string name="error_adding_task_and_turnpoints">An error occurrred adding the task and turnpoints to the database.</string>
+    <string name="add_task">Add Task</string>
+    <string name="error_loading_task_and_turnpoints">An error occurring retrieving the task from the database.</string>
+    <string name="error_searching_turnpoints">An error occurred searching the turnpoint database.</string>
+    <string name="error_getting_number_of_turnpoints">An error occurred getting the number of turnpoints.</string>
+    <string name="error_reading_task">Error reading task from database.</string>
 
 
 </resources>

@@ -1,11 +1,16 @@
 package com.fisincorporated.soaringforecast.repository;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-@Entity(indices = @Index(value = {"taskId"}))
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
+@Entity (foreignKeys = @ForeignKey(entity = Task.class
+        , parentColumns = "id", childColumns = "taskId", onDelete = CASCADE)
+        ,indices = @Index(value = {"taskId"}))
 public class TaskTurnpoint {
 
     @PrimaryKey(autoGenerate = true)
@@ -62,7 +67,7 @@ public class TaskTurnpoint {
         return taskId;
     }
 
-    public void setTaskId(@NonNull int taskId) {
+    public void setTaskId(@NonNull long taskId) {
         this.taskId = taskId;
     }
 

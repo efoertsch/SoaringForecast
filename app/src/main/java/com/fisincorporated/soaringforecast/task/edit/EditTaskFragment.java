@@ -55,6 +55,7 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
                              @Nullable Bundle savedInstanceState) {
 
         editTaskView = DataBindingUtil.inflate(inflater, R.layout.task_edit_layout, container, false);
+        editTaskView.setLifecycleOwner(this); // update UI based on livedata changes.
 
         editTaskView.setTaskAndTurnpointsViewModel(taskAndTurnpointsViewModel);
 
@@ -94,21 +95,24 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
         saveFab = editTaskView.editTaskSaveTask;
         saveFab.setOnClickListener(v -> taskAndTurnpointsViewModel.saveTask());
 
-
-        taskAndTurnpointsViewModel.getNeedToSaveUpdates().observe(this, needToSaveUpdates -> {
-            saveFab.setVisibility(needToSaveUpdates ? View.VISIBLE : View.GONE);
-        });
-
         return editTaskView.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().setTitle(R.string.edit_task);
+        displayTitle();
         // if just added all turnpoints via search, the task distance will not be updated by observer in createView
         // ( as this fragment paused while adding turnpoints, so make sure ui update occurs.
         editTaskView.editTaskDistance.setText(getString(R.string.distance_km,taskAndTurnpointsViewModel.getTaskDistance().getValue()));
+    }
+
+    private void displayTitle() {
+        if (taskId == -1){
+            getActivity().setTitle(R.string.add_task);
+        } else {
+            getActivity().setTitle(R.string.edit_task);
+        }
     }
 
     private void goToAddTaskTurnpoints() {

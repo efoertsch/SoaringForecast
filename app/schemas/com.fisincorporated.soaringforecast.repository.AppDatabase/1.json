@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "fa48c0856fae0a48cf957a96a3b23b17",
+    "identityHash": "a7b5ad8d62b1177238f7905c4c2f4ed6",
     "entities": [
       {
         "tableName": "Airport",
@@ -236,7 +236,7 @@
       },
       {
         "tableName": "TaskTurnpoint",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `taskOrder` INTEGER NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `distanceFromPriorTurnpoint` REAL NOT NULL, `distanceFromStartingPoint` REAL NOT NULL, `lastTurnpoint` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `taskOrder` INTEGER NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `distanceFromPriorTurnpoint` REAL NOT NULL, `distanceFromStartingPoint` REAL NOT NULL, `lastTurnpoint` INTEGER NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `Task`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -315,12 +315,24 @@
             "createSql": "CREATE  INDEX `index_TaskTurnpoint_taskId` ON `${TABLE_NAME}` (`taskId`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "Task",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "taskId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"fa48c0856fae0a48cf957a96a3b23b17\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a7b5ad8d62b1177238f7905c4c2f4ed6\")"
     ]
   }
 }
