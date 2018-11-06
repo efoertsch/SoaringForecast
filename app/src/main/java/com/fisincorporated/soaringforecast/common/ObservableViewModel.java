@@ -1,15 +1,22 @@
 package com.fisincorporated.soaringforecast.common;
 
-import android.arch.lifecycle.ViewModel;
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.Observable;
 import android.databinding.PropertyChangeRegistry;
+import android.support.annotation.NonNull;
 
 /**
  * A ViewModel that is also an Observable,
  * to be used with the Data Binding Library.
  */
-public class ObservableViewModel extends ViewModel implements Observable {
+public class ObservableViewModel extends AndroidViewModel implements Observable {
     private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
+
+    public ObservableViewModel(@NonNull Application application) {
+        super(application);
+    }
+
 
     @Override
     public void addOnPropertyChangedCallback(

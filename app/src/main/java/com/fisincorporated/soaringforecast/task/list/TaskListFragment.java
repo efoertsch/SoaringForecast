@@ -90,7 +90,7 @@ public class TaskListFragment extends Fragment implements GenericListClickListen
 
         FloatingActionButton fab = taskListView.taskListAddButton;
         fab.setOnClickListener(v ->
-                EventBus.getDefault().post(new EditTask(-1)));
+                EventBus.getDefault().post(new EditTask(0)));
 
         progressBar = taskListView.taskListProgressBar;
 

@@ -317,7 +317,7 @@ public class AppRepository {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
                     taskTurnpoint.setTaskId(taskId);
                 }
-                taskTurnpointDao.insertAll(taskTurnpoints);
+                long[] keys = taskTurnpointDao.insertAll(taskTurnpoints);
                 emitter.onSuccess(taskId);
             } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);

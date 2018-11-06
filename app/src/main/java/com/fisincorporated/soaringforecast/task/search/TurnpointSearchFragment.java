@@ -81,6 +81,19 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         searchView.setQueryHint(getString(R.string.search_for_turnpoints_hint));
         searchView.setIconifiedByDefault(false);
         item.expandActionView();
+        searchView.requestFocus();
+        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return false;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                getActivity().getSupportFragmentManager().popBackStack();
+                return true;
+            }
+        });
 
     }
 

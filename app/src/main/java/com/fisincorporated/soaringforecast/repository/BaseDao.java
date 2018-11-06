@@ -16,6 +16,7 @@ public interface BaseDao<T> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(T obj);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertAll(T... obj);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

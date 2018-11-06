@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.databinding.EditTaskView;
-import com.fisincorporated.soaringforecast.messages.AddNewTaskRefused;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTask;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.touchhelper.OnStartDragListener;
@@ -57,6 +55,7 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
                              @Nullable Bundle savedInstanceState) {
 
         editTaskView = DataBindingUtil.inflate(inflater, R.layout.task_edit_layout, container, false);
+        editTaskView.setLifecycleOwner(this); // update UI based on livedata changes.
 
         editTaskView.setTaskAndTurnpointsViewModel(taskAndTurnpointsViewModel);
 
@@ -124,23 +123,4 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
     }
-
-
-
-    //TODO - bug report.
-    private void displayAddTaskErrorDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.error_adding_new_task)
-                .setTitle(R.string.oops)
-                .setPositiveButton(R.string.go_back, (dialog, id) -> {
-                    dialog.dismiss();
-                    doNotAddTask();
-                });
-        builder.create().show();
-    }
-
-    private void doNotAddTask() {
-        EventBus.getDefault().post(new AddNewTaskRefused());
-    }
-
 }

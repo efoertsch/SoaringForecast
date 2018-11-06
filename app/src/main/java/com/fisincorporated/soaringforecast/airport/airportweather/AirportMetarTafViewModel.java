@@ -1,12 +1,13 @@
 package com.fisincorporated.soaringforecast.airport.airportweather;
 
+import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.content.res.Resources;
+import android.support.annotation.NonNull;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.common.ObservableViewModel;
 import com.fisincorporated.soaringforecast.data.AirportMetarTaf;
 import com.fisincorporated.soaringforecast.data.common.AviationWeatherResponse;
 import com.fisincorporated.soaringforecast.data.metars.Metar;
@@ -32,7 +33,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 //TODO clean up and execute api calls in more RxJava sort of way
-public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarTafPreferences {
+public class AirportMetarTafViewModel extends ObservableViewModel implements WeatherMetarTafPreferences {
 
     private AppPreferences appPreferences;
     private AppRepository appRepository;
@@ -54,6 +55,10 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
     private String distanceUnits;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    public AirportMetarTafViewModel(@NonNull Application application) {
+        super(application);
+    }
 
     public AirportMetarTafViewModel setAppPreferences(AppPreferences appPreferences) {
         this.appPreferences = appPreferences;
@@ -238,7 +243,7 @@ public class AirportMetarTafViewModel extends ViewModel implements WeatherMetarT
             EventBus.getDefault().post(new ResponseError(response.body().getErrors().getError()));
 
         } else {
-            EventBus.getDefault().post(new ResponseError(Resources.getSystem().getString(R.string.aviation_gov_unspecified_error)));
+            EventBus.getDefault().post(new ResponseError(getApplication().getString(R.string.aviation_gov_unspecified_error)));
         }
     }
 

@@ -1,11 +1,12 @@
 package com.fisincorporated.soaringforecast.task.edit;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.res.Resources;
 import android.databinding.Bindable;
 import android.location.Location;
+import android.support.annotation.NonNull;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.ObservableViewModel;
@@ -29,7 +30,7 @@ import timber.log.Timber;
 public class TaskAndTurnpointsViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
-    private long taskId = -1;
+    private long taskId = 0;
     private Task task = null;
     private List<TaskTurnpoint> deletedTaskTurnpoints = new ArrayList<>();
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
@@ -42,6 +43,10 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     private MutableLiveData<Boolean> working = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    public TaskAndTurnpointsViewModel(@NonNull Application application) {
+        super(application);
+    }
+
     public TaskAndTurnpointsViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
         working.setValue(false);
@@ -49,7 +54,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     }
 
     public TaskAndTurnpointsViewModel setTaskId(long taskId) {
-        if (taskId == -1 || this.taskId != taskId) {
+        if (taskId == 0 || this.taskId != taskId) {
             this.taskId = taskId;
             task = null;
             retrievedTask = false;
@@ -57,10 +62,9 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
             needToSaveUpdates.setValue(false);
             taskTurnpoints.setValue(new ArrayList<>());
             taskDistance.setValue(0f);
-            if (taskId == -1) {
+            if (taskId == 0)  {
                 task = new Task();
-                task.setId(taskId);  //-1
-                task.setTaskName(Resources.getSystem().getString(R.string.new_task_name));
+                task.setTaskName(getApplication().getString(R.string.new_task_name));
             } else {
                 getTask();
             }
@@ -68,6 +72,9 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         return this;
     }
 
+    public long getTaskId() {
+        return  taskId;
+    }
 
     @SuppressLint("CheckResult")
     public Task getTask() {
@@ -88,7 +95,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                             notifyChange();
                         },
                         t -> {
-                            EventBus.getDefault().post(new DataBaseError(Resources.getSystem().getString(R.string.error_reading_task), t));
+                            EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_reading_task), t));
                         });
     }
 
@@ -110,7 +117,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                             taskTurnpoints.setValue(newTaskTurnpoints);
                         },
                         t -> {
-                            EventBus.getDefault().post(new DataBaseError(Resources.getSystem().getString(R.string.error_loading_task_and_turnpoints), t));
+                            EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_loading_task_and_turnpoints), t));
                         });
     }
 
@@ -137,23 +144,25 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     public void saveTask() {
         working.setValue(true);
         Disposable disposable;
-        if (task.getId() != -1) {
-            disposable = appRepository.updateTaskAndTurnpoints(task, taskTurnpoints.getValue(), deletedTaskTurnpoints)
-                    .subscribe(() -> {
-                        needToSaveUpdates.setValue(false);
-                    }, t -> {
-                        EventBus.getDefault().post(new DataBaseError(Resources.getSystem().getString(R.string.error_adding_task_and_turnpoints), t));
-                    });
-
-        } else { // adding new task/turnpoints
+        if (task.getId() == 0) {
+            // adding new task/turnpoints
             disposable = appRepository.addNewTaskAndTurnpoints(task, taskTurnpoints.getValue())
                     .subscribe(taskId -> {
                         this.taskId = taskId;
+                        task.setId(taskId);
                         needToSaveUpdates.setValue(false);
+                        working.setValue(false);
                     }, t -> {
-                        EventBus.getDefault().post(new DataBaseError(Resources.getSystem().getString(R.string.error_adding_task_and_turnpoints), t));
+                        EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_adding_task_and_turnpoints), t));
                     });
-
+        } else {
+            disposable = appRepository.updateTaskAndTurnpoints(task, taskTurnpoints.getValue(), deletedTaskTurnpoints)
+                    .subscribe(() -> {
+                        needToSaveUpdates.setValue(false);
+                        working.setValue(false);
+                    }, t -> {
+                        EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_adding_task_and_turnpoints), t));
+                    });
         }
         compositeDisposable.add(disposable);
 
@@ -191,7 +200,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                             turnpoints.setValue(turnpointList);
                         },
                         t -> {
-                            EventBus.getDefault().post(new DataBaseError(Resources.getSystem().getString(R.string.error_searching_turnpoints), t));
+                            EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_searching_turnpoints), t));
                         });
         return turnpoints;
     }
@@ -266,7 +275,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                         , throwable -> {
                             //TODO
                             Timber.e(throwable);
-                            EventBus.getDefault().post(new DataBaseError(Resources.getSystem().getString(R.string.error_getting_number_of_turnpoints), throwable));
+                            EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_getting_number_of_turnpoints), throwable));
                         });
 
     }

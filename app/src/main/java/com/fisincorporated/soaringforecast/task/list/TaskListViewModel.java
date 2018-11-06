@@ -1,8 +1,10 @@
 package com.fisincorporated.soaringforecast.task.list;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.support.annotation.NonNull;
 
 import com.fisincorporated.soaringforecast.common.ObservableViewModel;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
@@ -19,6 +21,10 @@ public class TaskListViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
     private MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
+
+    public TaskListViewModel(@NonNull Application application) {
+        super(application);
+    }
 
     public TaskListViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
