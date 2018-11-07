@@ -1,18 +1,14 @@
 package com.fisincorporated.soaringforecast.soaring.forecast;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.Constants.FORECAST_SOUNDING;
-import com.fisincorporated.soaringforecast.messages.ReadyToSelectSoaringForecastEvent;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
 import com.fisincorporated.soaringforecast.soaring.json.ModelLocationAndTimes;
 import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDate;
 import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDates;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.Date;
@@ -22,12 +18,8 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 
 public class SoaringForecastDownloader {
@@ -54,54 +46,15 @@ public class SoaringForecastDownloader {
         compositeDisposable.clear();
     }
 
-    // Run on background thread
-    @SuppressLint("CheckResult")
-    public void loadForecastsForDay(final String region) {
-        compositeDisposable.add(callRegionForecastDates()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(regionForecastDates -> {
-                            sendViaBus(regionForecastDates);
-                        },
-                        throwable -> {
-                            Timber.d("Error: %s ", throwable.getMessage());
-                            //TODO - put error on bus
-                            throwable.printStackTrace();
-                        })
-        );
+    public Single<RegionForecastDates> getForecastsForDay(final String region) {
+        return client.getForecastDates("current.json?" + (new Date()).getTime());
     }
 
-    private void sendViaBus(RegionForecastDates regionForecastDates) {
-        EventBus.getDefault().post(regionForecastDates);
-    }
-
-    public void loadTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
-        DisposableObserver disposableObserver = Observable.fromIterable(regionForecastDates.getForecastDates())
+    public Observable<ModelLocationAndTimes> getTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
+        return  Observable.fromIterable(regionForecastDates.getForecastDates())
                 .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
                         callTypeLocationAndTimes(region, regionForecastDate).toObservable()
-                                .doOnNext(regionForecastDate::setModelLocationAndTimes))
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<ModelLocationAndTimes>() {
-                    @Override
-                    public void onNext(ModelLocationAndTimes typeLocationAndTimes) {
-                        // TODO determine how to combine together into Single
-                        //nothing
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        //TODO - put error on bus
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        EventBus.getDefault().post(new ReadyToSelectSoaringForecastEvent());
-
-                    }
-                });
-        compositeDisposable.add(disposableObserver);
-
+                                .doOnNext(regionForecastDate::setModelLocationAndTimes));
     }
 
     /**
@@ -111,7 +64,7 @@ public class SoaringForecastDownloader {
      * @throws IOException
      * @throws NullPointerException
      */
-    public Single<RegionForecastDates> callRegionForecastDates() {
+    public Single<RegionForecastDates> getRegionForecastDates() {
         return client.getForecastDates("current.json?" + (new Date()).getTime());
     }
 
@@ -122,8 +75,7 @@ public class SoaringForecastDownloader {
      * @throws IOException
      */
     public Single<ModelLocationAndTimes> callTypeLocationAndTimes(String region, RegionForecastDate regionForecastDate) {
-        return client.getTypeLocationAndTimes(region + "/" + regionForecastDate.getYyyymmddDate() + "/status.json")
-                .subscribeOn(Schedulers.io());
+        return client.getTypeLocationAndTimes(region + "/" + regionForecastDate.getYyyymmddDate() + "/status.json");
     }
 
     /**

@@ -158,8 +158,8 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private void bindViewModel() {
         viewDataBinding = DataBindingUtil.bind(bindingView);
         if (viewDataBinding != null) {
-            viewDataBinding.setForecastDisplay(this);
-            selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
+            //viewDataBinding.setForecastDisplay(this);
+            selectedSoaringForecastModel = appPreferences.getSoaringForecastModel();
             setupSoaringForecastModelsRecyclerView(soaringForecastModels);
             setupSoaringConditionRecyclerView(forecasts.getForecasts());
             mapProgressBar = viewDataBinding.soaringForecastMapProgressBar;
@@ -216,7 +216,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     @Override
     public void onResume() {
         EventBus.getDefault().register(this);
-        soaringForecastDownloader.loadForecastsForDay(appPreferences.getSoaringForecastRegion());
+        //soaringForecastDownloader.loadForecastsForDay(appPreferences.getSoaringForecastRegion());
     }
 
     @Override
@@ -301,7 +301,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private void storeRegionForecastDates(RegionForecastDates downloadedRegionForecastDates) {
         regionForecastDates = downloadedRegionForecastDates;
         regionForecastDates.parseForecastDates();
-        soaringForecastDownloader.loadTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
+        soaringForecastDownloader.getTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
     }
 
     @SuppressLint("CheckResult")

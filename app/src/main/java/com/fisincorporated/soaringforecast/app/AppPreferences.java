@@ -267,7 +267,7 @@ public class AppPreferences {
         editor.apply();
     }
 
-    public SoaringForecastModel getSoaringForecastType() {
+    public SoaringForecastModel getSoaringForecastModel() {
         return new SoaringForecastModel(sharedPreferences.getString(SOARING_FORECAST_TYPE_KEY, soaringForecastType));
     }
 

@@ -2,7 +2,6 @@ package com.fisincorporated.soaringforecast.dagger;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.databinding.ObservableArrayList;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
@@ -20,7 +19,6 @@ import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastDownloader;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastImage;
-import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastModel;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 
 import org.cache2k.Cache;
@@ -191,22 +189,6 @@ public class AppModule {
         return httpClient.build();
     }
 
-    @Provides
-    @Singleton
-    public List<SoaringForecastModel> provideSoaringForecastTypeArray() {
-        String[] types;
-        ObservableArrayList<SoaringForecastModel> soaringForecastModels = new ObservableArrayList<>();
-        Resources res = appContext.getResources();
-        try {
-            types = res.getStringArray(R.array.soaring_forecast_models);
-            for (int i = 0; i < types.length; ++i) {
-                SoaringForecastModel soaringForecastModel = new SoaringForecastModel(types[i]);
-                soaringForecastModels.add(soaringForecastModel);
-            }
-        } catch (Resources.NotFoundException nfe) {
-        }
-        return soaringForecastModels;
-    }
 
     @Provides
     @Singleton
