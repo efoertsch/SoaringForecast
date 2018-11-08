@@ -124,6 +124,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
                 .subscribe(regionForecastDateList -> {
                             storeRegionForecastDates(regionForecastDateList);
+                            getModelForecastDates();
                         },
                         throwable -> {
                             Timber.d("Error: %s ", throwable.getMessage());
@@ -147,7 +148,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     private void loadTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
         Disposable disposable = Observable.fromIterable(regionForecastDates.getForecastDates())
-                .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
+                .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>)
+                        (RegionForecastDate regionForecastDate) ->
                         soaringForecastDownloader.callTypeLocationAndTimes(region, regionForecastDate).toObservable()
                                 .doOnNext(regionForecastDate::setModelLocationAndTimes))
                 .subscribeOn(Schedulers.newThread())
@@ -196,24 +198,27 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
+    public MutableLiveData<List<ModelForecastDate>> getModelForecastDates() {
+         modelForecastDates.setValue(createForecastDateListForSelectedModel());
+         return  modelForecastDates;
+    }
+
     private List<ModelForecastDate> createForecastDateListForSelectedModel() {
         ModelLocationAndTimes modelLocationAndTimes;
         List<ModelForecastDate> modelForecastDateList = new ArrayList<>();
-        String model = selectedSoaringForecastModel.getValue().getName();
-        for (RegionForecastDate regionForecastDate : regionForecastDates.getRegionForecastDateList()) {
-            modelLocationAndTimes = regionForecastDate.getModelLocationAndTimes();
-            if (modelLocationAndTimes != null && modelLocationAndTimes.getGpsLocationAndTimesForModel(model) != null) {
-                ModelForecastDate modelForecastDate = new ModelForecastDate(model);
-                modelForecastDate.setBaseDate(regionForecastDate.getIndex(), regionForecastDate.getFormattedDate(), regionForecastDate.getYyyymmddDate());
-                modelForecastDate.setGpsLocationAndTimes(modelLocationAndTimes.getGpsLocationAndTimesForModel(model));
-                modelForecastDateList.add(modelForecastDate);
+        if (selectedSoaringForecastModel != null && selectedSoaringForecastModel.getValue() != null) {
+            String model = selectedSoaringForecastModel.getValue().getName();
+            for (RegionForecastDate regionForecastDate : regionForecastDates.getRegionForecastDateList()) {
+                modelLocationAndTimes = regionForecastDate.getModelLocationAndTimes();
+                if (modelLocationAndTimes != null && modelLocationAndTimes.getGpsLocationAndTimesForModel(model) != null) {
+                    ModelForecastDate modelForecastDate = new ModelForecastDate(model);
+                    modelForecastDate.setBaseDate(regionForecastDate.getIndex(), regionForecastDate.getFormattedDate(), regionForecastDate.getYyyymmddDate());
+                    modelForecastDate.setGpsLocationAndTimes(modelLocationAndTimes.getGpsLocationAndTimesForModel(model));
+                    modelForecastDateList.add(modelForecastDate);
+                }
             }
         }
         return modelForecastDateList;
-    }
-
-    public MutableLiveData<List<ModelForecastDate>> getModelForecastDates() {
-        return modelForecastDates;
     }
 
     public LiveData<List<Forecast>> getForecasts() {
@@ -250,6 +255,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             soaringForecastModels = new MutableLiveData<>();
             soaringForecastModels.setValue(new ArrayList<>());
             loadSoaringForecastModels();
+
         }
         return soaringForecastModels;
     }
@@ -260,6 +266,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(soaringForecastModelList -> {
                             soaringForecastModels.setValue(soaringForecastModelList);
+                            getSelectedSoaringForecastModel();
                         },
                         t -> {
                             //TODO email stack trace
