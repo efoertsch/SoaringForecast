@@ -250,6 +250,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         selectedForecast = forecasts.getValue().get(1);
     }
 
+    /**
+     * get the list of forecast models - gfs, nam, ...
+     * should only need to be called once (or whenever view created)
+     * @return  list of forecast models
+     */
     public LiveData<List<SoaringForecastModel>> getSoaringForecastModels() {
         if (soaringForecastModels == null) {
             soaringForecastModels = new MutableLiveData<>();
@@ -265,7 +270,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(soaringForecastModelList -> {
+                    // Once the list of models loaded
                             soaringForecastModels.setValue(soaringForecastModelList);
+                            // set the selected one
                             getSelectedSoaringForecastModel();
                         },
                         t -> {
