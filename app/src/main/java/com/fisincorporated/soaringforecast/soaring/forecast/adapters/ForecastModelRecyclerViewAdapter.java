@@ -31,7 +31,9 @@ public class ForecastModelRecyclerViewAdapter extends GenericRecyclerViewAdapter
     public void onBindViewHolder(ForecastModelViewHolder holder, int position) {
         super.onBindViewHolder(holder,position);
         holder.getViewDataBinding().setForecastModelClickListener(this);
-        holder.getViewDataBinding().soaringForecastModelLabel.setSelected(getSelectedItem().equals(getItems().get(position)));
+        if(getSelectedItem() != null) {
+            holder.getViewDataBinding().soaringForecastModelLabel.setSelected(getSelectedItem().equals(getItems().get(position)));
+        }
     }
 
     public void setSelectedForecastModel(SoaringForecastModel soaringForecastModel) {

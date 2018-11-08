@@ -39,7 +39,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     private GoogleMap googleMap;
 
-    private LatLngBounds mapLatLngBounds;
+    // Default for NewEngland
+    private LatLngBounds mapLatLngBounds = new LatLngBounds( new LatLng(41.2665329, -73.6473083)
+            ,new LatLng(45.0120811, -70.5046997));
     private GroundOverlay forecastOverlay;
     private int forecastOverlayOpacity;
 
@@ -61,26 +63,28 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         mapFragment.getMapAsync(this);
     }
 
+
     private void setMapBounds(LatLng southWestLatLng, LatLng northEastLatLng) {
-        mapLatLngBounds = new LatLngBounds(southWestLatLng, northEastLatLng);
+        setMapLatLngBounds(new LatLngBounds(southWestLatLng, northEastLatLng));
+    }
+
+    public void setMapLatLngBounds(LatLngBounds mapLatLngBounds) {
+        this.mapLatLngBounds = mapLatLngBounds;
+        setupMap();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        setupMap();// do your map stuff here
+
     }
 
-
-    public void setMapLatLngBounds(LatLngBounds mapLatLngBounds) {
-        this.mapLatLngBounds = mapLatLngBounds;
-    }
 
     private void setupMap() {
         if (mapLatLngBounds != null) {
             googleMap.setLatLngBoundsForCameraTarget(mapLatLngBounds);
         }
-        if (!drawingTask) {
+        if (!drawingTask ) {
             // if drawing task use the task latlng bounds for map positioning
             googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
         }

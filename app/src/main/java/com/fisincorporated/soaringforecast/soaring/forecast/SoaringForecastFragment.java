@@ -29,6 +29,10 @@ import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -108,31 +112,39 @@ public class SoaringForecastFragment extends DaggerFragment {
         });
         setObservers();
 
+
     }
 
+    //TODO - got a lot of observers - consolidate somehow?
     private void setObservers(){
         soaringForecastViewModel.getSoaringForecastModels().observe(this, soaringForecastModels -> {
             //TODO create preference for model to use for first display
             forecastModelrecyclerViewAdapter.setItems(soaringForecastModels);
-            if (soaringForecastModels != null && soaringForecastModels.size() > 0) {
-                forecastModelrecyclerViewAdapter.setSelectedForecastModel(soaringForecastModels.get(0));
-            }
         });
 
+        // Selected RASP model - GFS, NAM, ...
+        soaringForecastViewModel.getSelectedSoaringForecastModel().observe(this, soaringForecastModel ->
+                forecastModelrecyclerViewAdapter.setSelectedForecastModel(soaringForecastModel));
+
+        // Get the dates for which rasp forecasts are available
+        soaringForecastViewModel.getModelForecastDates().observe(this, modelForecastDates ->
+                forecastDateRecyclerViewAdapter.setItems(modelForecastDates));
+
+        // get the types of Rasp forecasts available
         soaringForecastViewModel.getForecasts().observe(this, forecasts -> {
                     soaringForecastRecyclerViewAdapter.setItems(forecasts);
                 }
         );
 
-        soaringForecastViewModel.getModelForecastDates().observe(this, modelForecastDates ->
-                forecastDateRecyclerViewAdapter.setItems(modelForecastDates));
-
+        // Get list of turnpoints for a selected task
         soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints ->
                 forecastMapper.setTaskTurnpoints(taskTurnpoints));
 
+        // Get list of sounding locations available
         soaringForecastViewModel.getSoundingLocations().observe(this, soundingLocations ->
                 forecastMapper.setSoundingLocations(soundingLocations));
 
+        // Get Rasp bitmap for the date/time selected and pass to mapper
         soaringForecastViewModel.getSelectedSoaringForecastImageSet().observe(this, soaringForecastImageSet -> {
             soaringForecastImageBinding.soaringForecastImageLocalTime.setText(soaringForecastImageSet.getLocalTime());
             forecastMapper.setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
@@ -157,8 +169,6 @@ public class SoaringForecastFragment extends DaggerFragment {
     private void setupSoaringConditionRecyclerView(List<Forecast> forecasts) {
         soaringForecastRecyclerViewAdapter = new SoaringForecastRecyclerViewAdapter(forecasts);
         setUpHorizontalRecyclerView(soaringForecastImageBinding.soaringForecastRecyclerView, soaringForecastRecyclerViewAdapter);
-        // TODO do better way to set selected
-        soaringForecastRecyclerViewAdapter.setSelectedForecast(forecasts.get(1));
     }
 
     private void setUpHorizontalRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter recyclerViewAdapter) {
@@ -170,8 +180,15 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Override
     public void onResume() {
         super.onResume();
-        //set title
         getActivity().setTitle(R.string.rasp);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+        soaringForecastViewModel.stopImageAnimation();
     }
 
 
@@ -225,6 +242,30 @@ public class SoaringForecastFragment extends DaggerFragment {
                     getActivity().invalidateOptionsMenu();
                 }
             }
+        }
+    }
+
+    //------------ Bus messages (mainly from recycler view selections  ------------
+
+    /**
+     * Selected forecast type gfs, nam, ...
+     *
+     * @param soaringForecastModel
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SoaringForecastModel soaringForecastModel) {
+        soaringForecastViewModel.setSelectedForecastModel(soaringForecastModel);
+    }
+
+    /**
+     * Selected model date
+     *
+     * @param modelForecastDate
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(ModelForecastDate modelForecastDate) {
+        if (!modelForecastDate.equals(soaringForecastViewModel.getSelectedSoaringForecastModel().getValue())) {
+            soaringForecastViewModel.setSelectedModelForecastDate(modelForecastDate);
         }
     }
 

@@ -2,9 +2,11 @@ package com.fisincorporated.soaringforecast.repository;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Environment;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastModel;
 import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
 import com.fisincorporated.soaringforecast.soaring.json.Soundings;
@@ -12,6 +14,7 @@ import com.fisincorporated.soaringforecast.task.json.TurnpointFile;
 import com.fisincorporated.soaringforecast.task.json.TurnpointFiles;
 import com.fisincorporated.soaringforecast.task.json.TurnpointRegion;
 import com.fisincorporated.soaringforecast.utils.JSONResourceReader;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -96,8 +99,33 @@ public class AppRepository {
 
 
     // --------- Forecasts -----------------
-    public Forecasts getForecasts() {
-        return (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
+    public Single<Forecasts> getForecasts() {
+        return Single.create(emitter -> {
+            try {
+                Forecasts forecasts = (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
+                emitter.onSuccess(forecasts);
+            } catch (JsonSyntaxException jse) {
+                emitter.onError(jse);
+            }
+        });
+    }
+
+    public Single<List<SoaringForecastModel>> getSoaringForecastModels() {
+        return Single.create(emitter -> {
+            String[] types;
+            Resources res = context.getResources();
+            List<SoaringForecastModel> soaringForecastModelList = new ArrayList<>();
+            try {
+                types = res.getStringArray(R.array.soaring_forecast_models);
+                for (int i = 0; i < types.length; ++i) {
+                    SoaringForecastModel soaringForecastModel = new SoaringForecastModel(types[i]);
+                    soaringForecastModelList.add(soaringForecastModel);
+                }
+                emitter.onSuccess(soaringForecastModelList);
+            } catch (Resources.NotFoundException nfe) {
+                emitter.onError(nfe);
+            }
+        });
     }
 
     // --------- Soundings ------------------
@@ -310,7 +338,8 @@ public class AppRepository {
     }
 
     @SuppressLint("CheckResult")
-    public Single<Long> addNewTaskAndTurnpoints(Task task, List<TaskTurnpoint> taskTurnpoints){
+    public Single<Long> addNewTaskAndTurnpoints(Task
+                                                        task, List<TaskTurnpoint> taskTurnpoints) {
         return Single.create((SingleOnSubscribe<Long>) emitter -> {
             try {
                 long taskId = taskDao.insert(task);
@@ -322,7 +351,7 @@ public class AppRepository {
             } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);
             }
-        })  .observeOn(AndroidSchedulers.mainThread())
+        }).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
 
     }
@@ -335,7 +364,6 @@ public class AppRepository {
                 .andThen(deleteTaskTurnpoints(deleteTurnpoints))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-
 
     }
 

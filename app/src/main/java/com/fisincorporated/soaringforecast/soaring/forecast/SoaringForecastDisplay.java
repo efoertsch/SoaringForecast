@@ -139,7 +139,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
     @Inject
     SoaringForecastDisplay(AppRepository appRepository) {
-        forecasts = appRepository.getForecasts();
+        //forecasts = appRepository.getForecasts();
     }
 
     public SoaringForecastDisplay setView(Fragment fragment, View view) {
@@ -379,7 +379,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     public void onMessageEvent(SoaringForecastModel soaringForecastModel) {
         if (!soaringForecastModel.equals(selectedSoaringForecastModel)) {
             selectedSoaringForecastModel = soaringForecastModel;
-            appPreferences.setSoaringForecastType(selectedSoaringForecastModel);
+            appPreferences.setSoaringForecastModel(selectedSoaringForecastModel);
             List<ModelForecastDate> modelForecastDates = createForecastDateListForSelectedModel();
 //            if (modelForecastDateRecyclerViewAdapter != null) {
 //                modelForecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);

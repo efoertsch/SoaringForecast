@@ -6,7 +6,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 
@@ -58,7 +57,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private int lastImageIndex = -1;
     private SoaringForecastApi client;
 
-    private MutableLiveData<SoaringForecastModel> selectedSoaringForecastModel;
+    private MutableLiveData<SoaringForecastModel> selectedSoaringForecastModel = new MutableLiveData<>();
     private MutableLiveData<List<ModelForecastDate>> modelForecastDates = new MutableLiveData<>();
     private MutableLiveData<ModelForecastDate> selectedModelForecastDate = new MutableLiveData<>();
     private RegionForecastDates regionForecastDates = new RegionForecastDates();
@@ -67,7 +66,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<SoaringForecastImageSet> selectedSoaringForecastImageSet = new MutableLiveData<>();
     private MutableLiveData<SoaringForecastImageSet> selectedSoundingForecastImageSet = new MutableLiveData<>();
     private MutableLiveData<List<SoaringForecastModel>> soaringForecastModels;
-    private MutableLiveData<List<SoundingLocation>> soundingLocations;
+    private MutableLiveData<List<SoundingLocation>> soundingLocations = new MutableLiveData<>();
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopPauseVisibility = new MutableLiveData<>();
     // Used to signal
@@ -83,8 +82,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public SoaringForecastViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
-        getForecasts();
-        setDefaultSoaringForecast();
         return this;
     }
 
@@ -98,13 +95,30 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return this;
     }
 
-    private LiveData<SoaringForecastModel> getSelectedSoaringForecastModel() {
+    public void setSelectedForecastModel(SoaringForecastModel selectedForecastModel) {
+        if (selectedSoaringForecastModel == null) {
+            selectedSoaringForecastModel = new MutableLiveData<>();
+        }
+        if (selectedSoaringForecastModel.getValue() != null
+                && !selectedSoaringForecastModel.getValue().equals(selectedForecastModel)){
+            selectedSoaringForecastModel.setValue(selectedForecastModel);
+            getRegionForecastDates();
+        }
+    }
+
+    public LiveData<SoaringForecastModel> getSelectedSoaringForecastModel() {
         if (selectedSoaringForecastModel == null) {
             selectedSoaringForecastModel.setValue(appPreferences.getSoaringForecastModel());
+            getRegionForecastDates();
         }
         return selectedSoaringForecastModel;
     }
 
+
+    public void setSelectedModelForecastDate(ModelForecastDate selectedModelForecastDate) {
+        this.selectedModelForecastDate.setValue(selectedModelForecastDate);
+        loadRaspImages();
+    }
 
     private void getRegionForecastDates() {
         Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
@@ -119,6 +133,12 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
+    /**
+     * Should be called after response from current.json call
+     * You get a list of all dates for which some forecast model will be provided.
+     *
+     * @param downloadedRegionForecastDates list of forecast dates for the region
+     */
     private void storeRegionForecastDates(RegionForecastDates downloadedRegionForecastDates) {
         regionForecastDates = downloadedRegionForecastDates;
         regionForecastDates.parseForecastDates();
@@ -199,10 +219,25 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     public LiveData<List<Forecast>> getForecasts() {
         if (forecasts == null) {
             forecasts = new MutableLiveData<>();
-            // TODO get async
-            forecasts.setValue(appRepository.getForecasts().getForecasts());
+            loadForecasts();
         }
         return forecasts;
+    }
+
+    private void loadForecasts() {
+        Disposable disposable = appRepository.getForecasts()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(forecasts1 -> {
+                            // rather confusing in naming of forecasts but that is the way it is
+                            forecasts.setValue(forecasts1.getForecasts());
+                            setDefaultSoaringForecast();
+                        },
+                        t -> {
+                            //TODO email stack trace
+                            Timber.e(t);
+                        });
+        compositeDisposable.add(disposable);
     }
 
     private void setDefaultSoaringForecast() {
@@ -220,18 +255,18 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     private void loadSoaringForecastModels() {
-        String[] types;
-        Resources res = getApplication().getResources();
-        List<SoaringForecastModel> soaringForecastModelList = new ArrayList<>();
-        try {
-            types = res.getStringArray(R.array.soaring_forecast_models);
-            for (int i = 0; i < types.length; ++i) {
-                SoaringForecastModel soaringForecastModel = new SoaringForecastModel(types[i]);
-                soaringForecastModelList.add(soaringForecastModel);
-            }
-        } catch (Resources.NotFoundException nfe) {
-        }
-        soaringForecastModels.setValue(soaringForecastModelList);
+        Disposable disposable = appRepository.getSoaringForecastModels()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(soaringForecastModelList -> {
+                            soaringForecastModels.setValue(soaringForecastModelList);
+                        },
+                        t -> {
+                            //TODO email stack trace
+                            Timber.e(t);
+                        });
+        compositeDisposable.add(disposable);
+
     }
 
     public void toggleSoundingPoints() {
@@ -256,7 +291,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return soundingLocations;
     }
 
-
     public void soundingImageCloseClick() {
         forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
         soundingDisplay.setValue(false);
@@ -272,8 +306,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         numberForecastTimes = forecastTimes.size();
     }
 
-
-    private void stopImageAnimation() {
+    public void stopImageAnimation() {
         Timber.d("Stopping Animation");
         if (soaringForecastImageAnimation != null) {
             soaringForecastImageAnimation.cancel();
@@ -305,7 +338,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
-    private void setLoopPauseVisibility(){
+    private void setLoopPauseVisibility() {
         loopPauseVisibility.setValue(soaringForecastImageAnimation.isRunning());
     }
 
@@ -322,8 +355,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
         return lastImageIndex;
     }
-
-
 
     private void startImageAnimation() {
         stopImageAnimation();
@@ -349,7 +380,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         soaringForecastImageAnimation.start();
     }
 
-
     public void selectForecastImage(int index) {
         SoaringForecastImageSet imageSet = imageMap.get(forecastTimes.get(index));
         switch (forecastSounding) {
@@ -370,6 +400,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             }
         }
     }
+
     public MutableLiveData<SoaringForecastImageSet> getSelectedSoaringForecastImageSet() {
         return selectedSoaringForecastImageSet;
     }
@@ -382,8 +413,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
-    public LiveData<Boolean> getWorking(){
-            return working;
+    public LiveData<Boolean> getWorking() {
+        return working;
     }
 
     @SuppressLint("CheckResult")
@@ -459,7 +490,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     //------- Soundings --------------------
     //TODO implement
-    public void displaySounding(SoundingLocation soundingLocation){
+    public void displaySounding(SoundingLocation soundingLocation) {
         forecastSounding = Constants.FORECAST_SOUNDING.SOUNDING;
         soundingDisplay.setValue(true);
         loadForecastSoundings(soundingLocation);
@@ -510,6 +541,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                             taskTurnpoints.setValue(taskTurnpointList);
                         },
                         t -> {
+                            //TODO email stack trace
                             Timber.e(t);
                         });
         compositeDisposable.add(disposable);
