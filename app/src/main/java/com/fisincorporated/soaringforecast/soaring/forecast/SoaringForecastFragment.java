@@ -19,8 +19,8 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.SoaringForecastImageBinding;
+import com.fisincorporated.soaringforecast.messages.DisplaySoundingLocation;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
 import com.fisincorporated.soaringforecast.soaring.forecast.adapters.ForecastDateRecyclerViewAdapter;
 import com.fisincorporated.soaringforecast.soaring.forecast.adapters.ForecastModelRecyclerViewAdapter;
 import com.fisincorporated.soaringforecast.soaring.forecast.adapters.SoaringForecastRecyclerViewAdapter;
@@ -28,6 +28,7 @@ import com.fisincorporated.soaringforecast.soaring.json.Forecast;
 import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,7 +49,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     ForecastMapper forecastMapper;
 
     @Inject
-    SoaringForecastApi soaringForecastApi;
+    SoaringForecastDownloader soaringForecastDownloader;
 
     private SoaringForecastViewModel soaringForecastViewModel;
     private SoaringForecastImageBinding soaringForecastImageBinding;
@@ -75,7 +76,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                 .get(SoaringForecastViewModel.class)
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
-                .setSoaringForecastApi(soaringForecastApi);
+                .setSoaringForecastDownloader(soaringForecastDownloader);
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -94,10 +95,14 @@ public class SoaringForecastFragment extends DaggerFragment {
         setupSoaringForecastModelsRecyclerView(null);
         setupSoaringConditionRecyclerView(null);
         setupModelForecastDateRecyclerView(null);
+        // opacity not worth having it bound in viewModel and forwarding changes.
+        forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
+        soaringForecastImageBinding.soaringForecastSeekbarOpacity.setProgress(appPreferences.getForecastOverlayOpacity());
         soaringForecastImageBinding.soaringForecastSeekbarOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 forecastMapper.setForecastOverlayOpacity(progress);
+                appPreferences.setForecastOverlayOpacity(progress);
             }
 
             @Override
@@ -112,11 +117,10 @@ public class SoaringForecastFragment extends DaggerFragment {
         });
         setObservers();
 
-
     }
 
-    //TODO - got a lot of observers - consolidate somehow?
-    private void setObservers(){
+    //TODO - way to many observers - consolidate/simplify somehow?
+    private void setObservers() {
         soaringForecastViewModel.getSoaringForecastModels().observe(this, soaringForecastModels -> {
             //TODO create preference for model to use for first display
             forecastModelrecyclerViewAdapter.setItems(soaringForecastModels);
@@ -126,15 +130,19 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.getSelectedSoaringForecastModel().observe(this, soaringForecastModel ->
                 forecastModelrecyclerViewAdapter.setSelectedForecastModel(soaringForecastModel));
 
-        // Get the dates for which rasp forecasts are available
+        // Get the dates for which rasp forecasts are available for the selected model
         soaringForecastViewModel.getModelForecastDates().observe(this, modelForecastDates ->
                 forecastDateRecyclerViewAdapter.setItems(modelForecastDates));
 
-        // get the types of Rasp forecasts available
+        // get the types of Rasp forecasts available - thermal updraft, bouncy/shear, cloud cover, ..
         soaringForecastViewModel.getForecasts().observe(this, forecasts -> {
                     soaringForecastRecyclerViewAdapter.setItems(forecasts);
                 }
         );
+
+        soaringForecastViewModel.getSelectedModelForecastDate().observe(this, modelForecastDate -> {
+            setMapLatLngBounds(modelForecastDate);
+        });
 
         // Get list of turnpoints for a selected task
         soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints ->
@@ -148,6 +156,13 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.getSelectedSoaringForecastImageSet().observe(this, soaringForecastImageSet -> {
             soaringForecastImageBinding.soaringForecastImageLocalTime.setText(soaringForecastImageSet.getLocalTime());
             forecastMapper.setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
+            soaringForecastImageBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
+        });
+
+        // Get Sounding bitmap for the date/time selected and pass to mapper
+        soaringForecastViewModel.getSoundingForecastImageSet().observe(this, soundingImageSet -> {
+            soaringForecastImageBinding.soaringForecastImageLocalTime.setText(soundingImageSet.getLocalTime());
+            soaringForecastImageBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
         });
     }
 
@@ -264,9 +279,19 @@ public class SoaringForecastFragment extends DaggerFragment {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ModelForecastDate modelForecastDate) {
-        if (!modelForecastDate.equals(soaringForecastViewModel.getSelectedSoaringForecastModel().getValue())) {
-            soaringForecastViewModel.setSelectedModelForecastDate(modelForecastDate);
-        }
+        soaringForecastViewModel.setSelectedModelForecastDate(modelForecastDate);
+    }
+
+    private void setMapLatLngBounds(ModelForecastDate modelForecastDate) {
+        forecastMapper.setMapLatLngBounds(
+                new LatLngBounds(modelForecastDate.getGpsLocationAndTimes().getSouthWestLatLng()
+                        , modelForecastDate.getGpsLocationAndTimes().getNorthEastLatLng()));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DisplaySoundingLocation displaySoundingLocation) {
+        soaringForecastViewModel.stopImageAnimation();
+        soaringForecastViewModel.setSelectedSoundingLocation(displaySoundingLocation.getSoundingLocation());
     }
 
 
@@ -282,9 +307,10 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
     private void displayOpacitySlider() {
-        soaringForecastImageBinding.soaringForecastSeekbarOpacity.setVisibility(
-                soaringForecastImageBinding.soaringForecastSeekbarOpacity.getVisibility() == View.VISIBLE ?
+        soaringForecastImageBinding.soaringForecastSeekbarLayout.setVisibility(
+                soaringForecastImageBinding.soaringForecastSeekbarLayout.getVisibility() == View.VISIBLE ?
                         View.GONE : View.VISIBLE);
+
     }
 
 }

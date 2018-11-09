@@ -33,6 +33,9 @@ public class ForecastModelRecyclerViewAdapter extends GenericRecyclerViewAdapter
         holder.getViewDataBinding().setForecastModelClickListener(this);
         if(getSelectedItem() != null) {
             holder.getViewDataBinding().soaringForecastModelLabel.setSelected(getSelectedItem().equals(getItems().get(position)));
+            if (getSelectedItem().equals(getItems().get(position))){
+                smoothScrollToPosition(position);
+            }
         }
     }
 

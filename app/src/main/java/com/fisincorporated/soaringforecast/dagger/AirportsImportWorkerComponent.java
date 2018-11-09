@@ -14,7 +14,9 @@ import dagger.Component;
 @Singleton
 @Component(modules = {OkHttpClientModule.class
         , ChannelIdModule.class
-        , AppRepositoryModule.class})
+        , AppRepositoryModule.class
+        , AirportListDownloaderModule.class
+})
 public interface AirportsImportWorkerComponent {
 
     @Component.Builder

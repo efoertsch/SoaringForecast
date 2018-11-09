@@ -64,8 +64,9 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
         notifyDataSetChanged();
     }
 
+
     public void setSelectedItem(int position) {
-        if (position <items.size()){
+        if (position < items.size()){
             selectedItem = items.get(position);
         } else {
             if (items.size() > 0) {
@@ -80,7 +81,6 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
-        smoothScroller = getSmoothScroller(recyclerView);
 
     }
 
@@ -327,13 +327,12 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
     }
 
     public void smoothScrollToPosition(int position) {
+        smoothScroller =  smoothScroller = getSmoothScroller(recyclerView);
         smoothScroller.setTargetPosition(position);
         recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
     }
 
-    public void scrollToPostion(int position){
-        recyclerView.scrollToPosition(position);
-    }
+
 
     public T getSelectedItem() {
         return selectedItem;

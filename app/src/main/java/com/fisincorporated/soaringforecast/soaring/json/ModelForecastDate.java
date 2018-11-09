@@ -27,6 +27,18 @@ public class ModelForecastDate extends BaseDate {
         this.gpsLocationAndTimes = gpsLocationAndTimes;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ModelForecastDate) {
+            ModelForecastDate c = (ModelForecastDate) obj;
+            if (c.yyyymmddDate.equals(yyyymmddDate)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public GpsLocationAndTimes getGpsLocationAndTimes() {
         return gpsLocationAndTimes;
     }

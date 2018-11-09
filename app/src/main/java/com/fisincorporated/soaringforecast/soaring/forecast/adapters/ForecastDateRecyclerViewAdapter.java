@@ -71,6 +71,7 @@ public class ForecastDateRecyclerViewAdapter extends GenericRecyclerViewAdapter<
     public void onDateClick(ModelForecastDate modelForecastDate, Integer position) {
         if (modelForecastDate != getSelectedItem()) {
             setSelectedItem(modelForecastDate);
+            notifyDataSetChanged();
             smoothScrollToPosition(position);
             EventBus.getDefault().post(modelForecastDate);
         }

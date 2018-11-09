@@ -51,4 +51,16 @@ public class Forecast {
         this.forecastDescription = forecastDescription;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Forecast) {
+            Forecast c = (Forecast) obj;
+            if (c.forecastName.equals(forecastName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

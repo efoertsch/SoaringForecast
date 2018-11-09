@@ -9,4 +9,8 @@ public class DisplaySoundingLocation {
     public DisplaySoundingLocation(SoundingLocation soundingLocation) {
         this.soundingLocation = soundingLocation;
     }
+
+    public SoundingLocation getSoundingLocation() {
+        return soundingLocation;
+    }
 }

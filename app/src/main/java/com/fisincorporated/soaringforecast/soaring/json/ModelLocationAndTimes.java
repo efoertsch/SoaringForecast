@@ -4,8 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 
-//http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json
-// Run for each date from RegionForecastDates
+/**
+ * For each date in RegionForecastDates there is a ModelLocationAndTimes object that
+ * indicates if for that date a forecast model (rap, nam, gfs) exists (is not null)
+ * If GpsLocationAndTimes is not null then that object provides the lat/lng for the forecast
+ * for that day along with all the times that a forecast exists
+ * //http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json
+ *  Run for each date from RegionForecastDates
+ */
 public class ModelLocationAndTimes {
 
     @SerializedName("rap")

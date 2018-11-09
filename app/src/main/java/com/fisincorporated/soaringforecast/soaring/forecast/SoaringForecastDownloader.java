@@ -156,6 +156,7 @@ public class SoaringForecastDownloader {
     public SoaringForecastImage getSoaringForcastImage(String region, String yyyymmddDate, String forecastType, String forecastParameter, String forecastTime, String bitmapType, String parmUrl) {
         SoaringForecastImage soaringForecastImage = new SoaringForecastImage(parmUrl);
         soaringForecastImage.setRegion(region)
+                .setForecastTime(forecastTime)
                 .setYyyymmdd(yyyymmddDate)
                 .setForecastType(forecastType)
                 .setForecastParameter(forecastParameter)

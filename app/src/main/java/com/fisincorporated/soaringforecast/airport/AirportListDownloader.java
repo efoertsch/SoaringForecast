@@ -14,8 +14,6 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
@@ -30,10 +28,7 @@ import timber.log.Timber;
 public class AirportListDownloader {
 
     private OkHttpClient okHttpClient;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
     private AppRepository appRepository;
-    private Disposable disposable;
 
     @Inject
     public AirportListDownloader(OkHttpClient okHttpClient, AppRepository appRepository) {
@@ -41,11 +36,8 @@ public class AirportListDownloader {
         this.appRepository = appRepository;
     }
 
-    public void cancelAirportListDownloadAndStore() {
-        disposable.dispose();
-    }
 
-    public Completable downloadAirportsToDB(OkHttpClient okHttpClient) {
+    public Completable downloadAirportsToDB() {
         return getDownloadAirportListObservable(okHttpClient).flatMapCompletable(responseBody ->
                 saveAirportListToDB(responseBody));
     }
@@ -55,7 +47,6 @@ public class AirportListDownloader {
         AirportListDownloadApi downloadService = retrofit.create(AirportListDownloadApi.class);
         return downloadService.downloadAirportList();
     }
-
 
     private Completable saveAirportListToDB(ResponseBody responseBody) {
         return new Completable() {

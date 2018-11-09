@@ -264,11 +264,11 @@
             android:id="@+id/soaring_forecast_sounding_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+            android:visibility="@{viewModel.soundingDisplay ? View.VISIBLE : View.GONE}"
             >
 
             <com.fisincorporated.soaringforecast.common.TouchImageView
@@ -286,7 +286,6 @@
                 android:layout_marginTop="@dimen/margin_standard"
                 android:contentDescription="@string/string_soaring_forecast_sounding_description"
                 android:onClick="@{() -> viewModel.soundingImageCloseClick()}"
-                android:visibility="@{viewModel.soundingDisplay ? View.VISIBLE : View.GONE}"
                 app:srcCompat="@drawable/ic_close_black_24dp"/>
 
         </RelativeLayout>
