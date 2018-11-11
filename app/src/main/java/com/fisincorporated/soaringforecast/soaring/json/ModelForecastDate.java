@@ -32,9 +32,7 @@ public class ModelForecastDate extends BaseDate {
     public boolean equals(Object obj) {
         if (obj instanceof ModelForecastDate) {
             ModelForecastDate c = (ModelForecastDate) obj;
-            if (c.model.equals(model) && c.yyyymmddDate.equals(yyyymmddDate)) {
-                return true;
-            }
+            return c.model.equals(model) && c.yyyymmddDate.equals(yyyymmddDate);
         }
 
         return false;

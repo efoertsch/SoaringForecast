@@ -44,9 +44,7 @@ public class SoaringForecastModel {
     public boolean equals(Object obj) {
         if (obj instanceof SoaringForecastModel) {
             SoaringForecastModel c = (SoaringForecastModel) obj;
-            if (c.getName().equals(name)) {
-                return true;
-            }
+            return c.getName().equals(name);
         }
 
         return false;

@@ -51,9 +51,7 @@ public class SatelliteCode {
     public boolean equals(Object obj) {
         if (obj instanceof SatelliteCode) {
             SatelliteCode c = (SatelliteCode) obj;
-            if (c.getCode().equals(code) && c.getName().equals(name)) {
-                return true;
-            }
+            return c.getCode().equals(code) && c.getName().equals(name);
         }
 
         return false;

@@ -32,7 +32,7 @@ public class ViewUtilities {
                         public void onClick(DialogInterface dialog, int id) {
 
                         }
-                    });;
+                    });
             builder.create().show();
         }
 

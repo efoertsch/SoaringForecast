@@ -1,7 +1,7 @@
 package com.fisincorporated.soaringforecast.test;
 
 import com.fisincorporated.soaringforecast.cache.BitmapCache;
-import com.fisincorporated.soaringforecast.dagger.AppModule;
+import com.fisincorporated.soaringforecast.dagger.OkHttpClientModule;
 import com.fisincorporated.soaringforecast.retrofit.LoggingInterceptor;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastRetrofit;
@@ -15,7 +15,6 @@ import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Date;
 
 import io.reactivex.Single;
@@ -38,17 +37,15 @@ public class SoaringForecastTest {
 
     @Before
     public void createRetrofit() {
-        retrofit = new SoaringForecastRetrofit(new AppModule().getOkHttpClient(new LoggingInterceptor())).getRetrofit();
+        retrofit = new SoaringForecastRetrofit(new OkHttpClientModule().getOkHttpClient(new LoggingInterceptor())).getRetrofit();
         client = retrofit.create(SoaringForecastApi.class);
     }
 
     /**
      * Call to get current forecast dates for region
-     *
-     * @throws IOException
      */
     @Test
-    public void shouldGetForecastDatesJson() throws Exception {
+    public void shouldGetForecastDatesJson() {
         Single<RegionForecastDates> single = client.getForecastDates("current.json?" + (new Date()).getTime());
         single.subscribe(regionForecastDates -> {
             System.out.println(" Got RegionForecastDates successfully");
@@ -67,7 +64,7 @@ public class SoaringForecastTest {
 
     //http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json - Run for each date in above json list
     @Test
-    public void shouldParseForecastDatesTest() throws Exception {
+    public void shouldParseForecastDatesTest() {
         Call<ModelLocationAndTimes> call;
         shouldGetForecastDatesJson();
         regionForecastDates.parseForecastDates();
@@ -109,12 +106,12 @@ public class SoaringForecastTest {
     }
 
     @Test
-    public void callLoadForecastsForDayTest() throws IOException {
+    public void callLoadForecastsForDayTest() {
 
         SoaringForecastDownloader soaringForecastDownloader = new SoaringForecastDownloader(client
         , new BitmapImageUtils(bitmapCache, new OkHttpClient.Builder().build()));
 
-        Single<RegionForecastDates> singleRegionForecastDates = soaringForecastDownloader.callRegionForecastDates();
+        Single<RegionForecastDates> singleRegionForecastDates = soaringForecastDownloader.getRegionForecastDates();
         singleRegionForecastDates.subscribe(regionForecastDates -> {
             assertNotNull("regionForecastDates is null",regionForecastDates);
             System.out.println(" Got RegionForecastDates successfully");

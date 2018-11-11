@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -40,7 +39,7 @@ public class AirportDatabaseTest {
     }
 
     @After
-    public void closeDb() throws IOException {
+    public void closeDb() {
         appDatabase.close();
     }
 
