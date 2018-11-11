@@ -20,7 +20,7 @@ public class SoaringForecastRetrofit {
                 .addConverterFactory(GsonConverterFactory.create());
 
         retrofit = builder.build();
-    };
+    }
 
     public Retrofit getRetrofit() {
         return retrofit;

@@ -15,12 +15,12 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
- * Returns the same METAR/TAF based on what is xml is based in resources directory
+ * Returns the same METAR/TAF based on what is in resources directory
  */
 public class MockInterceptor implements Interceptor {
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(Chain chain) {
         final URI uri = chain.request().url().uri();
         final String query = uri.getQuery();
         String responseString = getMockXml(query);

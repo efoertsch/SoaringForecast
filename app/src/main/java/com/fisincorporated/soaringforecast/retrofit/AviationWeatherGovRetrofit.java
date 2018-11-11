@@ -20,7 +20,7 @@ public class AviationWeatherGovRetrofit {
                 .client(okHttpClient)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build();
-    };
+    }
 
     public Retrofit getRetrofit() {
         return retrofit;

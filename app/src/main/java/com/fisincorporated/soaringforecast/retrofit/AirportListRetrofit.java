@@ -16,7 +16,7 @@ public class AirportListRetrofit {
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         retrofit = builder.build();
-    };
+    }
 
     public Retrofit getRetrofit() {
         return retrofit;

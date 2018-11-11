@@ -10,7 +10,7 @@ public class TurnpointTest {
     String turnpointString = "\"Sterling\",\"3B3\",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,\"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL\"";
 
     @Test
-    public void convertFromStringToTurnpointTest() throws Exception {
+    public void convertFromStringToTurnpointTest() {
         Turnpoint turnpoint = Turnpoint.createTurnpointFromCSVDetail(turnpointString);
         assertNotNull(turnpoint);
         assertEquals("Incorrect title", "Sterling",turnpoint.getTitle());
