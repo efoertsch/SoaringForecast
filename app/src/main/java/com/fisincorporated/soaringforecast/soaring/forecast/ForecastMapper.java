@@ -154,6 +154,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     // ------ Task Turnpoints ---------------------------------
     public void setTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
+        removeTaskTurnpoints();
         this.taskTurnpoints = taskTurnpoints;
         plotTurnpointsOnForecast(taskTurnpoints);
     }

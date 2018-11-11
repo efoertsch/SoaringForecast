@@ -8,6 +8,7 @@ public class ModelForecastDate extends BaseDate {
 
     public ModelForecastDate(String model) {
         super();
+        this.model = model;
     }
 
     public ModelForecastDate(String model, int index, String formattedDate, String yyyymmddDate) {
@@ -31,7 +32,7 @@ public class ModelForecastDate extends BaseDate {
     public boolean equals(Object obj) {
         if (obj instanceof ModelForecastDate) {
             ModelForecastDate c = (ModelForecastDate) obj;
-            if (c.yyyymmddDate.equals(yyyymmddDate)) {
+            if (c.model.equals(model) && c.yyyymmddDate.equals(yyyymmddDate)) {
                 return true;
             }
         }

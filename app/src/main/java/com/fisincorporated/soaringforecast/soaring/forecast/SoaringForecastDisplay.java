@@ -189,7 +189,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         ForecastModelRecyclerViewAdapter recyclerViewAdapter = new ForecastModelRecyclerViewAdapter(soaringForecastModels);
         setUpHorizontalRecyclerView(viewDataBinding.soaringForecastModelRecyclerView, recyclerViewAdapter);
         //TODO create preference for model to use for first display
-        recyclerViewAdapter.setSelectedForecastModel(soaringForecastModels.get(0));
+        recyclerViewAdapter.setSelectedItem(soaringForecastModels.get(0));
     }
 
 
@@ -202,7 +202,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         SoaringForecastRecyclerViewAdapter recyclerViewAdapter = new SoaringForecastRecyclerViewAdapter(forecasts);
         setUpHorizontalRecyclerView(viewDataBinding.soaringForecastRecyclerView, recyclerViewAdapter);
         // TODO do better way to set selected
-        recyclerViewAdapter.setSelectedForecast(forecasts.get(1));
+        recyclerViewAdapter.setSelectedItem(forecasts.get(1));
     }
 
     private void setUpHorizontalRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter recyclerViewAdapter) {

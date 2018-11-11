@@ -36,11 +36,6 @@ public class SoaringForecastRecyclerViewAdapter extends GenericRecyclerViewAdapt
         holder.getViewDataBinding().setForecastClickListener(this);
     }
 
-    public void setSelectedForecast(Forecast forecast) {
-        setSelectedItem(forecast);
-    }
-
-
     public void onForecastClick(Forecast forecast, Integer position) {
         if (forecast.equals(getSelectedItem())) {
             return;

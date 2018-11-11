@@ -23,14 +23,19 @@ public class ForecastDateRecyclerViewAdapter extends GenericRecyclerViewAdapter<
     public ForecastDateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ModelForecastDateView binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()), R.layout.soaring_forecast_date, parent, false);
-       return new ForecastDateViewHolder(binding);
+        return new ForecastDateViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(ForecastDateViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         //TODO get better way to do following
-        holder.getViewDataBinding().modelForecastDateLabel.setSelected(getItems().get(position).equals(getSelectedItem()));
+        if (getSelectedItem() != null) {
+            holder.getViewDataBinding().modelForecastDateLabel.setSelected(getSelectedItem().equals(getItems().get(position)));
+            if (getSelectedItem().equals(getItems().get(position))) {
+                smoothScrollToPosition(position);
+            }
+        }
         holder.getViewDataBinding().setDateClickListener(this);
     }
 

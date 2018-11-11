@@ -45,7 +45,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private AppRepository appRepository;
     private AppPreferences appPreferences;
 
-    private Forecast selectedForecast;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private ValueAnimator soaringForecastImageAnimation;
     private int numberForecastTimes;
@@ -56,6 +55,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<SoaringForecastModel> selectedSoaringForecastModel = new MutableLiveData<>();
     private MutableLiveData<List<ModelForecastDate>> modelForecastDates = new MutableLiveData<>();
     private MutableLiveData<ModelForecastDate> selectedModelForecastDate = new MutableLiveData<>();
+    private MutableLiveData<Forecast> selectedForecast = new MutableLiveData<>();
     private RegionForecastDates regionForecastDates = new RegionForecastDates();
     private MutableLiveData<List<Forecast>> forecasts;
     private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
@@ -64,7 +64,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<List<SoaringForecastModel>> soaringForecastModels;
     private MutableLiveData<List<SoundingLocation>> soundingLocations = new MutableLiveData<>();
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
-    private MutableLiveData<Boolean> loopPauseVisibility = new MutableLiveData<>();
+    private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
+
     private SoundingLocation selectedSoundingLocation;
 
     // Used to signal changes to UI
@@ -111,7 +112,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
 
     /**
-     * Call when user clicked date OR programmatically
+     * Call when user clicked date
      * @param clickedModelForecastDate
      */
     public void setSelectedModelForecastDate(ModelForecastDate clickedModelForecastDate) {
@@ -187,7 +188,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * Called once all soaring info retrieved from server and you are ready to start displaying
      * forecasts.
      */
-    // TODO include options to allow customization of forecasts to be displayed
+    // TODO include options to allow customization of which forecast should be displayed first
     //  (i.e. add to Settings options for first forecast model to be displayed, time of display
     //   whether to start animation or not...)
     private void getSoaringForecastImages() {
@@ -198,7 +199,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         // Get whatever current date is to start
         if (modelForecastDates.getValue() != null && modelForecastDates.getValue().size() > 0) {
             setSelectedModelForecastDate(modelForecastDates.getValue().get(0));
-            // TODO - load bitmaps for hcrit for first forecast type (e.g. gfs)
             Timber.d("Ready to load bitmaps");
             loadRaspImages();
         } else {
@@ -219,8 +219,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             for (RegionForecastDate regionForecastDate : regionForecastDates.getRegionForecastDateList()) {
                 modelLocationAndTimes = regionForecastDate.getModelLocationAndTimes();
                 if (modelLocationAndTimes != null && modelLocationAndTimes.getGpsLocationAndTimesForModel(model) != null) {
-                    ModelForecastDate modelForecastDate = new ModelForecastDate(model);
-                    modelForecastDate.setBaseDate(regionForecastDate.getIndex(), regionForecastDate.getFormattedDate(), regionForecastDate.getYyyymmddDate());
+                    ModelForecastDate modelForecastDate = new ModelForecastDate(model,regionForecastDate.getIndex()
+                            , regionForecastDate.getFormattedDate(), regionForecastDate.getYyyymmddDate());
                     modelForecastDate.setGpsLocationAndTimes(modelLocationAndTimes.getGpsLocationAndTimesForModel(model));
                     modelForecastDateList.add(modelForecastDate);
                 }
@@ -254,8 +254,19 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     private void setDefaultSoaringForecast() {
-        // TODO cheat here to get wstar - do something more flexible
-        selectedForecast = forecasts.getValue().get(1);
+        // TODO cheat here to get wstar - get from appPreferences?
+        if (forecasts.getValue() != null && forecasts.getValue().size() > 1) {
+            selectedForecast.setValue(forecasts.getValue().get(1));
+        }
+    }
+
+    public LiveData<Forecast> getSelectedSoaringForecast(){
+        return selectedForecast;
+    }
+
+    public void setSelectedSoaringForecast(Forecast forecast){
+        selectedForecast.setValue(forecast);
+        loadRaspImages();
     }
 
     /**
@@ -351,21 +362,21 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             case LOOP:
                 if (soaringForecastImageAnimation.isRunning()) {
                     stopImageAnimation();
-                    setLoopPauseVisibility();
+                    setLoopRunning();
                 } else {
                     startImageAnimation();
-                    setLoopPauseVisibility();
+                    setLoopRunning();
                 }
                 break;
         }
     }
 
-    private void setLoopPauseVisibility() {
-        loopPauseVisibility.setValue(soaringForecastImageAnimation.isRunning());
+    private void setLoopRunning() {
+        loopRunning.setValue(soaringForecastImageAnimation.isRunning());
     }
 
-    public LiveData<Boolean> getLoopPauseVisibility() {
-        return loopPauseVisibility;
+    public LiveData<Boolean> getLoopRunning() {
+        return loopRunning;
     }
 
     public LiveData<Boolean> getWorking() {
@@ -380,8 +391,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         working.setValue(true);
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
                 getApplication().getString(R.string.new_england_region)
-                , selectedModelForecastDate.getValue().getYyyymmddDate(), selectedSoaringForecastModel.getValue().getName()
-                , selectedForecast.getForecastName()
+                , selectedModelForecastDate.getValue().getYyyymmddDate()
+                , selectedSoaringForecastModel.getValue().getName()
+                , selectedForecast.getValue().getForecastName()
                 , selectedModelForecastDate.getValue().getGpsLocationAndTimes().getTimes())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -410,6 +422,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     private void displayRaspImages() {
+        working.setValue(false);
         forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
         startImageAnimation();
     }
@@ -514,13 +527,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         EventBus.getDefault().post(new CallFailure(t.toString()));
     }
 
-    //------- Soundings --------------------
-    //TODO implement
-    public void displaySounding(SoundingLocation soundingLocation) {
-        forecastSounding = Constants.FORECAST_SOUNDING.SOUNDING;
-        soundingDisplay.setValue(true);
-        loadForecastSoundings(soundingLocation);
-    }
+    //------- Soundings -------------------
 
     private void loadForecastSoundings(SoundingLocation soundingLocation) {
         stopImageAnimation();
@@ -550,16 +557,24 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         getForecastTimes();
-                        startImageAnimation();
+                        displaySoundingImages();
                     }
                 });
         compositeDisposable.add(disposableObserver);
     }
 
+
+    private void displaySoundingImages() {
+        working.setValue(false);
+        soundingDisplay.setValue(true);
+        forecastSounding = Constants.FORECAST_SOUNDING.SOUNDING;
+        startImageAnimation();
+    }
+
+
     // ------- Task display ---------------------
 
     public void getTask(long taskId) {
-        working.setValue(true);
         Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -178,7 +178,7 @@
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/pause_loop_toggle"
                 android:onClick="@{() -> viewModel.onStepClick(forecastAction.LOOP)}"
-                android:text="@{viewModel.loopPauseVisibility ? @string/loop : @string/pause}"
+                android:text="@{viewModel.loopRunning ? @string/pause : @string/loop }"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:tint="@color/colorPrimary"
 

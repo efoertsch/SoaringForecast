@@ -85,6 +85,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastImageBinding = DataBindingUtil.inflate(inflater
                 , R.layout.soaring_forecast_rasp, container, false);
         soaringForecastImageBinding.setLifecycleOwner(this);
+        soaringForecastImageBinding.setViewModel(soaringForecastViewModel);
         setupViews();
         return soaringForecastImageBinding.getRoot();
     }
@@ -119,7 +120,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     }
 
-    //TODO - way to many observers - consolidate/simplify somehow?
+    //TODO - way to many observers - consolidate/simplify?
     private void setObservers() {
         soaringForecastViewModel.getSoaringForecastModels().observe(this, soaringForecastModels -> {
             //TODO create preference for model to use for first display
@@ -128,11 +129,22 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // Selected RASP model - GFS, NAM, ...
         soaringForecastViewModel.getSelectedSoaringForecastModel().observe(this, soaringForecastModel ->
-                forecastModelrecyclerViewAdapter.setSelectedForecastModel(soaringForecastModel));
+                forecastModelrecyclerViewAdapter.setSelectedItem(soaringForecastModel));
 
-        // Get the dates for which rasp forecasts are available for the selected model
+        // Get the list of dates for which rasp forecasts are available for the selected model
         soaringForecastViewModel.getModelForecastDates().observe(this, modelForecastDates ->
                 forecastDateRecyclerViewAdapter.setItems(modelForecastDates));
+
+        // Set the selected date for which rasp forecasts is being displayed
+        soaringForecastViewModel.getSelectedModelForecastDate().observe(this, selectedForecastDate -> {
+            forecastDateRecyclerViewAdapter.setSelectedItem(selectedForecastDate);
+            setMapLatLngBounds(selectedForecastDate);
+        });
+
+        // Get the initial forecast to be displayed
+        soaringForecastViewModel.getSelectedSoaringForecast().observe(this, forecast -> {
+            soaringForecastRecyclerViewAdapter.setSelectedItem(forecast);
+        });
 
         // get the types of Rasp forecasts available - thermal updraft, bouncy/shear, cloud cover, ..
         soaringForecastViewModel.getForecasts().observe(this, forecasts -> {
@@ -140,9 +152,6 @@ public class SoaringForecastFragment extends DaggerFragment {
                 }
         );
 
-        soaringForecastViewModel.getSelectedModelForecastDate().observe(this, modelForecastDate -> {
-            setMapLatLngBounds(modelForecastDate);
-        });
 
         // Get list of turnpoints for a selected task
         soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints ->
@@ -282,6 +291,17 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.setSelectedModelForecastDate(modelForecastDate);
     }
 
+    /**
+     * Select soaring forecast i.e wstar, bsratio (forecasts in raw/forecast_options)
+     *
+     * @param forecast
+     */
+    @Subscribe
+    public void onMessageEvent(Forecast forecast) {
+        soaringForecastViewModel.setSelectedSoaringForecast(forecast);
+
+    }
+
     private void setMapLatLngBounds(ModelForecastDate modelForecastDate) {
         forecastMapper.setMapLatLngBounds(
                 new LatLngBounds(modelForecastDate.getGpsLocationAndTimes().getSouthWestLatLng()
@@ -290,7 +310,6 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplaySoundingLocation displaySoundingLocation) {
-        soaringForecastViewModel.stopImageAnimation();
         soaringForecastViewModel.setSelectedSoundingLocation(displaySoundingLocation.getSoundingLocation());
     }
 
