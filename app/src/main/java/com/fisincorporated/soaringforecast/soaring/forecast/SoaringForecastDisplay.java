@@ -19,7 +19,6 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.app.ViewModelLifeCycle;
 import com.fisincorporated.soaringforecast.common.Constants;
-import com.fisincorporated.soaringforecast.common.Constants.FORECAST_ACTION;
 import com.fisincorporated.soaringforecast.databinding.SoaringForecastImageBinding;
 import com.fisincorporated.soaringforecast.messages.DataLoadingEvent;
 import com.fisincorporated.soaringforecast.messages.ReadyToSelectSoaringForecastEvent;
@@ -478,7 +477,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     }
 
     // Stepping thru forecast images
-    public void onStepClick(FORECAST_ACTION forecastaction) {
+    public void onStepClick(Constants.STEP_ACTION forecastaction) {
         switch (forecastaction) {
             case BACKWARD:
                 stopImageAnimation();

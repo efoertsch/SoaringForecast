@@ -2,15 +2,12 @@ package com.fisincorporated.soaringforecast.satellite;
 
 import android.annotation.SuppressLint;
 
-import com.fisincorporated.soaringforecast.messages.DataLoadCompleteEvent;
-import com.fisincorporated.soaringforecast.messages.DataLoadingEvent;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImage;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageInfo;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 import com.fisincorporated.soaringforecast.utils.TimeUtils;
 
 import org.cache2k.Cache;
-import org.greenrobot.eventbus.EventBus;
 import org.reactivestreams.Subscription;
 
 import java.util.Calendar;
@@ -19,11 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class SatelliteImageDownloader {
@@ -41,43 +34,16 @@ public class SatelliteImageDownloader {
     @Inject
     public BitmapImageUtils bitmapImageUtils;
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Inject
     SatelliteImageDownloader() {
     }
 
     @SuppressLint("CheckResult")
-    public void loadSatelliteImages(String area, String type) {
-        cancelOutstandingLoads();
+    public Observable<Void> loadSatelliteImages(String area, String type) {
         satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
-        fireLoadStarted();
-        DisposableObserver disposableObserver = getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<Void>() {
-                    @Override
-                    public void onStart(){
-                    }
+        return getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames());
 
-                    @Override
-                    public void onNext(Void aVoid) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        confirmLoad();
-                        fireLoadComplete();
-
-                    }
-                });
-        compositeDisposable.add(disposableObserver);
     }
 
     private void confirmLoad() {
@@ -113,29 +79,11 @@ public class SatelliteImageDownloader {
 
     // In format of  ..._sat_irbw_alb.jpg
     public static String getImageNameSuffix(String area, String type) {
-        return "_sat" + "_" + type + "_" + area + ".jpg";
+        return new StringBuilder().append("_sat_").append(type).append("_").append(area).append(".jpg").toString();
     }
 
-    public void cancelOutstandingLoads() {
-        compositeDisposable.clear();
-    }
 
-    private void fireLoadStarted() {
-        EventBus.getDefault().post(new DataLoadingEvent());
-    }
-
-    private void fireLoadComplete() {
-        EventBus.getDefault().post(new DataLoadCompleteEvent());
-    }
-
-    public void shutdown() {
-        cancelOutstandingLoads();
-        if (satelliteImageCache != null) {
-            satelliteImageCache.clearAndClose();
-        }
-    }
-
-    private Observable<Void> getImageDownloaderObservable(final List<String> satelliteImageNames) {
+    public Observable<Void> getImageDownloaderObservable(final List<String> satelliteImageNames) {
         return Observable.fromIterable(satelliteImageNames)
                 .flatMap((Function<String, Observable<Void>>) satelliteImageName -> {
                     if (satelliteImageCache.get(satelliteImageName) == null) {

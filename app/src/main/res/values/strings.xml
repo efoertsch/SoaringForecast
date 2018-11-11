@@ -128,7 +128,7 @@
     <!-- Satellite images -->
     <string name="title_activity_satellite_image">Satellite Image</string>
     <string name="satellite_image_time_utc_label">UTC:</string>
-    <string name="satellite_image_time_local_label">Local:</string>
+    <string name="satellite_image_time_local">%1$s (Local)</string>
     <string name="soaring_forecast_date">Date</string>
     <string name="soaring_forecast_time">Time</string>
     <string name="soaring_forecast_time_utc_label">UTC</string>

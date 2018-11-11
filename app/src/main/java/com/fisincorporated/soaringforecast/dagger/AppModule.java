@@ -1,9 +1,7 @@
 package com.fisincorporated.soaringforecast.dagger;
 
 import android.content.Context;
-import android.content.res.Resources;
 
-import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.app.SoaringWeatherApplication;
 import com.fisincorporated.soaringforecast.cache.BitmapCache;
@@ -11,16 +9,12 @@ import com.fisincorporated.soaringforecast.retrofit.AviationWeatherApi;
 import com.fisincorporated.soaringforecast.retrofit.AviationWeatherGovRetrofit;
 import com.fisincorporated.soaringforecast.retrofit.LoggingInterceptor;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImage;
-import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
-import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastImage;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
@@ -103,37 +97,6 @@ public class AppModule {
         return bitmapCache;
     }
 
-    @Provides
-    @Singleton
-    public List<SatelliteRegion> provideSatelliteRegionArray() {
-        ArrayList<SatelliteRegion> satelliteRegions = new ArrayList<>();
-        Resources res = appContext.getResources();
-        try {
-            String[] regions = res.getStringArray(R.array.satellite_regions);
-            for (int i = 0; i < regions.length; ++i) {
-                SatelliteRegion satelliteRegion = new SatelliteRegion(regions[i]);
-                satelliteRegions.add(satelliteRegion);
-            }
-        } catch (Resources.NotFoundException ignored) {
-        }
-        return satelliteRegions;
-    }
-
-    @Provides
-    @Singleton
-    public List<SatelliteImageType> provideSatelliteImageType() {
-        ArrayList<SatelliteImageType> satelliteImageTypes = new ArrayList<>();
-        Resources res = appContext.getResources();
-        try {
-            String[] imageTypes = res.getStringArray(R.array.satellite_image_types);
-            for (int i = 0; i < imageTypes.length; ++i) {
-                SatelliteImageType satelliteImageType = new SatelliteImageType(imageTypes[i]);
-                satelliteImageTypes.add(satelliteImageType);
-            }
-        } catch (Resources.NotFoundException ignored) {
-        }
-        return satelliteImageTypes;
-    }
 
     @Provides
     @Singleton

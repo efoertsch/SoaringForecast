@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:bind="http://schemas.android.com/apk/res-auto">
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/apk/res-auto">
 
     <data class="NoaaSatelliteImageBinding">
 
@@ -9,125 +10,173 @@
         <import type="android.widget.Spinner"/>
 
         <variable
+            name="setAction"
+            type="com.fisincorporated.soaringforecast.common.Constants.STEP_ACTION"/>
+
+        <variable
             name="viewModel"
             type="com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteViewModel"/>
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/satellite_image_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
+        android:layout_marginEnd="@dimen/margin_standard"
+        android:layout_marginStart="@dimen/margin_standard"
+        android:layout_marginTop="@dimen/margin_standard">
 
-        <LinearLayout
-            android:id="@+id/satellite_image_region"
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/satellite_image_region_label"
+            style="@style/forecastLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_standard"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:text="@string/satellite_region"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            bind:layout_constraintBottom_toBottomOf="@+id/satellite_image_region_spinner"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="@+id/satellite_image_region_spinner"/>
 
-            <TextView
-                android:id="@+id/satellite_image_region_label"
-                style="@style/forecastLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="@string/satellite_region"/>
-
-            <Spinner
-                android:id="@+id/satellite_image_region_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:entries="@{viewModel.satelliteRegions}"
-                android:gravity="center_vertical"
-                bind:selectedRegionValue="@={viewModel.selectedSatelliteRegion}"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/satellite_image_type"
-            android:layout_width="match_parent"
+        <Spinner
+            android:id="@+id/satellite_image_region_spinner"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/satellite_image_region"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_standard"
+            android:entries="@{viewModel.satelliteRegions}"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            bind:layout_constraintStart_toEndOf="@+id/satellite_image_region_label"
+            bind:layout_constraintTop_toTopOf="parent"
+            bind:selectedRegionValue="@={viewModel.selectedSatelliteRegion}"
+            />
+
+
+        <TextView
+            android:id="@+id/satellite_image_type_label"
+            style="@style/forecastLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_half"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:text="@string/satellite_image_type"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            bind:layout_constraintBottom_toBottomOf="@+id/satellite_image_type_spinner"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="@+id/satellite_image_type_spinner"/>
 
-            <TextView
-                android:id="@+id/satellite_image_type_label"
-                style="@style/forecastLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="@string/satellite_image_type"/>
+        <Spinner
+            android:id="@+id/satellite_image_type_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@{viewModel.satelliteImageTypes}"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            bind:layout_constraintStart_toEndOf="@+id/satellite_image_type_label"
+            bind:layout_constraintTop_toBottomOf="@+id/satellite_image_region_spinner"
+            bind:selectedImageType="@{viewModel.selectedSatelliteImageType}"/>
 
-            <Spinner
-                android:id="@+id/satellite_image_type_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:entries="@{viewModel.satelliteImageTypes}"
-                android:gravity="center_vertical"
-                bind:selectedImageType="@={viewModel.selectedSatelliteImageType}"/>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/satellite_image_time"
+        <!-- time and loop/pause -->
+        <RelativeLayout
+            android:id="@+id/satellite_image_image_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/satellite_image_type"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_half"
-            android:orientation="horizontal"
-            >
+            android:layout_below="@+id/satellite_image_type_spinner"
+            bind:layout_constraintEnd_toEndOf="@+id/satellite_image_layout"
+            bind:layout_constraintStart_toStartOf="@+id/satellite_image_layout"
+            bind:layout_constraintTop_toBottomOf="@+id/satellite_image_type_spinner">
 
-            <TextView
-                android:id="@+id/satellite_image_utc_label"
-                style="@style/forecastLabel"
+            <LinearLayout
+                android:id="@+id/satellite_image_image_looper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="@dimen/margin_half"
+                android:background="@drawable/black_border"
+                android:gravity="center_vertical|center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/satellite_image_time_back_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_standard"
+                    android:contentDescription="@string/back_arrow"
+                    android:onClick="@{() -> viewModel.onStepClick(setAction.BACKWARD)}"
+                    android:tint="@color/colorPrimary"
+                    bind:srcCompat="@drawable/ic_keyboard_arrow_left"/>
+
+                <TextView
+                    android:id="@+id/satellite_image_local_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:id="@+id/satellite_image_time_local_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="@{String.format(@string/satellite_image_time_local, viewModel.localTimeDisplay)}"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    />
+
+                <ImageView
+                    android:id="@+id/satellite_image_time_forward_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_standard"
+                    android:contentDescription="@string/forward_arrow"
+                    android:onClick="@{() -> viewModel.onStepClick(setAction.FORWARD)}"
+                    android:tint="@color/colorPrimary"
+                    bind:srcCompat="@drawable/ic_keyboard_arrow_right"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/satellite_image_loop_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="@string/satellite_image_time_utc_label"/>
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/pause_loop_toggle"
+                android:onClick="@{() -> viewModel.onStepClick(setAction.LOOP)}"
+                android:text="@{safeUnbox(viewModel.loopRunning) ? @string/pause : @string/loop }"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:tint="@color/colorPrimary"
+                />
 
-            <TextView
-                android:id="@+id/satellite_image_utc_time"
-                style="@style/forecastData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"/>
+        </RelativeLayout>
 
-            <TextView
-                android:id="@+id/satellite_image_local_label"
-                style="@style/forecastLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="@string/satellite_image_time_local_label"/>
-
-            <TextView
-                android:id="@+id/satellite_image_local_time"
-                style="@style/forecastData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"/>
-
-        </LinearLayout>
-
-
+        <!-- set bitmap programatically -->
         <com.fisincorporated.soaringforecast.common.TouchImageView
             android:id="@+id/satellite_image_imageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@+id/satellite_image_time"
-            android:layout_margin="@dimen/margin_standard">
-        </com.fisincorporated.soaringforecast.common.TouchImageView>
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/margin_standard"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toBottomOf="@+id/satellite_image_image_time"/>
 
-    </RelativeLayout>
+        <ProgressBar
+            android:id="@+id/soaring_forecast_map_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toBottomOf="@+id/satellite_image_image_time"
+            />
+
+    </android.support.constraint.ConstraintLayout>
 
 </layout>
