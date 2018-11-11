@@ -139,7 +139,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
 
     @Inject
     SoaringForecastDisplay(AppRepository appRepository) {
-        forecasts = appRepository.getForecasts();
+        //forecasts = appRepository.getForecasts();
     }
 
     public SoaringForecastDisplay setView(Fragment fragment, View view) {
@@ -158,8 +158,8 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private void bindViewModel() {
         viewDataBinding = DataBindingUtil.bind(bindingView);
         if (viewDataBinding != null) {
-            viewDataBinding.setForecastDisplay(this);
-            selectedSoaringForecastModel = appPreferences.getSoaringForecastType();
+            //viewDataBinding.setForecastDisplay(this);
+            selectedSoaringForecastModel = appPreferences.getSoaringForecastModel();
             setupSoaringForecastModelsRecyclerView(soaringForecastModels);
             setupSoaringConditionRecyclerView(forecasts.getForecasts());
             mapProgressBar = viewDataBinding.soaringForecastMapProgressBar;
@@ -189,7 +189,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         ForecastModelRecyclerViewAdapter recyclerViewAdapter = new ForecastModelRecyclerViewAdapter(soaringForecastModels);
         setUpHorizontalRecyclerView(viewDataBinding.soaringForecastModelRecyclerView, recyclerViewAdapter);
         //TODO create preference for model to use for first display
-        recyclerViewAdapter.setSelectedForecastModel(soaringForecastModels.get(0));
+        recyclerViewAdapter.setSelectedItem(soaringForecastModels.get(0));
     }
 
 
@@ -202,7 +202,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
         SoaringForecastRecyclerViewAdapter recyclerViewAdapter = new SoaringForecastRecyclerViewAdapter(forecasts);
         setUpHorizontalRecyclerView(viewDataBinding.soaringForecastRecyclerView, recyclerViewAdapter);
         // TODO do better way to set selected
-        recyclerViewAdapter.setSelectedForecast(forecasts.get(1));
+        recyclerViewAdapter.setSelectedItem(forecasts.get(1));
     }
 
     private void setUpHorizontalRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter recyclerViewAdapter) {
@@ -216,7 +216,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     @Override
     public void onResume() {
         EventBus.getDefault().register(this);
-        soaringForecastDownloader.loadForecastsForDay(appPreferences.getSoaringForecastRegion());
+        //soaringForecastDownloader.loadForecastsForDay(appPreferences.getSoaringForecastRegion());
     }
 
     @Override
@@ -301,7 +301,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     private void storeRegionForecastDates(RegionForecastDates downloadedRegionForecastDates) {
         regionForecastDates = downloadedRegionForecastDates;
         regionForecastDates.parseForecastDates();
-        soaringForecastDownloader.loadTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
+        soaringForecastDownloader.getTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
     }
 
     @SuppressLint("CheckResult")
@@ -379,7 +379,7 @@ public class SoaringForecastDisplay extends BaseObservable implements ViewModelL
     public void onMessageEvent(SoaringForecastModel soaringForecastModel) {
         if (!soaringForecastModel.equals(selectedSoaringForecastModel)) {
             selectedSoaringForecastModel = soaringForecastModel;
-            appPreferences.setSoaringForecastType(selectedSoaringForecastModel);
+            appPreferences.setSoaringForecastModel(selectedSoaringForecastModel);
             List<ModelForecastDate> modelForecastDates = createForecastDateListForSelectedModel();
 //            if (modelForecastDateRecyclerViewAdapter != null) {
 //                modelForecastDateRecyclerViewAdapter.updateModelForecastDateList(modelForecastDates);

@@ -32,7 +32,7 @@ public class AppPreferences {
 
     private static final String DEFAULT_PREFS_SET = "DEFAULT_PREFS_SET";
 
-    private static final String SOARING_FORECAST_TYPE_KEY = "SOARING_FORECAST_TYPE";
+    private static final String SOARING_FORECAST_MODEL_KEY = "SOARING_FORECAST_TYPE";
 
     private static final String SOARING_FORECAST_REGION_KEY = "SOARING_FORECAST_REGION";
 
@@ -267,13 +267,13 @@ public class AppPreferences {
         editor.apply();
     }
 
-    public SoaringForecastModel getSoaringForecastType() {
-        return new SoaringForecastModel(sharedPreferences.getString(SOARING_FORECAST_TYPE_KEY, soaringForecastType));
+    public SoaringForecastModel getSoaringForecastModel() {
+        return new SoaringForecastModel(sharedPreferences.getString(SOARING_FORECAST_MODEL_KEY, soaringForecastType));
     }
 
-    public void setSoaringForecastType(SoaringForecastModel soaringForecastModel) {
+    public void setSoaringForecastModel(SoaringForecastModel soaringForecastModel) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SOARING_FORECAST_TYPE_KEY, soaringForecastModel.toStore());
+        editor.putString(SOARING_FORECAST_MODEL_KEY, soaringForecastModel.toStore());
         editor.apply();
     }
 

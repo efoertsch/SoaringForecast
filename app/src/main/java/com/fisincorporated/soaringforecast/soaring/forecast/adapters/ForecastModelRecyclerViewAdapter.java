@@ -13,11 +13,11 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
-public class ForecastModelRecyclerViewAdapter extends GenericRecyclerViewAdapter<SoaringForecastModel,ForecastModelViewHolder> {
+public class ForecastModelRecyclerViewAdapter extends GenericRecyclerViewAdapter<SoaringForecastModel, ForecastModelViewHolder> {
 
     private List<SoaringForecastModel> soaringForecastModels;
 
-    public ForecastModelRecyclerViewAdapter( List<SoaringForecastModel> items){
+    public ForecastModelRecyclerViewAdapter(List<SoaringForecastModel> items) {
         super(items);
     }
 
@@ -29,15 +29,16 @@ public class ForecastModelRecyclerViewAdapter extends GenericRecyclerViewAdapter
 
     @Override
     public void onBindViewHolder(ForecastModelViewHolder holder, int position) {
-        super.onBindViewHolder(holder,position);
+        super.onBindViewHolder(holder, position);
         holder.getViewDataBinding().setForecastModelClickListener(this);
-        holder.getViewDataBinding().soaringForecastModelLabel.setSelected(getSelectedItem().equals(getItems().get(position)));
+        if (getSelectedItem() != null) {
+            holder.getViewDataBinding().soaringForecastModelLabel.setSelected(getSelectedItem().equals(getItems().get(position)));
+            if (getSelectedItem().equals(getItems().get(position))) {
+                smoothScrollToPosition(position);
+            }
+        }
     }
 
-    public void setSelectedForecastModel(SoaringForecastModel soaringForecastModel) {
-       setSelectedItem(soaringForecastModel);
-       notifyDataSetChanged();
-    }
 
     public void onModelClick(SoaringForecastModel soaringForecastModel, Integer position) {
         if (!soaringForecastModel.equals(getSelectedItem())) {

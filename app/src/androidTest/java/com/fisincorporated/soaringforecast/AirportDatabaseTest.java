@@ -67,7 +67,7 @@ public class AirportDatabaseTest {
     @Test
     public void downloadAirportFileAndSaveToDB() {
         AirportListDownloader airportListDownloader = new AirportListDownloader(okHttpClient, appRepository);
-        airportListDownloader.downloadAirportsToDB(okHttpClient).blockingAwait();
+        airportListDownloader.downloadAirportsToDB().blockingAwait();
         assert(appRepository.getCountOfAirports().blockingGet() > 500);
     }
 }

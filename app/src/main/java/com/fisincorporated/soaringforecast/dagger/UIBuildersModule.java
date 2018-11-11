@@ -1,8 +1,8 @@
 package com.fisincorporated.soaringforecast.dagger;
 
 import com.fisincorporated.soaringforecast.airport.AirportActivity;
-import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
 import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
+import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
 import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
@@ -23,7 +23,7 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract WeatherDrawerActivity bindWeatherDrawerActivity();
 
-    @ContributesAndroidInjector(modules = {})
+    @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
     abstract SoaringForecastFragment bindSoaringForecastFragment();
 
     // --- Weather Metar/Taf -------------------

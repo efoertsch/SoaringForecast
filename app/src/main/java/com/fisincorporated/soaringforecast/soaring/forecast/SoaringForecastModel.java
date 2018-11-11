@@ -54,7 +54,13 @@ public class SoaringForecastModel {
 
     // For storing selected region in SharedPreferences
     public String toStore() {
-        return id + COMMA_DELIMITER + name.trim() + COMMA_DELIMITER + numberForecastDays;
+        return new StringBuilder()
+                .append(id)
+                .append(COMMA_DELIMITER)
+                .append(name.trim())
+                .append(COMMA_DELIMITER)
+                .append(numberForecastDays)
+                .toString();
     }
 
     public int getNumberForecastDays() {

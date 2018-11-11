@@ -4,15 +4,13 @@
 
     <!-- Soaring forecast models. Model, forecast number of days -->
     <string name="soaring_forecast_gfs" translatable="false">0,GFS,7</string>
-    <string name="soaring_forecast_hrrr" translatable="false">1,HRRR,1</string>
-    <string name="soaring_forecast_nam" translatable="false">2,NAM,3</string>
-    <string name="soaring_forecast_rap" translatable="false">3,RAP,1</string>
+    <string name="soaring_forecast_nam" translatable="false">1,NAM,3</string>
+    <string name="soaring_forecast_rap" translatable="false">2,RAP,1</string>
 
 
 
     <string-array name="soaring_forecast_models">
         <item>@string/soaring_forecast_gfs</item>
-        <item>@string/soaring_forecast_hrrr</item>
         <item>@string/soaring_forecast_nam</item>
         <item>@string/soaring_forecast_rap</item>
     </string-array>

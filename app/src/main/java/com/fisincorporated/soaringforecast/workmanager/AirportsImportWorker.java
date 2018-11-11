@@ -29,9 +29,6 @@ public class AirportsImportWorker extends Worker {
     String CHANNEL_ID;
 
     @Inject
-    OkHttpClient okHttpClient;
-
-    @Inject
     AppRepository appRepository;
 
     @Inject
@@ -53,7 +50,7 @@ public class AirportsImportWorker extends Worker {
         notificationManager = NotificationManagerCompat.from(context);
         displayStartNotification();
 
-        airportListDownloader.downloadAirportsToDB(okHttpClient).blockingAwait();
+        airportListDownloader.downloadAirportsToDB().blockingAwait();
         boolean success = appRepository.getCountOfAirports().blockingGet() > 2000;
         displayCompletionNotification(success);
 

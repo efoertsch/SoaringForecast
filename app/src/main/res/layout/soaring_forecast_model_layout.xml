@@ -29,7 +29,7 @@
         android:clickable="true"
         android:onClick="@{() -> forecastModelClickListener.onModelClick(soaringForecastModel, position)}"
         android:padding="@dimen/margin_half"
-        android:text="@{soaringForecastModel.name + '(' + soaringForecastModel.numberForecastDays + ')'}"
+        android:text="@{soaringForecastModel.name}"
         android:textAllCaps="true"
-        tools:text="GFS (7)"/>
+        tools:text="GFS"/>
 </layout>

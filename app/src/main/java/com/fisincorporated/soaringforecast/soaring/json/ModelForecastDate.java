@@ -8,6 +8,7 @@ public class ModelForecastDate extends BaseDate {
 
     public ModelForecastDate(String model) {
         super();
+        this.model = model;
     }
 
     public ModelForecastDate(String model, int index, String formattedDate, String yyyymmddDate) {
@@ -25,6 +26,18 @@ public class ModelForecastDate extends BaseDate {
 
     public void setGpsLocationAndTimes(GpsLocationAndTimes gpsLocationAndTimes) {
         this.gpsLocationAndTimes = gpsLocationAndTimes;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ModelForecastDate) {
+            ModelForecastDate c = (ModelForecastDate) obj;
+            if (c.model.equals(model) && c.yyyymmddDate.equals(yyyymmddDate)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public GpsLocationAndTimes getGpsLocationAndTimes() {

@@ -2,6 +2,9 @@ package com.fisincorporated.soaringforecast.soaring.forecast;
 
 public class SoaringForecastImageSet {
 
+    // Formatted for display
+    private String localTime;
+
     private SoaringForecastImage bodyImage;
     private SoaringForecastImage headerImage;
     private SoaringForecastImage sideImage;
@@ -37,5 +40,13 @@ public class SoaringForecastImageSet {
 
     public void setFooterImage(SoaringForecastImage footerImage) {
         this.footerImage = footerImage;
+    }
+
+    public String getLocalTime() {
+        return localTime;
+    }
+
+    public void setLocalTime(String localTime) {
+        this.localTime = localTime;
     }
 }
