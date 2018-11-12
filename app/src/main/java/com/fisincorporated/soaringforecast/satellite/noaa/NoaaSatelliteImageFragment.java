@@ -24,7 +24,6 @@ import dagger.android.support.DaggerFragment;
 public class NoaaSatelliteImageFragment extends DaggerFragment {
 
     private NoaaSatelliteImageBinding binding;
-
     private NoaaSatelliteViewModel satelliteViewModel;
 
     @Inject
@@ -38,6 +37,9 @@ public class NoaaSatelliteImageFragment extends DaggerFragment {
 
     @Inject
     public AppRepository appRepository;
+    private int lastRegionPosition = -1;
+    private int lastImageTypePosition = -1;
+
 
     public static NoaaSatelliteImageFragment newInstance() {
         NoaaSatelliteImageFragment noaaSatelliteImageFragment = new NoaaSatelliteImageFragment();
@@ -75,63 +77,33 @@ public class NoaaSatelliteImageFragment extends DaggerFragment {
 
     }
 
-    private void setup(){
-        satelliteViewModel.getSatelliteBitmap().observe(this, satelliteBitmap ->{
-           binding.satelliteImageImageView.setImageBitmap(satelliteBitmap);
+    private void setup() {
+        satelliteViewModel.setup();
+
+        satelliteViewModel.getRegionPosition().observe(this, regionPosition -> {
+                    // Don't try loading images until after spinner position intially set
+                    if (lastRegionPosition != -1 && regionPosition != lastRegionPosition) {
+                        satelliteViewModel.setSelectedSatelliteRegion(regionPosition);
+                    }
+                    lastRegionPosition = regionPosition;
+                }
+        );
+
+        satelliteViewModel.getImageTypePosition().observe(this, imageTypePosition -> {
+                    // Don't try loading images until after spinner position initially set
+                    if (lastImageTypePosition != -1 && imageTypePosition != lastImageTypePosition) {
+                        satelliteViewModel.setSelectedSatelliteImageType(imageTypePosition);
+                    }
+                    lastImageTypePosition = imageTypePosition;
+
+                }
+        );
+
+        //TODO is there a way have image objected in viewmodel?
+        satelliteViewModel.getSatelliteBitmap().observe(this, satelliteBitmap -> {
+            binding.satelliteImageImageView.setImageBitmap(satelliteBitmap);
         });
 
-        satelliteViewModel.setup();
     }
 
-
-
-    //-------- Binding for regions (CONUS, Albany, ..
-//    @BindingAdapter(value = {"selectedRegionValue", "selectedRegionValueAttrChanged"}, requireAll = false)
-//    public static void bindSpinnerData(Spinner spinner, SatelliteRegion newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                newSatelliteAttrChanged.onChange();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-//        if (newSelectedValue != null) {
-//            int pos = spinner.getSelectedItemPosition();
-//            spinner.setSelection(pos, true);
-//        }
-//    }
-//
-//    @InverseBindingAdapter(attribute = "selectedRegionValue", event = "selectedRegionValueAttrChanged")
-//    public static SatelliteRegion captureSelectedValue(Spinner spinner) {
-//        return (SatelliteRegion) spinner.getSelectedItem();
-//    }
-//
-//
-//
-//    // ---- Binding for satellite image type - Visible, Water Vapor,...
-//    @BindingAdapter(value = {"selectedImageType", "selectedImageTypeAttrChanged"}, requireAll = false)
-//    public static void bindImageTypeSpinnerData(Spinner spinner, SatelliteImageType newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                newSatelliteAttrChanged.onChange();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-//        if (newSelectedValue != null) {
-//            int pos = spinner.getSelectedItemPosition();
-//            spinner.setSelection(pos, true);
-//        }
-//    }
-//
-//    @InverseBindingAdapter(attribute = "selectedImageType", event = "selectedImageTypeAttrChanged")
-//    public static SatelliteImageType captureSelectedImageTypeValue(Spinner spinner) {
-//        return (SatelliteImageType) spinner.getSelectedItem();
-//    }
 }

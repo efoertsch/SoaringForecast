@@ -5,16 +5,8 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
-import android.databinding.InverseBindingMethod;
-import android.databinding.InverseBindingMethods;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Spinner;
 
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.Constants;
@@ -38,16 +30,19 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-@InverseBindingMethods({@InverseBindingMethod(type = Spinner.class, attribute = "android:selectedItemPosition"),})
 public class NoaaSatelliteViewModel extends AndroidViewModel {
 
     private AppPreferences appPreferences;
     private AppRepository appRepository;
 
-    private MutableLiveData<SatelliteRegion> selectedSatelliteRegion = new MutableLiveData<>();
-    private MutableLiveData<SatelliteImageType> selectedSatelliteImageType = new MutableLiveData<>();
     private MutableLiveData<List<SatelliteRegion>> satelliteRegions = new MutableLiveData<>();
+    private SatelliteRegion selectedSatelliteRegion;
+    private MutableLiveData<Integer> regionPosition = new MutableLiveData<>();
+
     private MutableLiveData<List<SatelliteImageType>> satelliteImageTypes = new MutableLiveData<>();
+    private SatelliteImageType selectedSatelliteImageType;
+    private MutableLiveData<Integer> imageTypePosition = new MutableLiveData<>();
+
     private MutableLiveData<SatelliteImage> selectedSatelliteImage = new MutableLiveData<>();
     private MutableLiveData<String> localTimeDisplay = new MutableLiveData<>();
 
@@ -61,8 +56,6 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
     public Cache<String, SatelliteImage> satelliteImageCache;
 
     private SatelliteImage satelliteImage;
-    private boolean bypassSatelliteRegionChange = true;
-    private boolean bypassSatelliteTypeChange = true;
 
     private ValueAnimator satelliteImageAnimation;
     private int numberImages = 0;
@@ -73,7 +66,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         super(application);
     }
 
-    //TODO ?create viewmodel injector and replace?
+    //TODO ?create viewmodel factor or injector and replace?
     public NoaaSatelliteViewModel setAppPreferences(AppPreferences appPreferences) {
         this.appPreferences = appPreferences;
         return this;
@@ -100,19 +93,26 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
 
     public void setup() {
         satelliteRegions.setValue(appRepository.getSatelliteRegions());
+        selectedSatelliteRegion = appPreferences.getSatelliteRegion();
+        if (selectedSatelliteRegion != null) {
+            regionPosition.setValue(satelliteRegions.getValue().indexOf(selectedSatelliteRegion));
+        }
+
         satelliteImageTypes.setValue(appRepository.getSatelliteImageTypes());
-        selectedSatelliteRegion.setValue(appPreferences.getSatelliteRegion());
-        selectedSatelliteImageType.setValue(appPreferences.getSatelliteImageType());
+        selectedSatelliteImageType = appPreferences.getSatelliteImageType();
+        if (selectedSatelliteImageType != null) {
+            imageTypePosition.setValue(satelliteImageTypes.getValue().indexOf(selectedSatelliteImageType));
+        }
         localTimeDisplay.setValue("");
         loadSatelliteImages();
     }
 
-    private void loadSatelliteImages() {
+    protected void loadSatelliteImages() {
         working.setValue(true);
         stopImageAnimation();
         satelliteImageInfo = SatelliteImageDownloader.createSatelliteImageInfo(TimeUtils.getUtcRightNow()
-                , selectedSatelliteRegion.getValue().getCode()
-                , selectedSatelliteImageType.getValue().getCode());
+                , selectedSatelliteRegion.getCode()
+                , selectedSatelliteImageType.getCode());
         selectedSatelliteImage.setValue(null);
 
         Disposable disposable = satelliteImageDownloader.getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
@@ -125,12 +125,11 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
 
                     @Override
                     public void onNext(Void aVoid) {
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        //TODO send up distress flare
                     }
 
                     @Override
@@ -150,18 +149,6 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
             satelliteImage = satelliteImageCache.get(satelliteImageName);
             Timber.d("Satellite image: %s -  %s", satelliteImageName, satelliteImage != null ? " cached" : " not cached");
         }
-    }
-
-    public MutableLiveData<List<SatelliteRegion>> getSatelliteRegions() {
-        return satelliteRegions;
-    }
-
-    public MutableLiveData<List<SatelliteImageType>> getSatelliteImageTypes() {
-        return satelliteImageTypes;
-    }
-
-    public MutableLiveData<String> getLocalTimeDisplay() {
-        return localTimeDisplay;
     }
 
     // Stepping thru forecast images
@@ -187,10 +174,6 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         }
     }
 
-    private void selectSatelliteImage(int i) {
-        getSatelliteImageByIndex(i);
-    }
-
     private int stepImageBy(int step) {
         lastImageIndex = lastImageIndex + step;
         if (lastImageIndex < 0) {
@@ -206,25 +189,26 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         numberImages = satelliteImageInfo.getSatelliteImageNames().size();
         // need to 'overshoot' the animation to be able to get the last image value
         satelliteImageAnimation = ImageAnimator.getInitAnimator(0, satelliteImageInfo.getSatelliteImageNames().size(), 5000, ValueAnimator.INFINITE);
-        satelliteImageAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
-                int index = (int) updatedAnimation.getAnimatedValue();
-                // Timber.d("animation index: %d  ", index);
-                if (index > numberImages - 1) {
-                    index = numberImages - 1;
-                }
-                if (lastImageIndex != index) {
-                    // Don't force redraw if still on same image as last time
-                    getSatelliteImageByIndex(index);
-                    lastImageIndex = index;
-                }
+        satelliteImageAnimation.addUpdateListener(updatedAnimation -> {
+            int index = (int) updatedAnimation.getAnimatedValue();
+            // Timber.d("animation index: %d  ", index);
+            if (index > numberImages - 1) {
+                index = numberImages - 1;
+            }
+            if (lastImageIndex != index) {
+                // Don't force redraw if still on same image as last time
+                getSatelliteImageByIndex(index);
+                lastImageIndex = index;
             }
         });
         satelliteImageAnimation.setRepeatCount(ValueAnimator.INFINITE);
         satelliteImageAnimation.start();
         setLoopRunning();
 
+    }
+
+    private void selectSatelliteImage(int i) {
+        getSatelliteImageByIndex(i);
     }
 
     private void getSatelliteImageByIndex(int index) {
@@ -243,6 +227,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
     private void stopImageAnimation() {
         if (satelliteImageAnimation != null) {
             satelliteImageAnimation.cancel();
+            satelliteImageAnimation = null;
         }
         setLoopRunning();
     }
@@ -259,94 +244,85 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         return working;
     }
 
-    @Override
-    public void onCleared() {
-        compositeDisposable.dispose();
-        if (satelliteImageCache != null) {
-            satelliteImageCache.clearAndClose();
-        }
-        super.onCleared();
 
+    //-------- Satellite Regions (CONUS, Albany, ..
+    public MutableLiveData<List<SatelliteRegion>> getSatelliteRegions() {
+        return satelliteRegions;
     }
 
+    public MutableLiveData<Integer> getRegionPosition() {
+        return regionPosition;
+    }
 
-    public MutableLiveData<SatelliteRegion> getSelectedSatelliteRegion() {
+    // Note this never gets called even though 2way databinding specified in xml.
+    // The value is updated via databinding directly, not via this method. So you need to
+    // check observer for updates and act accordingly
+    public void setRegionPosition(MutableLiveData<Integer> regionPosition) {
+        this.regionPosition = regionPosition;
+    }
+
+    public SatelliteRegion  getSelectedSatelliteRegion() {
         return selectedSatelliteRegion;
     }
 
+    public void setSelectedSatelliteRegion(int pos) {
+        setSelectedSatelliteRegion(satelliteRegions.getValue().get(pos));
+    }
 
     public void setSelectedSatelliteRegion(SatelliteRegion satelliteRegion) {
-        if (!selectedSatelliteRegion.getValue().equals(satelliteRegion)) {
-            selectedSatelliteRegion.setValue(satelliteRegion);
+        if (!selectedSatelliteRegion.equals(satelliteRegion)) {
+            selectedSatelliteRegion = satelliteRegion;
             appPreferences.setSatelliteRegion(satelliteRegion);
             loadSatelliteImages();
         }
     }
 
-    public void selectedSatelliteRegion(int pos) {
-        selectedSatelliteRegion.setValue(satelliteRegions.getValue().get(pos));
+    // ---- Satellite image type - Visible, Water Vapor,...
+
+    public MutableLiveData<List<SatelliteImageType>> getSatelliteImageTypes() {
+        return satelliteImageTypes;
     }
 
-    //-------- Binding for regions (CONUS, Albany, ..
-    @BindingAdapter(value = {"selectedRegionValue", "selectedRegionValueAttrChanged"}, requireAll = false)
-    public static void bindSpinnerData(Spinner spinner, SatelliteRegion newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                newSatelliteAttrChanged.onChange();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        if (newSelectedValue != null) {
-            int pos = spinner.getSelectedItemPosition();
-            spinner.setSelection(pos, true);
-        }
+    public MutableLiveData<Integer> getImageTypePosition() {
+        return imageTypePosition;
     }
 
-    @InverseBindingAdapter(attribute = "selectedRegionValue", event = "selectedRegionValueAttrChanged")
-    public static SatelliteRegion captureSelectedValue(Spinner spinner) {
-        return (SatelliteRegion) spinner.getSelectedItem();
+    // Note this never gets called even though 2way databinding specified in xml.
+    // The value is updated via databinding directly, not via this method. So you need to
+    // check observer for updates and act accordingly
+    public void setImageTypePosition(MutableLiveData<Integer> imageTypePosition) {
+        this.imageTypePosition = imageTypePosition;
+
     }
 
-    // ---- Binding for satellite image type - Visible, Water Vapor,...
-
-    public MutableLiveData<SatelliteImageType> getSelectedSatelliteImageType() {
+    public SatelliteImageType  getSelectedSatelliteImageType() {
         return selectedSatelliteImageType;
     }
 
+    public void setSelectedSatelliteImageType(int pos) {
+        setSelectedSatelliteImageType(satelliteImageTypes.getValue().get(pos));
+    }
+
     public void setSelectedSatelliteImageType(SatelliteImageType satelliteImageType) {
-        if (selectedSatelliteImageType.getValue().equals(satelliteImageType)) {
-            selectedSatelliteImageType.setValue(satelliteImageType);
+        if (!selectedSatelliteImageType.equals(satelliteImageType)) {
+            selectedSatelliteImageType = satelliteImageType;
             appPreferences.setSatelliteImageType(satelliteImageType);
             loadSatelliteImages();
         }
     }
 
-    @BindingAdapter(value = {"selectedImageType", "selectedImageTypeAttrChanged"}, requireAll = false)
-    public static void bindImageTypeSpinnerData(Spinner spinner, SatelliteImageType newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                newSatelliteAttrChanged.onChange();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        if (newSelectedValue != null) {
-            int pos = spinner.getSelectedItemPosition();
-            spinner.setSelection(pos, true);
-        }
+    public MutableLiveData<String> getLocalTimeDisplay() {
+        return localTimeDisplay;
     }
 
-    @InverseBindingAdapter(attribute = "selectedImageType", event = "selectedImageTypeAttrChanged")
-    public static SatelliteImageType captureSelectedImageTypeValue(Spinner spinner) {
-        return (SatelliteImageType) spinner.getSelectedItem();
+    @Override
+    public void onCleared() {
+        compositeDisposable.dispose();
+        satelliteImageAnimation.cancel();
+        super.onCleared();
     }
 
 }
+
+
 

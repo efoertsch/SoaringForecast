@@ -49,7 +49,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             bind:layout_constraintStart_toEndOf="@+id/satellite_image_region_label"
             bind:layout_constraintTop_toTopOf="parent"
-            bind:selectedRegionValue="@={viewModel.selectedSatelliteRegion}"
+            android:selectedItemPosition="@={viewModel.regionPosition}"
             />
 
 
@@ -76,7 +76,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             bind:layout_constraintStart_toEndOf="@+id/satellite_image_type_label"
             bind:layout_constraintTop_toBottomOf="@+id/satellite_image_region_spinner"
-            bind:selectedImageType="@={viewModel.selectedSatelliteImageType}"/>
+            android:selectedItemPosition="@={viewModel.imageTypePosition}"/>
 
 
         <!-- time and loop/pause -->
