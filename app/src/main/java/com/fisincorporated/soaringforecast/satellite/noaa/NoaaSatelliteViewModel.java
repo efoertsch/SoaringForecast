@@ -65,13 +65,9 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
     private boolean bypassSatelliteTypeChange = true;
 
     private ValueAnimator satelliteImageAnimation;
-
     private int numberImages = 0;
     private int lastImageIndex = -1;
-
-
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
 
     public NoaaSatelliteViewModel(@NonNull Application application) {
         super(application);
