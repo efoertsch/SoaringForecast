@@ -2,8 +2,13 @@ package com.fisincorporated.soaringforecast.satellite.noaa;
 
 import android.animation.ValueAnimator;
 import android.databinding.BaseObservable;
+import android.databinding.BindingAdapter;
+import android.databinding.InverseBindingAdapter;
+import android.databinding.InverseBindingListener;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.fisincorporated.soaringforecast.app.AppPreferences;
@@ -198,28 +203,28 @@ public class NoaaSatelliteViewModelOld extends BaseObservable implements ViewMod
     }
 
 
-//    @BindingAdapter(value = {"selectedRegionValue", "selectedRegionValueAttrChanged"}, requireAll = false)
-//    public static void bindSpinnerData(Spinner spinner, SatelliteRegion newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                newSatelliteAttrChanged.onChange();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-//        if (newSelectedValue != null) {
-//            int pos = spinner.getSelectedItemPosition();
-//            spinner.setSelection(pos, true);
-//        }
-//    }
-//
-//    @InverseBindingAdapter(attribute = "selectedRegionValue", event = "selectedRegionValueAttrChanged")
-//    public static SatelliteRegion captureSelectedValue(Spinner spinner) {
-//        return (SatelliteRegion) spinner.getSelectedItem();
-//    }
+    @BindingAdapter(value = {"selectedRegionValue", "selectedRegionValueAttrChanged"}, requireAll = false)
+    public static void bindSpinnerData(Spinner spinner, SatelliteRegion newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                newSatelliteAttrChanged.onChange();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        if (newSelectedValue != null) {
+            int pos = spinner.getSelectedItemPosition();
+            spinner.setSelection(pos, true);
+        }
+    }
+
+    @InverseBindingAdapter(attribute = "selectedRegionValue", event = "selectedRegionValueAttrChanged")
+    public static SatelliteRegion captureSelectedValue(Spinner spinner) {
+        return (SatelliteRegion) spinner.getSelectedItem();
+    }
 
 
     public List<SatelliteImageType> getSatelliteImageTypes() {
@@ -242,27 +247,27 @@ public class NoaaSatelliteViewModelOld extends BaseObservable implements ViewMod
         loadSatelliteImages();
     }
 
-//    @BindingAdapter(value = {"selectedImageType", "selectedImageTypeAttrChanged"}, requireAll = false)
-//    public static void bindImageTypeSpinnerData(Spinner spinner, SatelliteImageType newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                newSatelliteAttrChanged.onChange();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-//        if (newSelectedValue != null) {
-//            int pos = spinner.getSelectedItemPosition();
-//            spinner.setSelection(pos, true);
-//        }
-//    }
-//
-//    @InverseBindingAdapter(attribute = "selectedImageType", event = "selectedImageTypeAttrChanged")
-//    public static SatelliteImageType captureSelectedImageTypeValue(Spinner spinner) {
-//        return (SatelliteImageType) spinner.getSelectedItem();
-//    }
+    @BindingAdapter(value = {"selectedImageType", "selectedImageTypeAttrChanged"}, requireAll = false)
+    public static void bindImageTypeSpinnerData(Spinner spinner, SatelliteImageType newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                newSatelliteAttrChanged.onChange();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        if (newSelectedValue != null) {
+            int pos = spinner.getSelectedItemPosition();
+            spinner.setSelection(pos, true);
+        }
+    }
+
+    @InverseBindingAdapter(attribute = "selectedImageType", event = "selectedImageTypeAttrChanged")
+    public static SatelliteImageType captureSelectedImageTypeValue(Spinner spinner) {
+        return (SatelliteImageType) spinner.getSelectedItem();
+    }
 }
 

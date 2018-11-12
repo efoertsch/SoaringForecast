@@ -160,23 +160,6 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         return satelliteRegions;
     }
 
-    public MutableLiveData<SatelliteRegion> getSelectedSatelliteRegion() {
-        return selectedSatelliteRegion;
-    }
-
-    public void setSelectedSatelliteRegion(SatelliteRegion satelliteRegion) {
-        if (!selectedSatelliteRegion.getValue().equals(satelliteRegion)) {
-            selectedSatelliteRegion.setValue(satelliteRegion);
-            appPreferences.setSatelliteRegion(satelliteRegion);
-            loadSatelliteImages();
-        }
-    }
-
-    public void selectedSatelliteRegion(int pos) {
-        selectedSatelliteRegion.setValue(satelliteRegions.getValue().get(pos));
-    }
-
-
     public MutableLiveData<List<SatelliteImageType>> getSatelliteImageTypes() {
         return satelliteImageTypes;
     }
@@ -290,6 +273,24 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
 
     }
 
+
+    public MutableLiveData<SatelliteRegion> getSelectedSatelliteRegion() {
+        return selectedSatelliteRegion;
+    }
+
+
+    public void setSelectedSatelliteRegion(SatelliteRegion satelliteRegion) {
+        if (!selectedSatelliteRegion.getValue().equals(satelliteRegion)) {
+            selectedSatelliteRegion.setValue(satelliteRegion);
+            appPreferences.setSatelliteRegion(satelliteRegion);
+            loadSatelliteImages();
+        }
+    }
+
+    public void selectedSatelliteRegion(int pos) {
+        selectedSatelliteRegion.setValue(satelliteRegions.getValue().get(pos));
+    }
+
     //-------- Binding for regions (CONUS, Albany, ..
     @BindingAdapter(value = {"selectedRegionValue", "selectedRegionValueAttrChanged"}, requireAll = false)
     public static void bindSpinnerData(Spinner spinner, SatelliteRegion newSelectedValue, final InverseBindingListener newSatelliteAttrChanged) {
@@ -314,9 +315,8 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         return (SatelliteRegion) spinner.getSelectedItem();
     }
 
-
-
     // ---- Binding for satellite image type - Visible, Water Vapor,...
+
     public MutableLiveData<SatelliteImageType> getSelectedSatelliteImageType() {
         return selectedSatelliteImageType;
     }

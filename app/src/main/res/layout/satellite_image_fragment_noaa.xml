@@ -76,7 +76,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             bind:layout_constraintStart_toEndOf="@+id/satellite_image_type_label"
             bind:layout_constraintTop_toBottomOf="@+id/satellite_image_region_spinner"
-            bind:selectedImageType="@{viewModel.selectedSatelliteImageType}"/>
+            bind:selectedImageType="@={viewModel.selectedSatelliteImageType}"/>
 
 
         <!-- time and loop/pause -->
