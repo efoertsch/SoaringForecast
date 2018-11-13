@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.about.AboutActivity;
 import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
@@ -176,10 +177,13 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_import_turnpoints:
                 displayTurnpointsImport();
                 break;
+
+            case R.id.nav_menu_about:
+                displayAbout();
+                break;
         }
         drawerLayout.closeDrawers();
     }
-
 
     private void displayFragment(Fragment fragment, boolean addToBackstack) {
         // Replacing any existing fragment
@@ -210,6 +214,12 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
+
+    private void displayAbout() {
+        Intent i = new Intent(this, AboutActivity.class);
+        startActivity(i);
+    }
+
 
     private void displayNoaaSatelliteFragment() {
         SatelliteActivity.Builder builder = SatelliteActivity.Builder.getBuilder();

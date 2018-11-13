@@ -19,7 +19,6 @@
                 <item
                     android:id="@+id/nav_menu_dr_jacks"
                     android:title="@string/dr_jacks"/>
-
             </menu>
         </item>
 
@@ -60,9 +59,7 @@
                 <item
                     android:id="@+id/nav_menu_import_turnpoints"
                     android:title="@string/import_turnpoints"/>
-
             </menu>
-
 
         </item>
 
@@ -76,6 +73,10 @@
             />
 
     </group>
+
+    <item
+        android:id="@+id/nav_menu_about"
+        android:title="@string/activity_about"/>
 
 </menu>
 

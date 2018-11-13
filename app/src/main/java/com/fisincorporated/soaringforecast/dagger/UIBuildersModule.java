@@ -1,5 +1,7 @@
 package com.fisincorporated.soaringforecast.dagger;
 
+import com.fisincorporated.soaringforecast.about.AboutActivity;
+import com.fisincorporated.soaringforecast.about.AboutFragment;
 import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
@@ -64,6 +66,15 @@ public abstract class UIBuildersModule {
     // ----- Settings ------------
     @ContributesAndroidInjector(modules = {})
     abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();
+
+
+    // ----- About ------------
+    @ContributesAndroidInjector(modules = {})
+    abstract AboutActivity bindAboutActivity();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract AboutFragment bindAboutFragment();
+
 
 
 
