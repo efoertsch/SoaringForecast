@@ -23,6 +23,8 @@ import java.util.List;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -36,6 +38,7 @@ public class TurnpointsImporterViewModel extends ViewModel {
 
     private MutableLiveData<List<TurnpointFile>> turnpointFiles = new MutableLiveData();
     private MutableLiveData<List<File>> cupFiles = new MutableLiveData();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public TurnpointsImporterViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
@@ -49,23 +52,25 @@ public class TurnpointsImporterViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public LiveData<List<File>> getCupFiles() {
-        appRepository.getDownloadedCupFileList()
+        Disposable disposable = appRepository.getDownloadedCupFileList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(downloadedCupFileList ->
                                 cupFiles.setValue(downloadedCupFileList)
                         , Timber::e);
+        compositeDisposable.add(disposable);
         return cupFiles;
     }
 
     @SuppressLint("CheckResult")
     public LiveData<List<TurnpointFile>> getTurnpointFiles() {
-        appRepository.getTurnpointFiles(Constants.NEWENGLAND_REGION)
+        Disposable disposable = appRepository.getTurnpointFiles(Constants.NEWENGLAND_REGION)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(turnpointFileList ->
                                 turnpointFiles.setValue(turnpointFileList)
                         , Timber::e);
+        compositeDisposable.add(disposable);
         return turnpointFiles;
     }
 
@@ -171,6 +176,12 @@ public class TurnpointsImporterViewModel extends ViewModel {
         Timber.d("Lines read: %1$d  Lines written %2$d", linesRead, numberTurnpoints);
         Timber.d("File saved to DB successfully!");
         return numberTurnpoints;
+    }
+
+    @Override
+    public void onCleared() {
+        compositeDisposable.dispose();
+        super.onCleared();
     }
 
 

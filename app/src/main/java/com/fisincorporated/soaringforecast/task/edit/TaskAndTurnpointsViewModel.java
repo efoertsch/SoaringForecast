@@ -87,7 +87,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
 
     @SuppressLint("CheckResult")
     private void loadTask() {
-        appRepository.getTask(taskId)
+        Disposable disposable = appRepository.getTask(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(task -> {
@@ -97,6 +97,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                         t -> {
                             EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_reading_task), t));
                         });
+        compositeDisposable.add(disposable);
     }
 
     @SuppressLint("CheckResult")
@@ -110,7 +111,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
 
     @SuppressLint("CheckResult")
     public void loadTaskTurnpoints() {
-        appRepository.getTaskTurnpionts(taskId)
+        Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(newTaskTurnpoints -> {
@@ -119,6 +120,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                         t -> {
                             EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_loading_task_and_turnpoints), t));
                         });
+        compositeDisposable.add(disposable);
     }
 
     @Bindable
@@ -193,7 +195,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
 
     @SuppressLint("CheckResult")
     public LiveData<List<Turnpoint>> searchTurnpoints(String search) {
-        appRepository.findTurnpoints("%" + search + "%")
+        Disposable disposable = appRepository.findTurnpoints("%" + search + "%")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(turnpointList -> {
@@ -202,6 +204,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                         t -> {
                             EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_searching_turnpoints), t));
                         });
+        compositeDisposable.add(disposable);
         return turnpoints;
     }
 
@@ -268,7 +271,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
 
     @SuppressLint("CheckResult")
     private void getTotalSearchableTurnpoints() {
-        appRepository.getCountOfTurnpoints()
+        Disposable disposable = appRepository.getCountOfTurnpoints()
                 .subscribe(count -> {
                             numberSearchableTurnpoints.setValue(count);
                         }
@@ -277,6 +280,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                             Timber.e(throwable);
                             EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_getting_number_of_turnpoints), throwable));
                         });
+        compositeDisposable.add(disposable);
 
     }
 
@@ -293,7 +297,6 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     public void onCleared() {
         compositeDisposable.dispose();
         super.onCleared();
-
     }
 
 }

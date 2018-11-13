@@ -24,6 +24,7 @@ import org.greenrobot.eventbus.EventBus;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
+import io.reactivex.disposables.CompositeDisposable;
 
 public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHolder> extends DaggerFragment {
     @Inject
@@ -31,7 +32,7 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
     protected TurnpointsImportView turnpointsImportView;
     protected TurnpointsImporterViewModel turnpointsImporterViewModel;
     protected GenericRecyclerViewAdapter<T, VH > recyclerViewAdapter;
-
+    protected CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,12 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        compositeDisposable.dispose();
     }
 
 

@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -21,6 +23,7 @@ public class AirportListViewModel extends ViewModel {
     private MutableLiveData<List<Airport>> airports;
     private AppRepository appRepository;
     private AppPreferences appPreferences;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportListViewModel setRepositoryAndPreferences(AppRepository appRepository, AppPreferences appPreferences) {
         this.appRepository = appRepository;
@@ -42,13 +45,14 @@ public class AirportListViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public void listSelectedAirports( List<String> icaoIds) {
-        appRepository.getAirportsByIcaoIdAirports(icaoIds)
+        Disposable disposable = appRepository.getAirportsByIcaoIdAirports(icaoIds)
                 .subscribe(airportList -> {
                             airports.setValue(sortAirports(icaoIds, airportList));
                         },
                         t -> {
                             Timber.e(t);
                         });
+        compositeDisposable.add(disposable);
     }
 
 
@@ -69,7 +73,7 @@ public class AirportListViewModel extends ViewModel {
     // Get list of all airports in database
     @SuppressLint("CheckResult")
     public LiveData<List<Airport>> listAirports() {
-        appRepository.listAllAirports()
+        Disposable disposable = appRepository.listAllAirports()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(airportList -> {
@@ -78,7 +82,14 @@ public class AirportListViewModel extends ViewModel {
                         t -> {
                             Timber.e(t);
                         });
+        compositeDisposable.add(disposable);
         return airports;
+    }
+
+    @Override
+    public void onCleared(){
+        compositeDisposable.dispose();
+        super.onCleared();
     }
 
 

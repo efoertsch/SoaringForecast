@@ -618,4 +618,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return forecastOverlyOpacity;
     }
 
+    @Override
+    public void onCleared() {
+        compositeDisposable.dispose();
+        stopImageAnimation();
+        super.onCleared();
+    }
+
 }

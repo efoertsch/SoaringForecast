@@ -29,6 +29,7 @@ import javax.inject.Named;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 
@@ -113,11 +114,12 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
     @SuppressLint("CheckResult")
     private void clearTurnpointDatabase() {
         showProgressBar(true);
-        turnpointsImporterViewModel.clearTurnpointDatabase()
+        Disposable disposable = turnpointsImporterViewModel.clearTurnpointDatabase()
                 .subscribe(numberDeleted -> {
                     postNumberDeleted(numberDeleted);
                     showProgressBar(false);
                 });
+        compositeDisposable.add(disposable);
 
     }
 
@@ -137,6 +139,7 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
         EventBus.getDefault().post(new GoToDownloadImport());
     }
 
+    //TODO move logic into ViewModel
     @SuppressLint("CheckResult")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ImportSeeYouFile importSeeYouFile) {
@@ -144,7 +147,7 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
         TurnpointFile turnpointFile = importSeeYouFile.getTurnpointFile();
         Single<Integer> single = turnpointsImporterViewModel.setOkHttpClient(okHttpClient)
                 .importTurnpointsFromUrl(turnpointFile.getRelativeUrl());
-        single.observeOn(AndroidSchedulers.mainThread())
+        Disposable disposable =  single.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(numberTurnpoints -> {
                             showProgressBar(false);
@@ -155,6 +158,7 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
                             post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops), Snackbar.LENGTH_INDEFINITE));
                             // TODO mail crash
                         });
+        compositeDisposable.add(disposable);
     }
 
 }
