@@ -13,7 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
@@ -99,23 +98,23 @@ public class SoaringForecastFragment extends DaggerFragment {
         // opacity not worth having it bound in viewModel and forwarding changes.
         forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
         soaringForecastImageBinding.soaringForecastSeekbarOpacity.setProgress(appPreferences.getForecastOverlayOpacity());
-        soaringForecastImageBinding.soaringForecastSeekbarOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                forecastMapper.setForecastOverlayOpacity(progress);
-                appPreferences.setForecastOverlayOpacity(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // nada
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // nada
-            }
-        });
+//        soaringForecastImageBinding.soaringForecastSeekbarOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                forecastMapper.setForecastOverlayOpacity(progress);
+//                appPreferences.setForecastOverlayOpacity(progress);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//                // nada
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                // nada
+//            }
+//        });
         setObservers();
 
     }
@@ -172,6 +171,11 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.getSoundingForecastImageSet().observe(this, soundingImageSet -> {
             soaringForecastImageBinding.soaringForecastImageLocalTime.setText(soundingImageSet.getLocalTime());
             soaringForecastImageBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
+        });
+
+        // Forecast bitmap opacity
+        soaringForecastViewModel.getForecastOverlyOpacity().observe(this, forecastOverlyOpacity ->{
+            forecastMapper.setForecastOverlayOpacity(forecastOverlyOpacity);
         });
     }
 
@@ -313,13 +317,6 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.setSelectedSoundingLocation(displaySoundingLocation.getSoundingLocation());
     }
 
-
-    //@BindingAdapter(value={"android:onProgressChanged"})
-    public void onOpacityValueChanged(SeekBar seekBar, int newOpacity, boolean fromUser) {
-        forecastMapper.setForecastOverlayOpacity(newOpacity);
-        appPreferences.setForecastOverlayOpacity(newOpacity);
-
-    }
 
     private void toggleSoundingPoints() {
         soaringForecastViewModel.toggleSoundingPoints();

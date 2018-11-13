@@ -46,10 +46,10 @@
             android:layout_height="wrap_content"
             android:entries="@{viewModel.satelliteRegions}"
             android:gravity="center_vertical"
+            android:selectedItemPosition="@={viewModel.regionPosition}"
             android:textAppearance="?android:attr/textAppearanceMedium"
             bind:layout_constraintStart_toEndOf="@+id/satellite_image_region_label"
             bind:layout_constraintTop_toTopOf="parent"
-            android:selectedItemPosition="@={viewModel.regionPosition}"
             />
 
 
@@ -71,12 +71,13 @@
             android:id="@+id/satellite_image_type_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_standard"
             android:entries="@{viewModel.satelliteImageTypes}"
             android:gravity="center_vertical"
+            android:selectedItemPosition="@={viewModel.imageTypePosition}"
             android:textAppearance="?android:attr/textAppearanceMedium"
             bind:layout_constraintStart_toEndOf="@+id/satellite_image_type_label"
-            bind:layout_constraintTop_toBottomOf="@+id/satellite_image_region_spinner"
-            android:selectedItemPosition="@={viewModel.imageTypePosition}"/>
+            bind:layout_constraintTop_toBottomOf="@+id/satellite_image_region_spinner"/>
 
 
         <!-- time and loop/pause -->
@@ -85,6 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/satellite_image_type_spinner"
+            android:layout_marginTop="@dimen/margin_standard"
             bind:layout_constraintEnd_toEndOf="@+id/satellite_image_layout"
             bind:layout_constraintStart_toStartOf="@+id/satellite_image_layout"
             bind:layout_constraintTop_toBottomOf="@+id/satellite_image_type_spinner">
@@ -103,7 +105,6 @@
                     android:id="@+id/satellite_image_time_back_arrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_standard"
                     android:contentDescription="@string/back_arrow"
                     android:onClick="@{() -> viewModel.onStepClick(setAction.BACKWARD)}"
                     android:tint="@color/colorPrimary"
@@ -114,6 +115,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
+                    android:text="@{viewModel.localTimeDisplay}"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textStyle="bold"
                     />
@@ -123,16 +125,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:text="@{String.format(@string/satellite_image_time_local, viewModel.localTimeDisplay)}"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textStyle="bold"
+                    android:text="@string/satellite_image_time_local"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
                     />
 
                 <ImageView
                     android:id="@+id/satellite_image_time_forward_arrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_standard"
                     android:contentDescription="@string/forward_arrow"
                     android:onClick="@{() -> viewModel.onStepClick(setAction.FORWARD)}"
                     android:tint="@color/colorPrimary"

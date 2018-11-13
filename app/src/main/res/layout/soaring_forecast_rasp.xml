@@ -247,6 +247,7 @@
                 android:layout_weight="6"
                 android:max="100"
                 android:min="0"
+                android:onProgressChanged="@{(sb, value, fromUser)-> viewModel.onOpacityChanged(value)}"
                 />
 
             <TextView

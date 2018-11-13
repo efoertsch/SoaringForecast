@@ -163,7 +163,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
                 selectSatelliteImage(stepImageBy(1));
                 break;
             case LOOP:
-                if (satelliteImageAnimation.isRunning()) {
+                if (satelliteImageAnimation != null && satelliteImageAnimation.isRunning()) {
                     stopImageAnimation();
                     setLoopRunning();
                 } else {
@@ -186,6 +186,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
 
     private void startImageAnimation() {
         working.setValue(false);
+        stopImageAnimation();
         numberImages = satelliteImageInfo.getSatelliteImageNames().size();
         // need to 'overshoot' the animation to be able to get the last image value
         satelliteImageAnimation = ImageAnimator.getInitAnimator(0, satelliteImageInfo.getSatelliteImageNames().size(), 5000, ValueAnimator.INFINITE);
@@ -227,7 +228,6 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
     private void stopImageAnimation() {
         if (satelliteImageAnimation != null) {
             satelliteImageAnimation.cancel();
-            satelliteImageAnimation = null;
         }
         setLoopRunning();
     }

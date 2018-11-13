@@ -63,6 +63,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+    }
 
     private void setMapBounds(LatLng southWestLatLng, LatLng northEastLatLng) {
         setMapLatLngBounds(new LatLngBounds(southWestLatLng, northEastLatLng));
@@ -72,13 +76,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         this.mapLatLngBounds = mapLatLngBounds;
         setupMap();
     }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-
-    }
-
 
     private void setupMap() {
         if (mapLatLngBounds != null) {
@@ -90,12 +87,8 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
     }
 
-    public void setForecastOverlayOpacity(int forecastOverlayOpacity) {
-        this.forecastOverlayOpacity = forecastOverlayOpacity;
-    }
-
     // ---- Forecast overlay ------------------------------------
-    //
+    // 100% opacity = 0% transnparent
     public void setGroundOverlay(Bitmap bitmap) {
         if (bitmap == null) {
             return;
@@ -105,15 +98,30 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                     .image(BitmapDescriptorFactory.fromBitmap(bitmap))
                     .positionFromBounds(mapLatLngBounds);
             forecastOverlayOptions.transparency(1.0f - forecastOverlayOpacity / 100.0f);
-            forecastOverlay = googleMap.addGroundOverlay(forecastOverlayOptions);
+            if (googleMap != null) {
+                forecastOverlay = googleMap.addGroundOverlay(forecastOverlayOptions);
+            }
         } else {
-            forecastOverlay.setTransparency(1.0f - forecastOverlayOpacity / 100.0f);
+            setForecastOverlayTranparency();
             forecastOverlay.setImage(BitmapDescriptorFactory.fromBitmap(bitmap));
+        }
+    }
+
+    public void setForecastOverlayOpacity(int forecastOverlayOpacity) {
+        this.forecastOverlayOpacity = forecastOverlayOpacity;
+        setForecastOverlayTranparency();
+    }
+
+
+    public void setForecastOverlayTranparency(){
+        if (forecastOverlay != null){
+            forecastOverlay.setTransparency(1.0f - forecastOverlayOpacity / 100.0f);
         }
     }
 
     // ----- Sounding markers ----------------------------------------
     public void setSoundingLocations(List<SoundingLocation> soundingLocations) {
+
         if (soundingLocations == null || soundingLocations.size() == 0) {
             displaySoundingMarkers(false);
         } else {
