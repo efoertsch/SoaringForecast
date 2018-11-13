@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class ConversionUtilsTests {
 
     @Test
-    public void conversionFromGmtToLocalTimeIsCorrect() throws Exception {
+    public void conversionFromGmtToLocalTimeIsCorrect() {
         //Hmmm - How to test when we go between EST and DST?
         assertEquals("Feb 27, 3:54 PM", ConversionUtils.convertGMTToLocalTimeString("2017-02-27T20:54:00Z"));
     }

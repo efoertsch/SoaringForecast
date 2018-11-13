@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.MasterActivity;
-import com.fisincorporated.soaringforecast.messages.AddNewTaskRefused;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTask;
 import com.fisincorporated.soaringforecast.messages.EditTask;
 import com.fisincorporated.soaringforecast.messages.GoToDownloadImport;
@@ -75,10 +74,6 @@ public class TaskActivity extends MasterActivity {
 
 
     // Bus messages
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AddNewTaskRefused event) {
-        finish();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTask event) {

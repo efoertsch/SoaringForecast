@@ -55,9 +55,7 @@ public class Forecast {
     public boolean equals(Object obj) {
         if (obj instanceof Forecast) {
             Forecast c = (Forecast) obj;
-            if (c.forecastName.equals(forecastName)) {
-                return true;
-            }
+            return c.forecastName.equals(forecastName);
         }
 
         return false;

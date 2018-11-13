@@ -141,8 +141,7 @@ public class AppRepository {
     // ----------- Turnpoints in Download directory
 
     public Maybe<List<File>> getDownloadedCupFileList() {
-        Maybe<List<File>> maybe =
-                Maybe.create(emitter -> {
+       return Maybe.create(emitter -> {
                     try {
                         ArrayList<File> cupFileList = new ArrayList<>();
                         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -154,7 +153,6 @@ public class AppRepository {
                         emitter.onError(e);
                     }
                 });
-        return maybe;
     }
 
     public class ImageFileFilter implements FileFilter {
@@ -164,10 +162,7 @@ public class AppRepository {
             for (String extension : cupFileExtensions) {
                 if (file.getName().toLowerCase().endsWith(extension)) {
                     // make sure not version with control number placed before name.
-                    if (file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm")) {
-                        return false;
-                    }
-                    return true;
+                    return !file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm");
                 }
             }
             return false;
@@ -176,8 +171,7 @@ public class AppRepository {
 
     // ----------- Turnpoint download (SeeYou cup files) ------------------
     public Maybe<List<TurnpointFile>> getTurnpointFiles(String regionName) {
-        Maybe<List<TurnpointFile>> maybe =
-                Maybe.create(emitter -> {
+        return Maybe.create(emitter -> {
                     try {
                         List<TurnpointRegion> turnpointRegions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
                                 .constructUsingGson((TurnpointFiles.class)).getTurnpointRegions();
@@ -190,7 +184,6 @@ public class AppRepository {
                         emitter.onError(e);
                     }
                 });
-        return maybe;
     }
 
     private List<TurnpointFile> getRegionFiles
@@ -256,19 +249,19 @@ public class AppRepository {
     }
 
     public Completable updateTask(Task task) {
-        Completable completable = Completable.fromAction(() -> {
+        return Completable.fromAction(() -> {
             try {
                 taskDao.update(task);
             } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);
             }
         });
-        return completable;
+
 
     }
 
     public Completable updateTaskListOrder(List<Task> taskList) {
-        Completable completable = Completable.fromAction(() -> {
+        return  Completable.fromAction(() -> {
             try {
                 for (Task task : taskList) {
                     taskDao.update(task);
@@ -277,11 +270,10 @@ public class AppRepository {
                 throw Exceptions.propagate(throwable);
             }
         });
-        return completable;
     }
 
     public Completable deleteTask(Task task) {
-        Completable completable = Completable.fromAction(() -> {
+        return Completable.fromAction(() -> {
             try {
                 taskTurnpointDao.deleteTaskTurnpoints(task.getId());
                 taskDao.deleteTask(task.getId());
@@ -289,7 +281,6 @@ public class AppRepository {
                 throw Exceptions.propagate(throwable);
             }
         });
-        return completable;
     }
 
     // -----------Task Turnpoints -----------
@@ -298,7 +289,7 @@ public class AppRepository {
     }
 
     public Completable updateTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
-        Completable completable = Completable.fromAction(() -> {
+        return Completable.fromAction(() -> {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
                     if (taskTurnpoint.getId() == 0) {
@@ -311,11 +302,10 @@ public class AppRepository {
                 throw Exceptions.propagate(throwable);
             }
         });
-        return completable;
     }
 
     public Completable deleteTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
-        Completable completable = Completable.fromAction(() -> {
+        return Completable.fromAction(() -> {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
                     taskTurnpointDao.deleteTaskTurnpoint(taskTurnpoint.getTaskId(), taskTurnpoint.getTitle(), taskTurnpoint.getCode());
@@ -324,7 +314,6 @@ public class AppRepository {
                 throw Exceptions.propagate(throwable);
             }
         });
-        return completable;
     }
 
     // ---------- Update Task and Turnpoints --------------------------------
