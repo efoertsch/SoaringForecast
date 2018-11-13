@@ -65,6 +65,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<List<SoundingLocation>> soundingLocations = new MutableLiveData<>();
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
+    private MutableLiveData<Integer> forecastOverlyOpacity = new MutableLiveData<>();
 
     private SoundingLocation selectedSoundingLocation;
 
@@ -343,8 +344,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         Timber.d("Stopping Animation");
         if (soaringForecastImageAnimation != null) {
             soaringForecastImageAnimation.cancel();
-            return;
         }
+        setLoopRunning();
         Timber.e("soaringForecastImageAnimation is null so no animation to stop");
     }
 
@@ -360,7 +361,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 selectForecastImage(stepImageBy(1));
                 break;
             case LOOP:
-                if (soaringForecastImageAnimation.isRunning()) {
+                if (soaringForecastImageAnimation != null && soaringForecastImageAnimation.isRunning()) {
                     stopImageAnimation();
                     setLoopRunning();
                 } else {
@@ -372,7 +373,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     private void setLoopRunning() {
-        loopRunning.setValue(soaringForecastImageAnimation.isRunning());
+        loopRunning.setValue(soaringForecastImageAnimation == null || soaringForecastImageAnimation.isRunning());
     }
 
     public LiveData<Boolean> getLoopRunning() {
@@ -459,6 +460,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             lastImageIndex = index;
         });
         soaringForecastImageAnimation.start();
+        setLoopRunning();
     }
 
     public void selectForecastImage(int index) {
@@ -600,4 +602,20 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         this.selectedSoundingLocation = selectedSoundingLocation;
         loadForecastSoundings(selectedSoundingLocation);
     }
+
+    //------- Opacity of forecast overly -----------------
+   // @BindingAdapter(value={"android:onProgressChanged"})
+    public void onOpacityChanged(int opacity) {
+        forecastOverlyOpacity.setValue(opacity);
+        appPreferences.setForecastOverlayOpacity(opacity);
+    }
+
+    public MutableLiveData<Integer> getForecastOverlyOpacity(){
+        if (forecastOverlyOpacity == null){
+            forecastOverlyOpacity = new MutableLiveData<>();
+            forecastOverlyOpacity.setValue(appPreferences.getForecastOverlayOpacity());
+        }
+        return forecastOverlyOpacity;
+    }
+
 }
