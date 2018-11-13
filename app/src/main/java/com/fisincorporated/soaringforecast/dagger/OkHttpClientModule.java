@@ -19,7 +19,7 @@ public class OkHttpClientModule {
     public OkHttpClient getOkHttpClient(Interceptor interceptor) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         Dispatcher dispatcher = new Dispatcher();
-        dispatcher.setMaxRequests(4);
+        dispatcher.setMaxRequests(6);
         httpClient.dispatcher(dispatcher);
         httpClient.connectTimeout(30, TimeUnit.SECONDS);
         httpClient.readTimeout(30, TimeUnit.SECONDS);
@@ -32,7 +32,7 @@ public class OkHttpClientModule {
     public OkHttpClient getOkHttpClientNoInterceptor() {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         Dispatcher dispatcher = new Dispatcher();
-        dispatcher.setMaxRequests(4);
+        dispatcher.setMaxRequests(6);
         httpClient.dispatcher(dispatcher);
         httpClient.connectTimeout(30, TimeUnit.SECONDS);
         httpClient.readTimeout(30, TimeUnit.SECONDS);

@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.os.Environment;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
+import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastModel;
 import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
@@ -40,11 +42,14 @@ import io.reactivex.schedulers.Schedulers;
 public class AppRepository {
 
     private static AppRepository appRepository;
+    private static ArrayList<SatelliteRegion> satelliteRegions;
+    private static ArrayList<SatelliteImageType> satelliteImageTypes;
+
+    private Context context;
     private AirportDao airportDao;
     private TurnpointDao turnpointDao;
     private TaskDao taskDao;
     private TaskTurnpointDao taskTurnpointDao;
-    private Context context;
 
     private AppRepository(Context context) {
         AppDatabase db = AppDatabase.getDatabase(context);
@@ -354,6 +359,40 @@ public class AppRepository {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
+    }
+
+    // ----- Satellite options ----------
+
+    public List<SatelliteRegion> getSatelliteRegions() {
+        if (satelliteRegions == null ) {
+           satelliteRegions = new ArrayList<>();
+            Resources res = context.getResources();
+            try {
+                String[] regions = res.getStringArray(R.array.satellite_regions);
+                for (int i = 0; i < regions.length; ++i) {
+                    SatelliteRegion satelliteRegion = new SatelliteRegion(regions[i]);
+                    satelliteRegions.add(satelliteRegion);
+                }
+            } catch (Resources.NotFoundException ignored) {
+            }
+        }
+        return satelliteRegions;
+    }
+
+    public List<SatelliteImageType> getSatelliteImageTypes() {
+        if (satelliteImageTypes == null) {
+            satelliteImageTypes = new ArrayList<>();
+            Resources res = context.getResources();
+            try {
+                String[] imageTypes = res.getStringArray(R.array.satellite_image_types);
+                for (int i = 0; i < imageTypes.length; ++i) {
+                    SatelliteImageType satelliteImageType = new SatelliteImageType(imageTypes[i]);
+                    satelliteImageTypes.add(satelliteImageType);
+                }
+            } catch (Resources.NotFoundException ignored) {
+            }
+        }
+        return satelliteImageTypes;
     }
 
 }

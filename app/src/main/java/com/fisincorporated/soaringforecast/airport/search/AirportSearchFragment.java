@@ -70,8 +70,6 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(airportListAdapter);
 
-
-
         airportSearchViewModel.getSearchAirports("").observe(this, airports -> airportListAdapter.setAirportList(airports));
 
         return airportSearchView.getRoot();

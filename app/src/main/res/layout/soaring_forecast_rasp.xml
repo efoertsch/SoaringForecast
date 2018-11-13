@@ -10,7 +10,7 @@
 
         <variable
             name="forecastAction"
-            type="com.fisincorporated.soaringforecast.common.Constants.FORECAST_ACTION"/>
+            type="com.fisincorporated.soaringforecast.common.Constants.STEP_ACTION"/>
 
         <variable
             name="viewModel"
@@ -178,7 +178,7 @@
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/pause_loop_toggle"
                 android:onClick="@{() -> viewModel.onStepClick(forecastAction.LOOP)}"
-                android:text="@{viewModel.loopRunning ? @string/pause : @string/loop }"
+                android:text="@{safeUnbox(viewModel.loopRunning) ? @string/pause : @string/loop }"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:tint="@color/colorPrimary"
 
@@ -268,7 +268,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
-            android:visibility="@{viewModel.soundingDisplay ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(viewModel.soundingDisplay) ? View.VISIBLE : View.GONE}"
             >
 
             <com.fisincorporated.soaringforecast.common.TouchImageView
@@ -298,7 +298,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
-            android:visibility="@{viewModel.working ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
             />
 
     </android.support.constraint.ConstraintLayout>

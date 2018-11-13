@@ -10,7 +10,7 @@ public class Constants {
 
     public static final String SELECTED_TASK = "SELECTED_TASK";
 
-    public enum FORECAST_ACTION {
+    public enum STEP_ACTION {
         FORWARD,
         BACKWARD,
         LOOP

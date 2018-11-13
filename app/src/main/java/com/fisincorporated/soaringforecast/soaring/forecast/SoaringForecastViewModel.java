@@ -349,7 +349,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     // Stepping thru forecast images
-    public void onStepClick(Constants.FORECAST_ACTION forecastaction) {
+    public void onStepClick(Constants.STEP_ACTION forecastaction) {
         switch (forecastaction) {
             case BACKWARD:
                 stopImageAnimation();
