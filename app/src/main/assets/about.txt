@@ -7,7 +7,7 @@
  Once downloaded (you will receive a notification when complete), you can select the airports you would like to see METAR/TAFs. The METAR/TAF information comes from aviationweather.gov/
 </p>
 <p>Two types of satellite images can be displayed. The 'older' set (NOAA) also comes from aviationweather.gov.
-The second newer set(GEOS) comes from cdn.star.nesdis.noaa.gov.</p>
+ The second newer set(GEOS) comes from cdn.star.nesdis.noaa.gov. (Currently GEOS restricted to NE U.S.)</p>
 <p>Go to Settings to change display of METAR/TAFs. You can also select options to show links to Dr. Jacks and SkySite. The links starts and displays the sites in separate web browsers.</p>
 <p>No warranties expressed or implied. If the forecast looks great but the day turns out to be sucky, any tow fees, retrieval fees, or landout dinners are on you.</>
 
