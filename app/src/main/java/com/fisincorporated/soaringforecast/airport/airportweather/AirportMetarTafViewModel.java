@@ -257,6 +257,5 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     public void onCleared(){
         compositeDisposable.dispose();
         super.onCleared();
-
     }
 }

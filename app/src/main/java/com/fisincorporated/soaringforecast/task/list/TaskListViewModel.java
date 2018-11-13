@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -21,6 +23,7 @@ public class TaskListViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
     private MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public TaskListViewModel(@NonNull Application application) {
         super(application);
@@ -35,7 +38,7 @@ public class TaskListViewModel extends ObservableViewModel {
 
     @SuppressLint("CheckResult")
     public LiveData<List<Task>> listTasks() {
-        appRepository.listAllTasks()
+        Disposable disposable = appRepository.listAllTasks()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(taskList -> {
@@ -45,7 +48,14 @@ public class TaskListViewModel extends ObservableViewModel {
                         t -> {
                             Timber.e(t);
                         });
+        compositeDisposable.add(disposable);
         return tasks;
+    }
+
+    @Override
+    public void onCleared() {
+        compositeDisposable.dispose();
+        super.onCleared();
     }
 
 

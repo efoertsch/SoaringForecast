@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<File, TurnpointsDownloadViewHolder> {
@@ -44,7 +45,6 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
                              @Nullable Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
-
 
     @Override
     protected GenericRecyclerViewAdapter<File, TurnpointsDownloadViewHolder> getRecyclerViewAdapter() {
@@ -105,12 +105,13 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
         startActivity(browserIntent);
     }
 
+    //TODO move logic into ViewModel
     @SuppressLint("CheckResult")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ImportFile importFile) {
         showProgressBar(true);
-        Single<Integer> single =turnpointsImporterViewModel.importTurnpointFileFromDownloadDirectory(importFile.getFile().getName());
-        single.observeOn(AndroidSchedulers.mainThread())
+        Single<Integer> single = turnpointsImporterViewModel.importTurnpointFileFromDownloadDirectory(importFile.getFile().getName());
+        Disposable disposable = single.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(numberTurnpoints -> {
                             showProgressBar(false);
@@ -121,6 +122,8 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
                             post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops), Snackbar.LENGTH_INDEFINITE));
                             //TODO mail crash
                         });
+        compositeDisposable.add(disposable);
     }
+
 
 }

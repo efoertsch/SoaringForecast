@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -21,6 +23,7 @@ public class AirportSearchViewModel extends ViewModel {
     private MutableLiveData<List<Airport>> searchAirports;
     private AppRepository appRepository;
     private AppPreferences appPreferences;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportSearchViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
@@ -45,7 +48,7 @@ public class AirportSearchViewModel extends ViewModel {
         if (search == null || search.isEmpty()) {
             searchAirports.getValue().clear();
         } else {
-            appRepository.findAirports("%" + search + "%")
+            Disposable disposable = appRepository.findAirports("%" + search + "%")
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(airportList -> {
@@ -54,12 +57,19 @@ public class AirportSearchViewModel extends ViewModel {
                             t -> {
                                 Timber.e(t);
                             });
+            compositeDisposable.add(disposable);
         }
         return searchAirports;
     }
 
     public void addAirportIcaoCodeToSelectedAirports(String icaoId) {
         appPreferences.addAirportCodeToSelectedIcaoCodes(icaoId);
+    }
+
+    @Override
+    public void onCleared(){
+        compositeDisposable.dispose();
+        super.onCleared();
     }
 
 }
