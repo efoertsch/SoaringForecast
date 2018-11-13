@@ -18,6 +18,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TaskTurnpointDao getTaskTurnpointDao();
 
+
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -30,6 +31,10 @@ public abstract class AppDatabase extends RoomDatabase {
             }
         }
         return INSTANCE;
+    }
+
+    public int getDatabaseVersion(){
+        return (INSTANCE != null ? INSTANCE.mDatabase.getVersion() : 0);
     }
 
     /**

@@ -137,6 +137,8 @@
     <string name="back_arrow">back arrow</string>
     <string name="forward_arrow">forward arrow</string>
     <string name="loop">Loop</string>
+
+    <!-- random stuff added as needed -->
     <string name="model_forecast_for_date_not_available">Oops. No model forecast found for specified dates.</string>
     <string name="airport_database_loaded_ok">Airport database loaded OK</string>
     <string name="airport_database_load_oops">Oops. It looks like airport download failed. Will try again shortly.</string>
@@ -240,6 +242,13 @@
     <string name="metar_taf_preferences">METAR/TAF preferences</string>
     <string name="other_forecast_options">Other Forecasts</string>
     <string name="rasp_forecast_options">RASP Options</string>
+    <string name="activity_about">About</string>
+
+    <string name="app_version_code">App Version Code: %1$d</string>
+    <string name="app_version_name">App Version Name: %1$s</string>
+    <string name="db_version">Database Version: %1$d</string>
+    <string name="oops_about_file_is_missing">Oops About file is missing</string>
+    <string name="oops_error_reading_about_file">Oops. Error reading About file</string>
 
 
 </resources>

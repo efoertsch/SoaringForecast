@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="AboutView">
+
+        <variable
+            name="viewModel"
+            type="com.fisincorporated.soaringforecast.about.AboutViewModel"/>
+
+    </data>
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/margin_double">
+
+            <TextView
+                android:id="@+id/about_app_version_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{String.format(@string/app_version_code,viewModel.appVersionCode)}"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+            <TextView
+                android:id="@+id/about_app_version_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{String.format(@string/app_version_name,viewModel.appVersionName)}"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+            <TextView
+
+                android:id="@+id/about_database_version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:text="@{String.format(@string/db_version, viewModel.databaseVersion)}"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+            <TextView
+                android:id="@+id/about_soaring_weather_tvAbout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="all"
+                android:text="@{viewModel.aboutSoaringWeather}"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

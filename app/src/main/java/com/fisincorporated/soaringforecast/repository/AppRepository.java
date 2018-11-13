@@ -42,6 +42,7 @@ import io.reactivex.schedulers.Schedulers;
 public class AppRepository {
 
     private static AppRepository appRepository;
+    private static AppDatabase db;
     private static ArrayList<SatelliteRegion> satelliteRegions;
     private static ArrayList<SatelliteImageType> satelliteImageTypes;
 
@@ -52,12 +53,13 @@ public class AppRepository {
     private TaskTurnpointDao taskTurnpointDao;
 
     private AppRepository(Context context) {
-        AppDatabase db = AppDatabase.getDatabase(context);
+        db = AppDatabase.getDatabase(context);
         airportDao = db.getAirportDao();
         turnpointDao = db.getTurnpointDao();
         taskDao = db.getTaskDao();
         taskTurnpointDao = db.getTaskTurnpointDao();
         this.context = context;
+
     }
 
     public static AppRepository getAppRepository(Context context) {
@@ -69,6 +71,10 @@ public class AppRepository {
             }
         }
         return appRepository;
+    }
+
+    public int getDatabaseVersion() {
+        return db.getDatabaseVersion();
     }
 
     // --------- Airports -----------------
