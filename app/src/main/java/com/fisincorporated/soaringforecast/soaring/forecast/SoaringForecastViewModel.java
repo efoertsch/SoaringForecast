@@ -388,6 +388,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private void loadRaspImages() {
         stopImageAnimation();
         soundingDisplay.setValue(false);
+        displayForecastImageSet(null);
         imageMap.clear();
         working.setValue(true);
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
@@ -481,6 +482,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     && imageSet.getBodyImage() != null) {
                 selectedSoaringForecastImageSet.setValue(imageSet);
             }
+        } else {
+            selectedSoaringForecastImageSet.setValue(null);
         }
     }
 

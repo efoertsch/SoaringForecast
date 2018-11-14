@@ -51,7 +51,7 @@ public class SoaringForecastDownloader {
     }
 
     public Observable<ModelLocationAndTimes> getTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
-        return  Observable.fromIterable(regionForecastDates.getForecastDates())
+        return Observable.fromIterable(regionForecastDates.getForecastDates())
                 .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
                         callTypeLocationAndTimes(region, regionForecastDate).toObservable()
                                 .doOnNext(regionForecastDate::setModelLocationAndTimes));
@@ -80,6 +80,7 @@ public class SoaringForecastDownloader {
 
     /**
      * Get forecast
+     *
      * @param region
      * @param yyyymmddDate
      * @param soaringForecastType
@@ -96,13 +97,14 @@ public class SoaringForecastDownloader {
                                 getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.BODY, FORECAST_SOUNDING.FORECAST).toObservable()
                                 //, getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.HEAD, ForecastSounding.FORECAST).toObservable()
                                 , getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.SIDE, FORECAST_SOUNDING.FORECAST).toObservable()
-                               // , getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.FOOT, FORECAST_SOUNDING.FORECAST).toObservable()
+                                // , getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter, time, Constants.FOOT, FORECAST_SOUNDING.FORECAST).toObservable()
                         )
                 );
     }
 
     /**
      * Get sounding
+     *
      * @param region
      * @param yyyymmddDate
      * @param soaringForecastType
@@ -114,9 +116,9 @@ public class SoaringForecastDownloader {
                                                                             String forecastParameter, List<String> times) {
         return Observable.fromIterable(times)
                 .flatMap((Function<String, Observable<SoaringForecastImage>>) time ->
-                                getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter
-                                        , time, Constants.BODY, FORECAST_SOUNDING.SOUNDING).toObservable()
-                        );
+                        getSoaringForecastImageObservable(region, yyyymmddDate, soaringForecastType, forecastParameter
+                                , time, Constants.BODY, FORECAST_SOUNDING.SOUNDING).toObservable()
+                );
     }
 
     /**
@@ -125,31 +127,45 @@ public class SoaringForecastDownloader {
      * @param forecastParameter - wstar_bsratio  OR it is sounding index (1 based) with index based on location from sounding.json
      * @param forecastTime      - 1500
      * @param bitmapType        - body
-*                          <p>
-*                          Construct something like http:soargbsc.com/rasp/NewEngland/2018-03-31/gfs/wstar_bsratio.curr.1500lst.d2.body.png?11:15:44”
-*                          for soaring forecast or
+     *                          <p>
+     *                          Construct something like http:soargbsc.com/rasp/NewEngland/2018-03-31/gfs/wstar_bsratio.curr.1500lst.d2.body.png?11:15:44”
+     *                          for soaring forecast or
      * @param forecastSounding  - gfs/nam/rap
      */
     public Single<SoaringForecastImage> getSoaringForecastImageObservable(String region, String yyyymmddDate, String forecastType,
                                                                           String forecastParameter, String forecastTime, String bitmapType, FORECAST_SOUNDING forecastSounding) {
         final String parmUrl;
+        if (forecastTime.startsWith("old ")) {
+
+        }
         switch (forecastSounding) {
             case FORECAST:
-                parmUrl = getSoaringForecastUrlParm(region, yyyymmddDate, forecastType, forecastParameter, forecastTime, bitmapType);
+                parmUrl = getSoaringForecastUrlParm(region, yyyymmddDate, forecastType, forecastParameter
+                        , stripOldIfNeeded(forecastTime), bitmapType);
                 break;
             case SOUNDING:
-                parmUrl = getSoaringForecastSoundingUrlParm(region, yyyymmddDate, forecastType, forecastParameter, forecastTime, bitmapType);
+                parmUrl = getSoaringForecastSoundingUrlParm(region, yyyymmddDate, forecastType, forecastParameter
+                        , forecastTime, bitmapType);
                 break;
             default:
                 parmUrl = "xxxx";
         }
 
-        SoaringForecastImage soaringForecastImage = getSoaringForcastImage(region, yyyymmddDate, forecastType, forecastParameter, forecastTime, bitmapType, parmUrl);
+        SoaringForecastImage soaringForecastImage = getSoaringForcastImage(region, yyyymmddDate, forecastType
+                , forecastParameter, stripOldIfNeeded(forecastTime), bitmapType, parmUrl);
 
         return Single.create(
                 emitter -> {
                     emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, forecastUrl + parmUrl));
                 });
+    }
+
+    private String stripOldIfNeeded(String forecastTime){
+        if (forecastTime.startsWith("old ") && forecastTime.length() > 4) {
+            return forecastTime.substring(4);
+        } else {
+            return forecastTime;
+        }
     }
 
     @NonNull

@@ -6,7 +6,7 @@ public class SoaringForecastImage extends BitmapImage {
 
     private static final String separator = ":";
 
-    private String forecastTime = null;  //1300
+    private String forecastTime = null;  //1300 or might be old 1300 if RASP regenerating bitmaps
     private String forecastType = null;  // nam
     private String bitmapType = null;  // body footer header Constants.BODY, HEAD, FOOT, SIDE
     private String region = null;     // NewEngland

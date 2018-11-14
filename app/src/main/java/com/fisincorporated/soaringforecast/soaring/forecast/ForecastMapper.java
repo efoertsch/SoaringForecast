@@ -90,9 +90,17 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     // ---- Forecast overlay ------------------------------------
     // 100% opacity = 0% transnparent
     public void setGroundOverlay(Bitmap bitmap) {
+
         if (bitmap == null) {
-            return;
+            if (googleMap !=null && forecastOverlay  != null){
+                forecastOverlay.remove();
+                forecastOverlay = null;
+                return;
+            } else {
+                return;
+            }
         }
+
         if (forecastOverlay == null) {
             GroundOverlayOptions forecastOverlayOptions = new GroundOverlayOptions()
                     .image(BitmapDescriptorFactory.fromBitmap(bitmap))
