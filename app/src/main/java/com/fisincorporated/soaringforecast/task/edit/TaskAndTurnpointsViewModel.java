@@ -50,6 +50,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     public TaskAndTurnpointsViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
         working.setValue(false);
+        needToSaveUpdates.setValue(false);
         return this;
     }
 
@@ -70,6 +71,18 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
             }
         }
         return this;
+    }
+
+    /**
+     * Call this if changes made but you don't want to save them
+     * Since this viewmodel is shared with search/add turnpoints at the activity level
+     * you must reset in case you come back to same task from task list
+     */
+    public void reset() {
+        taskId = 0;
+        task = null;
+        taskTurnpoints.setValue(null);
+
     }
 
     public long getTaskId() {
@@ -94,6 +107,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(task -> {
                             this.task = task;
+                            taskDistance.setValue(task.getDistance());
                             notifyChange();
                         },
                         t -> {
@@ -302,5 +316,4 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         compositeDisposable.dispose();
         super.onCleared();
     }
-
 }

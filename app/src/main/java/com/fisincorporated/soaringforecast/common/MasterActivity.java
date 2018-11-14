@@ -124,14 +124,14 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(PopThisFragmentFromBackStack event) {
-        //popCurrentFragment();
+        popCurrentFragment();
     }
 
-//    public void popCurrentFragment() {
-//        FragmentManager fm = getSupportFragmentManager();
-//        fm.popBackStack();
-//        if (fm.getFragments().size() == 0){
-//            finish();
-//        }
-//    }
+    public void popCurrentFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        fm.popBackStack();
+        if (fm.getFragments().size() == 0){
+            finish();
+        }
+    }
 }

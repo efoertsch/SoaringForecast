@@ -249,6 +249,8 @@
     <string name="db_version">Database Version: %1$d</string>
     <string name="oops_about_file_is_missing">Oops About file is missing</string>
     <string name="oops_error_reading_about_file">Oops. Error reading About file</string>
+    <string name="save_task">Save Task?</string>
+    <string name="save_task_before_exit">Do you want to save your changes before exit?</string>
 
 
 </resources>
