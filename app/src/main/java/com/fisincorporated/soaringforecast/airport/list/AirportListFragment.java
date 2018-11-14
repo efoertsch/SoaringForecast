@@ -30,12 +30,16 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import dagger.android.support.DaggerFragment;
 
 public class AirportListFragment extends DaggerFragment implements OnStartDragListener, AirportListAdapter.NewAirportListListener {
 
-    private AppRepository appRepository;
-    private AppPreferences appPreferences;
+    @Inject
+    AppRepository appRepository;
+    @Inject
+    AppPreferences appPreferences;
 
     //TODO figure out injection for view model
     private AirportListViewModel airportListViewModel;
@@ -43,13 +47,6 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
     private ItemTouchHelper itemTouchHelper;
     private Observer<List<Airport>> airportListObserver;
     private boolean firstTime = true;
-
-    public static AirportListFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
-        AirportListFragment airportListFragment = new AirportListFragment();
-        airportListFragment.appRepository = appRepository;
-        airportListFragment.appPreferences = appPreferences;
-        return airportListFragment;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +63,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        AirportListView airportListView = DataBindingUtil.inflate(inflater, R.layout.airport_list_layout, container,false);
+        AirportListView airportListView = DataBindingUtil.inflate(inflater, R.layout.airport_list_layout, container, false);
 
         airportListAdapter = new AirportListAdapter();
         RecyclerView recyclerView = airportListView.airportListRecyclerView;
@@ -91,7 +88,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
 
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         //set title
         getActivity().setTitle(R.string.metar_taf_airports);
@@ -103,7 +100,7 @@ public class AirportListFragment extends DaggerFragment implements OnStartDragLi
         }
     }
 
-   @Override
+    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
     }

@@ -97,18 +97,15 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
     public void displayNewFragment(Fragment fragment) {
-        FragmentManager fm = getSupportFragmentManager();
         if (fragment != null) {
-            fm.beginTransaction().replace(R.id.fragmentContainer, fragment)
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment)
                     .commit();
         }
     }
 
-
     public void replaceWithThisFragment(Fragment fragment, boolean addToBackstack) {
         // Replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, fragment);
         if (addToBackstack) {
             fragmentTransaction.addToBackStack(null);

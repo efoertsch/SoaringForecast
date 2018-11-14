@@ -20,9 +20,13 @@ import timber.log.Timber;
 
 public class AirportSearchViewModel extends ViewModel {
 
-    private MutableLiveData<List<Airport>> searchAirports;
+
     private AppRepository appRepository;
     private AppPreferences appPreferences;
+
+    private MutableLiveData<List<Airport>> searchAirports;
+    private Disposable searchDisposable;
+
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportSearchViewModel setAppRepository(AppRepository appRepository) {
@@ -48,7 +52,10 @@ public class AirportSearchViewModel extends ViewModel {
         if (search == null || search.isEmpty()) {
             searchAirports.getValue().clear();
         } else {
-            Disposable disposable = appRepository.findAirports("%" + search + "%")
+            if (searchDisposable != null) {
+                compositeDisposable.delete(searchDisposable);
+            }
+            searchDisposable = appRepository.findAirports("%" + search + "%")
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(airportList -> {
@@ -57,7 +64,7 @@ public class AirportSearchViewModel extends ViewModel {
                             t -> {
                                 Timber.e(t);
                             });
-            compositeDisposable.add(disposable);
+            compositeDisposable.add(searchDisposable);
         }
         return searchAirports;
     }
