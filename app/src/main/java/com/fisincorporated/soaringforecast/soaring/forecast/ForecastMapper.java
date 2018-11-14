@@ -1,5 +1,6 @@
 package com.fisincorporated.soaringforecast.soaring.forecast;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
@@ -30,8 +31,15 @@ import javax.inject.Inject;
 
 public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private SupportMapFragment supportMapFragment;
-    private boolean drawingTask;
+    private Context context;
+    private boolean drawingTask = false;
+
+
+    // Default for NewEngland
+    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
+            , new LatLng(45.0120811, -70.5046997));
+    private List<SoundingLocation> soundingLocations = new ArrayList<>();
+    private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
 
     private List<Marker> taskTurnpointMarkers = new ArrayList<>();
     private List<Polyline> taskTurnpointLines = new ArrayList<>();
@@ -39,9 +47,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     private GoogleMap googleMap;
 
-    // Default for NewEngland
-    private LatLngBounds mapLatLngBounds = new LatLngBounds( new LatLng(41.2665329, -73.6473083)
-            ,new LatLng(45.0120811, -70.5046997));
     private GroundOverlay forecastOverlay;
     private int forecastOverlayOpacity;
 
@@ -53,46 +58,56 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private double swLong = 0;
     private double neLat = 0;
     private double neLong = 0;
-    private List<TaskTurnpoint> taskTurnpoints;
+
 
     @Inject
     public ForecastMapper() {
     }
 
     public void displayMap(SupportMapFragment mapFragment) {
+
         mapFragment.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        // if delay in map getting ready and bounds, sounding locations or task already passed in display them as
+        // required
+        updateMapBounds();
+        displaySoundingMarkers(true);
+        createSoundingMarkers();
+        plotTaskTurnpoints();
     }
 
-    private void setMapBounds(LatLng southWestLatLng, LatLng northEastLatLng) {
-        setMapLatLngBounds(new LatLngBounds(southWestLatLng, northEastLatLng));
-    }
 
     public void setMapLatLngBounds(LatLngBounds mapLatLngBounds) {
         this.mapLatLngBounds = mapLatLngBounds;
-        setupMap();
+        updateMapBounds();
     }
 
-    private void setupMap() {
-        if (mapLatLngBounds != null) {
+    private void updateMapBounds() {
+        if (googleMap != null && mapLatLngBounds != null) {
             googleMap.setLatLngBoundsForCameraTarget(mapLatLngBounds);
-        }
-        if (!drawingTask ) {
-            // if drawing task use the task latlng bounds for map positioning
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
+            if (!drawingTask) {
+                // if drawing task use the task latlng bounds for map positioning
+                googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                    @Override
+                    public void onMapLoaded() {
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
+                    }
+                });
+
+
+            }
         }
     }
 
     // ---- Forecast overlay ------------------------------------
     // 100% opacity = 0% transnparent
     public void setGroundOverlay(Bitmap bitmap) {
-
         if (bitmap == null) {
-            if (googleMap !=null && forecastOverlay  != null){
+            if (googleMap != null && forecastOverlay != null) {
                 forecastOverlay.remove();
                 forecastOverlay = null;
                 return;
@@ -120,31 +135,38 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         setForecastOverlayTranparency();
     }
 
-
-    public void setForecastOverlayTranparency(){
-        if (forecastOverlay != null){
+    public void setForecastOverlayTranparency() {
+        if (forecastOverlay != null) {
             forecastOverlay.setTransparency(1.0f - forecastOverlayOpacity / 100.0f);
         }
     }
 
     // ----- Sounding markers ----------------------------------------
-    public void setSoundingLocations(List<SoundingLocation> soundingLocations) {
-
-        if (soundingLocations == null || soundingLocations.size() == 0) {
+    public void setSoundingLocations(List<SoundingLocation> newSoundingLocations) {
+        soundingLocations.clear();
+        if (newSoundingLocations == null || newSoundingLocations.size() == 0) {
             displaySoundingMarkers(false);
         } else {
-            soundingMarkers.clear();
-            LatLng latLng;
-            Marker marker;
-            for (SoundingLocation soundingLocation : soundingLocations) {
-                latLng = new LatLng(soundingLocation.getLatitude(), soundingLocation.getLongitude());
-                marker = googleMap.addMarker(new MarkerOptions().position(latLng)
-                        .title(soundingLocation.getLocation()));
-                soundingMarkers.add(marker);
-                marker.setTag(soundingLocation);
-                googleMap.setOnMarkerClickListener(this);
-                displaySoundingMarkers(true);
-            }
+            soundingLocations.addAll(newSoundingLocations);
+            createSoundingMarkers();
+        }
+    }
+
+    private void createSoundingMarkers() {
+        if (googleMap == null) {
+            return;
+        }
+        soundingMarkers.clear();
+        LatLng latLng;
+        Marker marker;
+        for (SoundingLocation soundingLocation : soundingLocations) {
+            latLng = new LatLng(soundingLocation.getLatitude(), soundingLocation.getLongitude());
+            marker = googleMap.addMarker(new MarkerOptions().position(latLng)
+                    .title(soundingLocation.getLocation()));
+            soundingMarkers.add(marker);
+            marker.setTag(soundingLocation);
+            googleMap.setOnMarkerClickListener(this);
+            displaySoundingMarkers(true);
         }
     }
 
@@ -169,41 +191,57 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     }
 
     // ------ Task Turnpoints ---------------------------------
-    public void setTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
+    public void setTaskTurnpoints(List<TaskTurnpoint> newTaskTurnpoints) {
         removeTaskTurnpoints();
-        this.taskTurnpoints = taskTurnpoints;
-        plotTurnpointsOnForecast(taskTurnpoints);
+        taskTurnpoints.clear();
+        if (newTaskTurnpoints != null) {
+            taskTurnpoints.addAll(newTaskTurnpoints);
+            plotTaskTurnpoints();
+        }
     }
 
-    private void plotTurnpointsOnForecast(List<TaskTurnpoint> taskTurnpoints) {
+    public void removeTaskTurnpoints() {
+        drawingTask = false;
+        for (Polyline polyline : taskTurnpointLines) {
+            polyline.remove();
+        }
+
+        taskTurnpointLines.clear();
+        for (Marker marker : taskTurnpointMarkers) {
+            marker.remove();
+        }
+        taskTurnpointMarkers.clear();
+    }
+
+    private void plotTaskTurnpoints() {
         TaskTurnpoint taskTurnpoint;
         LatLng fromLatLng = new LatLng(0d, 0d); // to get rid of syntax checker
         LatLng toLatLng;
 
-        if (googleMap != null) {
+        if (googleMap == null) {
+            return;
+        }
 
-            if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
-                int numberTurnpoints = taskTurnpoints.size();
-                for (int i = 0; i < taskTurnpoints.size(); ++i) {
-                    taskTurnpoint = taskTurnpoints.get(i);
-                    if (i == 0) {
-                        fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                        placeTaskTurnpointMarker(taskTurnpoint.getTitle(), "Start", fromLatLng);
+        if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
+            int numberTurnpoints = taskTurnpoints.size();
+            for (int i = 0; i < taskTurnpoints.size(); ++i) {
+                taskTurnpoint = taskTurnpoints.get(i);
+                if (i == 0) {
+                    fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
+                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(), "Start", fromLatLng);
 
-                    } else {
-                        toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                        placeTaskTurnpointMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ? String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()) : "Finish"), toLatLng);
-                        drawLine(fromLatLng, toLatLng);
-                        fromLatLng = toLatLng;
-                    }
-                    updateMapLatLongCorners(fromLatLng);
+                } else {
+                    toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
+                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ? String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()) : "Finish"), toLatLng);
+                    drawLine(fromLatLng, toLatLng);
+                    fromLatLng = toLatLng;
                 }
-                LatLng southwest = new LatLng(swLat, swLong);
-                LatLng northeast = new LatLng(neLat, neLong);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
-                        southwest, northeast), 700, 700, 0));
+                updateMapLatLongCorners(fromLatLng);
             }
-
+            LatLng southwest = new LatLng(swLat, swLong);
+            LatLng northeast = new LatLng(neLat, neLong);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
+                    southwest, northeast), 700, 700, 0));
         }
     }
 
@@ -248,19 +286,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                 .snippet(snippet)
                 .position(latLng));
         taskTurnpointMarkers.add(marker);
-    }
-
-    public void removeTaskTurnpoints() {
-        drawingTask = false;
-        for (Polyline polyline : taskTurnpointLines) {
-            polyline.remove();
-        }
-
-        taskTurnpointLines.clear();
-        for (Marker marker : taskTurnpointMarkers) {
-            marker.remove();
-        }
-        taskTurnpointMarkers.clear();
     }
 
 }

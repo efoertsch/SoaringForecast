@@ -234,7 +234,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
     private void displaySoaringForecasts() {
-        SoaringForecastFragment fragment = SoaringForecastFragment.newInstance(appRepository,appPreferences);
+        SoaringForecastFragment fragment = new SoaringForecastFragment();
         displayFragment(fragment, false);
     }
 
