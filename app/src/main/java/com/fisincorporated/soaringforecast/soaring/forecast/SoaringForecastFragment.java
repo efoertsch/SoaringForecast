@@ -162,9 +162,15 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // Get Rasp bitmap for the date/time selected and pass to mapper
         soaringForecastViewModel.getSelectedSoaringForecastImageSet().observe(this, soaringForecastImageSet -> {
-            soaringForecastImageBinding.soaringForecastImageLocalTime.setText(soaringForecastImageSet.getLocalTime());
-            forecastMapper.setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
-            soaringForecastImageBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
+            if (soaringForecastImageSet != null) {
+                soaringForecastImageBinding.soaringForecastImageLocalTime.setText(soaringForecastImageSet.getLocalTime());
+                forecastMapper.setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
+                soaringForecastImageBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
+            } else {
+                soaringForecastImageBinding.soaringForecastImageLocalTime.setText("");
+                forecastMapper.setGroundOverlay(null);
+                soaringForecastImageBinding.soaringForecastScaleImage.setImageBitmap(null);
+            }
         });
 
         // Get Sounding bitmap for the date/time selected and pass to mapper
