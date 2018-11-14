@@ -5,6 +5,7 @@ import com.fisincorporated.soaringforecast.about.AboutFragment;
 import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
+import com.fisincorporated.soaringforecast.airport.search.AirportSearchFragment;
 import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
@@ -37,6 +38,9 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract AirportListFragment bindAirportListFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract AirportSearchFragment bindAirportSearchFragment();
 
 
     // ---- Task/Turnpoints ----

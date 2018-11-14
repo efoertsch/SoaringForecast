@@ -45,6 +45,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     private MutableLiveData<List<AirportMetarTaf>> airportMetarTafs;
     private MutableLiveData<List<TAF>> tafList;
     private MutableLiveData<List<Metar>> metarList;
+    private MutableLiveData<List<Airport>> airportList;
 
     // used for display of Metar/Taf
     private boolean displayRawTafMetar;
@@ -81,9 +82,17 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
             airportMetarTafs.setValue(new ArrayList<>());
             assignDisplayOptions();
             setAirportWeatherOrder();
-            addAirportNames();
+            callForAirportNames();
         }
         return airportMetarTafs;
+    }
+
+    public MutableLiveData<List<Airport>> getAirportList() {
+        if (airportList == null){
+            airportList = new MutableLiveData<>();
+            airportList.setValue(new ArrayList<>());
+        }
+        return airportList;
     }
 
     public LiveData<List<TAF>> getAirportTaf() {
@@ -122,16 +131,19 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     }
 
     public void refresh() {
-        String airportList = getAirportCodes();
+        String airportCodeList = getAirportCodes();
         assignDisplayOptions();
-        if (airportList == null || airportList.trim().length() == 0) {
+        if (airportCodeList == null || airportCodeList.trim().length() == 0) {
             airportMetarTafs.setValue(new ArrayList<>());
             tafList.setValue(new ArrayList<>());
             metarList.setValue(new ArrayList<>());
+            airportList.setValue((new ArrayList<>()));
+
         } else {
             setAirportWeatherOrder();
-            callForMetar(airportList);
-            callForTaf(airportList);
+            callForMetar(airportCodeList);
+            callForTaf(airportCodeList);
+            callForAirportNames();
         }
     }
 
@@ -164,34 +176,16 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
         return distanceUnits;
     }
 
-    private void addAirportNames() {
+    private void callForAirportNames() {
         Disposable disposable = appRepository.getAirportsByIcaoIdAirports(appPreferences.getSelectedAirportCodesList())
                 .subscribe(airportList -> {
-                            if (airportList != null) {
-                                addAirportNameToAirportWeather(airportList);
-                            }
+                            this.airportList.setValue(airportList);
                         },
                         t -> {
+                            //TODO display/report error
                             Timber.e(t);
                         });
         compositeDisposable.add(disposable);
-    }
-
-    private void addAirportNameToAirportWeather(List<Airport> airportList) {
-        synchronized (airportMetarTafs) {
-            List<AirportMetarTaf> airportweathers = airportMetarTafs.getValue();
-            for (int i = 0; i < airportList.size(); ++i) {
-                for (int j = 0; j < airportweathers.size(); ++j) {
-                    if (airportList.get(i).getIdent().equals(airportweathers.get(j).getIcaoId())) {
-                        airportweathers.get(j).setAirportName(airportList.get(i).getName());
-                        break;
-                    }
-                }
-            }
-            // just so it triggers update
-            airportMetarTafs.setValue(airportMetarTafs.getValue());
-        }
-
     }
 
     private void callForMetar(String airportList) {

@@ -36,22 +36,16 @@ import dagger.android.support.DaggerFragment;
 
 public class AirportMetarTafFragment extends DaggerFragment {
 
-    private AirportMetarTafViewModel airportMetarTafViewModel;
-
-    private AppPreferences appPreferences;
-    private AppRepository appRepository;
-    private AirportMetarTafView airportMetarTafView;
-    private boolean firstTime = true;
-
+    @Inject
+    AppRepository appRepository;
+    @Inject
+    AppPreferences appPreferences;
     @Inject
     public AviationWeatherApi aviationWeatherApi;
 
-    public static AirportMetarTafFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
-        AirportMetarTafFragment airportMetarTafFragment = new AirportMetarTafFragment();
-        airportMetarTafFragment.appRepository = appRepository;
-        airportMetarTafFragment.appPreferences = appPreferences;
-        return airportMetarTafFragment;
-    }
+    private AirportMetarTafViewModel airportMetarTafViewModel;
+    private AirportMetarTafView airportMetarTafView;
+    private boolean firstTime = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +69,9 @@ public class AirportMetarTafFragment extends DaggerFragment {
         airportMetarTafViewModel.getAirportMetarTafs().observe(this, airportWeatherList -> {
             airportMetarTafAdapter.setAirportMetarTafList(airportWeatherList);
         });
+
+        airportMetarTafViewModel.getAirportList().observe(this, airports ->
+        airportMetarTafAdapter.setAirportList(airports));
 
         airportMetarTafViewModel.getAirportMetars().observe(this, metars -> {
             airportMetarTafAdapter.updateMetarList(metars);

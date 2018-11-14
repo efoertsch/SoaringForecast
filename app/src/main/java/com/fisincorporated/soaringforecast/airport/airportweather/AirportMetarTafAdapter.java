@@ -20,6 +20,7 @@ import com.fisincorporated.soaringforecast.data.taf.TAF;
 import com.fisincorporated.soaringforecast.databinding.AirportWeatherBinding;
 import com.fisincorporated.soaringforecast.databinding.SkyConditionBinding;
 import com.fisincorporated.soaringforecast.databinding.TafForecastBinding;
+import com.fisincorporated.soaringforecast.repository.Airport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +49,7 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
                 // Make sure list of airports ordered (and w/ weather info) based on list passed in
                 ArrayList<AirportMetarTaf> newOrderedList = new ArrayList<>();
                 boolean airportAdded;
-                for(AirportMetarTaf selectedAirport : selectedAirports) {
+                for (AirportMetarTaf selectedAirport : selectedAirports) {
                     airportAdded = false;
                     for (AirportMetarTaf existingAirport : airportMetarTafList) {
                         if (selectedAirport.getIcaoId().equals(existingAirport.getIcaoId())) {
@@ -68,7 +69,31 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
 
     }
 
-    public AirportMetarTafAdapter setWeatherMetarTafPreferences(@NonNull WeatherMetarTafPreferences weatherMetarTafPreferences) {
+    /**
+     * Set name of airport
+     *
+     * @param airportList
+     */
+    public void setAirportList(List<Airport> airportList) {
+        AirportMetarTaf airportMetarTaf;
+        if (airportList == null) {
+            return;
+        }
+        synchronized (airportMetarTafList) {
+            for (int i = 0; i < airportMetarTafList.size(); ++i) {
+                airportMetarTaf = airportMetarTafList.get(i);
+                for (Airport airport : airportList) {
+                    if (airportMetarTaf.getIcaoId().equals(airport.getIdent())) {
+                        airportMetarTaf.setAirportName(airport.getName());
+                        notifyItemChanged(i);
+                    }
+                }
+            }
+        }
+    }
+
+    public AirportMetarTafAdapter setWeatherMetarTafPreferences
+            (@NonNull WeatherMetarTafPreferences weatherMetarTafPreferences) {
         this.weatherMetarTafPreferences = weatherMetarTafPreferences;
         return this;
     }
@@ -166,7 +191,8 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
         }
     }
 
-    private void addSkyConditionsToForecast(TafForecastBinding tafForecastBinding, Forecast forecast) {
+    private void addSkyConditionsToForecast(TafForecastBinding tafForecastBinding, Forecast
+            forecast) {
         if (forecast != null && forecast.getSkyCondition() != null & forecast.getSkyCondition().size() > 0) {
             LinearLayout layout = tafForecastBinding.airportTafCloudLayerLayout;
             LayoutInflater inflater = (LayoutInflater) layout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);

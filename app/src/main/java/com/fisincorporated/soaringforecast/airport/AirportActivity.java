@@ -6,21 +6,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
 import com.fisincorporated.soaringforecast.airport.search.AirportSearchFragment;
-import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
-import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.MasterActivity;
 import com.fisincorporated.soaringforecast.messages.AddAirportEvent;
 import com.fisincorporated.soaringforecast.messages.DisplayAirportList;
 import com.fisincorporated.soaringforecast.messages.DisplaySettings;
-import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import javax.inject.Inject;
 
 public class AirportActivity extends MasterActivity {
 
@@ -31,17 +27,10 @@ public class AirportActivity extends MasterActivity {
 
     public String airportFragmentOption;
 
-    @Inject
-    AppRepository appRepository;
-
-    @Inject
-    AppPreferences appPreferences;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     @Override
     protected Fragment createFragment() {
@@ -67,7 +56,7 @@ public class AirportActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddAirportEvent event) {
-        replaceWithThisFragment(getAirportSearchFragment(),true);
+        replaceWithThisFragment(getAirportSearchFragment(), true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -81,22 +70,21 @@ public class AirportActivity extends MasterActivity {
     }
 
     private Fragment getAirportListFragment() {
-        return  AirportListFragment.newInstance(appRepository, appPreferences);
+        return new AirportListFragment();
     }
 
     private Fragment getAirportSearchFragment() {
-        return AirportSearchFragment.newInstance(appRepository, appPreferences);
+        return new AirportSearchFragment();
     }
 
     private Fragment getAirportMetarTafFragment() {
-        return AirportMetarTafFragment.newInstance(appRepository, appPreferences);
+        return new AirportMetarTafFragment();
     }
 
     private void displaySettingsActivity() {
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
-
 
     public static class Builder {
 

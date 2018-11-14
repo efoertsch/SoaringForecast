@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,24 +28,23 @@ import com.fisincorporated.soaringforecast.repository.AppRepository;
 
 import org.greenrobot.eventbus.EventBus;
 
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
+
 // started with http://camposha.info/source/android-dialog-fragment-listview-searchfilter-source and
 // adapted as needed
-public class AirportSearchFragment extends Fragment implements AirportListAdapter.OnItemClickListener {
+public class AirportSearchFragment extends DaggerFragment implements AirportListAdapter.OnItemClickListener {
 
-    SearchView searchView;
+    @Inject
     AppRepository appRepository;
+    @Inject
     AppPreferences appPreferences;
 
+    SearchView searchView;
     //TODO figure out injection for view model and then also inject adapter
     AirportSearchViewModel airportSearchViewModel;
     AirportListAdapter airportListAdapter;
-
-    static public AirportSearchFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
-        AirportSearchFragment airportSearchFragment = new AirportSearchFragment();
-        airportSearchFragment.appRepository = appRepository;
-        airportSearchFragment.appPreferences = appPreferences;
-        return airportSearchFragment;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,16 +76,12 @@ public class AirportSearchFragment extends Fragment implements AirportListAdapte
     @Override
     public void onResume() {
         super.onResume();
-        //set title
         getActivity().setTitle(R.string.airport_search);
-        //displayKeyboard(true);
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // displayKeyboard(false);
     }
 
     @Override
