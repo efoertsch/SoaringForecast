@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import com.fisincorporated.soaringforecast.common.CheckBeforeGoingBack;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.MasterActivity;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTask;
@@ -20,6 +21,8 @@ import com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportFr
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
 
 
 public class TaskActivity extends MasterActivity {
@@ -52,6 +55,20 @@ public class TaskActivity extends MasterActivity {
             }
         }
         return getTaskListFragment();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            if (fragments.get(fragments.size()-1) instanceof CheckBeforeGoingBack){
+                CheckBeforeGoingBack checkBeforeGoingBack = (CheckBeforeGoingBack) fragments.get(fragments.size()-1);
+                if (!checkBeforeGoingBack.okToGoBack()){
+                   return;
+                }
+            }
+        }
+        super.onBackPressed();
     }
 
     private Fragment getSeeYouImportFragment() {

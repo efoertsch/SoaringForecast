@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.common.CheckBeforeGoingBack;
 import com.fisincorporated.soaringforecast.databinding.EditTaskView;
 import com.fisincorporated.soaringforecast.messages.AddTurnpointsToTask;
+import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.touchhelper.OnStartDragListener;
 import com.fisincorporated.soaringforecast.touchhelper.SimpleItemTouchHelperCallback;
@@ -26,7 +29,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class EditTaskFragment extends DaggerFragment implements OnStartDragListener {
+public class EditTaskFragment extends DaggerFragment implements OnStartDragListener, CheckBeforeGoingBack {
 
     @Inject
     AppRepository appRepository;
@@ -38,6 +41,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     private FloatingActionButton saveFab;
     private ItemTouchHelper itemTouchHelper;
     private EditTaskView editTaskView;
+
 
     public EditTaskFragment setTaskId(long taskId) {
         this.taskId = taskId;
@@ -60,7 +64,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         editTaskView = DataBindingUtil.inflate(inflater, R.layout.task_edit_layout, container, false);
         editTaskView.setLifecycleOwner(this); // update UI based on livedata changes.
 
-        editTaskView.setTaskAndTurnpointsViewModel(taskAndTurnpointsViewModel);
+        editTaskView.setViewModel(taskAndTurnpointsViewModel);
 
         RecyclerView recyclerView = editTaskView.editTaskRecyclerView;
         recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskAndTurnpointsViewModel);
@@ -77,15 +81,8 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
         taskAndTurnpointsViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
             recyclerViewAdapter.setItems(taskTurnpoints);
-            recyclerViewAdapter.notifyDataSetChanged();
-        });
 
-        // Could not get taskDistance in xml to update with new distance automagically on task distance change
-        // so set text this way
-        taskAndTurnpointsViewModel.getTaskDistance().observe(this, taskDistance ->{
-            editTaskView.editTaskDistance.setText(getString(R.string.distance_km,taskDistance));
         });
-
 
         //TODO DRY
         //DragListener
@@ -107,18 +104,16 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         displayTitle();
         // if just added all turnpoints via search, the task distance will not be updated by observer in createView
         // ( as this fragment paused while adding turnpoints, so make sure ui update occurs.
-        editTaskView.editTaskDistance.setText(getString(R.string.distance_km,taskAndTurnpointsViewModel.getTaskDistance().getValue()));
+        editTaskView.editTaskDistance.setText(getString(R.string.distance_km, taskAndTurnpointsViewModel.getTaskDistance().getValue()));
     }
 
     private void displayTitle() {
-        if (taskId == -1){
+        if (taskId == -1) {
             getActivity().setTitle(R.string.add_task);
         } else {
             getActivity().setTitle(R.string.edit_task);
         }
     }
-
-
 
     private void goToAddTaskTurnpoints() {
         EventBus.getDefault().post(new AddTurnpointsToTask());
@@ -127,5 +122,36 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
+    }
+
+    @Override
+    public boolean okToGoBack() {
+        if (taskAndTurnpointsViewModel.getNeedToSaveUpdates().getValue() == null
+                || !taskAndTurnpointsViewModel.getNeedToSaveUpdates().getValue()) {
+            return true;
+        } else {
+            displaySaveFirstDialog();
+            return false;
+        }
+    }
+
+    private void displaySaveFirstDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.save_task)
+                .setMessage(R.string.save_task_before_exit)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    taskAndTurnpointsViewModel.saveTask();
+                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                    taskAndTurnpointsViewModel.getTaskTurnpoints().removeObservers(this);
+                    taskAndTurnpointsViewModel.reset();
+                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+
     }
 }

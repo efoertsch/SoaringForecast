@@ -9,7 +9,7 @@
         <import type="android.view.View"/>
 
         <variable
-            name="taskAndTurnpointsViewModel"
+            name="viewModel"
             type="com.fisincorporated.soaringforecast.task.edit.TaskAndTurnpointsViewModel"/>
 
         <import type="java.lang.Integer"/>
@@ -43,7 +43,7 @@
             android:layout_marginEnd="@dimen/margin_standard"
             android:hint="@string/task_name"
             android:inputType="text"
-            android:text="@={taskAndTurnpointsViewModel.taskName}"
+            android:text="@={viewModel.taskName}"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/edit_task_taskname_label"
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_standard"
-            android:text=""
+            android:text="@{String.format(@string/distance_km,safeUnbox(viewModel.taskDistance))}"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintStart_toEndOf="@+id/edit_task_distance_label"
             app:layout_constraintTop_toBottomOf="@+id/edit_task_task_name"
@@ -122,9 +122,9 @@
             android:layout_margin="@dimen/margin_double"
             android:clickable="true"
             android:focusable="true"
-            android:onClick="@{() -> taskAndTurnpointsViewModel.saveTask()}"
+            android:onClick="@{() -> viewModel.saveTask()}"
             android:scaleType="fitXY"
-            android:visibility="@{safeUnbox(taskAndTurnpointsViewModel.needToSaveUpdates) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(viewModel.needToSaveUpdates) ? View.VISIBLE : View.GONE}"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -137,7 +137,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:visibility="@{safeUnbox(taskAndTurnpointsViewModel.working) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
             />
 
     </android.support.constraint.ConstraintLayout>
