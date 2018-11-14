@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,29 +34,26 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class TaskListFragment extends Fragment implements GenericListClickListener<Task>, GenericEditClickListener<Task>, OnStartDragListener {
+public class TaskListFragment extends DaggerFragment implements GenericListClickListener<Task>, GenericEditClickListener<Task>, OnStartDragListener {
 
+    @Inject
+    AppRepository appRepository;
 
-    private AppRepository appRepository;
     private List<Task> tasks = new ArrayList<>();
     private TaskListRecyclerViewAdapter recyclerViewAdapter;
     private ItemTouchHelper itemTouchHelper;
     private TaskListViewModel taskListViewModel;
     private ProgressBar progressBar;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-
-    public static TaskListFragment newInstance(AppRepository appRepository) {
-        TaskListFragment taskListFragment = new TaskListFragment();
-        taskListFragment.appRepository = appRepository;
-        return taskListFragment;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

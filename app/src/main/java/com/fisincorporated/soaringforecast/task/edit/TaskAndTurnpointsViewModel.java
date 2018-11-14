@@ -76,8 +76,10 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         return  taskId;
     }
 
+
     @SuppressLint("CheckResult")
     public Task getTask() {
+        //Do just once
         if (!retrievedTask) {
             retrievedTask = true;
             loadTask();
@@ -144,8 +146,10 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     }
 
     public void saveTask() {
-        working.setValue(true);
         Disposable disposable;
+        working.setValue(true);
+        // make sure task distance saved
+        setTaskDistance();
         if (task.getId() == 0) {
             // adding new task/turnpoints
             disposable = appRepository.addNewTaskAndTurnpoints(task, taskTurnpoints.getValue())

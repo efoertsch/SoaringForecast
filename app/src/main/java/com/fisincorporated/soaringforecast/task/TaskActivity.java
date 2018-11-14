@@ -12,7 +12,6 @@ import com.fisincorporated.soaringforecast.messages.EditTask;
 import com.fisincorporated.soaringforecast.messages.GoToDownloadImport;
 import com.fisincorporated.soaringforecast.messages.GoToTurnpointImport;
 import com.fisincorporated.soaringforecast.messages.SelectedTask;
-import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.task.edit.EditTaskFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
 import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
@@ -21,8 +20,6 @@ import com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportFr
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import javax.inject.Inject;
 
 
 public class TaskActivity extends MasterActivity {
@@ -35,9 +32,6 @@ public class TaskActivity extends MasterActivity {
     private static final String LIST_TASKS = "LIST_TASKS";
     private static final String TASK_NAME = "TASK_NAME";
     private static final String TASK_ID = "TASK_ID";
-
-    @Inject
-    AppRepository appRepository;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,30 +59,24 @@ public class TaskActivity extends MasterActivity {
     }
 
     private Fragment getTurnpointsDownloadFragment() {
-        return TurnpointsDownloadFragment.newInstance();
+        return new TurnpointsDownloadFragment();
     }
 
     private Fragment getTaskListFragment() {
-        return  TaskListFragment.newInstance(appRepository);
+        return  new TaskListFragment();
     }
-
 
     // Bus messages
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTask event) {
-        replaceWithThisFragment(EditTaskFragment.newInstance(appRepository, event.getTaskId()), true);
+        replaceWithThisFragment(new EditTaskFragment().setTaskId( event.getTaskId()), true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        replaceWithThisFragment(TurnpointSearchFragment.newInstance(), true);
+        replaceWithThisFragment(new TurnpointSearchFragment(), true);
     }
-
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onMessageEvent(AddTurnpointsToTaskRefused event) {
-//        //popCurrentFragment();
-//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToTurnpointImport event) {

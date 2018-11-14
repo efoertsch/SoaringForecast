@@ -35,11 +35,6 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
     public TurnpointsDownloadFragment() {
     }
 
-    public static TurnpointsDownloadFragment newInstance() {
-        TurnpointsDownloadFragment turnpointsDownloadFragment = new TurnpointsDownloadFragment();
-        return turnpointsDownloadFragment;
-    }
-
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

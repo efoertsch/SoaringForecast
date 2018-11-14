@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,9 +22,15 @@ import com.fisincorporated.soaringforecast.touchhelper.SimpleItemTouchHelperCall
 
 import org.greenrobot.eventbus.EventBus;
 
-public class EditTaskFragment extends Fragment implements OnStartDragListener {
+import javax.inject.Inject;
 
-    private AppRepository appRepository;
+import dagger.android.support.DaggerFragment;
+
+public class EditTaskFragment extends DaggerFragment implements OnStartDragListener {
+
+    @Inject
+    AppRepository appRepository;
+
     private long taskId;
 
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
@@ -34,16 +39,14 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
     private ItemTouchHelper itemTouchHelper;
     private EditTaskView editTaskView;
 
-
-    public static EditTaskFragment newInstance(AppRepository appRepository, long taskId) {
-        EditTaskFragment editTaskFragment = new EditTaskFragment();
-        editTaskFragment.appRepository = appRepository;
-        editTaskFragment.taskId = taskId;
-        return editTaskFragment;
+    public EditTaskFragment setTaskId(long taskId) {
+        this.taskId = taskId;
+        return this;
     }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Note viewmodel is shared by activity
         taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity())
                 .get(TaskAndTurnpointsViewModel.class)
                 .setAppRepository(appRepository)
@@ -114,6 +117,8 @@ public class EditTaskFragment extends Fragment implements OnStartDragListener {
             getActivity().setTitle(R.string.edit_task);
         }
     }
+
+
 
     private void goToAddTaskTurnpoints() {
         EventBus.getDefault().post(new AddTurnpointsToTask());
