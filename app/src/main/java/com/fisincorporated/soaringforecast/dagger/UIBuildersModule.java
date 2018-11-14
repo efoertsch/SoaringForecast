@@ -12,6 +12,7 @@ import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFrag
 import com.fisincorporated.soaringforecast.settings.SettingsPreferenceFragment;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.fisincorporated.soaringforecast.task.edit.EditTaskFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
 import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
 import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadFragment;
@@ -46,6 +47,9 @@ public abstract class UIBuildersModule {
     // ---- Task/Turnpoints ----
     @ContributesAndroidInjector(modules = {})
     abstract TaskActivity bindTaskActivity();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract EditTaskFragment bindEditTaskFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract TaskListFragment bindTaskListFragment();

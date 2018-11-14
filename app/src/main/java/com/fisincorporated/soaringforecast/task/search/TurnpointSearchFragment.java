@@ -30,15 +30,11 @@ import com.fisincorporated.soaringforecast.task.edit.TaskAndTurnpointsViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 public class TurnpointSearchFragment extends Fragment implements GenericListClickListener<Turnpoint> {
+
     private SearchView searchView;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
     private TurnpointSearchListAdapter turnpointSearchListAdapter;
     private AlertDialog noTurnpointsDialog;
-
-    static public TurnpointSearchFragment newInstance() {
-        TurnpointSearchFragment turnpointSearchFragment = new TurnpointSearchFragment();
-        return turnpointSearchFragment;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
