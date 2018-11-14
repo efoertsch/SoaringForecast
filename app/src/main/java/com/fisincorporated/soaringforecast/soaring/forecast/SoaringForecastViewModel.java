@@ -62,7 +62,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<SoaringForecastImageSet> selectedSoaringForecastImageSet = new MutableLiveData<>();
     private MutableLiveData<SoaringForecastImageSet> selectedSoundingForecastImageSet = new MutableLiveData<>();
     private MutableLiveData<List<SoaringForecastModel>> soaringForecastModels;
-    private MutableLiveData<List<SoundingLocation>> soundingLocations = new MutableLiveData<>();
+    private MutableLiveData<List<SoundingLocation>> soundingLocations;
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
     private MutableLiveData<Integer> forecastOverlyOpacity = new MutableLiveData<>();
@@ -74,6 +74,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> soundingDisplay = new MutableLiveData<>();
     private Constants.FORECAST_SOUNDING forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
 
+    private  boolean displaySoundings;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -303,26 +304,23 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     }
 
-    public void toggleSoundingPoints() {
-        boolean displaySoundings = !appPreferences.getDisplayForecastSoundings();
-        appPreferences.setDisplayForecastSoundings(displaySoundings);
-        getSoundingsLocations(displaySoundings);
+    public MutableLiveData<List<SoundingLocation>> getSoundingLocations() {
+        if (soundingLocations == null ) {
+            soundingLocations = new MutableLiveData<>();
+            // if setting set to display, go ahead and populate
+            if (displaySoundings = appPreferences.getDisplayForecastSoundings()) {
+                soundingLocations.setValue(appRepository.getLocationSoundings());
+            }
+        }
+        return soundingLocations;
     }
 
-    private void getSoundingsLocations(boolean display) {
-        if (soundingLocations == null) {
-            soundingLocations = new MutableLiveData<>();
-        }
-        if (display) {
+    public void toggleSoundingLocationDisplay() {
+        if (displaySoundings = !displaySoundings) {
             soundingLocations.setValue(appRepository.getLocationSoundings());
         } else {
             soundingLocations.setValue(null);
-
         }
-    }
-
-    public MutableLiveData<List<SoundingLocation>> getSoundingLocations() {
-        return soundingLocations;
     }
 
     public void soundingImageCloseClick() {
@@ -331,6 +329,10 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         loadRaspImages();
     }
 
+    /**
+     * Should a skew-t sounding chart be displayed.
+     * @return
+     */
     public MutableLiveData<Boolean> getSoundingDisplay() {
         return soundingDisplay;
     }
@@ -607,7 +609,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     //------- Opacity of forecast overly -----------------
-   // @BindingAdapter(value={"android:onProgressChanged"})
     public void onOpacityChanged(int opacity) {
         forecastOverlyOpacity.setValue(opacity);
         appPreferences.setForecastOverlayOpacity(opacity);

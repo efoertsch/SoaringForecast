@@ -41,8 +41,11 @@ import dagger.android.support.DaggerFragment;
 
 public class SoaringForecastFragment extends DaggerFragment {
 
-    private AppRepository appRepository;
-    private AppPreferences appPreferences;
+    @Inject
+    AppRepository appRepository;
+
+    @Inject
+    AppPreferences appPreferences;
 
     @Inject
     ForecastMapper forecastMapper;
@@ -60,13 +63,6 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     // TODO replace with livedata in viewmodel
     private boolean showClearTaskMenuItem;
-
-    public static SoaringForecastFragment newInstance(AppRepository appRepository, AppPreferences appPreferences) {
-        SoaringForecastFragment soaringForecastFragment = new SoaringForecastFragment();
-        soaringForecastFragment.appRepository = appRepository;
-        soaringForecastFragment.appPreferences = appPreferences;
-        return soaringForecastFragment;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,23 +94,6 @@ public class SoaringForecastFragment extends DaggerFragment {
         // opacity not worth having it bound in viewModel and forwarding changes.
         forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
         soaringForecastImageBinding.soaringForecastSeekbarOpacity.setProgress(appPreferences.getForecastOverlayOpacity());
-//        soaringForecastImageBinding.soaringForecastSeekbarOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                forecastMapper.setForecastOverlayOpacity(progress);
-//                appPreferences.setForecastOverlayOpacity(progress);
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//                // nada
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                // nada
-//            }
-//        });
         setObservers();
 
     }
@@ -150,7 +129,6 @@ public class SoaringForecastFragment extends DaggerFragment {
                     soaringForecastRecyclerViewAdapter.setItems(forecasts);
                 }
         );
-
 
         // Get list of turnpoints for a selected task
         soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints ->
@@ -252,7 +230,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                 displayOpacitySlider();
                 return true;
             case R.id.forecast_menu_toggle_sounding_points:
-                toggleSoundingPoints();
+                toggleSoundingLocationsDisplay();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -324,8 +302,8 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
 
-    private void toggleSoundingPoints() {
-        soaringForecastViewModel.toggleSoundingPoints();
+    private void toggleSoundingLocationsDisplay() {
+        soaringForecastViewModel.toggleSoundingLocationDisplay();
     }
 
     private void displayOpacitySlider() {
