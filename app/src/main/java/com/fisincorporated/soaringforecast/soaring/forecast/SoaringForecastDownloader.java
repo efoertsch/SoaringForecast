@@ -58,7 +58,7 @@ public class SoaringForecastDownloader {
     }
 
     /**
-     * Call to find what days forecasts are available for
+     * Call to find what days forecasts are available for forecasts
      *
      * @return
      * @throws IOException
