@@ -46,7 +46,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
-    //private ProgressBar loadingProgressBar;
 
     @Inject
     AppRepository appRepository;
@@ -67,8 +66,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         drawerToggle = setupDrawerToggle();
         drawerToggle.syncState();
         drawerLayout.addDrawerListener(drawerToggle);
-
-        //loadingProgressBar = findViewById(R.id.activity_load_progress_bar);
 
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         setupDrawerContent(navigationView);
@@ -240,7 +237,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
 
     private void displayTaskList(){
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
-        builder.displayTaskList();
+        builder.displayTaskList().enableClickTask(false);
         startActivity(builder.build(this));
     }
 

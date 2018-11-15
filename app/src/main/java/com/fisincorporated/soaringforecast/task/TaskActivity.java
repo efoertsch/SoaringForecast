@@ -35,6 +35,9 @@ public class TaskActivity extends MasterActivity {
     private static final String LIST_TASKS = "LIST_TASKS";
     private static final String TASK_NAME = "TASK_NAME";
     private static final String TASK_ID = "TASK_ID";
+    private static final String ENABLE_CLICK_TASK = "ENABLE_CLICK_TASK";
+
+    private boolean enableClickTask = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +83,7 @@ public class TaskActivity extends MasterActivity {
     }
 
     private Fragment getTaskListFragment() {
+        enableClickTask =  getIntent().getExtras().getBoolean(ENABLE_CLICK_TASK);
         return  new TaskListFragment();
     }
 
@@ -107,16 +111,17 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SelectedTask selectedTask){
-        Intent intent = getIntent();
-        Bundle bundle = new Bundle();
-        bundle.putLong(Constants.SELECTED_TASK, selectedTask.getTaskId());
-        intent.putExtras(bundle);
-        setResult(RESULT_OK, intent);
-        finish();
+        if (enableClickTask) {
+            Intent intent = getIntent();
+            Bundle bundle = new Bundle();
+            bundle.putLong(Constants.SELECTED_TASK, selectedTask.getTaskId());
+            intent.putExtras(bundle);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 
     public static class Builder {
-
         private Bundle bundle;
 
         private Builder() {
@@ -130,6 +135,11 @@ public class TaskActivity extends MasterActivity {
 
         public Builder displayTaskList() {
             bundle.putString(TURNPOINT_OP, LIST_TASKS);
+            return this;
+        }
+
+        public Builder enableClickTask(boolean enableClickTask){
+            bundle.putBoolean(ENABLE_CLICK_TASK, enableClickTask);
             return this;
         }
 

@@ -239,7 +239,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private void selectTask() {
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
-        builder.displayTaskList();
+        builder.displayTaskList().enableClickTask(true);
         startActivityForResult(builder.build(this.getContext()), 999);
     }
 
