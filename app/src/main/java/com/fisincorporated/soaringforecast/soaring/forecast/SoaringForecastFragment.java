@@ -82,6 +82,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastImageBinding.setLifecycleOwner(this);
         soaringForecastImageBinding.setViewModel(soaringForecastViewModel);
         setupViews();
+        setObservers();
         return soaringForecastImageBinding.getRoot();
     }
 
@@ -94,47 +95,48 @@ public class SoaringForecastFragment extends DaggerFragment {
         // opacity not worth having it bound in viewModel and forwarding changes.
         forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
         soaringForecastImageBinding.soaringForecastSeekbarOpacity.setProgress(appPreferences.getForecastOverlayOpacity());
-        setObservers();
-
     }
 
     //TODO - way to many observers - consolidate/simplify?
     private void setObservers() {
+        // RASP models - GFS, NAM, ...
         soaringForecastViewModel.getSoaringForecastModels().observe(this, soaringForecastModels -> {
             //TODO create preference for model to use for first display
             forecastModelrecyclerViewAdapter.setItems(soaringForecastModels);
         });
 
-        // Selected RASP model - GFS, NAM, ...
+        // Selected RASP model - GFS, NAM, ... Fired first time selected assigned and subsequent user clicks
         soaringForecastViewModel.getSelectedSoaringForecastModel().observe(this, soaringForecastModel ->
                 forecastModelrecyclerViewAdapter.setSelectedItem(soaringForecastModel));
 
-        // Get the list of dates for which rasp forecasts are available for the selected model
+        // List of dates for which rasp forecasts are available for the selected model
         soaringForecastViewModel.getModelForecastDates().observe(this, modelForecastDates ->
                 forecastDateRecyclerViewAdapter.setItems(modelForecastDates));
 
-        // Set the selected date for which rasp forecasts is being displayed
+        // First time selected date for the RASP model or subsequent user clicked date
+        // Data also has map bounds
         soaringForecastViewModel.getSelectedModelForecastDate().observe(this, selectedForecastDate -> {
             forecastDateRecyclerViewAdapter.setSelectedItem(selectedForecastDate);
             setMapLatLngBounds(selectedForecastDate);
         });
 
-        // Get the initial forecast to be displayed
-        soaringForecastViewModel.getSelectedSoaringForecast().observe(this, forecast -> {
-            soaringForecastRecyclerViewAdapter.setSelectedItem(forecast);
-        });
-
-        // get the types of Rasp forecasts available - thermal updraft, bouncy/shear, cloud cover, ..
+        // Types of Rasp forecasts available - thermal updraft, bouncy/shear, cloud cover, ..
         soaringForecastViewModel.getForecasts().observe(this, forecasts -> {
                     soaringForecastRecyclerViewAdapter.setItems(forecasts);
                 }
         );
 
-        // Get list of turnpoints for a selected task
+        // First time assigned or user clicked forecast (wstar,...) to be displayed
+        soaringForecastViewModel.getSelectedSoaringForecast().observe(this, forecast -> {
+            soaringForecastRecyclerViewAdapter.setSelectedItem(forecast);
+        });
+
+
+        // List of turnpoints for a selected task
         soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints ->
                 forecastMapper.setTaskTurnpoints(taskTurnpoints));
 
-        // Get list of sounding locations available
+        // List of sounding locations available
         soaringForecastViewModel.getSoundingLocations().observe(this, soundingLocations ->
                 forecastMapper.setSoundingLocations(soundingLocations));
 
@@ -145,13 +147,14 @@ public class SoaringForecastFragment extends DaggerFragment {
                 forecastMapper.setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
                 soaringForecastImageBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
             } else {
+                // Happens when user selects another forecast. Minimize confusion as to what is displayed by removing old forecast from map
                 soaringForecastImageBinding.soaringForecastImageLocalTime.setText("");
                 forecastMapper.setGroundOverlay(null);
                 soaringForecastImageBinding.soaringForecastScaleImage.setImageBitmap(null);
             }
         });
 
-        // Get Sounding bitmap for the date/time selected and pass to mapper
+        // Display sounding bitmap for the date/time selected and pass to mapper
         soaringForecastViewModel.getSoundingForecastImageSet().observe(this, soundingImageSet -> {
             soaringForecastImageBinding.soaringForecastImageLocalTime.setText(soundingImageSet.getLocalTime());
             soaringForecastImageBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
@@ -291,9 +294,11 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
     private void setMapLatLngBounds(ModelForecastDate modelForecastDate) {
-        forecastMapper.setMapLatLngBounds(
-                new LatLngBounds(modelForecastDate.getGpsLocationAndTimes().getSouthWestLatLng()
-                        , modelForecastDate.getGpsLocationAndTimes().getNorthEastLatLng()));
+        if (modelForecastDate != null) {
+            forecastMapper.setMapLatLngBounds(
+                    new LatLngBounds(modelForecastDate.getGpsLocationAndTimes().getSouthWestLatLng()
+                            , modelForecastDate.getGpsLocationAndTimes().getNorthEastLatLng()));
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
