@@ -31,6 +31,7 @@
 
         <activity
             android:name="com.fisincorporated.soaringforecast.settings.SettingsActivity"
+            android:parentActivityName=".drawer.WeatherDrawerActivity"
             android:screenOrientation="portrait">
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
@@ -39,6 +40,7 @@
 
        <activity
             android:name="com.fisincorporated.soaringforecast.task.TaskActivity"
+            android:parentActivityName=".drawer.WeatherDrawerActivity"
             android:screenOrientation="portrait">
            <meta-data
                android:name="android.support.PARENT_ACTIVITY"
@@ -47,6 +49,7 @@
 
         <activity
             android:name="com.fisincorporated.soaringforecast.satellite.SatelliteActivity"
+            android:parentActivityName=".drawer.WeatherDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -55,6 +58,7 @@
 
         <activity
             android:name="com.fisincorporated.soaringforecast.airport.AirportActivity"
+            android:parentActivityName=".drawer.WeatherDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -63,6 +67,7 @@
 
         <activity
             android:name="com.fisincorporated.soaringforecast.about.AboutActivity"
+            android:parentActivityName=".drawer.WeatherDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

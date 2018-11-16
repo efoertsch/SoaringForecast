@@ -1,6 +1,6 @@
 package com.fisincorporated.soaringforecast.soaring.forecast;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
@@ -31,11 +31,9 @@ import javax.inject.Inject;
 
 public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private Context context;
     private boolean drawingTask = false;
 
-
-    // Default for NewEngland
+    //Default for NewEngland - revise if new regions become available
     private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
             , new LatLng(45.0120811, -70.5046997));
     private List<SoundingLocation> soundingLocations = new ArrayList<>();
@@ -49,6 +47,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     private GroundOverlay forecastOverlay;
     private int forecastOverlayOpacity;
+    private Marker lastMarkerOpened;
 
     /**
      * Use to center task route in googleMap frame
@@ -74,6 +73,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         this.googleMap = googleMap;
         // if delay in map getting ready and bounds, sounding locations or task already passed in display them as
         // required
+        googleMap.setOnMarkerClickListener(this);
         updateMapBounds();
         displaySoundingMarkers(true);
         createSoundingMarkers();
@@ -91,13 +91,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             googleMap.setLatLngBoundsForCameraTarget(mapLatLngBounds);
             if (!drawingTask) {
                 // if drawing task use the task latlng bounds for map positioning
-                googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                    @Override
-                    public void onMapLoaded() {
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0));
-                    }
-                });
-
+                googleMap.setOnMapLoadedCallback(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapLatLngBounds, 0)));
 
             }
         }
@@ -135,7 +129,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         setForecastOverlayTranparency();
     }
 
-    public void setForecastOverlayTranparency() {
+    private void setForecastOverlayTranparency() {
         if (forecastOverlay != null) {
             forecastOverlay.setTransparency(1.0f - forecastOverlayOpacity / 100.0f);
         }
@@ -165,7 +159,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                     .title(soundingLocation.getLocation()));
             soundingMarkers.add(marker);
             marker.setTag(soundingLocation);
-            googleMap.setOnMarkerClickListener(this);
             displaySoundingMarkers(true);
         }
     }
@@ -181,13 +174,29 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (marker.getTag() == null) {
-            // a click on task marker causes onMarkerClick to fire, even though task marker
-            // onClickListener not assigned. Go figure.
-            return false;
+        // Check if there is an open info window (currently would just be taskmarker)
+        if (lastMarkerOpened != null) {
+            // Close the info window
+            lastMarkerOpened.hideInfoWindow();
+
+            // Is the marker the same marker that was already open
+            if (lastMarkerOpened.equals(marker)) {
+                // Nullify the last opened object
+                lastMarkerOpened = null;
+                // Return so that the info window isn't opened again
+                return true;
+            }
         }
-        EventBus.getDefault().post(new DisplaySoundingLocation((SoundingLocation) marker.getTag()));
-        return true;
+
+        if (marker.getTag() == null) {
+            // tag null if task marker
+            lastMarkerOpened = marker;
+            marker.showInfoWindow();
+            return true;
+        } else {
+            EventBus.getDefault().post(new DisplaySoundingLocation((SoundingLocation) marker.getTag()));
+            return true;
+        }
     }
 
     // ------ Task Turnpoints ---------------------------------
@@ -213,9 +222,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         taskTurnpointMarkers.clear();
     }
 
+    @SuppressLint("DefaultLocale")
     private void plotTaskTurnpoints() {
         TaskTurnpoint taskTurnpoint;
-        LatLng fromLatLng = new LatLng(0d, 0d); // to get rid of syntax checker
+        LatLng fromLatLng = new LatLng(0d, 0d); // to get rid of syntax checker flag
         LatLng toLatLng;
 
         if (googleMap == null) {
@@ -232,7 +242,8 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
                 } else {
                     toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ? String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()) : "Finish"), toLatLng);
+                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ?
+                            String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()) : "Finish"), toLatLng);
                     drawLine(fromLatLng, toLatLng);
                     fromLatLng = toLatLng;
                 }
@@ -248,7 +259,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     /**
      * Find the most southwest and northeast task lat/long
      *
-     * @param latLng
+     * @param latLng - latlng of task turnpoint
      */
     private void updateMapLatLongCorners(LatLng latLng) {
         if (southwest == null) {

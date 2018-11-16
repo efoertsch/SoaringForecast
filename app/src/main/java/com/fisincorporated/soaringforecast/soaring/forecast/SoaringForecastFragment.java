@@ -226,6 +226,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                 return true;
             case R.id.forecast_menu_clear_task:
                 forecastMapper.removeTaskTurnpoints();
+                soaringForecastViewModel.setTaskId(-1);
                 showClearTaskMenuItem = false;
                 getActivity().invalidateOptionsMenu();
                 return true;

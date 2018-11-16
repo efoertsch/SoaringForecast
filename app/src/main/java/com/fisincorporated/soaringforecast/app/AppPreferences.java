@@ -27,61 +27,36 @@ public class AppPreferences {
     //private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";
 
     private static final String SATELLITE_REGION_KEY = "SATELLITE_REGION";
-
     private static final String SATELLITE_IMAGE_TYPE_KEY = "SATELLITE_IMAGE_TYPE";
-
     private static final String DEFAULT_PREFS_SET = "DEFAULT_PREFS_SET";
-
     private static final String SOARING_FORECAST_MODEL_KEY = "SOARING_FORECAST_TYPE";
-
     private static final String SOARING_FORECAST_REGION_KEY = "SOARING_FORECAST_REGION";
-
     private static final String AIRPORT_CODES_FOR_METAR = "AIRPORT_CODES_FOR_METAR_TAF";
-
     private static final String FORECAST_OVERLAY_OPACITY = "FORECAST_OVERLAY_OPACITY";
-
     private static final String ICAO_CODE_DELIMITER = " ";
+    private static final String SELECTED_TASK_ID = "SELECTED_TASK_ID";
 
     // These string values are assigned in code so they match what is used in Settings
     private static String DISPLAY_SKYSIGHT_MENU_OPTION;
-
     private static String DISPLAY_DR_JACKS_MENU_OPTION;
-
     private static String RAW_METAR_KEY;
-
     private static String TEMPERATURE_UNITS_KEY;
-
     private static String WINDSPEED_UNITS_KEY;
-
     private static String ALTITUDE_UNITS_KEY;
-
     private static String DISTANCE_UNITS_KEY;
-
     private static String DECODE_TAF_METAR_KEY;
-
     private static String DISPLAY_FORECAST_SOUNDINGS;
 
-
     private SharedPreferences sharedPreferences;
-
     private boolean rawTafMetar;
-
     private boolean decodeTafMetar;
-
     private String imperialTemperatureUnits;
-
     private String imperialWindSpeedUnits;
-
     private String imperialAltitudeUnits;
-
     private String imperialDistanceUnits;
-
     private String satelliteRegionUS;
-
     private String satelliteImageTypeVis;
-
     private String soaringForecastType;
-
     private String soaringForecastDefaultRegion;
 
     @Inject
@@ -294,7 +269,6 @@ public class AppPreferences {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(AIRPORT_CODES_FOR_METAR, icaoCodes);
         editor.apply();
-
     }
 
     /**
@@ -366,6 +340,16 @@ public class AppPreferences {
 
     public boolean getDisplayForecastSoundings(){
         return sharedPreferences.getBoolean(DISPLAY_FORECAST_SOUNDINGS, true);
+    }
+
+    public long getSelectedTaskId(){
+        return sharedPreferences.getLong(SELECTED_TASK_ID, -1);
+    }
+
+    public void setSelectedTaskId(long selectedTaskId){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(SELECTED_TASK_ID, selectedTaskId);
+        editor.apply();
     }
 
 }
