@@ -1,6 +1,5 @@
 
-<p>SoaringWeather provides soaring forecasts, satellite images, and  weather observations and forecasts</p>
-<p>Currently soaring forecasts are limited to the NE U.S.</p>
+<p>SoaringWeather provides U.S. New England soaring forecasts, satellite images, and weather observations(METAR) and forecasts(TAF)</p>
 <p>Soaring forecasts are from soargbsc.com/rasp/. Sounding locations can be displayed and when touched will display the skew-t diagram.</p>
 <p>Seeyou turnpoint files from the Worldwide Soaring Turnpoint Exchange (http://soaringweb.org/TP/NA.html#US) can be imported, tasks created, and then a task can be overlaid on the the RASP forecasts. Alternately if you have a custom turnpoint file you use, you can place in in your devices Downloads directory and it can be imported from there.</p>
 <p> The first time you start the app a background task will run to download airport information from http://ourairports.com/data/.
@@ -9,7 +8,7 @@
 <p>Two types of satellite images can be displayed. The 'older' set (NOAA) also comes from aviationweather.gov.
  The second newer set(GEOS) comes from cdn.star.nesdis.noaa.gov. (Currently GEOS restricted to NE U.S.)</p>
 <p>Go to Settings to change display of METAR/TAFs. You can also select options to show links to Dr. Jacks and SkySite. The links starts and displays the sites in separate web browsers.</p>
-<p>No warranties expressed or implied. If the forecast looks great but the day turns out to be sucky, any tow fees, retrieval fees, or landout dinners are on you.</>
+<p>No warranties expressed or implied. Use at your own risk. If the forecast looks great but the day turns out to be sucky, any tow fees, retrieval fees, landout dinners, and/or broken gliders are on you.</>
 
 <p>Please email Eric Foertsch (efoertsch@fisincorporated.com) with any bugs or enhancement requests.
 </p>
