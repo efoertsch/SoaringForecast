@@ -131,10 +131,13 @@ public class SoaringForecastFragment extends DaggerFragment {
             soaringForecastRecyclerViewAdapter.setSelectedItem(forecast);
         });
 
-
         // List of turnpoints for a selected task
-        soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints ->
-                forecastMapper.setTaskTurnpoints(taskTurnpoints));
+        soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
+            if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
+                displayTaskClearMenuItem(true);
+            }
+            forecastMapper.setTaskTurnpoints(taskTurnpoints);
+        });
 
         // List of sounding locations available
         soaringForecastViewModel.getSoundingLocations().observe(this, soundingLocations ->
@@ -161,7 +164,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         });
 
         // Forecast bitmap opacity
-        soaringForecastViewModel.getForecastOverlyOpacity().observe(this, forecastOverlyOpacity ->{
+        soaringForecastViewModel.getForecastOverlyOpacity().observe(this, forecastOverlyOpacity -> {
             forecastMapper.setForecastOverlayOpacity(forecastOverlyOpacity);
         });
     }
@@ -227,8 +230,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_clear_task:
                 forecastMapper.removeTaskTurnpoints();
                 soaringForecastViewModel.setTaskId(-1);
-                showClearTaskMenuItem = false;
-                getActivity().invalidateOptionsMenu();
+                displayTaskClearMenuItem(false);
                 return true;
             case R.id.forecast_menu_opacity_slider:
                 displayOpacitySlider();
@@ -254,11 +256,14 @@ public class SoaringForecastFragment extends DaggerFragment {
                 long taskId = bundle.getLong(Constants.SELECTED_TASK);
                 if (taskId != 0) {
                     soaringForecastViewModel.getTask(taskId);
-                    showClearTaskMenuItem = true;
-                    getActivity().invalidateOptionsMenu();
                 }
             }
         }
+    }
+
+    private void displayTaskClearMenuItem(boolean visible) {
+        showClearTaskMenuItem = visible;
+        getActivity().invalidateOptionsMenu();
     }
 
     //------------ Bus messages (mainly from recycler view selections  ------------
