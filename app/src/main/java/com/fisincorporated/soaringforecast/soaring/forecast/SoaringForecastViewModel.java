@@ -75,7 +75,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private Constants.FORECAST_SOUNDING forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
 
     private boolean displaySoundings;
-    private boolean bypassLoadRasp = false; // used to prevent extraneous load of RASP forecasts
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -187,7 +186,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     /**
      * Get forecast dates for selected model (gfs currently has 7 dates, nam 3, rap 1
      *
-     * @return
+     * @return forecast dates for selected model
      */
     public MutableLiveData<List<ModelForecastDate>> getModelForecastDates() {
         modelForecastDates.setValue(createForecastDateListForSelectedModel());
@@ -632,6 +631,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(taskTurnpointList -> {
+                            appPreferences.setSelectedTaskId(taskId);
                             taskTurnpoints.setValue(taskTurnpointList);
                         },
                         t -> {
@@ -642,6 +642,12 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<List<TaskTurnpoint>> getTaskTurnpoints() {
+        if (taskTurnpoints.getValue() == null || taskTurnpoints.getValue().size() == 0) {
+            long taskId = appPreferences.getSelectedTaskId();
+            if (taskId != -1) {
+                getTask(taskId);
+            }
+        }
         return taskTurnpoints;
     }
 
@@ -675,4 +681,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         super.onCleared();
     }
 
+    public void setTaskId(int taskId) {
+        appPreferences.setSelectedTaskId(taskId);
+    }
 }
