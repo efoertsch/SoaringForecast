@@ -7,7 +7,7 @@ android {
         applicationId "com.fisincorporated.soaringweather"
         minSdkVersion 18
         targetSdkVersion 28
-        versionCode 1
+        versionCode 2
         versionName "1.0"
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
