@@ -16,11 +16,11 @@ import javax.inject.Named;
 
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-import okhttp3.OkHttpClient;
 
 public class AirportsImportWorker extends Worker {
 
     private static final int NOTIFICATION_ID = 1234;
+    private static final int MIN_AIRPORT_COUNT = 20000;
 
     private Context context;
 
@@ -43,19 +43,22 @@ public class AirportsImportWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-
+        int count = 0;
         context = getApplicationContext();
         DaggerAirportsImportWorkerComponent.builder().context(context).build().inject(this);
 
         notificationManager = NotificationManagerCompat.from(context);
         displayStartNotification();
 
-        airportListDownloader.downloadAirportsToDB().blockingAwait();
-        boolean success = appRepository.getCountOfAirports().blockingGet() > 2000;
-        displayCompletionNotification(success);
+        try {
+            count = airportListDownloader.downloadAirportsToDB().blockingGet();
+        } catch (Exception e) {
+            displayCompletionNotification(-1);
+        }
+        boolean success = displayCompletionNotification(count);
 
         // Indicate success or failure with your return value:
-        return success ? Result.SUCCESS : Result.FAILURE;
+        return success ? Result.SUCCESS : Result.RETRY;
     }
 
     private void displayStartNotification() {
@@ -68,15 +71,22 @@ public class AirportsImportWorker extends Worker {
         displayNotification(builder.build());
     }
 
-    private void displayCompletionNotification(boolean loadedOK) {
+    private boolean displayCompletionNotification(int count) {
         Context context = getApplicationContext();
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.glider_notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(loadedOK ? context.getString(R.string.airport_database_loaded_ok) :
-                        context.getString(R.string.airport_database_load_oops))
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+        if (count > MIN_AIRPORT_COUNT) {
+            builder.setContentText(context.getString(R.string.airport_database_loaded_ok));
+        } else {
+            builder.setContentText(context.getString(R.string.airport_database_load_oops))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getString(R.string.airport_database_oops_long_text)));
+        }
         displayNotification(builder.build());
+        return count > MIN_AIRPORT_COUNT;
     }
 
     private void displayNotification(Notification notification) {

@@ -644,7 +644,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     public MutableLiveData<List<TaskTurnpoint>> getTaskTurnpoints() {
         if (taskTurnpoints.getValue() == null || taskTurnpoints.getValue().size() == 0) {
             long taskId = appPreferences.getSelectedTaskId();
-            if (taskId != -1) {
+            if (taskId != -1L) {
                 getTask(taskId);
             }
         }

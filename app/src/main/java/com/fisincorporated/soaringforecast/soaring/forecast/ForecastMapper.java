@@ -233,17 +233,18 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
 
         if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
+            drawingTask = true;
             int numberTurnpoints = taskTurnpoints.size();
             for (int i = 0; i < taskTurnpoints.size(); ++i) {
                 taskTurnpoint = taskTurnpoints.get(i);
                 if (i == 0) {
                     fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(), "Start", fromLatLng);
-
+                    placeTaskTurnpointMarker(taskTurnpoint.getTitle()
+                            , String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), fromLatLng);
                 } else {
                     toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(), (i < numberTurnpoints - 1 ?
-                            String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()) : "Finish"), toLatLng);
+                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(),
+                            String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), toLatLng);
                     drawLine(fromLatLng, toLatLng);
                     fromLatLng = toLatLng;
                 }
@@ -251,8 +252,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             }
             LatLng southwest = new LatLng(swLat, swLong);
             LatLng northeast = new LatLng(neLat, neLong);
+            googleMap.setOnMapLoadedCallback(() ->
             googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
-                    southwest, northeast), 700, 700, 0));
+                    southwest, northeast), 0)));
         }
     }
 

@@ -343,7 +343,7 @@ public class AppPreferences {
     }
 
     public long getSelectedTaskId(){
-        return sharedPreferences.getLong(SELECTED_TASK_ID, -1);
+        return sharedPreferences.getLong(SELECTED_TASK_ID, -1L);
     }
 
     public void setSelectedTaskId(long selectedTaskId){

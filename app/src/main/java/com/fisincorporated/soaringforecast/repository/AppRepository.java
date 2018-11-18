@@ -108,6 +108,15 @@ public class AppRepository {
         return airportDao.getAirportByIdent(ident);
     }
 
+    public Single<Integer> deleteAllAirports() {
+        return Single.create(emitter -> {
+            try {
+                emitter.onSuccess(airportDao.deleteAll());
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
 
     // --------- Forecasts -----------------
     public Single<Forecasts> getForecasts() {
@@ -147,49 +156,50 @@ public class AppRepository {
     // ----------- Turnpoints in Download directory
 
     public Maybe<List<File>> getDownloadedCupFileList() {
-       return Maybe.create(emitter -> {
-                    try {
-                        ArrayList<File> cupFileList = new ArrayList<>();
-                        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                        File filesInDirectory[] = path.listFiles(new AppRepository.ImageFileFilter());
-                        cupFileList.addAll(new ArrayList<>(Arrays.asList(filesInDirectory)));
-                        emitter.onSuccess(cupFileList);
-                        emitter.onComplete();
-                    } catch (Exception e) {
-                        emitter.onError(e);
-                    }
-                });
-    }
-
-    public class ImageFileFilter implements FileFilter {
-        private final String[] cupFileExtensions = new String[]{"cup"};
-
-        public boolean accept(File file) {
-            for (String extension : cupFileExtensions) {
-                if (file.getName().toLowerCase().endsWith(extension)) {
-                    // make sure not version with control number placed before name.
-                    return !file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm");
-                }
+        return Maybe.create(emitter -> {
+            try {
+                ArrayList<File> cupFileList = new ArrayList<>();
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File filesInDirectory[] = path.listFiles(new AppRepository.ImageFileFilter());
+                cupFileList.addAll(new ArrayList<>(Arrays.asList(filesInDirectory)));
+                emitter.onSuccess(cupFileList);
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
             }
-            return false;
-        }
+        });
     }
+
+public class ImageFileFilter implements FileFilter {
+    private final String[] cupFileExtensions = new String[]{"cup"};
+
+    public boolean accept(File file) {
+        for (String extension : cupFileExtensions) {
+            if (file.getName().toLowerCase().endsWith(extension)) {
+                // make sure not version with control number placed before name.
+                return !file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm");
+            }
+        }
+        return false;
+    }
+
+}
 
     // ----------- Turnpoint download (SeeYou cup files) ------------------
     public Maybe<List<TurnpointFile>> getTurnpointFiles(String regionName) {
         return Maybe.create(emitter -> {
-                    try {
-                        List<TurnpointRegion> turnpointRegions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
-                                .constructUsingGson((TurnpointFiles.class)).getTurnpointRegions();
-                        if (turnpointRegions != null && !turnpointRegions.isEmpty()) {
-                            emitter.onSuccess(getRegionFiles(turnpointRegions, regionName));
-                        } else {
-                            emitter.onComplete();
-                        }
-                    } catch (Exception e) {
-                        emitter.onError(e);
-                    }
-                });
+            try {
+                List<TurnpointRegion> turnpointRegions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
+                        .constructUsingGson((TurnpointFiles.class)).getTurnpointRegions();
+                if (turnpointRegions != null && !turnpointRegions.isEmpty()) {
+                    emitter.onSuccess(getRegionFiles(turnpointRegions, regionName));
+                } else {
+                    emitter.onComplete();
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
     }
 
     private List<TurnpointFile> getRegionFiles
@@ -263,11 +273,10 @@ public class AppRepository {
             }
         });
 
-
     }
 
     public Completable updateTaskListOrder(List<Task> taskList) {
-        return  Completable.fromAction(() -> {
+        return Completable.fromAction(() -> {
             try {
                 for (Task task : taskList) {
                     taskDao.update(task);
@@ -370,8 +379,8 @@ public class AppRepository {
     // ----- Satellite options ----------
 
     public List<SatelliteRegion> getSatelliteRegions() {
-        if (satelliteRegions == null ) {
-           satelliteRegions = new ArrayList<>();
+        if (satelliteRegions == null) {
+            satelliteRegions = new ArrayList<>();
             Resources res = context.getResources();
             try {
                 String[] regions = res.getStringArray(R.array.satellite_regions);

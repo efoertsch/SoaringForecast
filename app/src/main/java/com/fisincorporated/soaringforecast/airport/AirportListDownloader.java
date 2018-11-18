@@ -37,9 +37,9 @@ public class AirportListDownloader {
     }
 
 
-    public Completable downloadAirportsToDB() {
-        return getDownloadAirportListObservable(okHttpClient).flatMapCompletable(responseBody ->
-                saveAirportListToDB(responseBody));
+    public Single<Integer> downloadAirportsToDB() {
+        return Completable.fromSingle(appRepository.deleteAllAirports()).andThen(getDownloadAirportListObservable(okHttpClient).flatMapCompletable(responseBody ->
+                saveAirportListToDB(responseBody)).andThen(appRepository.getCountOfAirports()));
     }
 
     public Single<ResponseBody> getDownloadAirportListObservable(OkHttpClient okHttpClient) {
@@ -84,6 +84,10 @@ public class AirportListDownloader {
                 }
             }
         };
+    }
+
+    private Single<Integer> getCountOfAirports() {
+        return appRepository.getCountOfAirports();
     }
 
 }

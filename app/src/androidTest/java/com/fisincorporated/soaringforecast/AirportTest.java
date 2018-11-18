@@ -22,7 +22,7 @@ import okhttp3.OkHttpClient;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
-public class AirportDatabaseTest {
+public class AirportTest {
     private AppRepository appRepository;
     private AppDatabase appDatabase;
     private OkHttpClient okHttpClient = new OkHttpClient();
@@ -65,8 +65,9 @@ public class AirportDatabaseTest {
 
     @Test
     public void downloadAirportFileAndSaveToDB() {
+         int count = appRepository.deleteAllAirports().blockingGet();
         AirportListDownloader airportListDownloader = new AirportListDownloader(okHttpClient, appRepository);
-        airportListDownloader.downloadAirportsToDB().blockingAwait();
-        assert(appRepository.getCountOfAirports().blockingGet() > 500);
+        count = airportListDownloader.downloadAirportsToDB().blockingGet();
+        assert(count > 500);
     }
 }

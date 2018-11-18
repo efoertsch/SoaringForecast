@@ -48,8 +48,8 @@ public class AirportMetarTafActivityTest extends BaseTest {
         String[] airports = airportList.split("\\s+");
         for (int i = 0; i < airports.length; ++i) {
 
-            scrollToRecyclerPosition(R.id.fragment_airport_weather_recycler_view, i);
-            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.fragment_airport_weather_recycler_view).atPosition(i));
+            scrollToRecyclerPosition(R.id.airport_metar_taf_recycler_view, i);
+            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.airport_metar_taf_recycler_view).atPosition(i));
             // Check that metar layout exists
             viewInteraction.check(matches(hasDescendant(withId(R.id.airport_weather_include_metar))));
             // Check that metar field exists
@@ -67,8 +67,8 @@ public class AirportMetarTafActivityTest extends BaseTest {
         String[] airports = airportList.split("\\s+");
         for (int i = 0; i < airports.length; ++i) {
 
-            scrollToRecyclerPosition(R.id.fragment_airport_weather_recycler_view, i);
-            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.fragment_airport_weather_recycler_view).atPosition(i));
+            scrollToRecyclerPosition(R.id.airport_metar_taf_recycler_view, i);
+            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.airport_metar_taf_recycler_view).atPosition(i));
             // Check that metar layout exists
             viewInteraction.check(matches(hasDescendant(withId(R.id.airport_weather_include_taf))));
             // Check that metar field exists
@@ -86,8 +86,8 @@ public class AirportMetarTafActivityTest extends BaseTest {
         String[] airports = airportList.split("\\s+");
         for (int i = 0; i < airports.length; ++i) {
 
-            scrollToRecyclerPosition(R.id.fragment_airport_weather_recycler_view, i);
-            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.fragment_airport_weather_recycler_view).atPosition(i));
+            scrollToRecyclerPosition(R.id.airport_metar_taf_recycler_view, i);
+            ViewInteraction viewInteraction = onView(withRecyclerView(R.id.airport_metar_taf_recycler_view).atPosition(i));
 
             // Check the row has the airport id field
             viewInteraction.check(matches(hasDescendant(withId(R.id.airport_station_id))));

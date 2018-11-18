@@ -29,4 +29,6 @@ public interface AirportDao extends BaseDao<Airport> {
     @Query("SELECT count(*) FROM airport")
     Single<Integer> getCountOfAirports();
 
+    @Query("Delete from airport")
+    int deleteAll();
 }
