@@ -445,11 +445,13 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
                     @Override
                     public void onNext(SoaringForecastImage soaringForecastImage) {
+                        Timber.d("got SoaringForecastImage");
                         storeImage(soaringForecastImage);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        Timber.e(e);
                         displayCallFailure(e);
                     }
 
@@ -529,6 +531,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             if (imageSet.getSideImage() != null
                     && imageSet.getBodyImage() != null) {
                 selectedSoaringForecastImageSet.setValue(imageSet);
+            } else {
+                Timber.d("imageSet side and or bodyImage is null");
             }
         } else {
             selectedSoaringForecastImageSet.setValue(null);

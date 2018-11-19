@@ -20,6 +20,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
+import timber.log.Timber;
 
 
 public class SoaringForecastDownloader {
@@ -142,6 +143,7 @@ public class SoaringForecastDownloader {
             case FORECAST:
                 parmUrl = getSoaringForecastUrlParm(region, yyyymmddDate, forecastType, forecastParameter
                         , stripOldIfNeeded(forecastTime), bitmapType);
+                Timber.d("calling parmUrl %1$s", parmUrl);
                 break;
             case SOUNDING:
                 parmUrl = getSoaringForecastSoundingUrlParm(region, yyyymmddDate, forecastType, forecastParameter
@@ -154,13 +156,17 @@ public class SoaringForecastDownloader {
         SoaringForecastImage soaringForecastImage = getSoaringForcastImage(region, yyyymmddDate, forecastType
                 , forecastParameter, stripOldIfNeeded(forecastTime), bitmapType, parmUrl);
 
-        return Single.create(
-                emitter -> {
-                    emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, forecastUrl + parmUrl));
-                });
+        return Single.create(emitter -> {
+            try {
+                emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, forecastUrl + parmUrl));
+            } catch (Exception e) {
+                emitter.onError(e);
+                Timber.e(e);
+            }
+        });
     }
 
-    private String stripOldIfNeeded(String forecastTime){
+    private String stripOldIfNeeded(String forecastTime) {
         if (forecastTime.startsWith("old ") && forecastTime.length() > 4) {
             return forecastTime.substring(4);
         } else {
@@ -169,7 +175,9 @@ public class SoaringForecastDownloader {
     }
 
     @NonNull
-    public SoaringForecastImage getSoaringForcastImage(String region, String yyyymmddDate, String forecastType, String forecastParameter, String forecastTime, String bitmapType, String parmUrl) {
+    public SoaringForecastImage getSoaringForcastImage(String region, String
+            yyyymmddDate, String forecastType, String forecastParameter, String forecastTime, String
+                                                               bitmapType, String parmUrl) {
         SoaringForecastImage soaringForecastImage = new SoaringForecastImage(parmUrl);
         soaringForecastImage.setRegion(region)
                 .setForecastTime(forecastTime)
@@ -190,11 +198,11 @@ public class SoaringForecastDownloader {
      * @param bitmapType
      * @return something like NewEngland/2018-03-31/gfs/wstar_bsratio.curr.1500lst.d2.body.png?11:15:44
      */
-    public String getSoaringForecastUrlParm(String region, String yyyymmddDate, String forecastType, String forecastParameter, String forecastTime, String bitmapType) {
+    public String getSoaringForecastUrlParm(String region, String yyyymmddDate, String
+            forecastType, String forecastParameter, String forecastTime, String bitmapType) {
         return String.format("%s/%s/%s/%s.curr.%slst.d2.%s.png?%s", region, yyyymmddDate
                 , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType, new Date().getTime());
     }
-
 
     /**
      * @param region
@@ -206,7 +214,8 @@ public class SoaringForecastDownloader {
      * @return something like NewEngland/2018-08-31/nam/sounding3.curr.1200lst.d2.png
      */
 
-    public String getSoaringForecastSoundingUrlParm(String region, String yyyymmddDate, String forecastType, String soundingIndex, String forecastTime, String bitmapType) {
+    public String getSoaringForecastSoundingUrlParm(String region, String yyyymmddDate, String
+            forecastType, String soundingIndex, String forecastTime, String bitmapType) {
         return String.format("%s/%s/%s/sounding%s.curr.%slst.d2.png", region, yyyymmddDate
                 , forecastType.toLowerCase(), soundingIndex, forecastTime, bitmapType);
     }
