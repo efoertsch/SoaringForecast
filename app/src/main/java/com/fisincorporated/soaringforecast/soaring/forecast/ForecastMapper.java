@@ -254,7 +254,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             LatLng northeast = new LatLng(neLat, neLong);
             googleMap.setOnMapLoadedCallback(() ->
             googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
-                    southwest, northeast), 0)));
+                    southwest, northeast), 60)));
         }
     }
 
