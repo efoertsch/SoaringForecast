@@ -61,4 +61,8 @@ public class Forecast {
         return false;
     }
 
+    public String toString(){
+        return forecastNameDisplay;
+    }
+
 }
