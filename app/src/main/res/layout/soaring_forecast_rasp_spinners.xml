@@ -14,7 +14,7 @@
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastViewModelSpinner"/>
+            type="com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -24,25 +24,11 @@
         android:animateLayoutChanges="true">
 
         <android.support.constraint.Guideline
-            android:id="@+id/guideline_20pct"
+            android:id="@+id/guideline_40pct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.20"/>
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline_30pct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.30"/>
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline_50pct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.50"/>
+            app:layout_constraintGuide_percent="0.40"/>
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline_80pct"
@@ -68,7 +54,7 @@
             android:entries="@{viewModel.soaringForecastModels}"
             android:selectedItemPosition="@={viewModel.soaringForecastModelPosition}"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_30pct"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_40pct"
             app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
             app:layout_constraintTop_toTopOf="parent"
             />

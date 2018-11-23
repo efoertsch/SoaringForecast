@@ -26,7 +26,7 @@ import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
-import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragmentSpinner;
+import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -231,7 +231,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
     private void displaySoaringForecasts() {
-        displayFragment(new SoaringForecastFragmentSpinner(), false);
+        displayFragment(new SoaringForecastFragment(), false);
     }
 
     private void displayTaskList(){

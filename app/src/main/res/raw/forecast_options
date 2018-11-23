@@ -61,7 +61,7 @@
       "forecast_description": "This parameter estimates the uncertainty (variability) of the BL Top height prediction which can result from meteorological variations.  Specifically, it gives the expected increase of a BL Top height based on a Thermal Index (TI) = 0 criteria should the actual surface temperature be 4 °F warmer than forecast.  Larger values indicate greater uncertainty/variability and thus better thermalling over local 'hot spots' or small-scale topography not resolved by the model.  But larger values also indicate greater sensitivity to error in the predicted surface temperature, so actual conditions have a greater likelihood of differing from those predicted.  Small values often result from the presence of a stable (inversion) layer capping and limiting thermal growth.  This parameter is most easily utilized through relative values, i.e. by first determining a 'typical' value for a location and subsequently noting whether predictions for a given day are for more/less uncertainty than is typical."
     },
     {
-      "forecast_name": "hwcrit",
+      "forecast_name": "experimental1",
       "forecast_type": "",
       "forecast_name_display": "MSL Ht of Critical Updraft Strength (175fpm)",
       "forecast_description": "This parameter estimates the height at which the average dry updraft strength drops below 175 fpm and is expected to give better quantitative numbers for the maximum cloudless thermalling height than the BL Top height forecast, especially when mixing results from vertical wind shear rather than thermals.  (Note: the present assumptions tend to underpredict the max. thermalling height for dry conditions.) In the presence of clouds the maximum thermalling height may instead be limited by the cloud base. Being for dry thermals, this parameter omits the effect of cloudsuck"
@@ -95,6 +95,18 @@
       "forecast_type": "full",
       "forecast_name_display": "Sfc.Dewpoint",
       "forecast_description": "The dew point temperature at a height of 2m above ground level.  This can be compared to observed surface dew point temperatures as an indication of model simulation accuracy; e.g. if observed surface dew point temperatures are significantly below those forecast, then BL cloud formation will be poorer than forecast.  This parameter is obtained directly from WRF model output and not from a BLIPMAP computation."
+    },
+    {
+      "forecast_name": "stars",
+      "forecast_type": "full",
+      "forecast_name_display": "Star Rating",
+      "forecast_description": "Experimental: Based on \"Thermalling Height\" (hglider). An adjustment for (the boundary layer average) wind speed of 0.25*((Wnd - 15)^2)/Wnd is applied, giving a reduction of about 1 at 25 kt and 4 at 40 kt. 0.5 is added if CuPotential is between 500 and 5000 (indicates small puffy Cu) and 0.5 deducted if CuPotential is < 0 (blue conditions). The Rating is then modified by the Buoyancy-Shear Ratio (bsratio): -0.9 @ 0; 0 @ 3; +0.9 @ 6 (this will be inappropriate in regions with stronger thermals). Finally, the result is spatially filtered to remove noise."
+    },
+    {
+      "forecast_name": "starshg",
+      "forecast_type": "full",
+      "forecast_name_display": "Star Rating - Foot Launchers",
+      "forecast_description": "As Stars Rating but using a different adjustment for wind, using SfcWind(10m) rather than BLAvgWind."
     },
     {
       "forecast_name": "nope_wind",
@@ -143,6 +155,18 @@
       "forecast_type": "",
       "forecast_name_display": "BL Max. Up/Down (Convergence)",
       "forecast_description": "Maximum grid-area-averaged extensive upward or downward motion within the BL as created by horizontal wind convergence.  Positive convergence is associated with local small-scale convergence lines (often called 'shear lines' by pilots, which are horizontal changes of wind speed/direction) - however, the actual size of such features is much smaller than can be resolved by the model so only stronger ones will be forecast and their predictions are subject to much error.  If CAPE is also large, thunderstorms can be triggered.  Negative convergence (divergence) produces subsiding vertical motion, creating low-level inversions which limit thermalling heights.  This parameter can be noisy, so users should be wary.  For a grid resolution of 12km or better convergence lines created by terrain are commonly predicted - sea-breeze predictions can also be found for strong cases, though they are best resolved by smaller-resolution grids."
+    },
+    {
+      "forecast_name": "wind950",
+      "forecast_type": "full",
+      "forecast_name_display": "Wind-950mB",
+      "forecast_description": "Wind at pressure level of 950 mB plotted with wind barbs."
+    },
+    {
+      "forecast_name": "wind850",
+      "forecast_type": "full",
+      "forecast_name_display": "Wind-850mB",
+      "forecast_description": "Wind at pressure level of 850 mB plotted with wind barbs."
     },
     {
       "forecast_name": "nope_cloud",
@@ -275,31 +299,8 @@
       "forecast_type": "full",
       "forecast_name_display": "Topography",
       "forecast_description": "Topography"
-    },
-    {
-      "forecast_name": "stars",
-      "forecast_type": "full",
-      "forecast_name_display": "Star Rating",
-      "forecast_description": "Experimental: Based on \"Thermalling Height\" (hglider). An adjustment for (the boundary layer average) wind speed of 0.25*((Wnd - 15)^2)/Wnd is applied, giving a reduction of about 1 at 25 kt and 4 at 40 kt. 0.5 is added if CuPotential is between 500 and 5000 (indicates small puffy Cu) and 0.5 deducted if CuPotential is < 0 (blue conditions). The Rating is then modified by the Buoyancy-Shear Ratio (bsratio): -0.9 @ 0; 0 @ 3; +0.9 @ 6 (this will be inappropriate in regions with stronger thermals). Finally, the result is spatially filtered to remove noise."
-    },
-    {
-      "forecast_name": "starshg",
-      "forecast_type": "full",
-      "forecast_name_display": "Star Rating - Foot Launchers",
-      "forecast_description": "As Stars Rating but using a different adjustment for wind, using SfcWind(10m) rather than BLAvgWind."
-    },
-    {
-      "forecast_name": "wind850",
-      "forecast_type": "full",
-      "forecast_name_display": "Wind-850mB",
-      "forecast_description": "Wind at pressure level of 850 mB plotted with wind barbs."
-    },
-    {
-      "forecast_name": "wind950",
-      "forecast_type": "full",
-      "forecast_name_display": "Wind-950mB",
-      "forecast_description": "Wind at pressure level of 950 mB plotted with wind barbs."
     }
+
   ]
 }
   

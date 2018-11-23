@@ -11,7 +11,6 @@ import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
 import com.fisincorporated.soaringforecast.settings.SettingsPreferenceFragment;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
-import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragmentSpinner;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.fisincorporated.soaringforecast.task.edit.EditTaskFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
@@ -29,10 +28,7 @@ public abstract class UIBuildersModule {
     abstract WeatherDrawerActivity bindWeatherDrawerActivity();
 
     @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
-    abstract SoaringForecastFragment bindSoaringForecastFragment();
-
-    @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
-    abstract SoaringForecastFragmentSpinner bindSoaringForecastFragmentSpinner();
+    abstract SoaringForecastFragment bindSoaringForecastFragmentSpinner();
 
 
     // --- Weather Metar/Taf -------------------
