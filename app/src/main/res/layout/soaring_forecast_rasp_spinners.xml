@@ -4,7 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
     >
 
-    <data class="SoaringForecastImageBinding">
+    <data class="SoaringForecastBinding">
 
         <import type="android.view.View"/>
 
@@ -24,25 +24,11 @@
         android:animateLayoutChanges="true">
 
         <android.support.constraint.Guideline
-            android:id="@+id/guideline_20pct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.20"/>
-
-        <android.support.constraint.Guideline
             android:id="@+id/guideline_40pct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.30"/>
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline_50pct"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.50"/>
+            app:layout_constraintGuide_percent="0.40"/>
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline_80pct"
@@ -58,64 +44,59 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="1.0"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/soaring_forecast_model_recycler_view"
+        <Spinner
+            android:id="@+id/soaring_forecast_model_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_half"
-            android:background="@drawable/black_border"
-            android:orientation="horizontal"
-            android:padding="@dimen/margin_half"
-            android:scrollbars="none"
+            android:entries="@{viewModel.soaringForecastModels}"
+            android:selectedItemPosition="@={viewModel.soaringForecastModelPosition}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toStartOf="@+id/guideline_40pct"
             app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/region_forecast_date_recycler_view"
+        <Spinner
+            android:id="@+id/region_forecast_date_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_half"
-            android:background="@drawable/black_border"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="@dimen/margin_half"
+            android:entries="@{viewModel.modelForecastDates}"
+            android:selectedItemPosition="@={viewModel.modelForecastDatesPosition}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toEndOf="@+id/guideline_100pct"
-            app:layout_constraintStart_toEndOf="@+id/soaring_forecast_model_recycler_view"
+            app:layout_constraintStart_toEndOf="@+id/soaring_forecast_model_spinner"
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/soaring_forecast_recycler_view"
-            android:layout_width="match_parent"
+        <Spinner
+            android:id="@+id/soaring_forecast_spinner"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/region_forecast_date_recycler_view"
+            android:layout_below="@+id/region_forecast_date_spinner"
             android:layout_marginEnd="@dimen/margin_standard"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_half"
-            android:background="@drawable/black_border"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="@dimen/margin_half"
+            android:entries="@{viewModel.forecasts}"
+            android:selectedItemPosition="@={viewModel.forecastPosition}"
             app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
             app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
-            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_model_recycler_view"
+            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_model_spinner"
             />
-
 
         <RelativeLayout
             android:id="@+id/soaring_forecast_image_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/soaring_forecast_recycler_view"
+
             app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
             app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
-            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_recycler_view">
+            app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_spinner">
 
             <LinearLayout
                 android:id="@+id/soaring_forecast_image_looper"
@@ -265,11 +246,11 @@
             android:id="@+id/soaring_forecast_sounding_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:visibility="@{safeUnbox(viewModel.soundingDisplay) ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
-            android:visibility="@{safeUnbox(viewModel.soundingDisplay) ? View.VISIBLE : View.GONE}"
             >
 
             <com.fisincorporated.soaringforecast.common.TouchImageView
@@ -295,11 +276,11 @@
             android:id="@+id/soaring_forecast_map_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
-            android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
             />
 
     </android.support.constraint.ConstraintLayout>

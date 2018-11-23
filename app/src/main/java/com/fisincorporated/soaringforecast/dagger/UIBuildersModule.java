@@ -28,7 +28,8 @@ public abstract class UIBuildersModule {
     abstract WeatherDrawerActivity bindWeatherDrawerActivity();
 
     @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
-    abstract SoaringForecastFragment bindSoaringForecastFragment();
+    abstract SoaringForecastFragment bindSoaringForecastFragmentSpinner();
+
 
     // --- Weather Metar/Taf -------------------
     @ContributesAndroidInjector(modules = {})
