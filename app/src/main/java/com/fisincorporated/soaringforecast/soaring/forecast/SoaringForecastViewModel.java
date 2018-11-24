@@ -19,8 +19,9 @@ import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
 import com.fisincorporated.soaringforecast.soaring.json.Forecast;
 import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.fisincorporated.soaringforecast.soaring.json.ModelLocationAndTimes;
+import com.fisincorporated.soaringforecast.soaring.json.NewRegionForecastDates;
+import com.fisincorporated.soaringforecast.soaring.json.Region;
 import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDate;
-import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDates;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
 import com.fisincorporated.soaringforecast.utils.ImageAnimator;
 
@@ -64,8 +65,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<Integer> forecastPosition = new MutableLiveData<>();
     private Forecast selectedForecast = null;
 
+    //private RegionForecastDates regionForecastDates = new RegionForecastDates();
+    //private NewRegionForecastDates regionForecastDates = new NewRegionForecastDates();
+    private Region region;
 
-    private RegionForecastDates regionForecastDates = new RegionForecastDates();
+
 
     private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
     private MutableLiveData<SoaringForecastImageSet> selectedSoaringForecastImageSet = new MutableLiveData<>();
@@ -179,8 +183,10 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(regionForecastDateList -> {
-                            storeRegionForecastDates(regionForecastDateList);
+                .subscribe(newRegionForecastDates -> {
+                            region = getDefaultRegion(newRegionForecastDates);
+                            region.setupRegionForecastDates();
+                            loadTypeLocationAndTimes(region);
                             getModelForecastDates();
                         },
                         throwable -> {
@@ -191,16 +197,14 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
-    /**
-     * Should be called after response from current.json call
-     * You get a list of all dates for which some forecast model will be provided.
-     *
-     * @param downloadedRegionForecastDates list of forecast dates for the region
-     */
-    private void storeRegionForecastDates(RegionForecastDates downloadedRegionForecastDates) {
-        regionForecastDates = downloadedRegionForecastDates;
-        regionForecastDates.parseForecastDates();
-        loadTypeLocationAndTimes(appPreferences.getSoaringForecastRegion(), downloadedRegionForecastDates);
+
+    private Region getDefaultRegion(NewRegionForecastDates newRegionForecastDates) {
+        for (Region region : newRegionForecastDates.getRegions()) {
+            if (region.getName().equals(appPreferences.getSoaringForecastRegion())) {
+                return region;
+            }
+        }
+        return null;
     }
 
 
@@ -219,7 +223,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         List<ModelForecastDate> modelForecastDateList = new ArrayList<>();
         if (selectedSoaringForecastModel != null && selectedSoaringForecastModel != null) {
             String model = selectedSoaringForecastModel.getName();
-            for (RegionForecastDate regionForecastDate : regionForecastDates.getRegionForecastDateList()) {
+            for (RegionForecastDate regionForecastDate : region.getRegionForecastDateList()) {
                 modelLocationAndTimes = regionForecastDate.getModelLocationAndTimes();
                 if (modelLocationAndTimes != null && modelLocationAndTimes.getGpsLocationAndTimesForModel(model) != null) {
                     ModelForecastDate modelForecastDate = new ModelForecastDate(model, regionForecastDate.getIndex()
@@ -263,27 +267,27 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * For the selected region (currently just "New England") and for each date in list
      * get the list of models, lat/lng coordinates and times that a forecast exists
      *
-     * @param region              (currently just "New England")
-     * @param regionForecastDates
+     * @param region
      */
-    private void loadTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
-        Disposable disposable = Observable.fromIterable(regionForecastDates.getForecastDates())
+    private void loadTypeLocationAndTimes(Region region) {
+        Disposable disposable = Observable.fromIterable(region.getRegionForecastDateList())
                 .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>)
-                        (RegionForecastDate regionForecastDate) ->
-                                soaringForecastDownloader.callTypeLocationAndTimes(region, regionForecastDate).toObservable()
-                                        .doOnNext(regionForecastDate::setModelLocationAndTimes))
+                        (RegionForecastDate regionForecastDate) -> {
+                            return soaringForecastDownloader.callTypeLocationAndTimes(region.getName(), regionForecastDate.getYyyymmddDate()).toObservable()
+                                    .doOnNext(regionForecastDate::setModelLocationAndTimes);
+                        })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<ModelLocationAndTimes>() {
                     @Override
                     public void onNext(ModelLocationAndTimes typeLocationAndTimes) {
                         // TODO determine how to combine together into Single
-                        //nothing
+                        Timber.d(typeLocationAndTimes.toString());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        //TODO - put error on bus
+                        Timber.d(e);
                     }
 
                     @Override

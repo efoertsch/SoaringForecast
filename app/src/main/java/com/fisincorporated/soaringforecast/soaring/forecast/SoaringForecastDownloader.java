@@ -8,6 +8,7 @@ import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.Constants.FORECAST_SOUNDING;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
 import com.fisincorporated.soaringforecast.soaring.json.ModelLocationAndTimes;
+import com.fisincorporated.soaringforecast.soaring.json.NewRegionForecastDates;
 import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDate;
 import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDates;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
@@ -42,22 +43,10 @@ public class SoaringForecastDownloader {
         forecastUrl = context.getString(R.string.rasp_url);
     }
 
-    public void shutdown() {
-        compositeDisposable.dispose();
-    }
-
-    public void clearOutstandingLoads() {
-        compositeDisposable.clear();
-    }
-
-    public Single<RegionForecastDates> getForecastsForDay(final String region) {
-        return client.getForecastDates("current.json?" + (new Date()).getTime());
-    }
-
     public Observable<ModelLocationAndTimes> getTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
         return Observable.fromIterable(regionForecastDates.getForecastDates())
                 .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
-                        callTypeLocationAndTimes(region, regionForecastDate).toObservable()
+                        callTypeLocationAndTimes(region, regionForecastDate.getYyyymmddDate()).toObservable()
                                 .doOnNext(regionForecastDate::setModelLocationAndTimes));
     }
 
@@ -68,7 +57,7 @@ public class SoaringForecastDownloader {
      * @throws IOException
      * @throws NullPointerException
      */
-    public Single<RegionForecastDates> getRegionForecastDates() {
+    public Single<NewRegionForecastDates> getRegionForecastDates() {
         return client.getForecastDates("current.json?" + (new Date()).getTime());
     }
 
@@ -78,8 +67,8 @@ public class SoaringForecastDownloader {
      * @param regionForecastDate
      * @throws IOException
      */
-    public Single<ModelLocationAndTimes> callTypeLocationAndTimes(String region, RegionForecastDate regionForecastDate) {
-        return client.getTypeLocationAndTimes(region + "/" + regionForecastDate.getYyyymmddDate() + "/status.json");
+    public Single<ModelLocationAndTimes> callTypeLocationAndTimes(String region, String  regionForecastDate) {
+        return client.getTypeLocationAndTimes(region + "/" + regionForecastDate + "/status.json");
     }
 
     /**

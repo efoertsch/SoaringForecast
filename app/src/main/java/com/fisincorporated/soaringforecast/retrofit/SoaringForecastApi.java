@@ -2,8 +2,8 @@ package com.fisincorporated.soaringforecast.retrofit;
 
 
 
-import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDates;
 import com.fisincorporated.soaringforecast.soaring.json.ModelLocationAndTimes;
+import com.fisincorporated.soaringforecast.soaring.json.NewRegionForecastDates;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;
@@ -18,7 +18,7 @@ public interface SoaringForecastApi {
     // Numbers at end are current time in millisec (used to always get updated json and
     // not server cached version
     @GET()
-    Single<RegionForecastDates> getForecastDates(@Url String url);
+    Single<NewRegionForecastDates> getForecastDates(@Url String url);
 
 
     // Construct URL as BASE_URL + "NewEngland/2018-03-30/status.json"
