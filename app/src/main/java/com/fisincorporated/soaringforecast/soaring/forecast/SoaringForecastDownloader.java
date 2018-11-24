@@ -1,7 +1,9 @@
 package com.fisincorporated.soaringforecast.soaring.forecast;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.Constants.FORECAST_SOUNDING;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
@@ -25,7 +27,7 @@ import timber.log.Timber;
 
 public class SoaringForecastDownloader {
 
-    private static final String forecastUrl = "http:soargbsc.com/rasp/";
+    private static String forecastUrl;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -34,9 +36,10 @@ public class SoaringForecastDownloader {
     private SoaringForecastApi client;
 
     @Inject
-    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils) {
+    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils, Context context) {
         this.client = client;
         this.bitmapImageUtils = bitmapImageUtils;
+        forecastUrl = context.getString(R.string.rasp_url);
     }
 
     public void shutdown() {

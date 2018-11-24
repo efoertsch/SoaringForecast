@@ -12,4 +12,5 @@ gradle/
 gradlew
 gradlew.bat
 app/release
+/app/src/debug/res/values/rasp_url.xml
 
