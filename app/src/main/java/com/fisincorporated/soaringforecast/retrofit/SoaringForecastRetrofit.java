@@ -1,10 +1,6 @@
 package com.fisincorporated.soaringforecast.retrofit;
 
 
-import android.content.Context;
-
-import com.fisincorporated.soaringforecast.R;
-
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -14,9 +10,9 @@ public class SoaringForecastRetrofit {
 
     private Retrofit retrofit;
 
-    public SoaringForecastRetrofit(OkHttpClient okHttpClient, Context context ){
+    public SoaringForecastRetrofit(OkHttpClient okHttpClient, String raspUrl ){
         Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.rasp_url))
+                .baseUrl(raspUrl)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create());

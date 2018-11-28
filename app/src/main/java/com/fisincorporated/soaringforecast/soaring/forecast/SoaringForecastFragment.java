@@ -16,9 +16,9 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.SoaringForecastBinding;
+import com.fisincorporated.soaringforecast.messages.DisplayRegionSelection;
 import com.fisincorporated.soaringforecast.messages.DisplaySoundingLocation;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.soaring.json.Forecast;
 import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -81,26 +81,27 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
     private void setupViews() {
-        // TODO how to get from binding
+        // TODO how to get from binding - soaringForecastBinding.soaringForecastMap - need to get as supportMapFragment
         forecastMapper.displayMap((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map));
         // opacity not worth having it bound in viewModel and forwarding changes.
         forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
         soaringForecastBinding.soaringForecastSeekbarOpacity.setProgress(appPreferences.getForecastOverlayOpacity());
     }
 
-    //TODO - way to many observers - consolidate/simplify?
+    //TODO - way to many observers - consolidate/simplify?   move to viewModel?
     private void setObservers() {
         // RASP models - GFS, NAM, ...
-        soaringForecastViewModel.getSoaringForecastModelPosition().observe(this, newForecastModelPosition -> {
+        soaringForecastViewModel.getModelPosition().observe(this, newForecastModelPosition -> {
             if (lastForecastModelPosition != -1 && lastForecastModelPosition != newForecastModelPosition) {
-                soaringForecastViewModel.setSoaringForecastModelPosition(newForecastModelPosition);
+                soaringForecastViewModel.setModelPosition(newForecastModelPosition);
             }
             lastForecastModelPosition = newForecastModelPosition;
         });
 
-        soaringForecastViewModel.getModelForecastDatesPosition().observe(this, newForecastDatePosition -> {
+        // Dates for the selected model
+        soaringForecastViewModel.getModelForecastDatePosition().observe(this, newForecastDatePosition -> {
             if (lastForecastDatePosition != -1 && lastForecastDatePosition != newForecastDatePosition) {
-                soaringForecastViewModel.setModelForecastDatesPosition(newForecastDatePosition);
+                soaringForecastViewModel.setModelForecastDatePosition(newForecastDatePosition);
                 setMapLatLngBounds(soaringForecastViewModel.getSelectedModelForecastDate());
             }
             lastForecastDatePosition = newForecastDatePosition;
@@ -194,9 +195,16 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_toggle_sounding_points:
                 toggleSoundingLocationsDisplay();
                 return true;
+            case R.id.forecast_menu_select_regions:
+                displayRegionSelections();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void displayRegionSelections() {
+        EventBus.getDefault().post(new DisplayRegionSelection());
     }
 
     private void selectTask() {
@@ -226,8 +234,8 @@ public class SoaringForecastFragment extends DaggerFragment {
     private void setMapLatLngBounds(ModelForecastDate modelForecastDate) {
         if (modelForecastDate != null) {
             forecastMapper.setMapLatLngBounds(
-                    new LatLngBounds(modelForecastDate.getGpsLocationAndTimes().getSouthWestLatLng()
-                            , modelForecastDate.getGpsLocationAndTimes().getNorthEastLatLng()));
+                    new LatLngBounds(modelForecastDate.getModel().getSouthWestLatLng()
+                            , modelForecastDate.getModel().getNorthEastLatLng()));
         }
     }
 

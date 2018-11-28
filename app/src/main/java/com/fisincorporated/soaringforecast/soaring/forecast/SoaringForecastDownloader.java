@@ -1,16 +1,12 @@
 package com.fisincorporated.soaringforecast.soaring.forecast;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.Constants.FORECAST_SOUNDING;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
-import com.fisincorporated.soaringforecast.soaring.json.ModelLocationAndTimes;
-import com.fisincorporated.soaringforecast.soaring.json.NewRegionForecastDates;
-import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDate;
-import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDates;
+import com.fisincorporated.soaringforecast.soaring.json.ForecastModels;
+import com.fisincorporated.soaringforecast.soaring.json.Regions;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 
 import java.io.IOException;
@@ -37,38 +33,32 @@ public class SoaringForecastDownloader {
     private SoaringForecastApi client;
 
     @Inject
-    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils, Context context) {
+    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils, String raspUrl) {
         this.client = client;
         this.bitmapImageUtils = bitmapImageUtils;
-        forecastUrl = context.getString(R.string.rasp_url);
-    }
-
-    public Observable<ModelLocationAndTimes> getTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
-        return Observable.fromIterable(regionForecastDates.getForecastDates())
-                .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
-                        callTypeLocationAndTimes(region, regionForecastDate.getYyyymmddDate()).toObservable()
-                                .doOnNext(regionForecastDate::setModelLocationAndTimes));
+        forecastUrl = raspUrl;
     }
 
     /**
-     * Call to find what days forecasts are available for forecasts
+     * Call to find what regions and days forecasts are available
      *
      * @return
      * @throws IOException
      * @throws NullPointerException
      */
-    public Single<NewRegionForecastDates> getRegionForecastDates() {
-        return client.getForecastDates("current.json?" + (new Date()).getTime());
+    public Single<Regions> getRegionForecastDates() {
+        return client.getForecastDates("current.json" );
     }
 
     /**
-     * Call to find out which forecasts (gps, nam, rap) are available for the day
+     * For the given region (e.g. NewEngland) and day find the available forecast models
      *
+     * @param region
      * @param regionForecastDate
      * @throws IOException
      */
-    public Single<ModelLocationAndTimes> callTypeLocationAndTimes(String region, String  regionForecastDate) {
-        return client.getTypeLocationAndTimes(region + "/" + regionForecastDate + "/status.json");
+    public Single<ForecastModels> getForecastModels(String region, String  regionForecastDate) {
+        return client.getForecastModels(region + "/" + regionForecastDate + "/status.json");
     }
 
     /**

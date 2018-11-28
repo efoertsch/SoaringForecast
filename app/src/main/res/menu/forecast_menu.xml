@@ -23,4 +23,8 @@
         android:title="@string/opacity_slider"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/forecast_menu_select_regions"
+        android:title="@string/select_regions"
+        app:showAsAction="never"/>
 </menu>

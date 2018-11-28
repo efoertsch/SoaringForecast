@@ -1,7 +1,5 @@
 package com.fisincorporated.soaringforecast.dagger;
 
-import android.content.Context;
-
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastRetrofit;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastDownloader;
@@ -17,13 +15,13 @@ import okhttp3.OkHttpClient;
 public class SoaringForecastModule {
 
     @Provides
-    public SoaringForecastApi providesSoaringForecastApi(@Named("interceptor")OkHttpClient okHttpClient, Context context) {
-        return new SoaringForecastRetrofit(okHttpClient, context).getRetrofit().create(SoaringForecastApi.class);
+    public SoaringForecastApi providesSoaringForecastApi(@Named("interceptor")OkHttpClient okHttpClient, @Named("rasp_url")String raspUrl) {
+        return new SoaringForecastRetrofit(okHttpClient, raspUrl).getRetrofit().create(SoaringForecastApi.class);
     }
 
     @Provides
     public SoaringForecastDownloader provideSoaringForecastDownloader(@Named("no_interceptor")OkHttpClient okHttpClient,
-                                                                      BitmapImageUtils bitmapImageUtils, Context context) {
-        return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient, context), bitmapImageUtils, context);
+                                                                      BitmapImageUtils bitmapImageUtils,  @Named("rasp_url")String raspUrl) {
+        return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient, raspUrl), bitmapImageUtils, raspUrl);
     }
 }

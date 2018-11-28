@@ -8,7 +8,6 @@ import android.os.Environment;
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
-import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastModel;
 import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
 import com.fisincorporated.soaringforecast.soaring.json.Soundings;
@@ -130,23 +129,23 @@ public class AppRepository {
         });
     }
 
-    public Single<List<SoaringForecastModel>> getSoaringForecastModels() {
-        return Single.create(emitter -> {
-            String[] types;
-            Resources res = context.getResources();
-            List<SoaringForecastModel> soaringForecastModelList = new ArrayList<>();
-            try {
-                types = res.getStringArray(R.array.soaring_forecast_models);
-                for (int i = 0; i < types.length; ++i) {
-                    SoaringForecastModel soaringForecastModel = new SoaringForecastModel(types[i]);
-                    soaringForecastModelList.add(soaringForecastModel);
-                }
-                emitter.onSuccess(soaringForecastModelList);
-            } catch (Resources.NotFoundException nfe) {
-                emitter.onError(nfe);
-            }
-        });
-    }
+//    public Single<List<SoaringForecastModel>> getSoaringForecastModels() {
+//        return Single.create(emitter -> {
+//            String[] types;
+//            Resources res = context.getResources();
+//            List<SoaringForecastModel> soaringForecastModelList = new ArrayList<>();
+//            try {
+//                types = res.getStringArray(R.array.soaring_forecast_models);
+//                for (int i = 0; i < types.length; ++i) {
+//                    SoaringForecastModel soaringForecastModel = new SoaringForecastModel(types[i]);
+//                    soaringForecastModelList.add(soaringForecastModel);
+//                }
+//                emitter.onSuccess(soaringForecastModelList);
+//            } catch (Resources.NotFoundException nfe) {
+//                emitter.onError(nfe);
+//            }
+//        });
+//    }
 
     // --------- Soundings ------------------
     public List<SoundingLocation> getLocationSoundings() {

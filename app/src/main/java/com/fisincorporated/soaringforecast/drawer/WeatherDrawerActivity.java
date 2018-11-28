@@ -22,11 +22,13 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.about.AboutActivity;
 import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.messages.DisplayRegionSelection;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
+import com.fisincorporated.soaringforecast.soaring.regions.RegionSelectionFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -174,7 +176,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_import_turnpoints:
                 displayTurnpointsImport();
                 break;
-
             case R.id.nav_menu_about:
                 displayAbout();
                 break;
@@ -216,7 +217,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         Intent i = new Intent(this, AboutActivity.class);
         startActivity(i);
     }
-
 
     private void displayNoaaSatelliteFragment() {
         SatelliteActivity.Builder builder = SatelliteActivity.Builder.getBuilder();
@@ -261,6 +261,12 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(),
                 Snackbar.LENGTH_INDEFINITE)
                 .show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DisplayRegionSelection event) {
+        RegionSelectionFragment fragment = new RegionSelectionFragment();
+        displayFragment(fragment, true);
     }
 
     private void checkForGooglePlayServices() {

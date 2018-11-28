@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * List of forecasts (wstar, hcrit, ...)
+ */
 public class Forecasts {
 
     @SerializedName("forecasts")

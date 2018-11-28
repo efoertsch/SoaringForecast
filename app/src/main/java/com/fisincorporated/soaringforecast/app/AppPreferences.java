@@ -12,7 +12,6 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.repository.Airport;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
-import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +28,7 @@ public class AppPreferences {
     private static final String SATELLITE_REGION_KEY = "SATELLITE_REGION";
     private static final String SATELLITE_IMAGE_TYPE_KEY = "SATELLITE_IMAGE_TYPE";
     private static final String DEFAULT_PREFS_SET = "DEFAULT_PREFS_SET";
-    private static final String SOARING_FORECAST_MODEL_KEY = "SOARING_FORECAST_TYPE";
+    private static final String SOARING_FORECAST_MODEL_KEY = "SOARING_FORECAST_MODEL";
     private static final String SOARING_FORECAST_REGION_KEY = "SOARING_FORECAST_REGION";
     private static final String AIRPORT_CODES_FOR_METAR = "AIRPORT_CODES_FOR_METAR_TAF";
     private static final String FORECAST_OVERLAY_OPACITY = "FORECAST_OVERLAY_OPACITY";
@@ -56,7 +55,7 @@ public class AppPreferences {
     private String imperialDistanceUnits;
     private String satelliteRegionUS;
     private String satelliteImageTypeVis;
-    private String soaringForecastType;
+    private String soaringForecastModel;
     private String soaringForecastDefaultRegion;
 
     @Inject
@@ -89,7 +88,7 @@ public class AppPreferences {
         imperialDistanceUnits = res.getString(R.string.pref_units_distance_statue_miles_label);
         satelliteRegionUS = res.getString(R.string.satellite_region_us);
         satelliteImageTypeVis = res.getString(R.string.satellite_image_type_vis);
-        soaringForecastType = res.getString(R.string.soaring_forecast_gfs);
+        soaringForecastModel = res.getString(R.string.default_forecast_model);
 
         // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
         // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
@@ -242,13 +241,13 @@ public class AppPreferences {
         editor.apply();
     }
 
-    public SoaringForecastModel getSoaringForecastModel() {
-        return new SoaringForecastModel(sharedPreferences.getString(SOARING_FORECAST_MODEL_KEY, soaringForecastType));
+    public String getForecastModel() {
+        return sharedPreferences.getString(SOARING_FORECAST_MODEL_KEY, soaringForecastModel);
     }
 
-    public void setSoaringForecastModel(SoaringForecastModel soaringForecastModel) {
+    public void setForecastModel(String selectedModel) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SOARING_FORECAST_MODEL_KEY, soaringForecastModel.toStore());
+        editor.putString(SOARING_FORECAST_MODEL_KEY, selectedModel);
         editor.apply();
     }
 

@@ -1,7 +1,5 @@
 package com.fisincorporated.soaringforecast.soaring.json;
 
-import android.databinding.ObservableArrayList;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// 0 to many Regions held by Regions
 public class Region {
 
     // Format "Friday November 23"
@@ -16,6 +15,7 @@ public class Region {
     @Expose
     private List<String> printDates = null;
 
+    // e.g. "NewEngland", "Panoche",...
     @SerializedName("name")
     @Expose
     private String name;
@@ -25,7 +25,8 @@ public class Region {
     @Expose
     private List<String> dates = null;
 
-    private ArrayList<RegionForecastDate> regionForecastDates = new ObservableArrayList<>();
+    // Custom fields
+    private ArrayList<ForecastModels> forecastModelsList = new ArrayList<>();
 
     public List<String> getPrintDates() {
         return printDates;
@@ -51,25 +52,39 @@ public class Region {
         this.dates = dates;
     }
 
-
-    public List<RegionForecastDate> getRegionForecastDateList() {
-        return regionForecastDates;
+    // Custom methods below
+    // Must be added in same order as dates
+    // So for each date, you have a list of models (gfs, nam,..) for that date
+    public void addForecastModels(ForecastModels forecastModels){
+            forecastModelsList.add(forecastModels);
     }
 
-    public void setupRegionForecastDates(){
-        regionForecastDates.clear();
-        for (int i = 0 ; i < dates.size() ; ++i){
-            RegionForecastDate forecastDate = new RegionForecastDate(regionForecastDates.size(), getPrintDate(i), dates.get(i));
-            regionForecastDates.add(forecastDate);
+    public List<ForecastModels> getForecastModels() {
+        return forecastModelsList;
+    }
+
+    public String getDate(int i){
+        if (dates != null && i < dates.size()){
+            return dates.get(i);
         }
+        return null;
     }
 
-    private String getPrintDate(int i) {
+    public ForecastModels getForecastModel(int i){
+        if (forecastModelsList != null && i < forecastModelsList.size()){
+            return forecastModelsList.get(i);
+        }
+        return null;
+    }
+
+
+    public String getPrintDate(int i) {
         if (printDates != null && i < printDates.size()){
             return printDates.get(i);
         }
         return null;
     }
+
 
     @Override
     public String toString() {

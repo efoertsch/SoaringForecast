@@ -5,12 +5,12 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * For each date in RegionForecastDates there is a ModelLocationAndTimes object that
+ * For each date in Regions there is a ModelLocationAndTimes object that
  * indicates if for that date a forecast model (rap, nam, gfs) exists (is not null)
  * If GpsLocationAndTimes is not null then that object provides the lat/lng for the forecast
  * for that day along with all the times that a forecast exists
  * //http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json
- *  Run for each date from RegionForecastDates
+ *  Run for each date from Regions
  */
 public class ModelLocationAndTimes {
 
