@@ -82,6 +82,15 @@ public class RegionSelectionFragment extends DaggerFragment {
                 radioButton.setText(region.getName());
                 radioButton.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
                 radioButton.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+                radioButton.setTextSize(getResources().getDimension(R.dimen.text_size_small));
+                //radioButton.setTypeface(null, Typeface.BOLD);
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//                    radioButton.setTextAppearance(getResources()
+//                            .getIdentifier("textAppearanceMedium", "style", getActivity().getPackageName()));
+//                } else {
+//                    radioButton.setTextAppearance(getContext(),getResources()
+//                            .getIdentifier("textAppearanceMedium", "style", getActivity().getPackageName()));
+//                }
                 radioButton.setLayoutParams(radioButtonParams);
                 regionGroup.addView(radioButton);
                 if (region.getName().equals(selectedRegion)) {
@@ -108,6 +117,9 @@ public class RegionSelectionFragment extends DaggerFragment {
     private LinearLayout.LayoutParams getRadioButtonParams() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.START;
+        int verticalMargin = (int)getResources().getDimension(R.dimen.margin_double);
+        int horizonatlMargin = (int)getResources().getDimension(R.dimen.margin_standard);
+        layoutParams.setMargins(horizonatlMargin, verticalMargin,horizonatlMargin, verticalMargin);
         return layoutParams;
     }
 }
