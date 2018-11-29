@@ -27,6 +27,7 @@ import com.fisincorporated.soaringforecast.utils.ImageAnimator;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -127,6 +128,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public void setModelNames(Region region) {
+        int position;
         List<String> modelNameList = new ArrayList<>();
         List<ForecastModels> forecastModelsList = region.getForecastModels();
         for (ForecastModels forecastModels : forecastModelsList) {
@@ -136,8 +138,19 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 }
             }
         }
-        modelNames.setValue(modelNameList);
-
+        Collections.sort(modelNameList);
+        if (modelNameList.size() > 0) {
+            modelNames.setValue(modelNameList);
+            selectedModelName = appPreferences.getForecastModel();
+            position = modelNames.getValue().indexOf(selectedModelName);
+            if ( position >= 0) {
+                modelPosition.setValue(position);
+            } else {
+                selectedModelName = modelNames.getValue().get(0);
+                appPreferences.setForecastModel(selectedModelName);
+                modelPosition.setValue(0);
+            }
+        }
     }
 
     // Get initial display forecast model.
@@ -449,7 +462,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         imageMap.clear();
         working.setValue(true);
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
-                  selectedModelForecastDate.getRegionName()
+                selectedModelForecastDate.getRegionName()
                 , selectedModelForecastDate.getDate()
                 , selectedModelForecastDate.getModel().getName()
                 , selectedForecast.getForecastName()
@@ -608,7 +621,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         stopImageAnimation();
         working.setValue(true);
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringSoundingForTypeAndDay(
-                  selectedModelForecastDate.getRegionName()
+                selectedModelForecastDate.getRegionName()
                 , selectedModelForecastDate.getDate()
                 , selectedModelForecastDate.getModel().getName()
                 , soundingLocation.getPosition() + ""

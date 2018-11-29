@@ -4,9 +4,11 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -38,6 +40,8 @@ public class RegionSelectionFragment extends DaggerFragment {
 
     private RegionSelectionViewModel regionSelectionViewModel;
     private RegionSelectionBinding regionSelectionBinding;
+
+    private LinearLayout.LayoutParams radioButtonParams;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,12 +75,14 @@ public class RegionSelectionFragment extends DaggerFragment {
         RadioGroup regionGroup = regionSelectionBinding.soaringRegionsButtonGroup;
         regionGroup.setOnCheckedChangeListener(getRegionButtonGroupListener());
         regionGroup.clearCheck();
-        regionGroup.removeAllViews();
-        regionGroup.setOrientation(RadioGroup.HORIZONTAL);
+        radioButtonParams = getRadioButtonParams();
         synchronized (regionList) {
             for (Region region : regionList) {
                 radioButton = new RadioButton(getContext());
                 radioButton.setText(region.getName());
+                radioButton.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                radioButton.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+                radioButton.setLayoutParams(radioButtonParams);
                 regionGroup.addView(radioButton);
                 if (region.getName().equals(selectedRegion)) {
                     radioButton.setChecked(true);
@@ -91,11 +97,17 @@ public class RegionSelectionFragment extends DaggerFragment {
      */
     private RadioGroup.OnCheckedChangeListener getRegionButtonGroupListener() {
         return (group, checkedId) -> {
-            RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
+            RadioButton checkedRadioButton =  group.findViewById(checkedId);
             // If the radiobutton that has changed in check state is now checked...
-            if (checkedRadioButton.isChecked()) {
+            if (checkedRadioButton != null && checkedRadioButton.isChecked()) {
                 regionSelectionViewModel.setSoaringForecastRegion(checkedRadioButton.getText().toString());
             }
         };
+    }
+
+    private LinearLayout.LayoutParams getRadioButtonParams() {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.START;
+        return layoutParams;
     }
 }

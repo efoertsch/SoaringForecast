@@ -252,7 +252,7 @@
     <string name="oops_error_reading_about_file">Oops. Error reading About file</string>
     <string name="save_task">Save Task?</string>
     <string name="save_task_before_exit">Do you want to save your changes before exit?</string>
-    <string name="select_regions">Select Regions</string>
+    <string name="select_region">Select Region</string>
 
     <string name="default_region_not_in_available_forecast_regions">Your default region: %1$s is not in the available list of forecast regions. Please select another region forforecasts.</string>
     <string name="default_forecast_model" translatable="false">GFS</string>
