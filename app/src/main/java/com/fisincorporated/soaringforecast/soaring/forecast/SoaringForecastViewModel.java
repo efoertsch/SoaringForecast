@@ -54,7 +54,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private int lastImageIndex = -1;
 
     // List of modelNames (GFS, NAM, ...)
-    private MutableLiveData<List<String>> modelNames  = new MutableLiveData<>();
+    private MutableLiveData<List<String>> modelNames = new MutableLiveData<>();
     private MutableLiveData<Integer> modelPosition = new MutableLiveData<>();
     private String selectedModelName;
 
@@ -118,6 +118,10 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             } else {
                 assignSelectedRegion();
             }
+            setTaskId(-1);
+            taskTurnpoints.setValue(new ArrayList<>());
+            soundingLocations.setValue(new ArrayList<>());
+
 
         }
     }
@@ -304,7 +308,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 }
             }
         }
-        setSelectedModelForecastDate(modelForecastDateList.get(modelForecastDatePosition.getValue()));
+        if (modelForecastDateList.size() > 0
+                && modelForecastDatePosition.getValue() != null
+                && modelForecastDatePosition.getValue() < modelForecastDateList.size()){
+            setSelectedModelForecastDate(modelForecastDateList.get(modelForecastDatePosition.getValue()));
+        }
     }
 
     public MutableLiveData<Integer> getModelForecastDatePosition() {
