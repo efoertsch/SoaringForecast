@@ -19,22 +19,22 @@ public class BitmapImageUtils {
     private BitmapCache bitmapCache;
     private OkHttpClient okHttpClient;
 
-    public BitmapImageUtils(BitmapCache bitmapCache, OkHttpClient okHttpClient){
+    public BitmapImageUtils(BitmapCache bitmapCache, OkHttpClient okHttpClient) {
         this.bitmapCache = bitmapCache;
         this.okHttpClient = okHttpClient;
     }
 
-    public BitmapImage getBitmapImage(final BitmapImage bitmapImage, final String url) {
-        Bitmap bitmap = bitmapCache.get(url);
+    public BitmapImage getBitmapImage(final BitmapImage bitmapImage, final String baseUrl, final String bitmapUrl) {
+        Bitmap bitmap = bitmapCache.get(bitmapUrl);
         if (bitmap != null) {
             bitmapImage.setBitmap(bitmap);
             return bitmapImage;
         }
 
-        bitmap = download(url);
+        bitmap = download(baseUrl + bitmapUrl);
         if (bitmap != null) {
             bitmapImage.setBitmap(bitmap);
-            bitmapCache.put(url, bitmap);
+            bitmapCache.put(bitmapUrl, bitmap);
             return bitmapImage;
         }
         bitmapImage.setErrorOnLoad(true);
@@ -73,4 +73,9 @@ public class BitmapImageUtils {
         }
         return bitmap;
     }
+
+    public void clearAllImages(){
+        bitmapCache.clearCache();
+    }
+
 }

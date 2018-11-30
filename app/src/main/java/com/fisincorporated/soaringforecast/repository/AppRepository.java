@@ -129,30 +129,16 @@ public class AppRepository {
         });
     }
 
-//    public Single<List<SoaringForecastModel>> getSoaringForecastModels() {
-//        return Single.create(emitter -> {
-//            String[] types;
-//            Resources res = context.getResources();
-//            List<SoaringForecastModel> soaringForecastModelList = new ArrayList<>();
-//            try {
-//                types = res.getStringArray(R.array.soaring_forecast_models);
-//                for (int i = 0; i < types.length; ++i) {
-//                    SoaringForecastModel soaringForecastModel = new SoaringForecastModel(types[i]);
-//                    soaringForecastModelList.add(soaringForecastModel);
-//                }
-//                emitter.onSuccess(soaringForecastModelList);
-//            } catch (Resources.NotFoundException nfe) {
-//                emitter.onError(nfe);
-//            }
-//        });
-//    }
-
     // --------- Soundings ------------------
-    public List<SoundingLocation> getLocationSoundings() {
-        return (new JSONResourceReader(context.getResources(), R.raw.soundings)).constructUsingGson(Soundings.class).getSoundingLocations();
+    public List<SoundingLocation> getLocationSoundings(String region) {
+        if (region.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
+            return (new JSONResourceReader(context.getResources(), R.raw.new_england_sounding_locations))
+                    .constructUsingGson(Soundings.class).getSoundingLocations();
+        }
+        return null;
     }
 
-    // ----------- Turnpoints in Download directory
+    // ----------- Turnpoints in Download directory -------------------
 
     public Maybe<List<File>> getDownloadedCupFileList() {
         return Maybe.create(emitter -> {
@@ -169,20 +155,20 @@ public class AppRepository {
         });
     }
 
-public class ImageFileFilter implements FileFilter {
-    private final String[] cupFileExtensions = new String[]{"cup"};
+    public class ImageFileFilter implements FileFilter {
+        private final String[] cupFileExtensions = new String[]{"cup"};
 
-    public boolean accept(File file) {
-        for (String extension : cupFileExtensions) {
-            if (file.getName().toLowerCase().endsWith(extension)) {
-                // make sure not version with control number placed before name.
-                return !file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm");
+        public boolean accept(File file) {
+            for (String extension : cupFileExtensions) {
+                if (file.getName().toLowerCase().endsWith(extension)) {
+                    // make sure not version with control number placed before name.
+                    return !file.getName().substring(0, file.getName().indexOf(".cup")).endsWith("_nm");
+                }
             }
+            return false;
         }
-        return false;
-    }
 
-}
+    }
 
     // ----------- Turnpoint download (SeeYou cup files) ------------------
     public Maybe<List<TurnpointFile>> getTurnpointFiles(String regionName) {

@@ -133,7 +133,7 @@
     <string name="soaring_forecast_time">Time</string>
     <string name="soaring_forecast_time_utc_label">UTC</string>
     <string name="soaring_forecast_time_local_label">(Local)</string>
-    <string name="new_england_region">NewEngland</string>
+    <string name="new_england_region" translatable="false">NewEngland</string>
     <string name="back_arrow">back arrow</string>
     <string name="forward_arrow">forward arrow</string>
     <string name="loop">Loop</string>
@@ -256,6 +256,7 @@
 
     <string name="default_region_not_in_available_forecast_regions">Your default region: %1$s is not in the available list of forecast regions. Please select another region forforecasts.</string>
     <string name="default_forecast_model" translatable="false">GFS</string>
+    <string name="oops_error_getting_regions">Error getting current.json for regions/dates.</string>
 
 
 </resources>

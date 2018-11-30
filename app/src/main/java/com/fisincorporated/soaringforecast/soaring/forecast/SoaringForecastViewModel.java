@@ -23,6 +23,7 @@ import com.fisincorporated.soaringforecast.soaring.json.Region;
 import com.fisincorporated.soaringforecast.soaring.json.Regions;
 import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
 import com.fisincorporated.soaringforecast.utils.ImageAnimator;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -53,7 +54,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private int lastImageIndex = -1;
 
     // List of modelNames (GFS, NAM, ...)
-    private MutableLiveData<List<String>> modelNames;
+    private MutableLiveData<List<String>> modelNames  = new MutableLiveData<>();
     private MutableLiveData<Integer> modelPosition = new MutableLiveData<>();
     private String selectedModelName;
 
@@ -62,11 +63,13 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<Integer> modelForecastDatePosition = new MutableLiveData<>();
     private ModelForecastDate selectedModelForecastDate;
 
-    private MutableLiveData<List<Forecast>> forecasts;
+    private MutableLiveData<List<Forecast>> forecasts = new MutableLiveData<>();
     private MutableLiveData<Integer> forecastPosition = new MutableLiveData<>();
     private Forecast selectedForecast = null;
 
+    private Regions regions;
     private Region selectedRegion;
+    private MutableLiveData<LatLngBounds> regionLatLngBounds = new MutableLiveData<>();
 
     private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
     private MutableLiveData<SoaringForecastImageSet> selectedSoaringForecastImageSet = new MutableLiveData<>();
@@ -105,23 +108,35 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return this;
     }
 
-    // The order of API calls should be
-    // 1. current.json - gets all dates for which some model forecasts have been created
-    //
-    // 2. status.json - for selected region, provides list of modelNames (gfs, nam, rap,..) that are available for each date
-    //
-    // based on default model and current date retrieve forecast bitmaps.
-    // If user selects new model update the available dates for which forecasts available
+    public void checkForRegionChange() {
+        // if region changed then
+        // get list of models/dates for that region
+        // refresh display
+        if (selectedRegion != null && !selectedRegion.equals(appPreferences.getSoaringForecastRegion())) {
+            if (regions == null) {
+                getRegionForecastDates();
+            } else {
+                assignSelectedRegion();
+            }
 
+        }
+    }
+
+    // The order of API calls are
+    // 1. current.json - gets all regions and dates for each region for which some model forecasts have been created
+    //
+    // 2. status.json - for selected region and date, call status.json to provide list of models (gfs, nam, rap,..), times,
+    //    and gps lat/longs for generated forecasts
+    //
+    // 3. Based on selected model and date, retrieve corresponding forecast bitmaps.
+    //
 
     /**
      * Get list of all modelNames (GFS, NAM, RAP,...) that have a forecast
      */
 
     public MutableLiveData<List<String>> getModelNames() {
-        working.setValue(true);
-        if (modelNames == null) {
-            modelNames = new MutableLiveData<>();
+        if (modelNames.getValue() == null) {
             getRegionForecastDates();
         }
         return modelNames;
@@ -143,7 +158,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             modelNames.setValue(modelNameList);
             selectedModelName = appPreferences.getForecastModel();
             position = modelNames.getValue().indexOf(selectedModelName);
-            if ( position >= 0) {
+            if (position >= 0) {
                 modelPosition.setValue(position);
             } else {
                 selectedModelName = modelNames.getValue().get(0);
@@ -154,14 +169,14 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     // Get initial display forecast model.
-    public String getSelectedModelName() {
-        if (selectedModelName == null) {
-            selectedModelName = appPreferences.getForecastModel();
-            modelPosition.setValue(modelNames.getValue().indexOf(selectedModelName));
-            getRegionForecastDates();
-        }
-        return selectedModelName;
-    }
+//    public String getSelectedModelName() {
+//        if (selectedModelName == null) {
+//            selectedModelName = appPreferences.getForecastModel();
+//            modelPosition.setValue(modelNames.getValue().indexOf(selectedModelName));
+//            getRegionForecastDates();
+//        }
+//        return selectedModelName;
+//    }
 
     public MutableLiveData<Integer> getModelPosition() {
         return modelPosition;
@@ -174,33 +189,42 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         createDatesAndModels(selectedModelName);
     }
 
+
     /**
-     * Get dates for which some forecast is available for some forecast model(GFS,..)
-     * Basically should return 7 dates (current, plus next 6 days)
+     * Get all regions and dates for which forecasts are available by region
+     * Currently returns for NewEngland region 7 dates (current, plus next 6 days)
+     * May include other regions/dates
+     * Note this does not include list of forecast models (that comes next)
      */
     private void getRegionForecastDates() {
         Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(regions -> {
-                            selectedRegion = getDefaultRegion(regions);
-                            if (selectedRegion != null) {
-                                loadForecastModels(selectedRegion);
-                            } else {
-                                // TODO display alert dialog on fragment and go to fragment to select region from available regions.
-                                EventBus.getDefault().post(new SnackbarMessage(getApplication().getApplicationContext().getString(R.string.default_region_not_in_available_forecast_regions, appPreferences.getSoaringForecastRegion())));
-                            }
+                .subscribe(regionList -> {
+                            regions = regionList;
+                            assignSelectedRegion();
                         },
                         throwable -> {
                             Timber.d("Error: %s ", throwable.getMessage());
                             //TODO - put error on bus
+                            EventBus.getDefault().post(new SnackbarMessage(getApplication().getApplicationContext().getString(R.string.oops_error_getting_regions)));
                             throwable.printStackTrace();
                         });
         compositeDisposable.add(disposable);
     }
 
+    private void assignSelectedRegion() {
+        selectedRegion = getDefaultRegion();
+        if (selectedRegion != null) {
+            loadForecastModels(selectedRegion);
+        } else {
+            // TODO display alert dialog on fragment and go to fragment to select region from available regions.
+            EventBus.getDefault().post(new SnackbarMessage(getApplication().getApplicationContext().getString(R.string.default_region_not_in_available_forecast_regions, appPreferences.getSoaringForecastRegion())));
+        }
+    }
 
-    private Region getDefaultRegion(Regions regions) {
+
+    private Region getDefaultRegion() {
         for (Region region : regions.getRegions()) {
             if (region.getName().equals(appPreferences.getSoaringForecastRegion())) {
                 return region;
@@ -239,7 +263,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         // Now have modelNames for each date at least one model forecast has been generated
-                        // Now create arrays needed for display
+                        //Create arrays needed for display
                         createDatesAndModels(appPreferences.getForecastModel());
 
                     }
@@ -247,6 +271,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
+    /**
+     * For selected model, get list of dates that forecasts are available
+     *
+     * @param selectedModelName
+     */
     private void createDatesAndModels(String selectedModelName) {
         List<ModelForecastDate> modelForecastDateList = new ArrayList<>();
         synchronized (selectedRegion) {
@@ -264,7 +293,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             // Save new list of dates
             modelForecastDates.setValue(modelForecastDateList);
 
-            if (modelForecastDatePosition.getValue() == null) {
+            // Set selected date to either first in list or if previous model date is also in current model date
+            // use that one (so models can be compared by date)
+            if (modelForecastDatePosition.getValue() == null || modelForecastDatePosition.getValue() >= modelForecastDateList.size()) {
                 modelForecastDatePosition.setValue(0);
             } else {
                 int position = modelForecastDatePosition.getValue();
@@ -289,7 +320,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return modelForecastDates;
     }
 
-
     /**
      * Call when user clicked date
      *
@@ -298,6 +328,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     public void setSelectedModelForecastDate(ModelForecastDate newModelForecastDate) {
         if (!newModelForecastDate.equals(getSelectedModelForecastDate())) {
             selectedModelForecastDate = newModelForecastDate;
+            setRegionLatLngBounds(selectedModelForecastDate);
             loadRaspImages();
         }
     }
@@ -306,6 +337,16 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return selectedModelForecastDate;
     }
 
+    public MutableLiveData<LatLngBounds> getRegionLatLngBounds() {
+        return regionLatLngBounds;
+    }
+
+    public void setRegionLatLngBounds(ModelForecastDate modelForecastDate) {
+        if (modelForecastDate != null) {
+            regionLatLngBounds.setValue(new LatLngBounds(modelForecastDate.getModel().getSouthWestLatLng()
+                    , modelForecastDate.getModel().getNorthEastLatLng()));
+        }
+    }
 
     /**
      * Get the list of forecasts (wstar,...) that can be selected
@@ -313,8 +354,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * @return
      */
     public LiveData<List<Forecast>> getForecasts() {
-        if (forecasts == null) {
-            forecasts = new MutableLiveData<>();
+        if (forecasts.getValue() == null) {
             loadForecasts();
         }
         return forecasts;
@@ -380,7 +420,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             soundingLocations = new MutableLiveData<>();
             // if setting set to display, go ahead and populate
             if (displaySoundings = appPreferences.getDisplayForecastSoundings()) {
-                soundingLocations.setValue(appRepository.getLocationSoundings());
+                soundingLocations.setValue(appRepository.getLocationSoundings(appPreferences.getSoaringForecastRegion()));
             }
         }
         return soundingLocations;
@@ -388,7 +428,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public void toggleSoundingLocationDisplay() {
         if (displaySoundings = !displaySoundings) {
-            soundingLocations.setValue(appRepository.getLocationSoundings());
+            soundingLocations.setValue(appRepository.getLocationSoundings(appPreferences.getSoaringForecastRegion()));
         } else {
             soundingLocations.setValue(null);
         }
@@ -709,6 +749,10 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return forecastOverlyOpacity;
     }
 
+    public void setTaskId(int taskId) {
+        appPreferences.setSelectedTaskId(taskId);
+    }
+
     @Override
     public void onCleared() {
         compositeDisposable.dispose();
@@ -716,7 +760,4 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         super.onCleared();
     }
 
-    public void setTaskId(int taskId) {
-        appPreferences.setSelectedTaskId(taskId);
-    }
 }

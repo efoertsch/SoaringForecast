@@ -34,8 +34,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private boolean drawingTask = false;
 
     //Default for NewEngland - revise if new regions become available
-    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
-            , new LatLng(45.0120811, -70.5046997));
+//    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
+//            , new LatLng(45.0120811, -70.5046997));
+    private LatLngBounds mapLatLngBounds ;
     private List<SoundingLocation> soundingLocations = new ArrayList<>();
     private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
 

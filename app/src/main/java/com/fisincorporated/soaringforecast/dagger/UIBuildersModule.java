@@ -9,9 +9,10 @@ import com.fisincorporated.soaringforecast.airport.search.AirportSearchFragment;
 import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
-import com.fisincorporated.soaringforecast.settings.SettingsPreferenceFragment;
+import com.fisincorporated.soaringforecast.settings.SettingsActivity;
+import com.fisincorporated.soaringforecast.settings.preferences.SettingsPreferenceFragment;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
-import com.fisincorporated.soaringforecast.soaring.regions.RegionSelectionFragment;
+import com.fisincorporated.soaringforecast.settings.regions.RegionSelectionFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.fisincorporated.soaringforecast.task.edit.EditTaskFragment;
 import com.fisincorporated.soaringforecast.task.list.TaskListFragment;
@@ -80,8 +81,10 @@ public abstract class UIBuildersModule {
 
     // ----- Settings ------------
     @ContributesAndroidInjector(modules = {})
-    abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();
+    abstract SettingsActivity bindSettingsActivity();
 
+    @ContributesAndroidInjector(modules = {})
+    abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();
 
     // ----- About ------------
     @ContributesAndroidInjector(modules = {})

@@ -16,10 +16,9 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.SoaringForecastBinding;
-import com.fisincorporated.soaringforecast.messages.DisplayRegionSelection;
 import com.fisincorporated.soaringforecast.messages.DisplaySoundingLocation;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
+import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -73,7 +72,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                              @Nullable Bundle savedInstanceState) {
         soaringForecastBinding = DataBindingUtil.inflate(inflater
                 , R.layout.soaring_forecast_rasp_spinners, container, false);
-        soaringForecastBinding.setLifecycleOwner(this);
+        soaringForecastBinding.setLifecycleOwner(getActivity());
         soaringForecastBinding.setViewModel(soaringForecastViewModel);
         setupViews();
         setObservers();
@@ -88,30 +87,40 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastBinding.soaringForecastSeekbarOpacity.setProgress(appPreferences.getForecastOverlayOpacity());
     }
 
-    //TODO - way to many observers - consolidate/simplify?   move to viewModel?
+    //TODO - lots of observers - consolidate/simplify?
     private void setObservers() {
         // RASP models - GFS, NAM, ...
         soaringForecastViewModel.getModelPosition().observe(this, newForecastModelPosition -> {
-            if (lastForecastModelPosition != -1 && lastForecastModelPosition != newForecastModelPosition) {
-                soaringForecastViewModel.setModelPosition(newForecastModelPosition);
+            if (newForecastModelPosition != null) {
+                if (lastForecastModelPosition != -1 && lastForecastModelPosition != newForecastModelPosition) {
+                    soaringForecastViewModel.setModelPosition(newForecastModelPosition);
+                }
+                lastForecastModelPosition = newForecastModelPosition;
             }
-            lastForecastModelPosition = newForecastModelPosition;
         });
 
         // Dates for the selected model
         soaringForecastViewModel.getModelForecastDatePosition().observe(this, newForecastDatePosition -> {
-            if (lastForecastDatePosition != -1 && lastForecastDatePosition != newForecastDatePosition) {
-                soaringForecastViewModel.setModelForecastDatePosition(newForecastDatePosition);
-                setMapLatLngBounds(soaringForecastViewModel.getSelectedModelForecastDate());
+            if (newForecastDatePosition != null) {
+                if (lastForecastDatePosition != -1 && lastForecastDatePosition != newForecastDatePosition) {
+                    soaringForecastViewModel.setModelForecastDatePosition(newForecastDatePosition);
+                }
+                lastForecastDatePosition = newForecastDatePosition;
             }
-            lastForecastDatePosition = newForecastDatePosition;
         });
 
         soaringForecastViewModel.getForecastPosition().observe(this, newForecastPosition -> {
-            if (lastForecastPosition != -1 && lastForecastPosition != newForecastPosition) {
-                soaringForecastViewModel.setForecastPosition(newForecastPosition);
+            if (newForecastPosition != null) {
+                if (lastForecastPosition != -1 && lastForecastPosition != newForecastPosition) {
+                    soaringForecastViewModel.setForecastPosition(newForecastPosition);
+                }
+                lastForecastPosition = newForecastPosition;
             }
-            lastForecastPosition = newForecastPosition;
+        });
+
+        // Set the corners of the google map
+        soaringForecastViewModel.getRegionLatLngBounds().observe(this, regionLatngBounds -> {
+            setMapLatLngBounds(regionLatngBounds);
         });
 
         // List of turnpoints for a selected task
@@ -157,6 +166,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         super.onResume();
         getActivity().setTitle(R.string.rasp);
         EventBus.getDefault().register(this);
+        soaringForecastViewModel.checkForRegionChange();
     }
 
     @Override
@@ -204,7 +214,9 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
     private void displayRegionSelections() {
-        EventBus.getDefault().post(new DisplayRegionSelection());
+        SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
+        builder.displaySelectRegion();
+        startActivity(builder.build(this.getContext()));
     }
 
     private void selectTask() {
@@ -231,11 +243,9 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
 
-    private void setMapLatLngBounds(ModelForecastDate modelForecastDate) {
-        if (modelForecastDate != null) {
-            forecastMapper.setMapLatLngBounds(
-                    new LatLngBounds(modelForecastDate.getModel().getSouthWestLatLng()
-                            , modelForecastDate.getModel().getNorthEastLatLng()));
+    private void setMapLatLngBounds(LatLngBounds latLngBounds) {
+        if (latLngBounds != null) {
+            forecastMapper.setMapLatLngBounds(latLngBounds);
         }
     }
 

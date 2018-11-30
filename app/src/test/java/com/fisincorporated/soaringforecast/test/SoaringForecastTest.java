@@ -7,7 +7,6 @@ import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastRetrofit;
 import com.fisincorporated.soaringforecast.soaring.json.ForecastModels;
 import com.fisincorporated.soaringforecast.soaring.json.Model;
-import com.fisincorporated.soaringforecast.soaring.json.ModelLocationAndTimes;
 import com.fisincorporated.soaringforecast.soaring.json.Region;
 import com.fisincorporated.soaringforecast.soaring.json.Regions;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
@@ -17,7 +16,6 @@ import org.junit.Test;
 
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
@@ -66,7 +64,6 @@ public class SoaringForecastTest {
     //http://www.soargbsc.com/rasp/NewEngland/2018-03-30/status.json - Run for each date in above json list
     @Test
     public void shouldGetStatusJsonForEachDateTest() {
-        Call<ModelLocationAndTimes> call;
         shouldGetRegionsCurrentJsonText();
         Region region  = regions.getRegion("NewEngland");
         assertNotNull("NewEngland Region missing from status.json", region);

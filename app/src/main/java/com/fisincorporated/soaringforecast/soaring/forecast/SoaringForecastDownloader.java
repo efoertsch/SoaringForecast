@@ -10,7 +10,6 @@ import com.fisincorporated.soaringforecast.soaring.json.Regions;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,7 +23,7 @@ import timber.log.Timber;
 
 public class SoaringForecastDownloader {
 
-    private static String forecastUrl;
+    private static String raspUrl;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -36,7 +35,7 @@ public class SoaringForecastDownloader {
     public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils, String raspUrl) {
         this.client = client;
         this.bitmapImageUtils = bitmapImageUtils;
-        forecastUrl = raspUrl;
+        this.raspUrl = raspUrl;
     }
 
     /**
@@ -140,7 +139,7 @@ public class SoaringForecastDownloader {
 
         return Single.create(emitter -> {
             try {
-                emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, forecastUrl + parmUrl));
+                emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, raspUrl, parmUrl));
             } catch (Exception e) {
                 emitter.onError(e);
                 Timber.e(e);
@@ -182,8 +181,8 @@ public class SoaringForecastDownloader {
      */
     public String getSoaringForecastUrlParm(String region, String yyyymmddDate, String
             forecastType, String forecastParameter, String forecastTime, String bitmapType) {
-        return String.format("%s/%s/%s/%s.curr.%slst.d2.%s.png?%s", region, yyyymmddDate
-                , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType, new Date().getTime());
+        return String.format("%s/%s/%s/%s.curr.%slst.d2.%s.png", region, yyyymmddDate
+                , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType);
     }
 
     /**
