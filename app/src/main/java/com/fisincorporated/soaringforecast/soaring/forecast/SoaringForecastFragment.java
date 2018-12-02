@@ -16,7 +16,7 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.SoaringForecastBinding;
-import com.fisincorporated.soaringforecast.messages.DisplaySoundingLocation;
+import com.fisincorporated.soaringforecast.messages.DisplaySounding;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
@@ -54,8 +54,11 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private MenuItem clearTaskMenuItem;
 
-    // TODO replace with livedata in viewmodel
+
     private boolean showClearTaskMenuItem;
+
+    private MenuItem soundingsMenuItem;
+    private boolean checkSoundsMenuItem = false;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,9 +136,14 @@ public class SoaringForecastFragment extends DaggerFragment {
             forecastMapper.setTaskTurnpoints(taskTurnpoints);
         });
 
-        // List of sounding locations available
-        soaringForecastViewModel.getSoundingLocations().observe(this, soundingLocations ->
-                forecastMapper.setSoundingLocations(soundingLocations));
+        // List of soundings available
+        soaringForecastViewModel.getSoundings().observe(this, soundingList -> {
+            checkSoundsMenuItem = (soundingList != null && soundingList.size() > 0);
+            forecastMapper.setSoundings(soundingList);
+            if (soundingsMenuItem != null) {
+                soundingsMenuItem.setChecked(checkSoundsMenuItem);
+            }
+        });
 
         // Get Rasp bitmap for the date/time selected and pass to mapper
         soaringForecastViewModel.getSelectedSoaringForecastImageSet().observe(this, soaringForecastImageSet -> {
@@ -187,6 +195,9 @@ public class SoaringForecastFragment extends DaggerFragment {
             clearTaskMenuItem.setVisible(showClearTaskMenuItem);
         }
 
+        soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
+        soundingsMenuItem.setChecked(checkSoundsMenuItem);
+
     }
 
     @Override
@@ -205,7 +216,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                 displayOpacitySlider();
                 return true;
             case R.id.forecast_menu_toggle_sounding_points:
-                toggleSoundingLocationsDisplay();
+                displaySoundings(!soundingsMenuItem.isChecked());
                 return true;
             case R.id.forecast_menu_select_regions:
                 displayRegionSelections();
@@ -252,13 +263,13 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(DisplaySoundingLocation displaySoundingLocation) {
-        soaringForecastViewModel.setSelectedSoundingLocation(displaySoundingLocation.getSoundingLocation());
+    public void onMessageEvent(DisplaySounding displaySounding) {
+        soaringForecastViewModel.setSelectedSounding(displaySounding.getSounding());
     }
 
 
-    private void toggleSoundingLocationsDisplay() {
-        soaringForecastViewModel.toggleSoundingLocationDisplay();
+    private void displaySoundings(boolean displaySoundings) {
+        soaringForecastViewModel.displaySoundings(displaySoundings);
     }
 
     private void displayOpacitySlider() {

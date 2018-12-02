@@ -15,6 +15,7 @@
     <item
         android:id="@+id/forecast_menu_toggle_sounding_points"
         android:title="@string/forecast_menu_toggle_sounds"
+        android:checkable="true"
         app:showAsAction="never"
         />
 

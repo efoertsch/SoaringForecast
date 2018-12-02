@@ -21,7 +21,7 @@ import com.fisincorporated.soaringforecast.soaring.json.Model;
 import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.fisincorporated.soaringforecast.soaring.json.Region;
 import com.fisincorporated.soaringforecast.soaring.json.Regions;
-import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
+import com.fisincorporated.soaringforecast.soaring.json.Sounding;
 import com.fisincorporated.soaringforecast.utils.ImageAnimator;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -75,12 +75,12 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<SoaringForecastImageSet> selectedSoaringForecastImageSet = new MutableLiveData<>();
     private MutableLiveData<SoaringForecastImageSet> selectedSoundingForecastImageSet = new MutableLiveData<>();
 
-    private MutableLiveData<List<SoundingLocation>> soundingLocations;
+    private MutableLiveData<List<Sounding>> soundings;
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
     private MutableLiveData<Integer> forecastOverlyOpacity = new MutableLiveData<>();
 
-    private SoundingLocation selectedSoundingLocation;
+    private Sounding selectedSounding;
 
     // Used to signal changes to UI
     private MutableLiveData<Boolean> working = new MutableLiveData<>();
@@ -120,7 +120,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             }
             setTaskId(-1);
             taskTurnpoints.setValue(new ArrayList<>());
-            soundingLocations.setValue(new ArrayList<>());
+            soundings.setValue(new ArrayList<>());
 
 
         }
@@ -221,6 +221,10 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         selectedRegion = getDefaultRegion();
         if (selectedRegion != null) {
             loadForecastModels(selectedRegion);
+            // see if soundings should be displayed
+            if (displaySoundings = appPreferences.getDisplayForecastSoundings()) {
+                loadSoundings();
+            }
         } else {
             // TODO display alert dialog on fragment and go to fragment to select region from available regions.
             EventBus.getDefault().post(new SnackbarMessage(getApplication().getApplicationContext().getString(R.string.default_region_not_in_available_forecast_regions, appPreferences.getSoaringForecastRegion())));
@@ -423,22 +427,26 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      * @return
      */
-    public MutableLiveData<List<SoundingLocation>> getSoundingLocations() {
-        if (soundingLocations == null) {
-            soundingLocations = new MutableLiveData<>();
-            // if setting set to display, go ahead and populate
-            if (displaySoundings = appPreferences.getDisplayForecastSoundings()) {
-                soundingLocations.setValue(appRepository.getLocationSoundings(appPreferences.getSoaringForecastRegion()));
-            }
+    public MutableLiveData<List<Sounding>> getSoundings() {
+        if (soundings == null) {
+            soundings = new MutableLiveData<>();
         }
-        return soundingLocations;
+        return soundings;
     }
 
-    public void toggleSoundingLocationDisplay() {
-        if (displaySoundings = !displaySoundings) {
-            soundingLocations.setValue(appRepository.getLocationSoundings(appPreferences.getSoaringForecastRegion()));
+    private void loadSoundings() {
+        List<Sounding> soundingList = selectedRegion.getSoundings();
+        soundings.setValue(soundingList);
+        if (soundingList == null) {
+            EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.no_soundings_available)));
+        }
+    }
+
+    public void displaySoundings(boolean displaySoundings) {
+        if (this.displaySoundings = displaySoundings) {
+            loadSoundings();
         } else {
-            soundingLocations.setValue(null);
+            soundings.setValue(null);
         }
     }
 
@@ -665,14 +673,14 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     //------- Soundings -------------------
 
-    private void loadForecastSoundings(SoundingLocation soundingLocation) {
+    private void loadForecastSoundings(Sounding sounding) {
         stopImageAnimation();
         working.setValue(true);
         DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringSoundingForTypeAndDay(
                 selectedModelForecastDate.getRegionName()
                 , selectedModelForecastDate.getDate()
                 , selectedModelForecastDate.getModel().getName()
-                , soundingLocation.getPosition() + ""
+                , sounding.getPosition() + ""
                 , selectedModelForecastDate.getModel().getTimes())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -734,13 +742,13 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return taskTurnpoints;
     }
 
-    public SoundingLocation getSelectedSoundingLocation() {
-        return selectedSoundingLocation;
+    public Sounding getSelectedSounding() {
+        return selectedSounding;
     }
 
-    public void setSelectedSoundingLocation(SoundingLocation selectedSoundingLocation) {
-        this.selectedSoundingLocation = selectedSoundingLocation;
-        loadForecastSoundings(selectedSoundingLocation);
+    public void setSelectedSounding(Sounding selectedSounding) {
+        this.selectedSounding = selectedSounding;
+        loadForecastSoundings(selectedSounding);
     }
 
     //------- Opacity of forecast overly -----------------

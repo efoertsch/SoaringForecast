@@ -2,6 +2,7 @@ package com.fisincorporated.soaringforecast.soaring.json;
 
 /**
  * ModelForecastDate will contain everything needed to construct the url for the forecast bitmap and map the results
+ * Note this is not a JSON object
  */
 public class ModelForecastDate  {
     private int index;

@@ -257,6 +257,7 @@
     <string name="default_region_not_in_available_forecast_regions">Your default region: %1$s is not in the available list of forecast regions. Please select another region forforecasts.</string>
     <string name="default_forecast_model" translatable="false">GFS</string>
     <string name="oops_error_getting_regions">Error getting current.json for regions/dates.</string>
+    <string name="no_soundings_available">No soundings available.</string>
 
 
 </resources>

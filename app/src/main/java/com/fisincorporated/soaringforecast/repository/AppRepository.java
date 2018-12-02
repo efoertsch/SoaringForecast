@@ -9,8 +9,6 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
 import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
-import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
-import com.fisincorporated.soaringforecast.soaring.json.Soundings;
 import com.fisincorporated.soaringforecast.task.json.TurnpointFile;
 import com.fisincorporated.soaringforecast.task.json.TurnpointFiles;
 import com.fisincorporated.soaringforecast.task.json.TurnpointRegion;
@@ -127,15 +125,6 @@ public class AppRepository {
                 emitter.onError(jse);
             }
         });
-    }
-
-    // --------- Soundings ------------------
-    public List<SoundingLocation> getLocationSoundings(String region) {
-        if (region.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
-            return (new JSONResourceReader(context.getResources(), R.raw.new_england_sounding_locations))
-                    .constructUsingGson(Soundings.class).getSoundingLocations();
-        }
-        return null;
     }
 
     // ----------- Turnpoints in Download directory -------------------

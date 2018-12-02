@@ -7,13 +7,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// 0 to many Regions held by Regions
+
+/**
+ * GSON is assigning fields directly and not using setter methods. (Switch to Jackson?)
+ * Hence the additional code for lat/lng
+ */
 public class Region {
 
     // Format "Friday November 23"
     @SerializedName("printDates")
     @Expose
     private List<String> printDates = null;
+
+    @SerializedName("soundings")
+    @Expose
+    private List<Sounding> soundings = null;
+
 
     // e.g. "NewEngland", "Panoche",...
     @SerializedName("name")
@@ -28,12 +37,14 @@ public class Region {
     // Custom fields
     private ArrayList<ForecastModels> forecastModelsList = new ArrayList<>();
 
-    public List<String> getPrintDates() {
-        return printDates;
+    private boolean soundingsSet = false;
+
+    public List<String> getDates() {
+        return dates;
     }
 
-    public void setPrintDates(List<String> printDates) {
-        this.printDates = printDates;
+    public void setDates(List<String> dates) {
+        this.dates = dates;
     }
 
     public String getName() {
@@ -44,13 +55,28 @@ public class Region {
         this.name = name;
     }
 
-    public List<String> getDates() {
-        return dates;
+    public List<Sounding> getSoundings() {
+        if (!soundingsSet) {
+            if (soundings != null && soundings.size() > 0){
+                for (int i = 0; i < soundings.size(); ++i){
+                    soundings.get(i).setPosition(i + 1);
+                    soundings.get(i).setLatLng();
+                }
+            }
+            soundingsSet = true;
+        }
+        return soundings;
     }
 
-    public void setDates(List<String> dates) {
-        this.dates = dates;
+
+    public List<String> getPrintDates() {
+        return printDates;
     }
+
+    public void setPrintDates(List<String> printDates) {
+        this.printDates = printDates;
+    }
+
 
     // Custom methods below
     // Must be added in same order as dates
