@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 
 // Disk cache from https://developer.android.com/topic/performance/graphics/cache-bitmap.html and modified accordingly
 // Memory cache from Cache2k
-// Shoulg be accessed on background thread
+// Should be accessed on background thread
 public class BitmapCache {
 
-    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 30; // 30MB
+    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 48; // 48MB
     private static final String DISK_CACHE_SUBDIR = "cachedBitmaps";
     private static final int DISK_CACHE_VERSION = 1;
 
@@ -26,7 +26,7 @@ public class BitmapCache {
     private boolean diskCacheStarting = true;
 
     private Cache<String, Bitmap> memoryCache;
-    private DiskLruImageCache mDiskLruCache;
+    private DiskLruImageCache diskLruImageCache;
     private Context context;
 
     // Needed to make public for unit testing
@@ -48,8 +48,8 @@ public class BitmapCache {
         }
                 .name("Bitmap Cache")
                 .eternal(false)
-                .expireAfterWrite(15, TimeUnit.MINUTES)    // expire/refresh after 15 minutes
-                .entryCapacity(20)
+                .expireAfterWrite(10, TimeUnit.MINUTES)    // expire/refresh after 10 minutes
+                .entryCapacity(22)
                 .build();
     }
 
@@ -74,7 +74,7 @@ public class BitmapCache {
         protected Void doInBackground(String... params) {
             synchronized (diskCacheLock) {
                 String cacheDir = params[0];
-                mDiskLruCache = new DiskLruImageCache(context, cacheDir, DISK_CACHE_SIZE, 90);
+                diskLruImageCache = new DiskLruImageCache(context, cacheDir, DISK_CACHE_SIZE, 90);
                 diskCacheStarting = false; // Finished initialization
                 diskCacheLock.notifyAll(); // Wake any waiting threads
             }
@@ -92,8 +92,8 @@ public class BitmapCache {
                     // do nothing
                 }
             }
-            if (mDiskLruCache != null) {
-                return mDiskLruCache.getBitmap(key);
+            if (diskLruImageCache != null) {
+                return diskLruImageCache.getBitmap(key);
             }
         }
         return null;
@@ -120,8 +120,8 @@ public class BitmapCache {
 
         // Also add to disk cache
         synchronized (diskCacheLock) {
-            if (mDiskLruCache != null && !mDiskLruCache.containsKey(key)) {
-                mDiskLruCache.put(key, bitmap);
+            if (diskLruImageCache != null && !diskLruImageCache.containsKey(key)) {
+                diskLruImageCache.put(key, bitmap);
             }
         }
     }
@@ -141,5 +141,11 @@ public class BitmapCache {
             return bitmap;
         }
         return null;
+    }
+
+    public void clearCache() {
+        diskLruImageCache.clearCache();
+        createDiskCache(context);
+        memoryCache.clear();
     }
 }

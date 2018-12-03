@@ -99,8 +99,7 @@ public class SatelliteImageDownloader {
     }
 
     private void getBitmapImage(final SatelliteImage satelliteImage) {
-        String url = SATELLITE_URL + satelliteImage.getImageName();
-        bitmapImageUtils.getBitmapImage(satelliteImage, url);
+        bitmapImageUtils.getBitmapImage(satelliteImage, SATELLITE_URL, satelliteImage.getImageName());
     }
 
 

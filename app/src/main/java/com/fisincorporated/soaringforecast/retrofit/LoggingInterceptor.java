@@ -1,5 +1,7 @@
 package com.fisincorporated.soaringforecast.retrofit;
 
+import android.annotation.SuppressLint;
+
 import com.fisincorporated.soaringforecast.BuildConfig;
 
 import java.io.IOException;
@@ -34,6 +36,7 @@ public class LoggingInterceptor implements Interceptor {
         Response response = chain.proceed(request);
         long t2 = System.nanoTime();
 
+        @SuppressLint("DefaultLocale")
         String responseLog = String.format("Received response for %s in %.1fms%n%s",
                 response.request().url(), (t2 - t1) / 1e6d, response.headers());
 

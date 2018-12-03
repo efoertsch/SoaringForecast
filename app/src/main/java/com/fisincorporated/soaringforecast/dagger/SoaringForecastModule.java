@@ -15,13 +15,13 @@ import okhttp3.OkHttpClient;
 public class SoaringForecastModule {
 
     @Provides
-    public SoaringForecastApi providesSoaringForecastApi(@Named("interceptor")OkHttpClient okHttpClient) {
-        return new SoaringForecastRetrofit(okHttpClient).getRetrofit().create(SoaringForecastApi.class);
+    public SoaringForecastApi providesSoaringForecastApi(@Named("interceptor")OkHttpClient okHttpClient, @Named("rasp_url")String raspUrl) {
+        return new SoaringForecastRetrofit(okHttpClient, raspUrl).getRetrofit().create(SoaringForecastApi.class);
     }
 
     @Provides
     public SoaringForecastDownloader provideSoaringForecastDownloader(@Named("no_interceptor")OkHttpClient okHttpClient,
-                                                                      BitmapImageUtils bitmapImageUtils) {
-        return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient), bitmapImageUtils);
+                                                                      BitmapImageUtils bitmapImageUtils,  @Named("rasp_url")String raspUrl) {
+        return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient, raspUrl), bitmapImageUtils, raspUrl);
     }
 }

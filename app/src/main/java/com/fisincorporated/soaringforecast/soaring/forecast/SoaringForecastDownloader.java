@@ -5,13 +5,11 @@ import android.support.annotation.NonNull;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.common.Constants.FORECAST_SOUNDING;
 import com.fisincorporated.soaringforecast.retrofit.SoaringForecastApi;
-import com.fisincorporated.soaringforecast.soaring.json.ModelLocationAndTimes;
-import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDate;
-import com.fisincorporated.soaringforecast.soaring.json.RegionForecastDates;
+import com.fisincorporated.soaringforecast.soaring.json.ForecastModels;
+import com.fisincorporated.soaringforecast.soaring.json.Regions;
 import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,7 +23,7 @@ import timber.log.Timber;
 
 public class SoaringForecastDownloader {
 
-    private static final String forecastUrl = "http:soargbsc.com/rasp/";
+    private static String raspUrl;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -34,49 +32,32 @@ public class SoaringForecastDownloader {
     private SoaringForecastApi client;
 
     @Inject
-    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils) {
+    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils, String raspUrl) {
         this.client = client;
         this.bitmapImageUtils = bitmapImageUtils;
-    }
-
-    public void shutdown() {
-        compositeDisposable.dispose();
-    }
-
-    public void clearOutstandingLoads() {
-        compositeDisposable.clear();
-    }
-
-    public Single<RegionForecastDates> getForecastsForDay(final String region) {
-        return client.getForecastDates("current.json?" + (new Date()).getTime());
-    }
-
-    public Observable<ModelLocationAndTimes> getTypeLocationAndTimes(final String region, final RegionForecastDates regionForecastDates) {
-        return Observable.fromIterable(regionForecastDates.getForecastDates())
-                .flatMap((Function<RegionForecastDate, Observable<ModelLocationAndTimes>>) (RegionForecastDate regionForecastDate) ->
-                        callTypeLocationAndTimes(region, regionForecastDate).toObservable()
-                                .doOnNext(regionForecastDate::setModelLocationAndTimes));
+        this.raspUrl = raspUrl;
     }
 
     /**
-     * Call to find what days forecasts are available for forecasts
+     * Call to find what regions and days forecasts are available
      *
      * @return
      * @throws IOException
      * @throws NullPointerException
      */
-    public Single<RegionForecastDates> getRegionForecastDates() {
-        return client.getForecastDates("current.json?" + (new Date()).getTime());
+    public Single<Regions> getRegionForecastDates() {
+        return client.getForecastDates("current.json" );
     }
 
     /**
-     * Call to find out which forecasts (gps, nam, rap) are available for the day
+     * For the given region (e.g. NewEngland) and day find the available forecast models
      *
+     * @param region
      * @param regionForecastDate
      * @throws IOException
      */
-    public Single<ModelLocationAndTimes> callTypeLocationAndTimes(String region, RegionForecastDate regionForecastDate) {
-        return client.getTypeLocationAndTimes(region + "/" + regionForecastDate.getYyyymmddDate() + "/status.json");
+    public Single<ForecastModels> getForecastModels(String region, String  regionForecastDate) {
+        return client.getForecastModels(region + "/" + regionForecastDate + "/status.json");
     }
 
     /**
@@ -158,7 +139,7 @@ public class SoaringForecastDownloader {
 
         return Single.create(emitter -> {
             try {
-                emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, forecastUrl + parmUrl));
+                emitter.onSuccess((SoaringForecastImage) bitmapImageUtils.getBitmapImage(soaringForecastImage, raspUrl, parmUrl));
             } catch (Exception e) {
                 emitter.onError(e);
                 Timber.e(e);
@@ -200,8 +181,8 @@ public class SoaringForecastDownloader {
      */
     public String getSoaringForecastUrlParm(String region, String yyyymmddDate, String
             forecastType, String forecastParameter, String forecastTime, String bitmapType) {
-        return String.format("%s/%s/%s/%s.curr.%slst.d2.%s.png?%s", region, yyyymmddDate
-                , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType, new Date().getTime());
+        return String.format("%s/%s/%s/%s.curr.%slst.d2.%s.png", region, yyyymmddDate
+                , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType);
     }
 
     /**

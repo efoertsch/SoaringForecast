@@ -4,9 +4,9 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import com.fisincorporated.soaringforecast.messages.DisplaySoundingLocation;
+import com.fisincorporated.soaringforecast.messages.DisplaySounding;
 import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
-import com.fisincorporated.soaringforecast.soaring.json.SoundingLocation;
+import com.fisincorporated.soaringforecast.soaring.json.Sounding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,9 +34,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private boolean drawingTask = false;
 
     //Default for NewEngland - revise if new regions become available
-    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
-            , new LatLng(45.0120811, -70.5046997));
-    private List<SoundingLocation> soundingLocations = new ArrayList<>();
+//    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
+//            , new LatLng(45.0120811, -70.5046997));
+    private LatLngBounds mapLatLngBounds ;
+    private List<Sounding> soundings = new ArrayList<>();
     private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
 
     private List<Marker> taskTurnpointMarkers = new ArrayList<>();
@@ -136,12 +137,12 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     }
 
     // ----- Sounding markers ----------------------------------------
-    public void setSoundingLocations(List<SoundingLocation> newSoundingLocations) {
-        soundingLocations.clear();
-        if (newSoundingLocations == null || newSoundingLocations.size() == 0) {
+    public void setSoundings(List<Sounding> soundings) {
+        this.soundings.clear();
+        if (soundings == null || soundings.size() == 0) {
             displaySoundingMarkers(false);
         } else {
-            soundingLocations.addAll(newSoundingLocations);
+            this.soundings.addAll(soundings);
             createSoundingMarkers();
         }
     }
@@ -153,12 +154,12 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         soundingMarkers.clear();
         LatLng latLng;
         Marker marker;
-        for (SoundingLocation soundingLocation : soundingLocations) {
-            latLng = new LatLng(soundingLocation.getLatitude(), soundingLocation.getLongitude());
+        for (Sounding sounding : soundings) {
+            latLng = new LatLng(sounding.getLat(), sounding.getLng());
             marker = googleMap.addMarker(new MarkerOptions().position(latLng)
-                    .title(soundingLocation.getLocation()));
+                    .title(sounding.getLocation()));
             soundingMarkers.add(marker);
-            marker.setTag(soundingLocation);
+            marker.setTag(sounding);
             displaySoundingMarkers(true);
         }
     }
@@ -194,7 +195,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             marker.showInfoWindow();
             return true;
         } else {
-            EventBus.getDefault().post(new DisplaySoundingLocation((SoundingLocation) marker.getTag()));
+            EventBus.getDefault().post(new DisplaySounding((Sounding) marker.getTag()));
             return true;
         }
     }
@@ -234,7 +235,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
         if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
             drawingTask = true;
-            int numberTurnpoints = taskTurnpoints.size();
             for (int i = 0; i < taskTurnpoints.size(); ++i) {
                 taskTurnpoint = taskTurnpoints.get(i);
                 if (i == 0) {

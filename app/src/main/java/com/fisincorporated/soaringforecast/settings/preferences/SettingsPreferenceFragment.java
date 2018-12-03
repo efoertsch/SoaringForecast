@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.settings;
+package com.fisincorporated.soaringforecast.settings.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -64,6 +64,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().setTitle(getString(R.string.settings));
         // Set up a listener whenever a key changes
         initSummary(getPreferenceScreen());
         getPreferenceScreen().getSharedPreferences()

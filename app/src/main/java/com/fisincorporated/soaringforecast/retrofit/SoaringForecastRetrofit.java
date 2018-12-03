@@ -8,13 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SoaringForecastRetrofit {
 
-    public static final String SOARING_FORECAST_URL = "http://www.soargbsc.com/rasp/";
-
     private Retrofit retrofit;
 
-    public SoaringForecastRetrofit(OkHttpClient okHttpClient ){
+    public SoaringForecastRetrofit(OkHttpClient okHttpClient, String raspUrl ){
         Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(SOARING_FORECAST_URL)
+                .baseUrl(raspUrl)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create());

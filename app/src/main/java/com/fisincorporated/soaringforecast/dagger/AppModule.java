@@ -2,6 +2,7 @@ package com.fisincorporated.soaringforecast.dagger;
 
 import android.content.Context;
 
+import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.app.SoaringWeatherApplication;
 import com.fisincorporated.soaringforecast.cache.BitmapCache;
@@ -75,6 +76,11 @@ public class AppModule {
         return new LoggingInterceptor();
     }
 
+    @Provides @Named("rasp_url")
+    @Singleton
+    public String getRaspUrl(){
+        return appContext.getString(R.string.rasp_url);
+    }
 
     @Provides
     @Singleton

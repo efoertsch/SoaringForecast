@@ -15,6 +15,7 @@
     <item
         android:id="@+id/forecast_menu_toggle_sounding_points"
         android:title="@string/forecast_menu_toggle_sounds"
+        android:checkable="true"
         app:showAsAction="never"
         />
 
@@ -23,4 +24,8 @@
         android:title="@string/opacity_slider"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/forecast_menu_select_regions"
+        android:title="@string/select_region"
+        app:showAsAction="never"/>
 </menu>

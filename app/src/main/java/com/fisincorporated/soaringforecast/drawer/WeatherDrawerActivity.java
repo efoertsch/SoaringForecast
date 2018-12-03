@@ -86,9 +86,9 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
 
-    public void  checkForecastsToBeDisplayed() {
+    public void checkForecastsToBeDisplayed() {
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
-        Menu menu= navigationView.getMenu();
+        Menu menu = navigationView.getMenu();
         MenuItem menuItem = menu.findItem(R.id.nav_menu_skysight);
         if (menuItem != null) {
             menuItem.setVisible(appPreferences.isSkySightDisplayed());
@@ -174,7 +174,6 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_import_turnpoints:
                 displayTurnpointsImport();
                 break;
-
             case R.id.nav_menu_about:
                 displayAbout();
                 break;
@@ -187,7 +186,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
                 .replace(R.id.app_frame_layout, fragment);
-        if(addToBackstack) {
+        if (addToBackstack) {
             fragmentTransaction.addToBackStack(null);
         }
         fragmentTransaction.commit();
@@ -208,15 +207,14 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
     private void displaySettingsActivity() {
-        Intent i = new Intent(this, SettingsActivity.class);
-        startActivity(i);
+        SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
+        startActivity(builder.displaySettings().build(this));
     }
 
     private void displayAbout() {
         Intent i = new Intent(this, AboutActivity.class);
         startActivity(i);
     }
-
 
     private void displayNoaaSatelliteFragment() {
         SatelliteActivity.Builder builder = SatelliteActivity.Builder.getBuilder();
@@ -234,7 +232,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         displayFragment(new SoaringForecastFragment(), false);
     }
 
-    private void displayTaskList(){
+    private void displayTaskList() {
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
         builder.displayTaskList().enableClickTask(false);
         startActivity(builder.build(this));
@@ -258,8 +256,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SnackbarMessage message) {
-        Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(),
-                Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(), message.getDuration())
                 .show();
     }
 
@@ -278,7 +275,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         builder.setTitle(R.string.oops)
                 .setMessage(R.string.need_google_play_services)
                 .setPositiveButton(R.string.exit, (dialog, id) -> {
-                   finish();
+                    finish();
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
