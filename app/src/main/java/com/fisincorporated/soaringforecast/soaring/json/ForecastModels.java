@@ -3,6 +3,7 @@ package com.fisincorporated.soaringforecast.soaring.json;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -40,7 +41,7 @@ public class ForecastModels {
     @Override
     public String toString() {
         return new StringBuilder()
-                .append("models").append(models.toArray())
+                .append("models: ").append(Arrays.toString(models.toArray()))
                 .toString();
     }
 
