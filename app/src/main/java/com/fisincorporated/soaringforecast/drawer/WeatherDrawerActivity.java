@@ -28,6 +28,7 @@ import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.fisincorporated.soaringforecast.windy.WindyActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -150,6 +151,9 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_airport_weather:
                 displayAirportMetarTaf();
                 break;
+            case R.id.nav_menu_windy:
+                displayWindy();
+                break;
             case R.id.nav_menu_display_options:
                 displaySettingsActivity();
                 break;
@@ -200,6 +204,11 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         startActivity(builder.build(this));
     }
 
+
+    private void displayWindy() {
+        WindyActivity.Builder builder = WindyActivity.Builder.getBuilder();
+        startActivity(builder.build(this));
+    }
     private void displayAirportMetarTaf() {
         AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
         builder.displayMetarTaf();

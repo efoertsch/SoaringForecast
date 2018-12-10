@@ -12,6 +12,12 @@
                 <item
                     android:id="@+id/nav_menu_rasp"
                     android:title="@string/action_soaring_forecast_rasp"/>
+
+                <item
+                    android:id="@+id/nav_menu_windy"
+                    android:title="@string/action_airport_windy"
+                    />
+
                 <item
                     android:id="@+id/nav_menu_skysight"
                     android:title="@string/action_soaring_forecast_skysight"/>
