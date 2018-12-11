@@ -19,13 +19,13 @@ public class WindyFragment extends Fragment {
 
     private WindyView windyView;
     private WebView webView;
+    private int zoom = 7;
 
     private LatLng defaultLatLng = new LatLng( 43.1393051,-72.076004);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
 
         windyView = DataBindingUtil.inflate(inflater, R.layout.fragment_windy, container, false);
         webView = windyView.fragmentWindyWebview;
@@ -37,7 +37,7 @@ public class WindyFragment extends Fragment {
             webView.setWebContentsDebuggingEnabled(true);
         }
         // prevent popups and new windows (but do not override the onCreateWindow() )
-        //webSettings.setSupportMultipleWindows(true);
+        webView.getSettings().setSupportMultipleWindows(true);
 
         webView.loadUrl("file:///android_asset/windy.html");
 
@@ -58,6 +58,11 @@ public class WindyFragment extends Fragment {
     @JavascriptInterface
     public double getLong(){
         return defaultLatLng.longitude;
+    }
+
+    @JavascriptInterface
+    public double getZoom(){
+        return zoom;
     }
 
 }
