@@ -34,8 +34,10 @@ public class AppPreferences {
     private static final String FORECAST_OVERLAY_OPACITY = "FORECAST_OVERLAY_OPACITY";
     private static final String ICAO_CODE_DELIMITER = " ";
     private static final String SELECTED_TASK_ID = "SELECTED_TASK_ID";
+    private static final String WINDY_ZOOM_LEVEL = "WINDY_ZOOM_LEVEL" ;
 
     // These string values are assigned in code so they match what is used in Settings
+    private static String DISPLAY_WINDY_MENU_OPTION;
     private static String DISPLAY_SKYSIGHT_MENU_OPTION;
     private static String DISPLAY_DR_JACKS_MENU_OPTION;
     private static String RAW_METAR_KEY;
@@ -74,6 +76,7 @@ public class AppPreferences {
         DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
         soaringForecastDefaultRegion = context.getString(R.string.new_england_region);
 
+        DISPLAY_WINDY_MENU_OPTION =  context.getString(R.string.pref_add_windy_to_menu_key);
         DISPLAY_SKYSIGHT_MENU_OPTION = context.getString(R.string.pref_add_skysight_to_menu_key);
         DISPLAY_DR_JACKS_MENU_OPTION = context.getString(R.string.pref_add_dr_jacks_to_menu_key);
 
@@ -313,6 +316,15 @@ public class AppPreferences {
         setSelectedAirportCodes(sb.toString());
     }
 
+
+    public boolean isAnyForecastOptionDisplayed(){
+        return isWindyDisplayed() || isSkySightDisplayed() || isDrJacksDisplayed();
+    }
+
+    public boolean isWindyDisplayed(){
+        return sharedPreferences.getBoolean(DISPLAY_WINDY_MENU_OPTION, true);
+    }
+
     public boolean isSkySightDisplayed(){
         return sharedPreferences.getBoolean(DISPLAY_SKYSIGHT_MENU_OPTION, false);
     }
@@ -351,4 +363,7 @@ public class AppPreferences {
         editor.apply();
     }
 
+    public double getWindyZoomLevel() {
+        return sharedPreferences.getInt(WINDY_ZOOM_LEVEL, 7);
+    }
 }

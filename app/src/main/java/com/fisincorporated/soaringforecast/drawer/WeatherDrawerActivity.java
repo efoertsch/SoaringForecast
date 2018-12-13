@@ -86,18 +86,29 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-
     public void checkForecastsToBeDisplayed() {
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.findItem(R.id.nav_menu_skysight);
-        if (menuItem != null) {
-            menuItem.setVisible(appPreferences.isSkySightDisplayed());
+        MenuItem menuItem = menu.findItem(R.id.nav_menu_soaring_forecasts);
+        if (appPreferences.isAnyForecastOptionDisplayed()) {
+            menuItem.setVisible(true);
+
+            menuItem = menu.findItem(R.id.nav_menu_windy);
+            if (menuItem != null) {
+                menuItem.setVisible(appPreferences.isWindyDisplayed());
+            }
+            menuItem = menu.findItem(R.id.nav_menu_skysight);
+            if (menuItem != null) {
+                menuItem.setVisible(appPreferences.isSkySightDisplayed());
+            }
+            menuItem = menu.findItem(R.id.nav_menu_dr_jacks);
+            if (menuItem != null) {
+                menuItem.setVisible(appPreferences.isDrJacksDisplayed());
+            }
+        } else {
+            menuItem.setVisible(false);
         }
-        menuItem = menu.findItem(R.id.nav_menu_dr_jacks);
-        if (menuItem != null) {
-            menuItem.setVisible(appPreferences.isDrJacksDisplayed());
-        }
+
     }
 
 
@@ -143,28 +154,9 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-
         switch (menuItem.getItemId()) {
-            case R.id.nav_menu_airport_list:
-                displayAirportListFragment();
-                break;
-            case R.id.nav_menu_airport_weather:
-                displayAirportMetarTaf();
-                break;
             case R.id.nav_menu_windy:
                 displayWindy();
-                break;
-            case R.id.nav_menu_display_options:
-                displaySettingsActivity();
-                break;
-            case R.id.nav_menu_noaa_satellite:
-                displayNoaaSatelliteFragment();
-                break;
-            case R.id.nav_menu_geos_satellite:
-                displayGeossSatelliteFragment();
-                break;
-            case R.id.nav_menu_rasp:
-                displaySoaringForecasts();
                 break;
             case R.id.nav_menu_skysight:
                 startSkySightBrowser();
@@ -172,11 +164,26 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_dr_jacks:
                 startDrJacksBrowser();
                 break;
+            case R.id.nav_menu_airport_weather:
+                displayAirportMetarTaf();
+                break;
+            case R.id.nav_menu_noaa_satellite:
+                displayNoaaSatelliteFragment();
+                break;
+            case R.id.nav_menu_geos_satellite:
+                displayGeossSatelliteFragment();
+                break;
+            case R.id.nav_menu_airport_list:
+                displayAirportListFragment();
+                break;
             case R.id.nav_menu_task_list:
                 displayTaskList();
                 break;
             case R.id.nav_menu_import_turnpoints:
                 displayTurnpointsImport();
+                break;
+            case R.id.nav_menu_settings:
+                displaySettingsActivity();
                 break;
             case R.id.nav_menu_about:
                 displayAbout();
@@ -194,16 +201,13 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             fragmentTransaction.addToBackStack(null);
         }
         fragmentTransaction.commit();
-
     }
-
 
     private void displayAirportListFragment() {
         AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
         builder.displayAirportListMaintenace();
         startActivity(builder.build(this));
     }
-
 
     private void displayWindy() {
         WindyActivity.Builder builder = WindyActivity.Builder.getBuilder();

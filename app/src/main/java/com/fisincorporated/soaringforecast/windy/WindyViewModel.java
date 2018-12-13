@@ -65,7 +65,7 @@ public class WindyViewModel extends AndroidViewModel {
 
     @JavascriptInterface
     public double getZoom() {
-        return zoom;
+        return appPreferences.getWindyZoomLevel();
     }
 
 }
