@@ -9,17 +9,29 @@
 
     </data>
 
-    <FrameLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#0099cc"
-        >
+        android:layout_height="match_parent">
 
         <WebView
             android:id="@+id/fragment_windy_webview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/fragment_windy_test_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    </FrameLayout>
+
+        <Button
+            android:id="@+id/fragment_windy_test_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/test"/>
+
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

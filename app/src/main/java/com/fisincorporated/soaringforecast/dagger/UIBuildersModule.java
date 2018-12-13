@@ -20,6 +20,7 @@ import com.fisincorporated.soaringforecast.task.search.TurnpointSearchFragment;
 import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadFragment;
 import com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportFragment;
 import com.fisincorporated.soaringforecast.windy.WindyActivity;
+import com.fisincorporated.soaringforecast.windy.WindyFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -30,7 +31,6 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract WeatherDrawerActivity bindWeatherDrawerActivity();
 
-
     // ----- Forecasts ------------------------
     @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
     abstract SoaringForecastFragment bindSoaringForecastFragmentSpinner();
@@ -38,6 +38,12 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
     abstract RegionSelectionFragment bindsRegionSelectionFragment();
 
+    // ----- Windy -------
+    @ContributesAndroidInjector(modules = {})
+    abstract WindyActivity bindWindyActivity();
+
+    @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
+    abstract WindyFragment bindWindyFragment();
 
     // --- Weather Metar/Taf -------------------
     @ContributesAndroidInjector(modules = {})
@@ -94,9 +100,7 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract AboutFragment bindAboutFragment();
 
-    // ----- Windy -------
-    @ContributesAndroidInjector(modules = {})
-    abstract WindyActivity bindWindyActivity();
+
 
 
 

@@ -14,6 +14,8 @@ import okhttp3.OkHttpClient;
 @Module
 public class SoaringForecastModule {
 
+    private static final String APP_WINDY_URL = "file:///android_asset/windy.html";
+
     @Provides
     public SoaringForecastApi providesSoaringForecastApi(@Named("interceptor")OkHttpClient okHttpClient, @Named("rasp_url")String raspUrl) {
         return new SoaringForecastRetrofit(okHttpClient, raspUrl).getRetrofit().create(SoaringForecastApi.class);
@@ -24,4 +26,11 @@ public class SoaringForecastModule {
                                                                       BitmapImageUtils bitmapImageUtils,  @Named("rasp_url")String raspUrl) {
         return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient, raspUrl), bitmapImageUtils, raspUrl);
     }
+
+    @Provides
+    @Named("appWindyUrl")
+    public String getAppWindUrl(){
+        return  APP_WINDY_URL;
+    }
+
 }
