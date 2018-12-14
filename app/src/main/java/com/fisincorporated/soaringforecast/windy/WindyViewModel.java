@@ -11,7 +11,10 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
+import com.fisincorporated.soaringforecast.soaring.json.Model;
+import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -33,6 +36,9 @@ public class WindyViewModel extends AndroidViewModel {
     private AppRepository appRepository;
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private MutableLiveData<Boolean> startUpComplete;
+    private ModelForecastDate selectedModelForecastDate;
+    private LatLng selectedLatLng;
 
 
     public WindyViewModel(@NonNull Application application) {
@@ -48,6 +54,15 @@ public class WindyViewModel extends AndroidViewModel {
     WindyViewModel setAppRepository(AppRepository appRepository){
         this.appRepository =  appRepository;
         return this;
+    }
+
+    public MutableLiveData<Boolean> getStartUpComplete() {
+        if (startUpComplete == null) {
+            startUpComplete = new MutableLiveData<>();
+            getSelectedModelForecastDate();
+            getTask();
+        }
+        return startUpComplete;
     }
 
 
@@ -75,17 +90,37 @@ public class WindyViewModel extends AndroidViewModel {
 
     @JavascriptInterface
     public double getLat() {
-        return defaultLatLng.latitude;
+        return selectedLatLng.latitude;
     }
 
     @JavascriptInterface
     public double getLong() {
-        return defaultLatLng.longitude;
+        return selectedLatLng.longitude;
     }
 
     @JavascriptInterface
     public double getZoom() {
         return appPreferences.getWindyZoomLevel();
+    }
+
+    @JavascriptInterface
+    public  String getTaskTurnpointsForMap() {
+        if (taskTurnpoints.getValue() == null) {
+            return null;
+        }
+        Gson gson = new Gson();
+        String taskJson = gson.toJson(taskTurnpoints.getValue());
+        return taskJson;
+    }
+
+
+    public void getTask(){
+        long taskId = appPreferences.getSelectedTaskId();
+        if (taskId != -1) {
+            getTask(taskId);
+        } else {
+            startUpComplete.setValue(true);
+        }
     }
 
     public void getTask(long taskId) {
@@ -95,6 +130,7 @@ public class WindyViewModel extends AndroidViewModel {
                 .subscribe(taskTurnpointList -> {
                             appPreferences.setSelectedTaskId(taskId);
                             taskTurnpoints.setValue(taskTurnpointList);
+                            startUpComplete.setValue(true);
                         },
                         t -> {
                             //TODO email stack trace
@@ -107,12 +143,20 @@ public class WindyViewModel extends AndroidViewModel {
         return taskTurnpoints;
     }
 
-    public void getTask(){
-        getTask(appPreferences.getSelectedTaskId());
-    }
-
     public void setTaskId(long taskId) {
         appPreferences.setSelectedTaskId(taskId);
+    }
+
+    public void getSelectedModelForecastDate() {
+        selectedModelForecastDate = appPreferences.getSelectedModelForecastDate();
+        if (selectedModelForecastDate != null ) {
+            Model model = selectedModelForecastDate.getModel();
+            if (model != null) {
+                selectedLatLng = new LatLng(model.getCenter().get(0), model.getCenter().get(1));
+                return;
+            }
+        }
+        selectedLatLng = defaultLatLng;
     }
 
     @Override
@@ -120,4 +164,5 @@ public class WindyViewModel extends AndroidViewModel {
         compositeDisposable.dispose();
         super.onCleared();
     }
+
 }

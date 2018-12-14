@@ -12,6 +12,8 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.repository.Airport;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
+import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +37,7 @@ public class AppPreferences {
     private static final String ICAO_CODE_DELIMITER = " ";
     private static final String SELECTED_TASK_ID = "SELECTED_TASK_ID";
     private static final String WINDY_ZOOM_LEVEL = "WINDY_ZOOM_LEVEL" ;
+    private static final String SELECTED_MODEL_FORECAST_DATE = "SELECTED_MODEL_FORECAST_DATE";
 
     // These string values are assigned in code so they match what is used in Settings
     private static String DISPLAY_WINDY_MENU_OPTION;
@@ -365,5 +368,19 @@ public class AppPreferences {
 
     public double getWindyZoomLevel() {
         return sharedPreferences.getInt(WINDY_ZOOM_LEVEL, 7);
+    }
+
+    public void setSelectedModelForecastDate(ModelForecastDate selectedModelForecastDate) {
+        Gson gson = new Gson();
+        String json = gson.toJson(selectedModelForecastDate);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SELECTED_MODEL_FORECAST_DATE, json);
+        editor.apply();
+    }
+
+    public ModelForecastDate getSelectedModelForecastDate() {
+        Gson gson = new Gson();
+        return gson.fromJson(sharedPreferences.getString(SELECTED_MODEL_FORECAST_DATE, "")
+                ,ModelForecastDate.class);
     }
 }

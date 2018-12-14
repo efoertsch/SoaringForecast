@@ -1,103 +1,39 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
+<!-- !!!!!!!!!!Used for testing only!!!!!!!!! -->
+<!-- point browser to this file via file:///(your path to)/assets/chrome_windy.html -->
 <html>
+
 <head>
     <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
     <script src="https://api4.windy.com/assets/libBoot.js"></script>
-
     <style>
-  		#windy {
-  			width: 100%;
-  			height:  800px ;
-  		}
-
-    </style>
+    #windy {
+      width: 100%;
+      height: 400px;
+    }
+  </style>
 </head>
+
 <body>
 <div id="windy"></div>
-<button onclick="getWindyDiv()">TestDrawing</button>
-
-
 <style>
-        #windy #embed-zoom {
-            display: none !important;
-        }
-</style>
+    #windy #embed-zoom {
+      display: none !important;
+    }
+
+
+  </style>
 
 <script type="text/javascript">
-
- function getWindyDiv(){
- var windyDiv = document.getElementById("windy")
- console.log("Height" + windyDiv.offsetHeight)
- windyDiv.style.height = "900px"
- console.log("got windy element")
- }
-
- var turnpoints = [{"latitudeDeg": 42.425003,"longitudeDeg": -71.79117,"title": "Sterling"}
-        , {"latitudeDeg": 42.46,"longitudeDeg": -71.92,"title": "Random"}]
-
- function myFunction(){
-        drawTask(turnpoints)
-    }
-
-    const options = {
-
-                // Required: API key
-                 key: 'y852QwXYurm70lQozoV2rGSLQXoltuQc',
-
-                // Put additional console output
-                verbose: true,
-
-                // Optional: Initial state of the map
-                lat: 43.1393051,
-                lon:  -72.076004,
-                zoom: 7
-        }
-    // Initialize Windy API
-    windyInit(options, windyAPI => {
-      // windyAPI is ready, and contain 'map', 'store',
-      // 'picker' and other usefull stuff
-      // .map is instance of Leaflet map
-      //const { map } = windyAPI
-      const {
-        map,
-        utils,
-        picker,
-        pickerMobile,
-        overlays,
-        broadcast,
-        store
-      } = windyAPI
-
-
-      // workaround - mobilePicker has bug so this tells windy to use desktopPicker
-      <!--let mobileMadeFalse = false;-->
-      <!--if (W.rootScope.isMobile) {-->
-        <!--W.rootScope.isMobile = false;-->
-        <!--mobileMadeFalse = true;-->
-      <!--}-->
-      <!--picker.on('pickerOpened', (e) => {-->
-        <!--if (mobileMadeFalse) {-->
-          <!--document.getElementsByClassName("picker-lines noselect")[0].parentNode.style.marginTop = "-70px";-->
-          <!--document.getElementsByClassName("picker-drag-me")[0].style.display = "none";-->
-        <!--}-->
-      <!--});-->
-      // end of workaround
-
-
-      <!--L.popup()-->
-      <!--.setLatLng([getLat(),getLong()])-->
-      <!--.setContent("Hello World")-->
-      <!--.openOn( map );-->
-
-       function androidConnected() {
-      if (typeof android !== "undefined" && android !== null){
-          return true;
-      } else {
-        alert("Not viewing in webview");
-        return false;
-      }
-    }
+    function androidConnected() {
+       if (typeof android !== "undefined" && android !== null){
+         return true;
+       } else {
+         alert("Not viewing in webview");
+         return false;
+       }
+     }
 
     function getLat() {
       if (androidConnected()) {
@@ -125,6 +61,12 @@
       }
     }
 
+    function getTaskTurnpointsForMap() {
+     if (androidConnected()) {
+        return JSON.parse(android.getTaskTurnpointsForMap());
+      }
+     }
+
     // Does not set map height dynamically. Need to figure out how to to
     function setHeight(height) {
       if (androidConnected()) {
@@ -143,9 +85,62 @@
      //   smoothFactor: 1
      // });
 
+    function drawTask(taskTurnpoints){
+      console.log(taskTurnpoints);
+      taskTurnpoints.forEach(plotTurnpointOnMap);
+    }
 
- var taskTurnpoints = [{"latitudeDeg": 42.425003,"longitudeDeg": -71.79117,"title": "Sterling"}
-        , {"latitudeDeg": 42.43,"longitudeDeg": -72.0,"title": "Random"}]
+    function plotTurnpointOnMap(taskTurnpoint, index, taskTurnpoints){
+        var latLong = [];
+        latLong[0] = taskTurnpoint.latitudeDeg;
+        latLong[1] = taskTurnpoint.longitudeDeg;
+        //marker = L.marker(latLong).addTo(L.map);
+        //L.polyLine(latLong, {color: 'red'}).addTo(L.map);
+       // marker.bindPopup(taskTurnpoint.title).openPopup();
+    }
+
+
+    const options = {
+        // Required: API key
+        key: getWindyKey(),
+        // Put additional console output
+        verbose: true,
+        // Optional: Initial state of the map
+        lat: getLat(),
+        lon: getLong(),
+        zoom: getZoom(),
+      }
+
+    // Initialize Windy API
+    windyInit(options, windyAPI => {
+      // windyAPI is ready, and contain 'map', 'store',
+      // 'picker' and other usefull stuff
+      // .map is instance of Leaflet map
+      //const { map } = windyAPI
+      const {
+        map,
+        utils,
+        picker,
+        pickerMobile,
+        overlays,
+        broadcast
+      } = windyAPI
+
+
+
+      // workaround - mobilePicker has bug so this tells windy to use desktopPicker
+      let mobileMadeFalse = false;
+      if (W.rootScope.isMobile) {
+        W.rootScope.isMobile = false;
+        mobileMadeFalse = true;
+      }
+      picker.on('pickerOpened', (e) => {
+        if (mobileMadeFalse) {
+          document.getElementsByClassName("picker-lines noselect")[0].parentNode.style.marginTop = "-70px";
+          document.getElementsByClassName("picker-drag-me")[0].style.display = "none";
+        }
+      });
+      // end of workaround
 
     var turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
     var turnpointPolyLine = {
@@ -158,7 +153,10 @@
     var mapMarker = new Array()
     var mapPolyLine = new Array()
 
-     drawTask(taskTurnpoints)
+    // getTaskTurnpointsForMap is app function
+    var taskTurnpoints = getTaskTurnpointsForMap()
+
+    drawTask(taskTurnpoints)
 
     function drawTask(taskTurnpoints){
     if (taskTurnpoints != null){
@@ -174,8 +172,9 @@
       }
     }
 
-    function plotTurnpointOnMap(taskTurnpoint, index, taskTurnpoints){
+    function plotTurnpointOnMap(taskTurnpoint){
         var latLong = [taskTurnpoint.latitudeDeg, taskTurnpoint.longitudeDeg];
+        console.log("turnpoint lat/lng:" + latLong[0] + "/" + latLong[1])
         mapPolyLine.push(latLong)
         marker = L.marker(latLong,{icon: turnpointIcon})
         marker.bindPopup(taskTurnpoint.title);
@@ -184,9 +183,10 @@
         mapMarker.push(marker)
     }
 
+
     })
 
-</script>
+  </script>
 <script>
 // set https://github.com/iatkin/leaflet-svgicon
     //Leaflet-SVGIcon
@@ -390,6 +390,6 @@ L.marker.svgMarker = function(latlng, options) {
     return new L.Marker.SVGMarker(latlng, options)
 }
 </script>
-
 </body>
+
 </html>

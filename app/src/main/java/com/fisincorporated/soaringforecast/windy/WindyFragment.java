@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
@@ -53,7 +52,8 @@ public class WindyFragment extends DaggerFragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        // Menus turned off until issues with drawing task on Windy resolved
+        // setHasOptionsMenu(true);
         windyViewModel = ViewModelProviders.of(this)
                 .get(WindyViewModel.class)
                 .setAppPreferences(appPreferences)
@@ -65,8 +65,6 @@ public class WindyFragment extends DaggerFragment {
                              Bundle savedInstanceState) {
         windyView = DataBindingUtil.inflate(inflater, R.layout.fragment_windy, container, false);
         setupViews();
-
-
         return windyView.getRoot();
     }
 
@@ -87,7 +85,7 @@ public class WindyFragment extends DaggerFragment {
             }
 
             public void onPageFinished(WebView view, String url) {
-                setObservers();
+                // ???
             }
         });
 
@@ -99,15 +97,15 @@ public class WindyFragment extends DaggerFragment {
         // prevent popups and new windows (but do not override the onCreateWindow() )
         webView.getSettings().setSupportMultipleWindows(true);
 
-        Button testButton = windyView.fragmentWindyTestButton;
-        testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                windyViewModel.getTask();
-            }
-        });
+//        Button testButton = windyView.fragmentWindyTestButton;
+//        testButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                windyViewModel.getTask();
+//            }
+//        });
 
-        webView.loadUrl(appWindyUrl);
+        setObservers();
     }
 
     @Override
@@ -154,15 +152,20 @@ public class WindyFragment extends DaggerFragment {
     }
 
     public void setObservers() {
+        windyViewModel.getStartUpComplete().observe(this, isComplete -> {
+            if (isComplete) {
+                webView.loadUrl(appWindyUrl);
+            }
+        });
         windyViewModel.getCommand().observe(this, command -> {
             // execute javascript command
             executeJavaScriptCommand(command);
         });
 
-        windyViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
-            plotTask(taskTurnpoints);
-
-        });
+//        windyViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
+//            plotTask(taskTurnpoints);
+//
+//        });
     }
 
     private void plotTask(List<TaskTurnpoint> taskTurnpoints) {
