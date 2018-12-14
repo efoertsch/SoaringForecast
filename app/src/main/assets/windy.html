@@ -177,7 +177,7 @@
         console.log("turnpoint lat/lng:" + latLong[0] + "/" + latLong[1])
         mapPolyLine.push(latLong)
         marker = L.marker(latLong,{icon: turnpointIcon})
-        marker.bindPopup(taskTurnpoint.title);
+        marker.bindPopup(taskTurnpoint.title + "( " + taskTurnpoint.distanceFromStartingPoint.toFixed(1) +"km)");
         marker.addTo(map);
         //marker.openPopup() only one popup shows at a time so wait for user click to display
         mapMarker.push(marker)
