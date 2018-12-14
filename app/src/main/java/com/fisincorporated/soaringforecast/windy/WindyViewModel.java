@@ -9,7 +9,17 @@ import android.webkit.JavascriptInterface;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.repository.AppRepository;
+import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class WindyViewModel extends AndroidViewModel {
 
@@ -20,6 +30,10 @@ public class WindyViewModel extends AndroidViewModel {
     private int zoom = 7;
     private LatLng defaultLatLng = new LatLng(43.1393051, -72.076004);
     private AppPreferences appPreferences;
+    private AppRepository appRepository;
+    private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
 
     public WindyViewModel(@NonNull Application application) {
         super(application);
@@ -30,6 +44,12 @@ public class WindyViewModel extends AndroidViewModel {
         this.appPreferences =  appPreferences;
         return this;
     }
+
+    WindyViewModel setAppRepository(AppRepository appRepository){
+        this.appRepository =  appRepository;
+        return this;
+    }
+
 
     public MutableLiveData<String> getCommand() {
         if (command == null) {
@@ -68,4 +88,36 @@ public class WindyViewModel extends AndroidViewModel {
         return appPreferences.getWindyZoomLevel();
     }
 
+    public void getTask(long taskId) {
+        Disposable disposable = appRepository.getTaskTurnpionts(taskId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(taskTurnpointList -> {
+                            appPreferences.setSelectedTaskId(taskId);
+                            taskTurnpoints.setValue(taskTurnpointList);
+                        },
+                        t -> {
+                            //TODO email stack trace
+                            Timber.e(t);
+                        });
+        compositeDisposable.add(disposable);
+    }
+
+    public MutableLiveData<List<TaskTurnpoint>> getTaskTurnpoints() {
+        return taskTurnpoints;
+    }
+
+    public void getTask(){
+        getTask(appPreferences.getSelectedTaskId());
+    }
+
+    public void setTaskId(long taskId) {
+        appPreferences.setSelectedTaskId(taskId);
+    }
+
+    @Override
+    public void onCleared() {
+        compositeDisposable.dispose();
+        super.onCleared();
+    }
 }

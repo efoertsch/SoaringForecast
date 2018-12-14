@@ -54,7 +54,6 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private MenuItem clearTaskMenuItem;
 
-
     private boolean showClearTaskMenuItem;
 
     private MenuItem soundingsMenuItem;
@@ -197,7 +196,6 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
         soundingsMenuItem.setChecked(checkSoundsMenuItem);
-
     }
 
     @Override

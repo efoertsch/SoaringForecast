@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -16,7 +19,14 @@ import android.widget.Button;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.WindyView;
+import com.fisincorporated.soaringforecast.repository.AppRepository;
+import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
+import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.google.gson.Gson;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,17 +42,22 @@ public class WindyFragment extends DaggerFragment {
     @Inject
     AppPreferences appPreferences;
 
+    @Inject
+    AppRepository appRepository;
+
     private WindyViewModel windyViewModel;
     private WindyView windyView;
     private WebView webView;
-
+    private MenuItem clearTaskMenuItem;
+    private boolean showClearTaskMenuItem;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         windyViewModel = ViewModelProviders.of(this)
                 .get(WindyViewModel.class)
-                .setAppPreferences(appPreferences);
+                .setAppPreferences(appPreferences)
+                .setAppRepository(appRepository);
     }
 
     @Override
@@ -50,7 +65,7 @@ public class WindyFragment extends DaggerFragment {
                              Bundle savedInstanceState) {
         windyView = DataBindingUtil.inflate(inflater, R.layout.fragment_windy, container, false);
         setupViews();
-        setObservers();
+
 
         return windyView.getRoot();
     }
@@ -72,7 +87,7 @@ public class WindyFragment extends DaggerFragment {
             }
 
             public void onPageFinished(WebView view, String url) {
-                // resetHeight();
+                setObservers();
             }
         });
 
@@ -88,17 +103,54 @@ public class WindyFragment extends DaggerFragment {
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawLine(43.1393051, -72.076004, 43.5, -72.84);
+                windyViewModel.getTask();
             }
         });
-
 
         webView.loadUrl(appWindyUrl);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.windy_menu, menu);
+        clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
+        if (clearTaskMenuItem != null) {
+            clearTaskMenuItem.setVisible(showClearTaskMenuItem);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.forecast_menu_select_task:
+                selectTask();
+                return true;
+            case R.id.forecast_menu_clear_task:
+                removeTaskTurnpoints();
+                windyViewModel.setTaskId(-1);
+                displayTaskClearMenuItem(false);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void removeTaskTurnpoints() {
+        //TODO remove points from Windy overlay
+    }
+
+    private void displayTaskClearMenuItem(boolean visible) {
+        showClearTaskMenuItem = visible;
+        getActivity().invalidateOptionsMenu();
+    }
+
+
     public void drawLine(double fromLat, double fromLong, double toLat, double toLong) {
-       executeJavaScriptCommand("javascript:drawLine( " + fromLat + "," + fromLong
-                + "," + toLat + "," + toLong + ")");
+        String command = "javascript:drawLine( " + fromLat + "," + fromLong
+                + "," + toLat + "," + toLong + ")";
+        executeJavaScriptCommand(command);
     }
 
     public void setObservers() {
@@ -106,10 +158,42 @@ public class WindyFragment extends DaggerFragment {
             // execute javascript command
             executeJavaScriptCommand(command);
         });
+
+        windyViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
+            plotTask(taskTurnpoints);
+
+        });
+    }
+
+    private void plotTask(List<TaskTurnpoint> taskTurnpoints) {
+        Gson gson = new Gson();
+        String taskJson = gson.toJson(taskTurnpoints);
+        String command = new StringBuilder().append("javascript:").append("drawTask(")
+                .append(taskJson).append(")").toString();
+        executeJavaScriptCommand(command);
+
     }
 
     private void executeJavaScriptCommand(String command) {
         webView.evaluateJavascript(command, null);
+    }
+
+    private void selectTask() {
+        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
+        builder.displayTaskList().enableClickTask(true);
+        startActivityForResult(builder.build(this.getContext()), 999);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bundle bundle;
+        if (requestCode == 999 && data != null) {
+            if ((bundle = data.getExtras()) != null) {
+                long taskId = bundle.getLong(Constants.SELECTED_TASK);
+                if (taskId != 0) {
+                    windyViewModel.setTaskId(taskId);
+                }
+            }
+        }
     }
 
 }

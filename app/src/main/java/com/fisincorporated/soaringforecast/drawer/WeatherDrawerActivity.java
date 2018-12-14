@@ -108,9 +108,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         } else {
             menuItem.setVisible(false);
         }
-
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
