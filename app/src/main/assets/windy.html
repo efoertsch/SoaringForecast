@@ -26,7 +26,8 @@
   </style>
 
 <script type="text/javascript">
-    function androidConnected() {
+
+  function androidConnected() {
        if (typeof android !== "undefined" && android !== null){
          return true;
        } else {
@@ -34,6 +35,13 @@
          return false;
        }
      }
+
+     function getWindyKey() {
+      if (androidConnected()) {
+        return android.getWindyKey();
+      }
+    }
+
 
     function getLat() {
       if (androidConnected()) {
@@ -49,56 +57,11 @@
       }
     }
 
-    function getWindyKey() {
-      if (androidConnected()) {
-        return android.getWindyKey();
-      }
-    }
-
-    function getZoom() {
+     function getZoom() {
       if (androidConnected()) {
         return android.getZoom();
       }
     }
-
-    function getTaskTurnpointsForMap() {
-     if (androidConnected()) {
-        return JSON.parse(android.getTaskTurnpointsForMap());
-      }
-     }
-
-    // Does not set map height dynamically. Need to figure out how to to
-    function setHeight(height) {
-      if (androidConnected()) {
-        document.getElementById("map-container")
-          .style.height = height;
-        document.getElementById("map-container")
-          .style.bottom = height;
-      }
-    }
-
-     // Example of customizing line
-     // var taskLine = new L.polyline(pointList, {
-     //   color: 'red',
-     //   weight: 3,
-     //   opacity: 0.5,
-     //   smoothFactor: 1
-     // });
-
-    function drawTask(taskTurnpoints){
-      console.log(taskTurnpoints);
-      taskTurnpoints.forEach(plotTurnpointOnMap);
-    }
-
-    function plotTurnpointOnMap(taskTurnpoint, index, taskTurnpoints){
-        var latLong = [];
-        latLong[0] = taskTurnpoint.latitudeDeg;
-        latLong[1] = taskTurnpoint.longitudeDeg;
-        //marker = L.marker(latLong).addTo(L.map);
-        //L.polyLine(latLong, {color: 'red'}).addTo(L.map);
-       // marker.bindPopup(taskTurnpoint.title).openPopup();
-    }
-
 
     const options = {
         // Required: API key
@@ -116,7 +79,6 @@
       // windyAPI is ready, and contain 'map', 'store',
       // 'picker' and other usefull stuff
       // .map is instance of Leaflet map
-      //const { map } = windyAPI
       const {
         map,
         utils,
@@ -125,7 +87,6 @@
         overlays,
         broadcast
       } = windyAPI
-
 
 
       // workaround - mobilePicker has bug so this tells windy to use desktopPicker
@@ -144,9 +105,10 @@
 
     var turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
     var turnpointPolyLine = {
-                    color: '#ff0000',
+                    color: 'red',
                     weight: 2,
                     opacity: 1,
+                    smoothFactor: 1,
                     zIndex: 1000,
                     className: 'polyTrack'};
 
@@ -177,16 +139,31 @@
         console.log("turnpoint lat/lng:" + latLong[0] + "/" + latLong[1])
         mapPolyLine.push(latLong)
         marker = L.marker(latLong,{icon: turnpointIcon})
-        marker.bindPopup(taskTurnpoint.title + "( " + taskTurnpoint.distanceFromStartingPoint.toFixed(1) +"km)");
+        marker.bindPopup(taskTurnpoint.title + "\n( " + taskTurnpoint.distanceFromStartingPoint.toFixed(1) +"km)");
         marker.addTo(map);
         //marker.openPopup() only one popup shows at a time so wait for user click to display
         mapMarker.push(marker)
     }
 
+    function getTaskTurnpointsForMap() {
+     if (androidConnected()) {
+        return JSON.parse(android.getTaskTurnpointsForMap());
+      }
+     }
+
+    // Does not set map height dynamically. Need to figure out how to to
+    function setHeight(height) {
+      if (androidConnected()) {
+        document.getElementById("map-container")
+          .style.height = height;
+        document.getElementById("map-container")
+          .style.bottom = height;
+      }
+    }
 
     })
 
-  </script>
+</script>
 <script>
 // set https://github.com/iatkin/leaflet-svgicon
     //Leaflet-SVGIcon

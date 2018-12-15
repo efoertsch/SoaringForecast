@@ -71,6 +71,20 @@ public class WindyFragment extends DaggerFragment {
     @SuppressLint("SetJavaScriptEnabled")
     private void setupViews() {
         webView = windyView.fragmentWindyWebview;
+        webView.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        int width = webView.getMeasuredWidth();
+        int height = webView.getMeasuredHeight();
+//        ViewTreeObserver viewTreeObserver = webView.getViewTreeObserver();
+//        if (viewTreeObserver.isAlive()) {
+//            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//                @Override
+//                public void onGlobalLayout() {
+//                    webView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                    setWebViewHeight(webView.getHeight());
+//                }
+//            });
+//        }
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -106,6 +120,9 @@ public class WindyFragment extends DaggerFragment {
 //        });
 
         setObservers();
+    }
+
+    private void setWebViewHeight(int height) {
     }
 
     @Override
