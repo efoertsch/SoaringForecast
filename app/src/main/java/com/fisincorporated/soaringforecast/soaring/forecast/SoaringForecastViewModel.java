@@ -112,7 +112,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         // if region changed then
         // get list of models/dates for that region
         // refresh display
-        if (selectedRegion != null && !selectedRegion.equals(appPreferences.getSoaringForecastRegion())) {
+        if (selectedRegion != null && !selectedRegion.getName().equals(appPreferences.getSoaringForecastRegion())) {
             if (regions == null) {
                 getRegionForecastDates();
             } else {
@@ -171,16 +171,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
-    // Get initial display forecast model.
-//    public String getSelectedModelName() {
-//        if (selectedModelName == null) {
-//            selectedModelName = appPreferences.getForecastModel();
-//            modelPosition.setValue(modelNames.getValue().indexOf(selectedModelName));
-//            getRegionForecastDates();
-//        }
-//        return selectedModelName;
-//    }
-
     public MutableLiveData<Integer> getModelPosition() {
         return modelPosition;
     }
@@ -191,7 +181,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         appPreferences.setForecastModel(selectedModelName);
         createDatesAndModels(selectedModelName);
     }
-
 
     /**
      * Get all regions and dates for which forecasts are available by region
