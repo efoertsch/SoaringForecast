@@ -14,7 +14,9 @@ import okhttp3.OkHttpClient;
 @Module
 public class SoaringForecastModule {
 
-    private static final String APP_WINDY_URL = "file:///android_asset/windy.html";
+
+    private static final String WINDY_HTML_FILENAME = "windy.html";
+    private static final String APP_WINDY_URL = "file:///android_asset/" + WINDY_HTML_FILENAME;
 
     @Provides
     public SoaringForecastApi providesSoaringForecastApi(@Named("interceptor")OkHttpClient okHttpClient, @Named("rasp_url")String raspUrl) {

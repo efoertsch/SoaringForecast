@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -21,16 +22,19 @@ import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.WindyView;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
-import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
-import com.google.gson.Gson;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import dagger.android.support.DaggerFragment;
+
+
+// What has to happen here
+// 1. Determine size of webView
+// 2. Pass size of webview to html to get proper size for Windy
+// 3. Once Windy set up get/draw task if there is one
+// 4. Set appropriate menu items
 
 public class WindyFragment extends DaggerFragment {
 
@@ -49,11 +53,12 @@ public class WindyFragment extends DaggerFragment {
     private WebView webView;
     private MenuItem clearTaskMenuItem;
     private boolean showClearTaskMenuItem;
+    private int webViewHeight = 500;  // set as default
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Menus turned off until issues with drawing task on Windy resolved
-        // setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
         windyViewModel = ViewModelProviders.of(this)
                 .get(WindyViewModel.class)
                 .setAppPreferences(appPreferences)
@@ -71,19 +76,14 @@ public class WindyFragment extends DaggerFragment {
     @SuppressLint("SetJavaScriptEnabled")
     private void setupViews() {
         webView = windyView.fragmentWindyWebview;
-        webView.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        int width = webView.getMeasuredWidth();
-        int height = webView.getMeasuredHeight();
-//        ViewTreeObserver viewTreeObserver = webView.getViewTreeObserver();
-//        if (viewTreeObserver.isAlive()) {
-//            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                @Override
-//                public void onGlobalLayout() {
-//                    webView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                    setWebViewHeight(webView.getHeight());
-//                }
-//            });
-//        }
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(windyViewModel, "android");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
+        // prevent popups and new windows (but do not override the onCreateWindow() )
+        webView.getSettings().setSupportMultipleWindows(true);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -97,33 +97,25 @@ public class WindyFragment extends DaggerFragment {
                 startActivity(intent);
                 return true;
             }
-
             public void onPageFinished(WebView view, String url) {
                 // ???
             }
         });
 
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(windyViewModel, "android");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true);
+        webView.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewTreeObserver viewTreeObserver = webView.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    webView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    // now should have webview height
+                    setObservers();
+                }
+            });
         }
-        // prevent popups and new windows (but do not override the onCreateWindow() )
-        webView.getSettings().setSupportMultipleWindows(true);
-
-//        Button testButton = windyView.fragmentWindyTestButton;
-//        testButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                windyViewModel.getTask();
-//            }
-//        });
-
-        setObservers();
     }
 
-    private void setWebViewHeight(int height) {
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -142,8 +134,7 @@ public class WindyFragment extends DaggerFragment {
                 selectTask();
                 return true;
             case R.id.forecast_menu_clear_task:
-                removeTaskTurnpoints();
-                windyViewModel.setTaskId(-1);
+                windyViewModel.removeTaskTurnpoints();
                 displayTaskClearMenuItem(false);
                 return true;
 
@@ -152,20 +143,9 @@ public class WindyFragment extends DaggerFragment {
         }
     }
 
-    private void removeTaskTurnpoints() {
-        //TODO remove points from Windy overlay
-    }
-
     private void displayTaskClearMenuItem(boolean visible) {
         showClearTaskMenuItem = visible;
         getActivity().invalidateOptionsMenu();
-    }
-
-
-    public void drawLine(double fromLat, double fromLong, double toLat, double toLong) {
-        String command = "javascript:drawLine( " + fromLat + "," + fromLong
-                + "," + toLat + "," + toLong + ")";
-        executeJavaScriptCommand(command);
     }
 
     public void setObservers() {
@@ -179,18 +159,9 @@ public class WindyFragment extends DaggerFragment {
             executeJavaScriptCommand(command);
         });
 
-//        windyViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
-//            plotTask(taskTurnpoints);
-//
-//        });
-    }
-
-    private void plotTask(List<TaskTurnpoint> taskTurnpoints) {
-        Gson gson = new Gson();
-        String taskJson = gson.toJson(taskTurnpoints);
-        String command = new StringBuilder().append("javascript:").append("drawTask(")
-                .append(taskJson).append(")").toString();
-        executeJavaScriptCommand(command);
+        windyViewModel.getTaskSelected().observe(this, isTaskSelected -> {
+            displayTaskClearMenuItem(isTaskSelected);
+        });
 
     }
 
@@ -209,7 +180,7 @@ public class WindyFragment extends DaggerFragment {
         if (requestCode == 999 && data != null) {
             if ((bundle = data.getExtras()) != null) {
                 long taskId = bundle.getLong(Constants.SELECTED_TASK);
-                if (taskId != 0) {
+                if (taskId >= 0) {
                     windyViewModel.setTaskId(taskId);
                 }
             }

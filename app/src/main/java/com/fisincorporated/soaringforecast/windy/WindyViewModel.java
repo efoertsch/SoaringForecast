@@ -16,6 +16,7 @@ import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -34,9 +35,10 @@ public class WindyViewModel extends AndroidViewModel {
     private LatLng defaultLatLng = new LatLng(43.1393051, -72.076004);
     private AppPreferences appPreferences;
     private AppRepository appRepository;
-    private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
+    private List<TaskTurnpoint> taskTurnpoints = new ArrayList();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private MutableLiveData<Boolean> startUpComplete;
+    private MutableLiveData<Boolean> taskSelected ;
     private ModelForecastDate selectedModelForecastDate;
     private LatLng selectedLatLng;
 
@@ -65,6 +67,14 @@ public class WindyViewModel extends AndroidViewModel {
         return startUpComplete;
     }
 
+    public MutableLiveData<Boolean> getTaskSelected(){
+        if (taskSelected == null) {
+            taskSelected = new MutableLiveData<>();
+            taskSelected.setValue(appPreferences.getSelectedTaskId() > 0);
+        }
+        return taskSelected;
+    }
+
 
     public MutableLiveData<String> getCommand() {
         if (command == null) {
@@ -73,14 +83,23 @@ public class WindyViewModel extends AndroidViewModel {
         return command;
     }
 
+    public void  setCommand(String stringCommand) {
+        // Using postValue as it seems Android doesn't like to have
+        // javascript call Android app and app logic then send javascript to webview
+        // So postValue allows webview call to end first, the command gets sent a bit later
+        command.postValue(stringCommand);
+    }
+
+    public void removeTaskTurnpoints() {
+        taskTurnpoints.clear();
+        setCommand( new StringBuilder().append("javascript:").append("removeTaskFromMap()").toString());
+        setTaskId(-1);
+        taskSelected.setValue(false);
+    }
+
     @JavascriptInterface
     public void resetHeight() {
         command.setValue("javascript:setHeight('200px')");
-    }
-
-    public void drawLine(double fromLat, double fromLong, double toLat, double toLong) {
-        command.setValue("javascript:drawLine( " + fromLat + "," + fromLong
-                + "," + toLat + "," + toLong + ")");
     }
 
     @JavascriptInterface
@@ -104,13 +123,22 @@ public class WindyViewModel extends AndroidViewModel {
     }
 
     @JavascriptInterface
-    public  String getTaskTurnpointsForMap() {
-        if (taskTurnpoints.getValue() == null) {
-            return null;
+    public void getTaskTurnpointsForMap() {
+        plotTask(taskTurnpoints);
+
+    }
+
+    @JavascriptInterface
+    public void mapLoaded(){
+        // Windy initialized and ready
+        getTask();  // may not be one but if so draw it.
+    }
+
+    public void setTaskId(long taskId) {
+        appPreferences.setSelectedTaskId(taskId);
+        if (taskId != -1) {
+            getTask(taskId);
         }
-        Gson gson = new Gson();
-        String taskJson = gson.toJson(taskTurnpoints.getValue());
-        return taskJson;
     }
 
 
@@ -128,9 +156,16 @@ public class WindyViewModel extends AndroidViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(taskTurnpointList -> {
-                            appPreferences.setSelectedTaskId(taskId);
-                            taskTurnpoints.setValue(taskTurnpointList);
-                            startUpComplete.setValue(true);
+                            taskTurnpoints = taskTurnpointList;
+                            taskSelected.setValue(true);
+                            if (startUpComplete != null
+                                    && startUpComplete.getValue() != null
+                                    && startUpComplete.getValue()){
+                                // 2nd or later request
+                                plotTask(taskTurnpointList);
+                            } else {
+                                startUpComplete.setValue(true);
+                            }
                         },
                         t -> {
                             //TODO email stack trace
@@ -139,13 +174,14 @@ public class WindyViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public MutableLiveData<List<TaskTurnpoint>> getTaskTurnpoints() {
-        return taskTurnpoints;
+    private void plotTask(List<TaskTurnpoint> taskTurnpoints) {
+        Gson gson = new Gson();
+        String taskJson = gson.toJson(taskTurnpoints);
+        String command = new StringBuilder().append("javascript:").append("drawTask(")
+                .append(taskJson).append(")").toString();
+        setCommand(command);
     }
 
-    public void setTaskId(long taskId) {
-        appPreferences.setSelectedTaskId(taskId);
-    }
 
     public void getSelectedModelForecastDate() {
         selectedModelForecastDate = appPreferences.getSelectedModelForecastDate();
