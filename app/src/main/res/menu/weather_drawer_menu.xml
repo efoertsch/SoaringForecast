@@ -6,12 +6,13 @@
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_menu_soaring_forecasts"
-            android:title="@string/action_soaring_forecasts"
-            >
+            android:title="@string/action_soaring_forecasts">
             <menu>
                 <item
-                    android:id="@+id/nav_menu_rasp"
-                    android:title="@string/action_soaring_forecast_rasp"/>
+                    android:id="@+id/nav_menu_windy"
+                    android:title="@string/action_airport_windy"
+                    />
+
                 <item
                     android:id="@+id/nav_menu_skysight"
                     android:title="@string/action_soaring_forecast_skysight"/>
@@ -68,7 +69,7 @@
 
     <group android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_menu_display_options"
+            android:id="@+id/nav_menu_settings"
             android:title="@string/action_settings"
             />
 

@@ -62,7 +62,7 @@ public class WeatherDrawerActivityTest extends BaseTest {
     @Test
     public void canGetToSettingsFromNavDrawer() {
         drawerExistsSwipingRight();
-        onView(withId(R.id.app_weather_drawer)).perform(NavigationViewActions.navigateTo(R.id.nav_menu_display_options));
+        onView(withId(R.id.app_weather_drawer)).perform(NavigationViewActions.navigateTo(R.id.nav_menu_settings));
 
 
     }

@@ -21,3 +21,7 @@ gradle/wrapper/gradle-wrapper.properties
 .idea/vcs.xml
 .idea/copyright/profiles_settings.xml
 .idea/markdown-navigator/profiles_settings.xml
+
+app/release/output.json
+
+app/release/app-release.apk

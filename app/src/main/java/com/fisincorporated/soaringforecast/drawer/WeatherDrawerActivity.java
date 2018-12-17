@@ -28,6 +28,7 @@ import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.fisincorporated.soaringforecast.windy.WindyActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -85,20 +86,29 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-
     public void checkForecastsToBeDisplayed() {
         NavigationView navigationView = findViewById(R.id.app_weather_drawer);
         Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.findItem(R.id.nav_menu_skysight);
-        if (menuItem != null) {
-            menuItem.setVisible(appPreferences.isSkySightDisplayed());
-        }
-        menuItem = menu.findItem(R.id.nav_menu_dr_jacks);
-        if (menuItem != null) {
-            menuItem.setVisible(appPreferences.isDrJacksDisplayed());
+        MenuItem menuItem = menu.findItem(R.id.nav_menu_soaring_forecasts);
+        if (appPreferences.isAnyForecastOptionDisplayed()) {
+            menuItem.setVisible(true);
+
+            menuItem = menu.findItem(R.id.nav_menu_windy);
+            if (menuItem != null) {
+                menuItem.setVisible(appPreferences.isWindyDisplayed());
+            }
+            menuItem = menu.findItem(R.id.nav_menu_skysight);
+            if (menuItem != null) {
+                menuItem.setVisible(appPreferences.isSkySightDisplayed());
+            }
+            menuItem = menu.findItem(R.id.nav_menu_dr_jacks);
+            if (menuItem != null) {
+                menuItem.setVisible(appPreferences.isDrJacksDisplayed());
+            }
+        } else {
+            menuItem.setVisible(false);
         }
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -142,25 +152,9 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-
         switch (menuItem.getItemId()) {
-            case R.id.nav_menu_airport_list:
-                displayAirportListFragment();
-                break;
-            case R.id.nav_menu_airport_weather:
-                displayAirportMetarTaf();
-                break;
-            case R.id.nav_menu_display_options:
-                displaySettingsActivity();
-                break;
-            case R.id.nav_menu_noaa_satellite:
-                displayNoaaSatelliteFragment();
-                break;
-            case R.id.nav_menu_geos_satellite:
-                displayGeossSatelliteFragment();
-                break;
-            case R.id.nav_menu_rasp:
-                displaySoaringForecasts();
+            case R.id.nav_menu_windy:
+                displayWindy();
                 break;
             case R.id.nav_menu_skysight:
                 startSkySightBrowser();
@@ -168,11 +162,26 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_dr_jacks:
                 startDrJacksBrowser();
                 break;
+            case R.id.nav_menu_airport_weather:
+                displayAirportMetarTaf();
+                break;
+            case R.id.nav_menu_noaa_satellite:
+                displayNoaaSatelliteFragment();
+                break;
+            case R.id.nav_menu_geos_satellite:
+                displayGeossSatelliteFragment();
+                break;
+            case R.id.nav_menu_airport_list:
+                displayAirportListFragment();
+                break;
             case R.id.nav_menu_task_list:
                 displayTaskList();
                 break;
             case R.id.nav_menu_import_turnpoints:
                 displayTurnpointsImport();
+                break;
+            case R.id.nav_menu_settings:
+                displaySettingsActivity();
                 break;
             case R.id.nav_menu_about:
                 displayAbout();
@@ -190,9 +199,7 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
             fragmentTransaction.addToBackStack(null);
         }
         fragmentTransaction.commit();
-
     }
-
 
     private void displayAirportListFragment() {
         AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
@@ -200,6 +207,10 @@ public class WeatherDrawerActivity extends DaggerAppCompatActivity {
         startActivity(builder.build(this));
     }
 
+    private void displayWindy() {
+        WindyActivity.Builder builder = WindyActivity.Builder.getBuilder();
+        startActivity(builder.build(this));
+    }
     private void displayAirportMetarTaf() {
         AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
         builder.displayMetarTaf();

@@ -22,6 +22,7 @@
     <string name="action_satellite_images">Satellite</string>
     <string name="action_airport_weather">Airport Weather</string>
     <string name="action_airport_metar_taf">Airport Metar/TAF</string>
+    <string name="action_airport_windy">Windy</string>
     <string name="action_soaring_forecasts">Soaring Forecasts</string>
 
     <!-- Metar/TAF -->
@@ -69,6 +70,9 @@
 
     <string name="pref_decode_taf_metar_key" translatable="false">Decode_TAF_METAR_key</string>
     <string name="pref_decode_taf_metar_metar">Decode raw TAF/METAR</string>
+
+    <string name="pref_add_windy_to_menu_key" translatable="false">Display_Windy_key</string>
+    <string name="pref_add_windy_to_menu">Add Windy to Menu </string>
 
     <string name="pref_add_skysight_to_menu_key" translatable="false">Display_SkySight_key</string>
     <string name="pref_add_skysight_to_menu">Add SkySight to Menu </string>
@@ -207,7 +211,7 @@
     <string name="task">Task:</string>
     <string name="turnpoints">Turnpoints:</string>
     <string name="turnpoints_no_hyphen">Turnpoints</string>
-    <string name= "start">Start</string>
+    <string name="start">Start</string>
     <string name="display_km_from_prior_turnpoint">From prior point: %.1fkm</string>
     <string name="display_km_from_start">From start: %.1fkm</string>
     <string name="distance_km">%.1fkm</string>
@@ -258,6 +262,15 @@
     <string name="default_forecast_model" translatable="false">GFS</string>
     <string name="oops_error_getting_regions">Error getting current.json for regions/dates.</string>
     <string name="no_soundings_available">No soundings available.</string>
+
+    <string name="windy">Windy</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="test">Test</string>
+
 
 
 </resources>

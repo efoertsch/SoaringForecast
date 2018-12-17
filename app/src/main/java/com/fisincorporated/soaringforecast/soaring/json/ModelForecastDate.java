@@ -1,14 +1,30 @@
 package com.fisincorporated.soaringforecast.soaring.json;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * ModelForecastDate will contain everything needed to construct the url for the forecast bitmap and map the results
- * Note this is not a JSON object
  */
 public class ModelForecastDate  {
+    @SerializedName("index")
+    @Expose
     private int index;
+
+    @SerializedName("regionName")
+    @Expose
     private String regionName;    // "NewEngland"
+
+    @SerializedName("model")
+    @Expose
     private Model model;          // GFS, times, center, corners
+
+    @SerializedName("printDate")
+    @Expose
     private String printDate;    //"Friday March 30"
+
+    @SerializedName("date")
+    @Expose
     private String date;        //"2018-03-30"
 
     public ModelForecastDate(int index, String regionName,Model model, String printDate, String date) {

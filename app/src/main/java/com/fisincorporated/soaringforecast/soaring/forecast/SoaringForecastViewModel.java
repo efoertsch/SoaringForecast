@@ -122,7 +122,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             taskTurnpoints.setValue(new ArrayList<>());
             soundings.setValue(new ArrayList<>());
 
-
         }
     }
 
@@ -284,37 +283,36 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      * @param selectedModelName
      */
-    private void createDatesAndModels(String selectedModelName) {
+    private void createDatesAndModels(final String selectedModelName) {
         List<ModelForecastDate> modelForecastDateList = new ArrayList<>();
-        synchronized (selectedRegion) {
-            // for the selected model get the dates and model info
-            for (int i = 0; i < selectedRegion.getDates().size(); ++i) {
-                if (selectedRegion.getForecastModel(i) != null && selectedRegion.getForecastModel(i).getSelectedModel(selectedModelName) != null) {
-                    ModelForecastDate modelForecastDate = new ModelForecastDate(i, selectedRegion.getName()
-                            , selectedRegion.getForecastModel(i).getSelectedModel(selectedModelName)
-                            , selectedRegion.getPrintDate(i), selectedRegion.getDate(i));
-                    modelForecastDateList.add(modelForecastDate);
-                }
-            }
-            setModelNames(selectedRegion);
-
-            // Save new list of dates
-            modelForecastDates.setValue(modelForecastDateList);
-
-            // Set selected date to either first in list or if previous model date is also in current model date
-            // use that one (so models can be compared by date)
-            if (modelForecastDatePosition.getValue() == null || modelForecastDatePosition.getValue() >= modelForecastDateList.size()) {
-                modelForecastDatePosition.setValue(0);
-            } else {
-                int position = modelForecastDatePosition.getValue();
-                if (position >= modelForecastDates.getValue().size()) {
-                    modelForecastDatePosition.setValue(0);
-                }
+        // for the selected model get the dates and model info
+        for (int i = 0; i < selectedRegion.getDates().size(); ++i) {
+            if (selectedRegion.getForecastModel(i) != null && selectedRegion.getForecastModel(i).getSelectedModel(selectedModelName) != null) {
+                ModelForecastDate modelForecastDate = new ModelForecastDate(i, selectedRegion.getName()
+                        , selectedRegion.getForecastModel(i).getSelectedModel(selectedModelName)
+                        , selectedRegion.getPrintDate(i), selectedRegion.getDate(i));
+                modelForecastDateList.add(modelForecastDate);
             }
         }
+        setModelNames(selectedRegion);
+
+        // Save new list of dates
+        modelForecastDates.setValue(modelForecastDateList);
+
+        // Set selected date to either first in list or if previous model date is also in current model date
+        // use that one (so models can be compared by date)
+        if (modelForecastDatePosition.getValue() == null || modelForecastDatePosition.getValue() >= modelForecastDateList.size()) {
+            modelForecastDatePosition.setValue(0);
+        } else {
+            int position = modelForecastDatePosition.getValue();
+            if (position >= modelForecastDates.getValue().size()) {
+                modelForecastDatePosition.setValue(0);
+            }
+        }
+
         if (modelForecastDateList.size() > 0
                 && modelForecastDatePosition.getValue() != null
-                && modelForecastDatePosition.getValue() < modelForecastDateList.size()){
+                && modelForecastDatePosition.getValue() < modelForecastDateList.size()) {
             setSelectedModelForecastDate(modelForecastDateList.get(modelForecastDatePosition.getValue()));
         }
     }
@@ -341,6 +339,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         if (!newModelForecastDate.equals(getSelectedModelForecastDate())) {
             selectedModelForecastDate = newModelForecastDate;
             setRegionLatLngBounds(selectedModelForecastDate);
+            appPreferences.setSelectedModelForecastDate(selectedModelForecastDate);
             loadRaspImages();
         }
     }

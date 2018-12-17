@@ -30,15 +30,6 @@ public class SatelliteActivity extends MasterActivity {
         super.onCreate(savedInstanceState);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
 
     @Override
     protected Fragment createFragment() {
