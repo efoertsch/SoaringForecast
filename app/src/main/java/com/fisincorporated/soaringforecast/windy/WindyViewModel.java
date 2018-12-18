@@ -2,6 +2,7 @@ package com.fisincorporated.soaringforecast.windy;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -49,8 +50,10 @@ public class WindyViewModel extends AndroidViewModel {
     private MutableLiveData<Integer> altitudePosition = new MutableLiveData<>();
     private WindyAltitude selectedAltitude;
 
+    // Used to signal changes to UI
+    private MutableLiveData<Boolean> working = new MutableLiveData<>();
 
-    // TODO put zoom in appPreferences
+    // TODO put zoom in appPreferences?
     private int zoom = 7;
     private LatLng defaultLatLng = new LatLng(43.1393051, -72.076004);
     private AppPreferences appPreferences;
@@ -99,6 +102,7 @@ public class WindyViewModel extends AndroidViewModel {
     }
 
     private void setWindyModel(WindyModel selectedModelName) {
+        working.setValue(true);
         setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setModel(")
                 .append(selectedModelName.getCode())
                 .append(JAVASCRIPT_END)
@@ -126,6 +130,7 @@ public class WindyViewModel extends AndroidViewModel {
     }
 
     private void setModelLayer(WindyLayer selectedModelLayer) {
+        working.setValue(true);
         setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setLayer(")
                 .append("'" +selectedModelLayer.getCode()+ "'")
                 .append(JAVASCRIPT_END)
@@ -154,6 +159,7 @@ public class WindyViewModel extends AndroidViewModel {
 
 
     private void notifyNewAltitude(WindyAltitude selectedAltitude) {
+        working.setValue(true);
         setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setAltitude(")
                 .append("'" + selectedAltitude.getWindyCode() + "'")
                 .append(JAVASCRIPT_END)
@@ -161,6 +167,13 @@ public class WindyViewModel extends AndroidViewModel {
     }
 
     // ---- end Altitude ------
+
+    public LiveData<Boolean> getWorking() {
+        if (working.getValue() == null ) {
+            working.setValue(true);
+        }
+        return working;
+    }
 
     public MutableLiveData<Boolean> getStartUpComplete() {
         if (startUpComplete == null) {
@@ -205,6 +218,12 @@ public class WindyViewModel extends AndroidViewModel {
         taskSelected.setValue(false);
     }
 
+
+    @JavascriptInterface
+    public void redrawCompleted(){
+        // this is being called via webview background thread so post update
+        working.postValue(false);
+    }
 
     @JavascriptInterface
     public String getWindyKey() {

@@ -86,6 +86,12 @@ var taskLayerGroup
        }
      }
 
+     function redrawCompleted(){
+       if (androidConnected()){
+         android.redrawCompleted()
+         }
+      }
+
      function getWindyKey() {
       if (androidConnected()) {
         return android.getWindyKey();
@@ -205,8 +211,12 @@ var taskLayerGroup
           document.getElementsByClassName("picker-lines noselect")[0].parentNode.style.marginTop = "-70px";
           document.getElementsByClassName("picker-drag-me")[0].style.display = "none";
         }
-      });
+      })
       // end of workaround
+
+      broadcast.on('redrawFinished',(e) => {
+          redrawCompleted()
+       })
 
      setWindMap(store, map)
       console.log(windyAPI.store.getAllowed('availLevels'))
