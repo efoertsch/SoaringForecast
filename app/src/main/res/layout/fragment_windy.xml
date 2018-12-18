@@ -73,6 +73,7 @@
             android:layout_marginTop="@dimen/margin_half"
             android:entries="@{viewModel.altitudes}"
             android:selectedItemPosition="@={viewModel.altitudePosition}"
+            android:visibility="@{safeUnbox(viewModel.altitudeVisible) ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="@+id/fragment_windy_constraint_layout"
             app:layout_constraintStart_toEndOf="@+id/fragment_windy_layer_spinner"
             app:layout_constraintTop_toTopOf="parent"
@@ -82,10 +83,10 @@
             android:id="@+id/fragment_windy_webview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/margin_standard"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fragment_windy_model_spinner"
-            android:layout_marginBottom="@dimen/margin_standard"
             />
 
         <ProgressBar

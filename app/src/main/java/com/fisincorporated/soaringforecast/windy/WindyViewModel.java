@@ -49,6 +49,7 @@ public class WindyViewModel extends AndroidViewModel {
     private MutableLiveData<List<WindyAltitude>> altitudes = new MutableLiveData<>();
     private MutableLiveData<Integer> altitudePosition = new MutableLiveData<>();
     private WindyAltitude selectedAltitude;
+    private MutableLiveData<Boolean> altitudeVisible;
 
     // Used to signal changes to UI
     private MutableLiveData<Boolean> working = new MutableLiveData<>();
@@ -126,6 +127,7 @@ public class WindyViewModel extends AndroidViewModel {
     public void setModelLayerPosition(int newModelLayerPosition){
         modelLayerPosition.setValue(newModelLayerPosition);
         selectedModelLayer = modelLayers.getValue().get(newModelLayerPosition);
+        setAltitudeVisible(newModelLayerPosition);
         setModelLayer(selectedModelLayer);
     }
 
@@ -157,14 +159,28 @@ public class WindyViewModel extends AndroidViewModel {
         notifyNewAltitude(selectedAltitude);
     }
 
-
     private void notifyNewAltitude(WindyAltitude selectedAltitude) {
+        // Note that webview may not be set up yet but which will cause a
+        //"Uncaught ReferenceError: setAltitude is not defined" in chrome log
         working.setValue(true);
         setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setAltitude(")
                 .append("'" + selectedAltitude.getWindyCode() + "'")
                 .append(JAVASCRIPT_END)
                 .toString());
     }
+
+    public MutableLiveData<Boolean> getAltitudeVisible(){
+        if (altitudeVisible == null) {
+            altitudeVisible = new MutableLiveData<>();
+            setAltitudeVisible(modelLayerPosition.getValue());
+        }
+        return altitudeVisible;
+    }
+
+    private void setAltitudeVisible(int index) {
+        altitudeVisible.postValue(modelLayers.getValue().get(index).isByAltitude());
+    }
+
 
     // ---- end Altitude ------
 
@@ -196,6 +212,12 @@ public class WindyViewModel extends AndroidViewModel {
         return taskSelected;
     }
 
+    public void removeTaskTurnpoints() {
+        taskTurnpoints.clear();
+        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("removeTaskFromMap()").toString());
+        setTaskId(-1);
+        taskSelected.setValue(false);
+    }
 
     public MutableLiveData<String> getCommand() {
         if (command == null) {
@@ -210,14 +232,6 @@ public class WindyViewModel extends AndroidViewModel {
         // So postValue allows webview call to end first, the command gets sent a bit later
         command.postValue(stringCommand);
     }
-
-    public void removeTaskTurnpoints() {
-        taskTurnpoints.clear();
-        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("removeTaskFromMap()").toString());
-        setTaskId(-1);
-        taskSelected.setValue(false);
-    }
-
 
     @JavascriptInterface
     public void redrawCompleted(){

@@ -12,7 +12,7 @@
     <style>
     #windy {
       width: 100%;
-      height: 400px;
+      height: 800px;
     }
 
     </style>
@@ -70,7 +70,6 @@ function testFunction(){
    this.store = store
    windyMap = map
    // could not define icon until WindyAPI initialized
-   turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
    turnpointPolyLine = {
                     color: 'red',
                     weight: 2,
@@ -79,15 +78,19 @@ function testFunction(){
                     className: 'polyTrack'};
   }
 
-  function setModel(model){
+
+    function setModel(model){
+       console.log('Requesting product:' + product)
        store.set('product',model)
      }
 
     function setLayer(layer){
+       console.log('Requesting layer:' + layer)
        store.set('overlay', layer)
     }
 
     function setAltitude(altitude){
+       console.log('Requesting level:' + altitude)
        store.set('level', altitude)
     }
 

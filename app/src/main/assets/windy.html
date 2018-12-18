@@ -40,7 +40,6 @@ var taskLayerGroup
     windyMap = map
     // could not define icon until WindyAPI initialized
     turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
-    // Using unescaped '#' characters in a data URI body is deprecated and will be removed in M71, around December 2018
     turnpointPolyLine = {
                     color: 'red',
                     weight: 2,
@@ -54,14 +53,17 @@ var taskLayerGroup
   }
 
     function setModel(model){
+       console.log('Requesting product:' + product)
        store.set('product',model)
      }
 
     function setLayer(layer){
+       console.log('Requesting layer:' + layer)
        store.set('overlay', layer)
     }
 
     function setAltitude(altitude){
+       console.log('Requesting level:' + altitude)
        store.set('level', altitude)
     }
 
@@ -219,8 +221,14 @@ var taskLayerGroup
        })
 
      setWindMap(store, map)
-      console.log(windyAPI.store.getAllowed('availLevels'))
-      console.log(windyAPI.store.getAllowed('availLayers'))
+
+     console.log("windyAPI.store.layer:" + windyAPI.store.get('overlay'))
+     console.log("levels:" + windyAPI.store.get('availLevels'))
+
+
+      console.log("Allowed products: " + windyAPI.store.getAllowed('product'))
+      console.log("Allowed overlays: " + windyAPI.store.getAllowed('overlay'))
+      console.log("Allowed levels: " + windyAPI.store.getAllowed('level'))
 
 })
 
