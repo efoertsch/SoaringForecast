@@ -27,8 +27,28 @@ import timber.log.Timber;
 
 public class WindyViewModel extends AndroidViewModel {
 
+    private static final String JAVASCRIPT_START = "javascript:";
+    private static final String JAVASCRIPT_END = ")";
+
     Context context;
     MutableLiveData<String> command;
+
+    // List of windyModels currently only GFS
+    private MutableLiveData<List<WindyModel>> windyModels = new MutableLiveData<>();
+    private MutableLiveData<Integer> modelPosition = new MutableLiveData<>();
+    private WindyModel selectedModelName;
+
+    // Layers
+    // List of modelLayers(wind, temp, cloud, rain, pressure)
+    private MutableLiveData<List<WindyLayer>> modelLayers = new MutableLiveData<>();
+    private MutableLiveData<Integer> modelLayerPosition = new MutableLiveData<>();
+    private WindyLayer selectedModelLayer;
+
+    // List of altitudes (does not apply to cloud, rain, pressure layers)
+    private MutableLiveData<List<WindyAltitude>> altitudes = new MutableLiveData<>();
+    private MutableLiveData<Integer> altitudePosition = new MutableLiveData<>();
+    private WindyAltitude selectedAltitude;
+
 
     // TODO put zoom in appPreferences
     private int zoom = 7;
@@ -58,10 +78,98 @@ public class WindyViewModel extends AndroidViewModel {
         return this;
     }
 
+    // --- WindyModel (currently just gsf ) -------------
+    public MutableLiveData<List<WindyModel>> getWindyModels() {
+        if (windyModels.getValue() == null) {
+            windyModels = new MutableLiveData<>();
+            windyModels.setValue(appRepository.getWindyModels());
+            modelPosition.setValue(0);
+        }
+        return windyModels;
+    }
+
+    public MutableLiveData<Integer> getModelPosition() {
+        return modelPosition;
+    }
+
+    public void setModelPosition(int newModelPosition) {
+        modelPosition.setValue(newModelPosition);
+        selectedModelName = windyModels.getValue().get(newModelPosition);
+        setWindyModel(selectedModelName);
+    }
+
+    private void setWindyModel(WindyModel selectedModelName) {
+        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setModel(")
+                .append(selectedModelName.getCode())
+                .append(JAVASCRIPT_END)
+                .toString());
+    }
+
+    // ---- ModelLayers --------
+    public MutableLiveData<List<WindyLayer>> getModelLayers() {
+        if (modelLayers.getValue() == null) {
+            modelLayers = new MutableLiveData<>();
+            modelLayers.setValue(appRepository.getWindyLayers());
+            modelLayerPosition.setValue(0);
+        }
+        return modelLayers;
+    }
+
+    public MutableLiveData<Integer> getModelLayerPosition() {
+        return modelLayerPosition;
+    }
+
+    public void setModelLayerPosition(int newModelLayerPosition){
+        modelLayerPosition.setValue(newModelLayerPosition);
+        selectedModelLayer = modelLayers.getValue().get(newModelLayerPosition);
+        setModelLayer(selectedModelLayer);
+    }
+
+    private void setModelLayer(WindyLayer selectedModelLayer) {
+        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setLayer(")
+                .append("'" +selectedModelLayer.getCode()+ "'")
+                .append(JAVASCRIPT_END)
+                .toString());
+    }
+
+    // ---- Altitude ----------
+    public MutableLiveData<List<WindyAltitude>> getAltitudes() {
+        if (altitudes.getValue() == null) {
+            altitudes = new MutableLiveData<>();
+            altitudes.setValue(appRepository.getWindyAltitudes());
+            altitudePosition.setValue(0);
+        }
+        return altitudes;
+    }
+
+    public MutableLiveData<Integer> getAltitudePosition() {
+        return altitudePosition;
+    }
+
+    public void setAltitudePosition(int newModelAltitudePosition){
+        altitudePosition.setValue( newModelAltitudePosition);
+        selectedAltitude = altitudes.getValue().get( newModelAltitudePosition);
+        notifyNewAltitude(selectedAltitude);
+    }
+
+
+    private void notifyNewAltitude(WindyAltitude selectedAltitude) {
+        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setAltitude(")
+                .append("'" + selectedAltitude.getWindyCode() + "'")
+                .append(JAVASCRIPT_END)
+                .toString());
+    }
+
+    // ---- end Altitude ------
+
     public MutableLiveData<Boolean> getStartUpComplete() {
         if (startUpComplete == null) {
             startUpComplete = new MutableLiveData<>();
+            // TODO wrap following in RxJava
             getSelectedModelForecastDate();
+            getWindyModels();
+            getModelLayers();
+            getAltitudes();
             getTask();
         }
         return startUpComplete;
@@ -92,15 +200,11 @@ public class WindyViewModel extends AndroidViewModel {
 
     public void removeTaskTurnpoints() {
         taskTurnpoints.clear();
-        setCommand( new StringBuilder().append("javascript:").append("removeTaskFromMap()").toString());
+        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("removeTaskFromMap()").toString());
         setTaskId(-1);
         taskSelected.setValue(false);
     }
 
-    @JavascriptInterface
-    public void resetHeight() {
-        command.setValue("javascript:setHeight('200px')");
-    }
 
     @JavascriptInterface
     public String getWindyKey() {
@@ -177,8 +281,8 @@ public class WindyViewModel extends AndroidViewModel {
     private void plotTask(List<TaskTurnpoint> taskTurnpoints) {
         Gson gson = new Gson();
         String taskJson = gson.toJson(taskTurnpoints);
-        String command = new StringBuilder().append("javascript:").append("drawTask(")
-                .append(taskJson).append(")").toString();
+        String command = new StringBuilder().append(JAVASCRIPT_START).append("drawTask(")
+                .append(taskJson).append(JAVASCRIPT_END).toString();
         setCommand(command);
     }
 

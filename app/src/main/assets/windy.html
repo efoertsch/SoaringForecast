@@ -7,7 +7,7 @@
     <style>
     #windy {
       width: 100%;
-      height: 500px;
+      height: 400px;
     }
   </style>
 </head>
@@ -15,6 +15,7 @@
 <body>
 <div id="windy"></div>
 <style>
+    #windy #mobile-ovr-select,
     #windy #embed-zoom {
       display: none !important;
     }
@@ -24,6 +25,7 @@
 
 console.log("Running main javascript");
 
+var store
 var windyMap
 var taskLayerGroup
 var turnpointIcon
@@ -33,7 +35,8 @@ var mapPolyLine = new Array()
 var taskLayerGroup
 
 
- function setWindMap(map){
+ function setWindMap(store, map){
+    this.store = store
     windyMap = map
     // could not define icon until WindyAPI initialized
     turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
@@ -49,6 +52,18 @@ var taskLayerGroup
     getTaskTurnpointsForMap()
 
   }
+
+    function setModel(model){
+       store.set('product',model)
+     }
+
+    function setLayer(layer){
+       store.set('overlay', layer)
+    }
+
+    function setAltitude(altitude){
+       store.set('level', altitude)
+    }
 
   function removeTaskFromMap(){
    if (windyMap && taskLayerGroup){
@@ -174,7 +189,8 @@ var taskLayerGroup
         picker,
         pickerMobile,
         overlays,
-        broadcast
+        broadcast,
+        store
       } = windyAPI
 
 
@@ -192,7 +208,9 @@ var taskLayerGroup
       });
       // end of workaround
 
-     setWindMap(map)
+     setWindMap(store, map)
+      console.log(windyAPI.store.getAllowed('availLevels'))
+      console.log(windyAPI.store.getAllowed('availLayers'))
 
 })
 

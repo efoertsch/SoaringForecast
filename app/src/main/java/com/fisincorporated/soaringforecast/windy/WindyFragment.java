@@ -54,6 +54,9 @@ public class WindyFragment extends DaggerFragment {
     private MenuItem clearTaskMenuItem;
     private boolean showClearTaskMenuItem;
     private int webViewHeight = 500;  // set as default
+    private int  lastModelPosition = -1;
+    private int lastModelLayerPosition  = -1;
+    private int lastAltitudePosition = -1;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +72,8 @@ public class WindyFragment extends DaggerFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         windyView = DataBindingUtil.inflate(inflater, R.layout.fragment_windy, container, false);
+        windyView.setLifecycleOwner(getActivity());
+        windyView.setViewModel(windyViewModel);
         setupViews();
         return windyView.getRoot();
     }
@@ -76,7 +81,6 @@ public class WindyFragment extends DaggerFragment {
     @SuppressLint("SetJavaScriptEnabled")
     private void setupViews() {
         webView = windyView.fragmentWindyWebview;
-
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(windyViewModel, "android");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -161,6 +165,27 @@ public class WindyFragment extends DaggerFragment {
 
         windyViewModel.getTaskSelected().observe(this, isTaskSelected -> {
             displayTaskClearMenuItem(isTaskSelected);
+        });
+
+        windyViewModel.getModelPosition().observe(this, position -> {
+           if (lastModelPosition != position) {
+               lastModelPosition = position;
+               windyViewModel.setModelPosition(position);
+           }
+        });
+
+        windyViewModel.getModelLayerPosition().observe(this, position -> {
+            if (lastModelLayerPosition != position) {
+                lastModelLayerPosition = position;
+                windyViewModel.setModelLayerPosition(position);
+            }
+        });
+
+        windyViewModel.getAltitudePosition().observe(this, position -> {
+            if (lastAltitudePosition != position) {
+                lastAltitudePosition = position;
+                windyViewModel.setAltitudePosition(position);
+            }
         });
 
     }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="windy_model_gfs" translatable="false">0,gfs,GFS</string>
+
+    <string-array name="windy_models">
+        <item>@string/windy_model_gfs</item>
+    </string-array>
+
+    <!-- format index, windy parm name, display name, altitude applies (0 no, 1 yes) -->
+    <string name="windy_layer_wind" translatable="false">0,wind,Wind,1</string>
+    <string name="windy_layer_temp" translatable="false">1,temp,Temp,1</string>
+    <string name="windy_layer_cloud" translatable="false">2,clouds,Clouds,0</string>
+    <string name="windy_layer_rain" translatable="false">3,rain,Rain,0</string>
+    <string name="windy_layer_pressure" translatable="false">4,pressure,Pressure,0</string>
+
+    <string-array name="windy_layers">
+        <item>@string/windy_layer_wind</item>
+        <item>@string/windy_layer_temp</item>
+        <item>@string/windy_layer_cloud</item>
+        <item>@string/windy_layer_rain</item>
+        <item>@string/windy_layer_pressure</item>
+    </string-array>
+
+
+    <string name="windy_altitude_surface" translatable="false">0,surface,Surface,surface</string>
+    <string name="windy_altitude_100m" translatable="false">1,100m,330ft, 100m</string>
+    <string name="windy_altitude_975hpa" translatable="false">2,300m,1000ft,975h</string>
+    <string name="windy_altitude_950hpa" translatable="false">3,600m,2000ft,955h</string>
+    <string name="windy_altitude_925hpa" translatable="false">4,750m,2500ft,925h</string>
+    <string name="windy_altitude_900hpa" translatable="false">5,900m,3000ft,900h</string>
+    <string name="windy_altitude_850hpa" translatable="false">6,1500m,5000ft,850h</string>
+    <string name="windy_altitude_800hpa" translatable="false">7,2000m,6400ft,800h</string>
+    <string name="windy_altitude_700hpa" translatable="false">8,3000m,FL100,700h</string>
+    <string name="windy_altitude_600hpa" translatable="false">9,4200m,FL140,600h</string>
+    <string name="windy_altitude_500hpa" translatable="false">10,5500m,FL180,500h</string>
+    <string name="windy_altitude_400hpa" translatable="false">11,7000m,FL240,400h</string>
+    <string name="windy_altitude_300hpa" translatable="false">12,9000m,FL300,300h</string>
+    <string name="windy_altitude_250hpa" translatable="false">13,10k,FL340,250h</string>
+    <string name="windy_altitude_200hpa" translatable="false">14,11.7k,FL390,200h</string>
+    <string name="windy_altitude_150hpa" translatable="false">15,13.5k,FL450,150h</string>
+
+
+    <string-array name="windy_altitude">
+        <item>@string/windy_altitude_surface</item>
+        <item>@string/windy_altitude_100m</item>
+        <item>@string/windy_altitude_975hpa</item>
+        <item>@string/windy_altitude_950hpa</item>
+        <item>@string/windy_altitude_925hpa</item>
+        <item>@string/windy_altitude_900hpa</item>
+        <item>@string/windy_altitude_850hpa</item>
+        <item>@string/windy_altitude_800hpa</item>
+        <item>@string/windy_altitude_700hpa</item>
+        <item>@string/windy_altitude_600hpa</item>
+        <item>@string/windy_altitude_500hpa</item>
+        <item>@string/windy_altitude_400hpa</item>
+        <item>@string/windy_altitude_250hpa</item>
+        <item>@string/windy_altitude_200hpa</item>
+        <item>@string/windy_altitude_150hpa</item>
+    </string-array>
+
+
+</resources>
