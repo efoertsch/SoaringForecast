@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import dagger.android.support.DaggerFragment;
+import timber.log.Timber;
 
 // What has to happen here
 // 1. Determine size of webView
@@ -81,6 +82,7 @@ public class WindyFragment extends DaggerFragment {
     @SuppressLint("SetJavaScriptEnabled")
     private void setupViews() {
         webView = windyView.fragmentWindyWebview;
+        Timber.d("WebView info: %1$s", webView.getSettings().getUserAgentString());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(windyViewModel, "android");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -220,7 +222,7 @@ public class WindyFragment extends DaggerFragment {
 
     // Ok a hack, but set the height of windy to the webview height
     private String getWindyHTML(int height) {
-        String html = StringUtils.readFromAssetsFolder(getContext(), "windy_test.html"
+        String html = StringUtils.readFromAssetsFolder(getContext(), windyFile
                 , REPLACEMENT_HEIGHT_SEARCH, pxToDp(height - 250) + "px");
         return html;
     }

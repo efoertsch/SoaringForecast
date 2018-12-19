@@ -257,6 +257,7 @@ windyInit(options, windyAPI => {
   } = windyAPI;
 
   // workaround - mobilePicker has bug so this tells windy to use desktopPicker
+  //W.rootScope.isMobile = true;
   var mobileMadeFalse = false;
   if (W.rootScope.isMobile) {
     W.rootScope.isMobile = false;
@@ -274,8 +275,16 @@ windyInit(options, windyAPI => {
     redrawCompleted()
   })
 
-  setWindMap(store, map);
+  // Observing change of .store value
+  store.on('isImperial', isImperial => {
+    console.log(`isImperial was changed: ${ isImperial }`);
+  });
 
+  setWindMap(store, map);
+  console.log(" isImperial:" + windyAPI.store.get('isImperial'));
+  store.set('isImperial',true);
+  console.log(" isImperial:" + windyAPI.store.get('isImperial'));
+  console.log(" temp units:" + windyAPI.store.get('metric_temp'));
   console.log("windyAPI.store.layer:" + windyAPI.store.get('overlay'));
   console.log("levels:" + windyAPI.store.get('availLevels'));
   console.log("Allowed products: " + windyAPI.store.getAllowed('product'));

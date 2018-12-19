@@ -19,18 +19,18 @@
         android:background="@android:color/white">
 
         <android.support.constraint.Guideline
-            android:id="@+id/guideline_30pct"
+            android:id="@+id/guideline_35pct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.30"/>
+            app:layout_constraintGuide_percent="0.35"/>
 
         <android.support.constraint.Guideline
-            android:id="@+id/guideline_60pct"
+            android:id="@+id/guideline_70pct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.6"/>
+            app:layout_constraintGuide_percent="0.70"/>
 
 
         <Spinner
@@ -43,7 +43,7 @@
             android:entries="@{viewModel.windyModels}"
             android:selectedItemPosition="@={viewModel.modelPosition}"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_30pct"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_35pct"
             app:layout_constraintStart_toStartOf="@+id/fragment_windy_constraint_layout"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -53,13 +53,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_half"
             android:entries="@{viewModel.modelLayers}"
             android:selectedItemPosition="@={viewModel.modelLayerPosition}"
             android:textAllCaps="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintEnd_toEndOf="@+id/guideline_60pct"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_70pct"
             app:layout_constraintStart_toEndOf="@+id/fragment_windy_model_spinner"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -69,7 +68,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_half"
             android:entries="@{viewModel.altitudes}"
             android:selectedItemPosition="@={viewModel.altitudePosition}"

@@ -32,14 +32,14 @@ public class SoaringForecastModule {
     @Provides
     @Named("appWindyUrl")
     public String getAppWindUrl(){
-        return  APP_WINDY_URL;
+        return APP_WINDY_URL;
     }
 
     // Used for webview.loadData()
     @Provides
     @Named("windyHtmlFileName")
     public String getWindyHtmlFileName(){
-        return  APP_WINDY_URL;
+        return WINDY_HTML_FILENAME;
     }
 
 }

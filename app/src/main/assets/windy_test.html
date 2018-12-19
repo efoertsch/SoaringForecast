@@ -36,16 +36,16 @@ function setWindMap(store, map){
   windyStore = store;
   windyMap = map;
   // could not define icon until WindyAPI initialized
-  turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
+  turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1});
   turnpointPolyLine = {
                     color: 'red',
                     weight: 2,
                     opacity: 1,
                     zIndex: 1000,
-                    className: 'polyTrack'}
+                    className: 'polyTrack'};
 
   console.log("calling getTaskTurnpointsForMap()")
-  getTaskTurnpointsForMap()
+  getTaskTurnpointsForMap();
 }
 
 function setModel(model){
@@ -215,7 +215,7 @@ windyInit(options, windyAPI => {
   })
 
   setWindMap(store, map);
-
+  store.set('isImperial',true);
   console.log("windyAPI.store.layer:" + windyAPI.store.get('overlay'));
   console.log("levels:" + windyAPI.store.get('availLevels'));
   console.log("Allowed products: " + windyAPI.store.getAllowed('product'));

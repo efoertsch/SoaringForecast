@@ -36,16 +36,16 @@ function setWindMap(store, map){
   windyStore = store;
   windyMap = map;
   // could not define icon until WindyAPI initialized
-  turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
+  turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1});
   turnpointPolyLine = {
                     color: 'red',
                     weight: 2,
                     opacity: 1,
                     zIndex: 1000,
-                    className: 'polyTrack'}
+                    className: 'polyTrack'};
 
-  console.log("calling getTaskTurnpointsForMap()")
-  getTaskTurnpointsForMap()
+  console.log("calling getTaskTurnpointsForMap()");
+  getTaskTurnpointsForMap();
 }
 
 function setModel(model){
@@ -146,12 +146,10 @@ function createMarkersAndPolyLine(taskTurnpoints) {
       mapPolyLine.push(latLong);
       var marker = L.marker(latLong,{icon: turnpointIcon});
       // !!! Remove .toFixed(1) if testing on Chrome !!!
-      marker.bindPopup(taskTurnpoints[i].title + "\n( "
-        + taskTurnpoints[i].distanceFromStartingPoint.toFixed(1) +"km)");
+      marker.bindPopup(taskTurnpoints[i].title + "\n( " + taskTurnpoints[i].distanceFromStartingPoint.toFixed(1) +"km)");
       mapMarker.push(marker);
     }
-    taskLayerGroup = L.layerGroup(mapMarker).addLayer(L.polyline(mapPolyLine
-      ,turnpointPolyLine));
+    taskLayerGroup = L.layerGroup(mapMarker).addLayer(L.polyline(mapPolyLine,turnpointPolyLine));
     taskLayerGroup.addTo(windyMap);
     console.log("Done with plotting turnpoints");
   }
@@ -207,21 +205,31 @@ windyInit(options, windyAPI => {
      document.getElementsByClassName("picker-lines noselect")[0].parentNode.style.marginTop = "-70px";
      document.getElementsByClassName("picker-drag-me")[0].style.display = "none";
   }
-  })
+  });
   // end of workaround
 
   broadcast.on('redrawFinished',(e) => {
-    redrawCompleted()
-  })
+    redrawCompleted();
+  });
+
+  // Observing change of .store value
+  store.on('isImperial', isImperial => {
+    console.log(`isImperial was changed: ${ isImperial }`);
+  });
 
   setWindMap(store, map);
-
-  console.log("windyAPI.store.layer:" + windyAPI.store.get('overlay'));
+  windyAPI.store.set('isImperial',false);
+  windyAPI.store.set('isImperial',true);
+  console.log(" isImperial:" + windyAPI.store.get('isImperial'));
+  //windyAPI.store.set('metric_temp', '°F');
+  console.log(" isImperial:" + windyAPI.store.get('isImperial'));
+  console.log(" temp units:" + windyAPI.store.get('metric_temp'));
+  console.log("store.layer:" + store.get('overlay'));
   console.log("levels:" + windyAPI.store.get('availLevels'));
   console.log("Allowed products: " + windyAPI.store.getAllowed('product'));
   console.log("Allowed overlays: " + windyAPI.store.getAllowed('overlay'));
   console.log("Allowed levels: " + windyAPI.store.getAllowed('level'));
-})
+});
 </script>
 <script>
 /* Need to put in this file as webview will give error when this html loaded via webView.loadData()

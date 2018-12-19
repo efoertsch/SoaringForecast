@@ -88,6 +88,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private Constants.FORECAST_SOUNDING forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
 
     private boolean displaySoundings;
+    private long lastTaskId;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -108,7 +109,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return this;
     }
 
-    public void checkForRegionChange() {
+    public void checkForChanges() {
         // if region changed then
         // get list of models/dates for that region
         // refresh display
@@ -122,6 +123,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             taskTurnpoints.setValue(new ArrayList<>());
             soundings.setValue(new ArrayList<>());
 
+        } else {
+            checkIfToDisplayTask();
         }
     }
 
@@ -705,7 +708,16 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     // ------- Task display ---------------------
 
+    private void checkIfToDisplayTask(){
+        long currentTaskId =  appPreferences.getSelectedTaskId();
+        if (lastTaskId != currentTaskId){
+            lastTaskId = currentTaskId;
+            getTask(lastTaskId);
+        }
+    }
+
     public void getTask(long taskId) {
+        lastTaskId = -1;
         Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

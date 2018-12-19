@@ -28,7 +28,9 @@ public class StringUtils {
                 if (searchString != null && str.contains(searchString)) {
                     str = str.replace(searchString, replacementString);
                 }
-                Timber.d("%1$s: %2$s",assetsFileName,str);
+//                if (BuildConfig.DEBUG) {
+//                    Timber.d("%1$s: %2$s", assetsFileName, str);
+//                }
                 buf.append(str.trim());
             }
             in.close();

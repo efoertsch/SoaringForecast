@@ -174,7 +174,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         super.onResume();
         getActivity().setTitle(R.string.rasp);
         EventBus.getDefault().register(this);
-        soaringForecastViewModel.checkForRegionChange();
+        soaringForecastViewModel.checkForChanges();
     }
 
     @Override
