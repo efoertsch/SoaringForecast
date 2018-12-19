@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,12 +24,12 @@ import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.WindyView;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.fisincorporated.soaringforecast.utils.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import dagger.android.support.DaggerFragment;
-
 
 // What has to happen here
 // 1. Determine size of webView
@@ -53,9 +54,8 @@ public class WindyFragment extends DaggerFragment {
     private WebView webView;
     private MenuItem clearTaskMenuItem;
     private boolean showClearTaskMenuItem;
-    private int webViewHeight = 500;  // set as default
-    private int  lastModelPosition = -1;
-    private int lastModelLayerPosition  = -1;
+    private int lastModelPosition = -1;
+    private int lastModelLayerPosition = -1;
     private int lastAltitudePosition = -1;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -101,6 +101,7 @@ public class WindyFragment extends DaggerFragment {
                 startActivity(intent);
                 return true;
             }
+
             public void onPageFinished(WebView view, String url) {
                 // ???
             }
@@ -155,7 +156,10 @@ public class WindyFragment extends DaggerFragment {
     public void setObservers() {
         windyViewModel.getStartUpComplete().observe(this, isComplete -> {
             if (isComplete) {
-                webView.loadUrl(appWindyUrl);
+                //webView.loadUrl(appWindyUrl);
+                //webView.loadUrl( "file:///android_asset/windy_backup.html");
+                webView.loadData(getWindyHTML(webView.getHeight())
+                             ,"text/html; charset=utf-8", "UTF-8");
             }
         });
         windyViewModel.getCommand().observe(this, command -> {
@@ -168,10 +172,10 @@ public class WindyFragment extends DaggerFragment {
         });
 
         windyViewModel.getModelPosition().observe(this, position -> {
-           if (lastModelPosition != position) {
-               lastModelPosition = position;
-               windyViewModel.setModelPosition(position);
-           }
+            if (lastModelPosition != position) {
+                lastModelPosition = position;
+                windyViewModel.setModelPosition(position);
+            }
         });
 
         windyViewModel.getModelLayerPosition().observe(this, position -> {
@@ -210,6 +214,22 @@ public class WindyFragment extends DaggerFragment {
                 }
             }
         }
+
     }
 
+    static final String REPLACEMENT_HEIGHT_SEARCH = "XXXHEIGHTXXX";
+
+    // Ok a hack, but set the height of windy to the webview height
+    private String getWindyHTML(int height) {
+        String html = StringUtils.readFromAssetsFolder(getContext(), "windy_test.html"
+                , REPLACEMENT_HEIGHT_SEARCH, pxToDp(height - 250) + "px");
+        return html;
+    }
+
+    //TODO put in utility class
+    private int pxToDp(int px) {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return dp;
+    }
 }
