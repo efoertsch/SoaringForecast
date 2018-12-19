@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<meta charset="UTF-8">
 <html>
 <head>
     <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
     <script src="https://api4.windy.com/assets/libBoot.js"></script>
-
     <style>
     #windy {
       width: 100%;
-      height: 400px;
+      height: XXXHEIGHTXXX;
     }
   </style>
 </head>
@@ -24,222 +21,214 @@
 
 <script type="text/javascript">
 
-console.log("Running main javascript");
+console.log("Running windy.html javascript");
 
-var store
-var windyMap
-var taskLayerGroup
-var turnpointIcon
-var turnpointPolyLine
-var mapMarker = new Array()
-var mapPolyLine = new Array()
-var taskLayerGroup
+var windyStore;
+var windyMap;
+var taskLayerGroup;
+var turnpointIcon;
+var turnpointPolyLine;
+var mapMarker = [];
+var mapPolyLine = [];
+var taskLayerGroup;
 
-
- function setWindMap(store, map){
-    this.store = store
-    windyMap = map
-    // could not define icon until WindyAPI initialized
-    turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
-    turnpointPolyLine = {
+function setWindMap(store, map){
+  windyStore = store;
+  windyMap = map;
+  // could not define icon until WindyAPI initialized
+  turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
+  turnpointPolyLine = {
                     color: 'red',
                     weight: 2,
                     opacity: 1,
                     zIndex: 1000,
-                    className: 'polyTrack'};
+                    className: 'polyTrack'}
 
-    console.log("calling getTaskTurnpointsForMap()")
-    getTaskTurnpointsForMap()
+  console.log("calling getTaskTurnpointsForMap()")
+  getTaskTurnpointsForMap()
+}
 
+function setModel(model){
+  console.log('Requesting product:' + product);
+  windyStore.set('product',model);
+}
+
+function setLayer(layer){
+  console.log('Requesting layer:' + layer);
+  windyStore.set('overlay', layer);
+}
+
+function setAltitude(altitude){
+  console.log('Requesting level:' + altitude);
+  windyStore.set('level', altitude);
+}
+
+function removeTaskFromMap() {
+  if (windyMap && taskLayerGroup){
+     windyMap.removeLayer(taskLayerGroup);
   }
-
-    function setModel(model){
-       console.log('Requesting product:' + product)
-       store.set('product',model)
-     }
-
-    function setLayer(layer){
-       console.log('Requesting layer:' + layer)
-       store.set('overlay', layer)
-    }
-
-    function setAltitude(altitude){
-       console.log('Requesting level:' + altitude)
-       store.set('level', altitude)
-    }
-
-  function removeTaskFromMap(){
-   if (windyMap && taskLayerGroup){
-      windyMap.removeLayer(taskLayerGroup)
-   }
-   if(mapMarker){
-      mapMarker.length = 0
-   }
-   if (mapPolyLine){
-      mapPolyLine.length = 0
-   }
+  if (mapMarker) {
+    mapMarker.length = 0;
   }
-
-  function androidConnected() {
-       if (typeof android !== "undefined" && android !== null){
-         return true;
-       } else {
-         alert("Not viewing in webview");
-         return false;
-       }
-     }
-
-     function redrawCompleted(){
-       if (androidConnected()){
-         android.redrawCompleted()
-         }
-      }
-
-     function getWindyKey() {
-      if (androidConnected()) {
-        return android.getWindyKey();
-      }
-    }
-
-    function getLat() {
-      if (androidConnected()) {
-        console.log("lat = " + android.getLat());
-        return android.getLat();
-      }
-    }
-
-    function getLong() {
-      if (androidConnected()) {
-        console.log("long = " + android.getLong());
-        return android.getLong();
-      }
-    }
-
-     function getZoom() {
-      if (androidConnected()) {
-        return android.getZoom();
-      }
-    }
-
-    function mapLoaded(){
-     if (androidConnected()){
-       android.mapLoaded();
-    }
-   }
-
-   // Call this once when map is loaded to see if task needs to be drawn
-  function getTaskTurnpointsForMap() {
-     if (androidConnected()) {
-        console.log("calling android.getTaskTurnpointsForMap()")
-        android.getTaskTurnpointsForMap();
-      }
+  if (mapPolyLine){
+    mapPolyLine.length = 0;
   }
+}
 
-  // Called by app to pass in turnpoints
-  function drawTask(taskTurnpoints) {
-       console.log("drawTask(taskTurnpoints)")
-        logTaskTurnpoints(taskTurnpoints)
-        removeTaskFromMap()
-        createMarkersAndPolyLine(taskTurnpoints)
-   }
+function androidConnected() {
+  if (typeof android !== "undefined" && android !== null){
+    return true;
+  } else {
+    alert("Not viewing in webview");
+    return false;
+  }
+}
 
-   function createMarkersAndPolyLine(taskTurnpoints) {
-     if (taskTurnpoints != null  && taskTurnpoints.length > 0) {
-       for (i = 0; i < taskTurnpoints.length; i++) {
-          var latLong = [taskTurnpoints[i].latitudeDeg, taskTurnpoints[i].longitudeDeg];
-          mapPolyLine.push(latLong)
-          marker = L.marker(latLong,{icon: turnpointIcon})
-          // !!!.toFixed(1) gives (currently) error on end of taskTurnpoints[i].distanceFromStartingPoint on Chrome !!!
-          marker.bindPopup(taskTurnpoints[i].title + "( " + taskTurnpoints[i].distanceFromStartingPoint.toFixed(1) +"km)")
-          mapMarker.push(marker)
-       }
-       taskLayerGroup = L.layerGroup(mapMarker).addLayer(L.polyline(mapPolyLine, turnpointPolyLine))
-       taskLayerGroup.addTo(windyMap)
-       console.log("Done with plotting turnpoints")
-     }else {
-        console.log("taskTurnpoints null or empty")
+function redrawCompleted(){
+  if (androidConnected()){
+    android.redrawCompleted();
+  }
+}
+
+function getWindyKey() {
+  if (androidConnected()) {
+    return android.getWindyKey();
+  }
+}
+
+function getLat() {
+  if (androidConnected()) {
+    console.log("lat = " + android.getLat());
+    return android.getLat();
+  }
+}
+
+function getLong() {
+  if (androidConnected()) {
+    console.log("long = " + android.getLong());
+    return android.getLong();
+  }
+}
+
+function getZoom() {
+  if (androidConnected()) {
+    return android.getZoom();
+  }
+}
+
+function mapLoaded(){
+  if (androidConnected()){
+    android.mapLoaded();
+  }
+}
+
+// Call this once when map is loaded to see if task needs to be drawn
+function getTaskTurnpointsForMap() {
+  if (androidConnected()) {
+    console.log("calling android.getTaskTurnpointsForMap()");
+    android.getTaskTurnpointsForMap();
+  }
+}
+
+// Called by app to pass in turnpoints
+function drawTask(taskTurnpoints) {
+  console.log("drawTask(taskTurnpoints)");
+  logTaskTurnpoints(taskTurnpoints);
+  removeTaskFromMap();
+  createMarkersAndPolyLine(taskTurnpoints);
+}
+
+// !!!.toFixed(1) gives (currently) error on end of taskTurnpoints[i].distanceFromStartingPoint on Chrome !!!
+function createMarkersAndPolyLine(taskTurnpoints) {
+  if (taskTurnpoints != null) {
+    for (i = 0; i < taskTurnpoints.length; i++) {
+      var latLong = [taskTurnpoints[i].latitudeDeg, taskTurnpoints[i].longitudeDeg];
+      mapPolyLine.push(latLong);
+      var marker = L.marker(latLong,{icon: turnpointIcon});
+      // !!! Remove .toFixed(1) if testing on Chrome !!!
+      marker.bindPopup(taskTurnpoints[i].title + "\n( "
+        + taskTurnpoints[i].distanceFromStartingPoint.toFixed(1) +"km)");
+      mapMarker.push(marker);
     }
-   }
+    taskLayerGroup = L.layerGroup(mapMarker).addLayer(L.polyline(mapPolyLine
+      ,turnpointPolyLine));
+    taskLayerGroup.addTo(windyMap);
+    console.log("Done with plotting turnpoints");
+  }
+}
 
-   function logTaskTurnpoints(taskTurnpoints){
-     if (taskTurnpoints != null  && taskTurnpoints.length > 0) {
-       for (i = 0; i < taskTurnpoints.length; i++) {
-         var latLong = [taskTurnpoints[i].latitudeDeg, taskTurnpoints[i].longitudeDeg];
-         console.log("lat/long:" + taskTurnpoints[i].latitudeDeg + "/" + taskTurnpoints[i].longitudeDeg)
-         console.log("title" + taskTurnpoints[i].title)
-         console.log("distance from starting" + taskTurnpoints[i].distanceFromStartingPoint.toFixed(1))
-         mapPolyLine.push(latLong)
-       }
-     } else {
-        console.log("taskTurnpoints null or empty")
+function logTaskTurnpoints(taskTurnpoints){
+  if (taskTurnpoints != null  && taskTurnpoints.length > 0) {
+    for (i = 0; i < taskTurnpoints.length; i++) {
+      var latLong = [taskTurnpoints[i].latitudeDeg, taskTurnpoints[i].longitudeDeg];
+      console.log("lat/long:" + taskTurnpoints[i].latitudeDeg + "/" + taskTurnpoints[i].longitudeDeg);
+      console.log("title" + taskTurnpoints[i].title);
+      console.log("distance from starting" + taskTurnpoints[i].distanceFromStartingPoint.toFixed(1));
+      mapPolyLine.push(latLong);
     }
-   }
+  } else {
+    console.log("taskTurnpoints null or empty");
+  }
+}
 
+const options = {
+  // Required: API key
+  key: getWindyKey(),
+  // Put additional console output
+  verbose: true,
+  // Optional: Initial state of the map
+  lat: getLat(),
+  lon: getLong(),
+  zoom: getZoom()
+};
+// Initialize Windy API
+windyInit(options, windyAPI => {
+  // windyAPI is ready, and contain 'map', 'store',
+  // 'picker' and other usefull stuff
+  // .map is instance of Leaflet map
+  const {
+    map,
+    utils,
+    picker,
+    pickerMobile,
+    overlays,
+    broadcast,
+    store
+  } = windyAPI;
 
-    const options = {
-        // Required: API key
-        key: getWindyKey(),
-        // Put additional console output
-        verbose: true,
-        // Optional: Initial state of the map
-        lat: getLat(),
-        lon: getLong(),
-        zoom: getZoom(),
-      }
+  // workaround - mobilePicker has bug so this tells windy to use desktopPicker
+  var mobileMadeFalse = false;
+  if (W.rootScope.isMobile) {
+    W.rootScope.isMobile = false;
+    mobileMadeFalse = true;
+  }
+  picker.on('pickerOpened', (e) => {
+  if (mobileMadeFalse) {
+     document.getElementsByClassName("picker-lines noselect")[0].parentNode.style.marginTop = "-70px";
+     document.getElementsByClassName("picker-drag-me")[0].style.display = "none";
+  }
+  })
+  // end of workaround
 
+  broadcast.on('redrawFinished',(e) => {
+    redrawCompleted()
+  })
 
-    windyInit(options, windyAPI => {
-      // windyAPI is ready, and contain 'map', 'store',
-      // 'picker' and other usefull stuff
-      // .map is instance of Leaflet map
-      const {
-        map,
-        utils,
-        picker,
-        pickerMobile,
-        overlays,
-        broadcast,
-        store
-      } = windyAPI
+  setWindMap(store, map);
 
-
-      // workaround - mobilePicker has bug so this tells windy to use desktopPicker
-      let mobileMadeFalse = false;
-      if (W.rootScope.isMobile) {
-        W.rootScope.isMobile = false;
-        mobileMadeFalse = true;
-      }
-      picker.on('pickerOpened', (e) => {
-        if (mobileMadeFalse) {
-          document.getElementsByClassName("picker-lines noselect")[0].parentNode.style.marginTop = "-70px";
-          document.getElementsByClassName("picker-drag-me")[0].style.display = "none";
-        }
-      })
-      // end of workaround
-
-      broadcast.on('redrawFinished',(e) => {
-          redrawCompleted()
-       })
-
-     setWindMap(store, map)
-
-     console.log("windyAPI.store.layer:" + windyAPI.store.get('overlay'))
-     console.log("levels:" + windyAPI.store.get('availLevels'))
-
-
-      console.log("Allowed products: " + windyAPI.store.getAllowed('product'))
-      console.log("Allowed overlays: " + windyAPI.store.getAllowed('overlay'))
-      console.log("Allowed levels: " + windyAPI.store.getAllowed('level'))
-
+  console.log("windyAPI.store.layer:" + windyAPI.store.get('overlay'));
+  console.log("levels:" + windyAPI.store.get('availLevels'));
+  console.log("Allowed products: " + windyAPI.store.getAllowed('product'));
+  console.log("Allowed overlays: " + windyAPI.store.getAllowed('overlay'));
+  console.log("Allowed levels: " + windyAPI.store.getAllowed('level'));
 })
-
 </script>
 <script>
-<-- Need to put in this file as webview will give error when this html loaded via webView.loadData()
-    and this javascript below in local file -->
+/* Need to put in this file as webview will give error when this html loaded via webView.loadData()
+  and this javascript below in local file */
 L.DivIcon.SVGIcon = L.DivIcon.extend({
 // set https://github.com/iatkin/leaflet-svgicon
-    //Leaflet-SVGIcon
+//Leaflet-SVGIcon
 //SVG icon for any marker class
 //Ilya Atkin
 //ilya.atkin@unh.edu
@@ -438,8 +427,6 @@ L.marker.svgMarker = function(latlng, options) {
     return new L.Marker.SVGMarker(latlng, options)
 
 }
-
 </script>
 </body>
-
 </html>

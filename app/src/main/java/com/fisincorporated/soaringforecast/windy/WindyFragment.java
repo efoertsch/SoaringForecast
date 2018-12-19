@@ -40,8 +40,8 @@ import dagger.android.support.DaggerFragment;
 public class WindyFragment extends DaggerFragment {
 
     @Inject
-    @Named("appWindyUrl")
-    String appWindyUrl;
+    @Named("windyHtmlFileName")
+    String windyFile;
 
     @Inject
     AppPreferences appPreferences;
@@ -92,7 +92,7 @@ public class WindyFragment extends DaggerFragment {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (Uri.parse(url).getHost().equals(appWindyUrl)) {
+                if (Uri.parse(url).getHost().equals(windyFile)) {
                     // This is app related url so ignore
                     return false;
                 }
@@ -156,8 +156,7 @@ public class WindyFragment extends DaggerFragment {
     public void setObservers() {
         windyViewModel.getStartUpComplete().observe(this, isComplete -> {
             if (isComplete) {
-                //webView.loadUrl(appWindyUrl);
-                //webView.loadUrl( "file:///android_asset/windy_backup.html");
+                //webView.loadUrl(windyFile);
                 webView.loadData(getWindyHTML(webView.getHeight())
                              ,"text/html; charset=utf-8", "UTF-8");
             }
