@@ -1,7 +1,3 @@
-<!DOCTYPE html>
-<meta charset="UTF-8">
-<!-- !!!!!!!!!!Used for testing only!!!!!!!!! -->
-<!-- point browser to this file via file:///(your path to)/assets/chrome_windy.html -->
 <html>
 <head>
     <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
@@ -9,61 +5,21 @@
     <style>
     #windy {
       width: 100%;
-      height: 800px;
+      height: XXXHEIGHTXXX;
     }
-
-    </style>
+  </style>
 </head>
+
 <body>
 <div id="windy"></div>
-<button onclick="testFunction()">Test</button>
-<button onclick="testFunction2()">Test2</button>
-
-
 <style>
-        /* #windy #mobile-ovr-select,   /* the wind/rain/... picker */
-       /* #windy #embed-zoom {         /* zoom +/- (use pinch/zoom) */
-            display: none !important;
-        }
-        */
-
+    #windy #mobile-ovr-select,
+    #windy #embed-zoom {
+      display: none !important;
+    }
 </style>
 
 <script type="text/javascript">
-
-//---------------- CHROME TESTING --------------------------
-var taskTurnpoints = [{"latitudeDeg": 42.425003,"longitudeDeg": -71.79117,"title": "Sterling"}
-        , {"latitudeDeg": 42.43,"longitudeDeg": -72.0,"title": "Random"}
-        ,{"latitudeDeg": 42.5,"longitudeDeg": -72.5,"title": "End"}]
-
-function testFunction(){
-  //resizeMap();
-  //getWindyDiv();
-  createMarkersAndPolyLine(taskTurnpoints);
-
- }
-
- function resizeMap(){
-  document.getElementById("windy").height= getHeight();
-  map.invalidateSize();
- }
-
- function testFunction2(){
-  removeTaskFromMap();
- }
-
-windyKey = "y852QwXYurm70lQozoV2rGSLQXoltuQc";
-//Sterling
-// var lat = 43.1393051;
-// var lon =  -72.076004;
-
-//Mt Washington
- var lat = 44.2705835;
- var lon = -71.3207819;
-
- var zoom = 7;
-
-//------------ END CHROME TESTING --------------------------
 
 console.log("Running windy.html javascript");
 
@@ -80,15 +36,17 @@ function setWindMap(store, map){
   windyStore = store;
   windyMap = map;
   // could not define icon until WindyAPI initialized
-  turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1})
+  turnpointIcon = new L.DivIcon.SVGIcon( { "color":"rgb(255,0,0)" ,"fillOpacity": 1});
   turnpointPolyLine = {
                     color: 'red',
                     weight: 2,
                     opacity: 1,
                     zIndex: 1000,
-                    className: 'polyTrack'}
-}
+                    className: 'polyTrack'};
 
+  console.log("calling getTaskTurnpointsForMap()")
+  getTaskTurnpointsForMap();
+}
 
 function setModel(model){
   console.log('Requesting product:' + product);
@@ -117,70 +75,52 @@ function removeTaskFromMap() {
   }
 }
 
-function getWindyDiv(){
-  var windyDiv = document.getElementById("windy");
-  console.log("Height" + windyDiv.offsetHeight);
-  windyDiv.style.height = "900px";
-  console.log("got windy element");
-}
-
-// Does not set map height dynamically. Need to figure out how to to
-function setHeight(height) {
-  document.getElementById("windy").clientHeight = height + "px";
-  map.invalidateSize();
-}
-
-
-// ------  Chrome Testing   -----------
 function androidConnected() {
-  return true;
+  if (typeof android !== "undefined" && android !== null){
+    return true;
+  } else {
+    alert("Not viewing in webview");
+    return false;
+  }
 }
-
 
 function redrawCompleted(){
   if (androidConnected()){
-    //android.redrawCompleted();
-    console.log("redraw completed")
+    android.redrawCompleted();
   }
 }
 
 function getWindyKey() {
   if (androidConnected()) {
-    //return android.getWindyKey();
-    return windyKey;
+    return android.getWindyKey();
   }
 }
 
 function getLat() {
   if (androidConnected()) {
-    //console.log("lat = " + android.getLat());
-    //return android.getLat();
-    return lat;
+    console.log("lat = " + android.getLat());
+    return android.getLat();
   }
 }
 
 function getLong() {
   if (androidConnected()) {
-    //console.log("long = " + android.getLong());
-    //return android.getLong();
-    return lon;
+    console.log("long = " + android.getLong());
+    return android.getLong();
   }
 }
 
 function getZoom() {
   if (androidConnected()) {
-    //return android.getZoom();
-    return zoom;
+    return android.getZoom();
   }
 }
 
 function mapLoaded(){
   if (androidConnected()){
-    //android.mapLoaded();
-    console("map loaded");
+    android.mapLoaded();
   }
 }
-// -------- End Chrome testing -----------------------
 
 // Call this once when map is loaded to see if task needs to be drawn
 function getTaskTurnpointsForMap() {
@@ -207,7 +147,7 @@ function createMarkersAndPolyLine(taskTurnpoints) {
       var marker = L.marker(latLong,{icon: turnpointIcon});
       // !!! Remove .toFixed(1) if testing on Chrome !!!
       marker.bindPopup(taskTurnpoints[i].title + "\n( "
-        + taskTurnpoints[i].distanceFromStartingPoint +"km)");
+        + taskTurnpoints[i].distanceFromStartingPoint.toFixed(1) +"km)");
       mapMarker.push(marker);
     }
     taskLayerGroup = L.layerGroup(mapMarker).addLayer(L.polyline(mapPolyLine
@@ -257,7 +197,6 @@ windyInit(options, windyAPI => {
   } = windyAPI;
 
   // workaround - mobilePicker has bug so this tells windy to use desktopPicker
-  //W.rootScope.isMobile = true;
   var mobileMadeFalse = false;
   if (W.rootScope.isMobile) {
     W.rootScope.isMobile = false;
@@ -275,27 +214,18 @@ windyInit(options, windyAPI => {
     redrawCompleted()
   })
 
-  // Observing change of .store value
-  store.on('isImperial', isImperial => {
-    console.log(`isImperial was changed: ${ isImperial }`);
-  });
-
   setWindMap(store, map);
-  console.log(" isImperial:" + windyAPI.store.get('isImperial'));
   store.set('isImperial',true);
-  console.log(" isImperial:" + windyAPI.store.get('isImperial'));
-  console.log(" temp units:" + windyAPI.store.get('metric_temp'));
   console.log("windyAPI.store.layer:" + windyAPI.store.get('overlay'));
   console.log("levels:" + windyAPI.store.get('availLevels'));
   console.log("Allowed products: " + windyAPI.store.getAllowed('product'));
   console.log("Allowed overlays: " + windyAPI.store.getAllowed('overlay'));
   console.log("Allowed levels: " + windyAPI.store.getAllowed('level'));
 })
-
 </script>
 <script>
 /* Need to put in this file as webview will give error when this html loaded via webView.loadData()
-  and this javascript below in local file (file:///....) */
+  and this javascript below in local file */
 L.DivIcon.SVGIcon = L.DivIcon.extend({
 // set https://github.com/iatkin/leaflet-svgicon
 //Leaflet-SVGIcon

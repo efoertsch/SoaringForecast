@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,12 +24,13 @@ import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.WindyView;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.fisincorporated.soaringforecast.utils.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import dagger.android.support.DaggerFragment;
-
+import timber.log.Timber;
 
 // What has to happen here
 // 1. Determine size of webView
@@ -39,8 +41,8 @@ import dagger.android.support.DaggerFragment;
 public class WindyFragment extends DaggerFragment {
 
     @Inject
-    @Named("appWindyUrl")
-    String appWindyUrl;
+    @Named("windyHtmlFileName")
+    String windyFile;
 
     @Inject
     AppPreferences appPreferences;
@@ -53,7 +55,9 @@ public class WindyFragment extends DaggerFragment {
     private WebView webView;
     private MenuItem clearTaskMenuItem;
     private boolean showClearTaskMenuItem;
-    private int webViewHeight = 500;  // set as default
+    private int lastModelPosition = -1;
+    private int lastModelLayerPosition = -1;
+    private int lastAltitudePosition = -1;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,8 @@ public class WindyFragment extends DaggerFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         windyView = DataBindingUtil.inflate(inflater, R.layout.fragment_windy, container, false);
+        windyView.setLifecycleOwner(getActivity());
+        windyView.setViewModel(windyViewModel);
         setupViews();
         return windyView.getRoot();
     }
@@ -76,7 +82,7 @@ public class WindyFragment extends DaggerFragment {
     @SuppressLint("SetJavaScriptEnabled")
     private void setupViews() {
         webView = windyView.fragmentWindyWebview;
-
+        Timber.d("WebView info: %1$s", webView.getSettings().getUserAgentString());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(windyViewModel, "android");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -88,7 +94,7 @@ public class WindyFragment extends DaggerFragment {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (Uri.parse(url).getHost().equals(appWindyUrl)) {
+                if (Uri.parse(url).getHost().equals(windyFile)) {
                     // This is app related url so ignore
                     return false;
                 }
@@ -97,6 +103,7 @@ public class WindyFragment extends DaggerFragment {
                 startActivity(intent);
                 return true;
             }
+
             public void onPageFinished(WebView view, String url) {
                 // ???
             }
@@ -151,7 +158,9 @@ public class WindyFragment extends DaggerFragment {
     public void setObservers() {
         windyViewModel.getStartUpComplete().observe(this, isComplete -> {
             if (isComplete) {
-                webView.loadUrl(appWindyUrl);
+                //webView.loadUrl(windyFile);
+                webView.loadData(getWindyHTML(webView.getHeight())
+                             ,"text/html; charset=utf-8", "UTF-8");
             }
         });
         windyViewModel.getCommand().observe(this, command -> {
@@ -161,6 +170,27 @@ public class WindyFragment extends DaggerFragment {
 
         windyViewModel.getTaskSelected().observe(this, isTaskSelected -> {
             displayTaskClearMenuItem(isTaskSelected);
+        });
+
+        windyViewModel.getModelPosition().observe(this, position -> {
+            if (lastModelPosition != position) {
+                lastModelPosition = position;
+                windyViewModel.setModelPosition(position);
+            }
+        });
+
+        windyViewModel.getModelLayerPosition().observe(this, position -> {
+            if (lastModelLayerPosition != position) {
+                lastModelLayerPosition = position;
+                windyViewModel.setModelLayerPosition(position);
+            }
+        });
+
+        windyViewModel.getAltitudePosition().observe(this, position -> {
+            if (lastAltitudePosition != position) {
+                lastAltitudePosition = position;
+                windyViewModel.setAltitudePosition(position);
+            }
         });
 
     }
@@ -185,6 +215,22 @@ public class WindyFragment extends DaggerFragment {
                 }
             }
         }
+
     }
 
+    static final String REPLACEMENT_HEIGHT_SEARCH = "XXXHEIGHTXXX";
+
+    // Ok a hack, but set the height of windy to the webview height
+    private String getWindyHTML(int height) {
+        String html = StringUtils.readFromAssetsFolder(getContext(), windyFile
+                , REPLACEMENT_HEIGHT_SEARCH, pxToDp(height - 250) + "px");
+        return html;
+    }
+
+    //TODO put in utility class
+    private int pxToDp(int px) {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return dp;
+    }
 }

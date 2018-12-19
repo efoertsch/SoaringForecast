@@ -13,6 +13,9 @@ import com.fisincorporated.soaringforecast.task.json.TurnpointFile;
 import com.fisincorporated.soaringforecast.task.json.TurnpointFiles;
 import com.fisincorporated.soaringforecast.task.json.TurnpointRegion;
 import com.fisincorporated.soaringforecast.utils.JSONResourceReader;
+import com.fisincorporated.soaringforecast.windy.WindyAltitude;
+import com.fisincorporated.soaringforecast.windy.WindyLayer;
+import com.fisincorporated.soaringforecast.windy.WindyModel;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
@@ -42,6 +45,10 @@ public class AppRepository {
     private static AppDatabase db;
     private static ArrayList<SatelliteRegion> satelliteRegions;
     private static ArrayList<SatelliteImageType> satelliteImageTypes;
+    private static ArrayList<WindyModel> windyModels;
+    private static ArrayList<WindyLayer> windyLayers;
+    private static ArrayList<WindyAltitude> windyAltitudes;
+
 
     private Context context;
     private AirportDao airportDao;
@@ -382,6 +389,58 @@ public class AppRepository {
             }
         }
         return satelliteImageTypes;
+    }
+
+    // ---------- Windy arrays ------------------------
+    public List<WindyModel> getWindyModels(){
+        if (windyModels == null) {
+            windyModels = new ArrayList<WindyModel>();
+            Resources res = context.getResources();
+            try {
+                String[] imageTypes = res.getStringArray(R.array.windy_models);
+                for (int i = 0; i < imageTypes.length; ++i) {
+                    WindyModel windyModel = new WindyModel(imageTypes[i]);
+                   windyModels.add(windyModel);
+                }
+            } catch (Resources.NotFoundException ignored) {
+            }
+
+        }
+        return windyModels;
+    }
+
+    public List<WindyLayer> getWindyLayers(){
+        if (windyLayers == null) {
+            windyLayers = new ArrayList<WindyLayer>();
+            Resources res = context.getResources();
+            try {
+                String[] imageTypes = res.getStringArray(R.array.windy_layers);
+                for (int i = 0; i < imageTypes.length; ++i) {
+                    WindyLayer WindyLayer = new WindyLayer(imageTypes[i]);
+                    windyLayers.add(WindyLayer);
+                }
+            } catch (Resources.NotFoundException ignored) {
+            }
+
+        }
+        return windyLayers;
+    }
+
+    public List<WindyAltitude> getWindyAltitudes(){
+        if (windyAltitudes == null) {
+            windyAltitudes = new ArrayList<WindyAltitude>();
+            Resources res = context.getResources();
+            try {
+                String[] imageTypes = res.getStringArray(R.array.windy_altitude);
+                for (int i = 0; i < imageTypes.length; ++i) {
+                    WindyAltitude windyAltitude = new WindyAltitude(imageTypes[i]);
+                    windyAltitudes.add(windyAltitude);
+                }
+            } catch (Resources.NotFoundException ignored) {
+            }
+
+        }
+        return windyAltitudes;
     }
 
 }

@@ -1,39 +1,102 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.fisincorporated.soaringforecast.windy.WindyActivity">
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data class="WindyView">
 
         <import type="android.view.View"/>
 
+        <variable
+            name="viewModel"
+            type="com.fisincorporated.soaringforecast.windy.WindyViewModel"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/fragment_windy_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
 
-        <!--app:layout_constraintBottom_toTopOf="@+id/fragment_windy_test_button"-->
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline_35pct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35"/>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline_70pct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.70"/>
+
+
+        <Spinner
+            android:id="@+id/fragment_windy_model_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:entries="@{viewModel.windyModels}"
+            android:selectedItemPosition="@={viewModel.modelPosition}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_35pct"
+            app:layout_constraintStart_toStartOf="@+id/fragment_windy_constraint_layout"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <Spinner
+            android:id="@+id/fragment_windy_layer_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:entries="@{viewModel.modelLayers}"
+            android:selectedItemPosition="@={viewModel.modelLayerPosition}"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_70pct"
+            app:layout_constraintStart_toEndOf="@+id/fragment_windy_model_spinner"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <Spinner
+            android:id="@+id/fragment_windy_altitude_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginTop="@dimen/margin_half"
+            android:entries="@{viewModel.altitudes}"
+            android:selectedItemPosition="@={viewModel.altitudePosition}"
+            android:visibility="@{safeUnbox(viewModel.altitudeVisible) ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="@+id/fragment_windy_constraint_layout"
+            app:layout_constraintStart_toEndOf="@+id/fragment_windy_layer_spinner"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
         <WebView
             android:id="@+id/fragment_windy_webview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/margin_standard"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fragment_windy_model_spinner"
             />
 
-
-        <!--
-        <Button
-            android:id="@+id/fragment_windy_test_button"
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:id="@+id/fragment_windy__progress_bar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/test"/>
-          -->
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fragment_windy_model_spinner"
+            />
 
     </android.support.constraint.ConstraintLayout>
 
