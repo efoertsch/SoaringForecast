@@ -16,8 +16,9 @@
 </head>
 <body>
 <div id="windy"></div>
-<button onclick="testFunction()">Test</button>
+<button onclick="testFunction1()">Test</button>
 <button onclick="testFunction2()">Test2</button>
+<button onclick="testFunction3()">Test3</button>
 
 
 <style>
@@ -36,20 +37,28 @@ var taskTurnpoints = [{"latitudeDeg": 42.425003,"longitudeDeg": -71.79117,"title
         , {"latitudeDeg": 42.43,"longitudeDeg": -72.0,"title": "Random"}
         ,{"latitudeDeg": 42.5,"longitudeDeg": -72.5,"title": "End"}]
 
-function testFunction(){
+function testFunction1(){
   //resizeMap();
   //getWindyDiv();
-  createMarkersAndPolyLine(taskTurnpoints);
+  //createMarkersAndPolyLine(taskTurnpoints);
+  setBaseLayerToDefault()
 
+
+ }
+
+ function testFunction2(){
+   //removeTaskFromMap();
+   setBaseLayerToGoogleMap();
+
+ }
+ function testFunction3(){
+   //setBaseLayerToOpenTopoMap();
+   setBaseLayerToArcGisMap();
  }
 
  function resizeMap(){
   document.getElementById("windy").height= getHeight();
   map.invalidateSize();
- }
-
- function testFunction2(){
-  removeTaskFromMap();
  }
 
 windyKey = "y852QwXYurm70lQozoV2rGSLQXoltuQc";
@@ -75,6 +84,7 @@ var turnpointPolyLine;
 var mapMarker = [];
 var mapPolyLine = [];
 var taskLayerGroup;
+var origWindyMapLabels;
 
 function setWindMap(store, map){
   windyStore = store;
@@ -87,6 +97,42 @@ function setWindMap(store, map){
                     opacity: 1,
                     zIndex: 1000,
                     className: 'polyTrack'}
+}
+
+function setBaseLayerToDefault(){
+  windyMap.baseLayer.setUrl("https://tiles-s.windy.com/tiles/v8.1/darkmap/{z}/{x}/{y}.png");
+  //windyMap.baseLayer.setOpactiy(0.5); // setOpacity not defined
+  windyMap.addLayer( origWindyMapLabels);
+}
+
+
+function setBaseLayerToGoogleMap(){
+  windyMap.baseLayer.options.subdomains = ["mt0", "mt1", "mt2", "mt3"];
+  windyMap.baseLayer.setUrl("https://{s}.google.com/vt/lyrs=t,h&x={x}&y={y}&z={z}");
+  windyMap.baseLayer.setOpacity(0.5);
+  windyMap.removeLayer(W.labelsLayer);
+}
+
+function setBaseLayerToArcGisMap(){
+  // .map is instance of Leaflet map
+  //L.tileLayer(
+  //  "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+  //  {
+  //    attribution: "Trung tâm thông tin & dữ liệu KTTV",
+  //    minZoom: 12,
+  //    maxZoom: 18
+  //  }
+  //) .addTo(windyMap);
+   windyMap.baseLayer.setUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}");
+  windyMap.options.maxZoom = 24;
+  windyMap.baseLayer.setOpacity(0.5);
+   windyMap.removeLayer(W.labelsLayer);
+}
+
+function setBaseLayerToOpenTopoMap(){
+  windyMap.baseLayer.setUrl("https://a.tile.opentopomap.org/{z}/{x}/{y}.png");
+   windyMap.baseLayer.setOpacity(0.5);
+    windyMap.removeLayer(W.labelsLayer);
 }
 
 
@@ -255,6 +301,8 @@ windyInit(options, windyAPI => {
     broadcast,
     store
   } = windyAPI;
+
+  origWindyMapLabels = W.labelsLayer;
 
   // workaround - mobilePicker has bug so this tells windy to use desktopPicker
   //W.rootScope.isMobile = true;
