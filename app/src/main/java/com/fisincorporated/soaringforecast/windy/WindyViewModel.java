@@ -338,4 +338,14 @@ public class WindyViewModel extends AndroidViewModel {
         super.onCleared();
     }
 
+    public boolean displayTopoMap(boolean checked) {
+        if (checked){
+            //TODO return to base windy map
+            setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setBaseLayerToDefault()").toString());
+            return false;
+        } else {
+            setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setBaseLayerToArcGisMap()").toString());
+            return true;
+        }
+    }
 }

@@ -31,6 +31,7 @@ var turnpointPolyLine;
 var mapMarker = [];
 var mapPolyLine = [];
 var taskLayerGroup;
+var origWindyMapLabels;
 
 function setWindMap(store, map){
   windyStore = store;
@@ -46,6 +47,25 @@ function setWindMap(store, map){
 
   console.log("calling getTaskTurnpointsForMap()");
   getTaskTurnpointsForMap();
+}
+
+function setBaseLayerToDefault(){
+  windyMap.baseLayer.setUrl("https://tiles-s.windy.com/tiles/v8.1/darkmap/{z}/{x}/{y}.png");
+  windyMap.addLayer(origWindyMapLabels);
+}
+
+function setBaseLayerToGoogleMap(){
+  windyMap.baseLayer.options.subdomains = ["mt0", "mt1", "mt2", "mt3"];
+  windyMap.baseLayer.setUrl("https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}");
+  windyMap.baseLayer.setOpacity(0.5);
+   windyMap.removeLayer(W.labelsLayer);
+}
+
+function setBaseLayerToArcGisMap(){
+  windyMap.baseLayer.setUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}");
+  // windyMap.options.maxZoom = 18;
+  windyMap.baseLayer.setOpacity(0.5);
+ windyMap.removeLayer(W.labelsLayer);
 }
 
 function setModel(model){
@@ -193,6 +213,8 @@ windyInit(options, windyAPI => {
     broadcast,
     store
   } = windyAPI;
+
+  origWindyMapLabels = W.labelsLayer;
 
   // workaround - mobilePicker has bug so this tells windy to use desktopPicker
   var mobileMadeFalse = false;

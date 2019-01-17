@@ -54,10 +54,12 @@ public class WindyFragment extends DaggerFragment {
     private WindyView windyView;
     private WebView webView;
     private MenuItem clearTaskMenuItem;
+    private MenuItem googleMapMenuItem;
     private boolean showClearTaskMenuItem;
     private int lastModelPosition = -1;
     private int lastModelLayerPosition = -1;
     private int lastAltitudePosition = -1;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,27 +129,37 @@ public class WindyFragment extends DaggerFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.windy_menu, menu);
-        clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
+        clearTaskMenuItem = menu.findItem(R.id.windy_menu_clear_task);
         if (clearTaskMenuItem != null) {
             clearTaskMenuItem.setVisible(showClearTaskMenuItem);
         }
+
+        googleMapMenuItem = menu.findItem(R.id.windy_menu_topo_map);
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.forecast_menu_select_task:
+            case R.id.windy_menu_select_task:
                 selectTask();
                 return true;
-            case R.id.forecast_menu_clear_task:
+            case R.id.windy_menu_clear_task:
                 windyViewModel.removeTaskTurnpoints();
                 displayTaskClearMenuItem(false);
+                return true;
+            case R.id.windy_menu_topo_map:
+                toogleTopoMap();
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void toogleTopoMap() {
+            googleMapMenuItem.setChecked(windyViewModel.displayTopoMap(googleMapMenuItem.isChecked()));
     }
 
     private void displayTaskClearMenuItem(boolean visible) {
