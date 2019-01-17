@@ -50,7 +50,7 @@ function setWindMap(store, map){
 }
 
 function setBaseLayerToDefault(){
-  windyMap.baseLayer.setUrl("https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}");
+  windyMap.baseLayer.setUrl("https://tiles-s.windy.com/tiles/v8.1/darkmap/{z}/{x}/{y}.png");
   windyMap.addLayer(origWindyMapLabels);
 }
 
