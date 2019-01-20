@@ -65,7 +65,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     private MutableLiveData<List<Forecast>> forecasts = new MutableLiveData<>();
     private MutableLiveData<Integer> forecastPosition = new MutableLiveData<>();
-    private Forecast selectedForecast = null;
+    private MutableLiveData<Forecast> selectedForecast = new MutableLiveData<>();
 
     private Regions regions;
     private Region selectedRegion;
@@ -383,15 +383,21 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      */
     private void setDefaultSoaringForecast() {
+        getSelectedForecast();
         // TODO cheat here to get wstar - get from appPreferences?
         if (forecasts.getValue() != null && forecasts.getValue().size() > 1) {
-            selectedForecast = forecasts.getValue().get(1);
+            selectedForecast.setValue(forecasts.getValue().get(1));
             forecastPosition.setValue(1);
         }
     }
 
-    public Forecast getSelectedSoaringForecast() {
+    public MutableLiveData<Forecast> getSelectedForecast() {
+        if (selectedForecast == null) {
+            selectedForecast = new MutableLiveData<>();
+            selectedForecast.setValue(new Forecast());
+        }
         return selectedForecast;
+
     }
 
     /**
@@ -399,8 +405,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      * @param forecast
      */
-    public void setSelectedSoaringForecast(Forecast forecast) {
-        selectedForecast = forecast;
+    public void setSelected(Forecast forecast) {
+        selectedForecast.setValue(forecast);
         loadRaspImages();
     }
 
@@ -410,7 +416,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public void setForecastPosition(int newForecastPosition) {
         forecastPosition.setValue(newForecastPosition);
-        setSelectedSoaringForecast(forecasts.getValue().get(newForecastPosition));
+        setSelected(forecasts.getValue().get(newForecastPosition));
     }
 
     /**
@@ -512,7 +518,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 selectedModelForecastDate.getRegionName()
                 , selectedModelForecastDate.getDate()
                 , selectedModelForecastDate.getModel().getName()
-                , selectedForecast.getForecastName()
+                , selectedForecast.getValue().getForecastName()
                 , selectedModelForecastDate.getModel().getTimes())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -8,7 +8,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.fisincorporated.soaringforecast.app.BaseTest;
-import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
+import com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,12 +25,12 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
  * Hopefully there where be no cheating along the way...
  */
 @RunWith(AndroidJUnit4.class)
-public class WeatherDrawerActivityTest extends BaseTest {
+public class ForecastDrawerActivityTest extends BaseTest {
 
     // Hmmm - Won't even compile without having at least the activity defined.
     @Rule
-    public ActivityTestRule<WeatherDrawerActivity> mActivityRule =
-            new ActivityTestRule<>(WeatherDrawerActivity.class, true, false);
+    public ActivityTestRule<ForecastDrawerActivity> mActivityRule =
+            new ActivityTestRule<>(ForecastDrawerActivity.class, true, false);
 
     @Before
     public void setup() {
@@ -41,7 +41,7 @@ public class WeatherDrawerActivityTest extends BaseTest {
     @Test
     public void weatherDrawerActivityExists() {
         Context targetContext = getContext();
-        Intent intent = new Intent(targetContext, WeatherDrawerActivity.class);
+        Intent intent = new Intent(targetContext, ForecastDrawerActivity.class);
         mActivityRule.launchActivity(intent);
     }
 

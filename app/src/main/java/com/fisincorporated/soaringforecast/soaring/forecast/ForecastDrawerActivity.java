@@ -1,4 +1,4 @@
-package com.fisincorporated.soaringforecast.drawer;
+package com.fisincorporated.soaringforecast.soaring.forecast;
 
 
 import android.content.Intent;
@@ -26,7 +26,6 @@ import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
-import com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastFragment;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.fisincorporated.soaringforecast.windy.WindyActivity;
 import com.google.android.gms.common.ConnectionResult;
@@ -42,7 +41,7 @@ import dagger.android.support.DaggerAppCompatActivity;
 
 // Nav bar http://guides.codepath.com/android/fragment-navigation-drawer#setup-toolbar
 
-public class WeatherDrawerActivity extends DaggerAppCompatActivity {
+public class ForecastDrawerActivity extends DaggerAppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;

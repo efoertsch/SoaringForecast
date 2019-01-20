@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import com.fisincorporated.soaringforecast.databinding.SoaringForecastBinding;
 import com.fisincorporated.soaringforecast.messages.DisplaySounding;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
+import com.fisincorporated.soaringforecast.soaring.json.Forecast;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -27,6 +29,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -48,13 +52,11 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private SoaringForecastViewModel soaringForecastViewModel;
     private SoaringForecastBinding soaringForecastBinding;
-
+    private ForecastTypeAdapter forecastTypeAdapter;
     private int lastForecastModelPosition = -1;
     private int lastForecastDatePosition = -1;
     private int lastForecastPosition = -1;
-
     private boolean showClearTaskMenuItem;
-
     private MenuItem soundingsMenuItem;
     private boolean checkSoundsMenuItem = false;
 
@@ -72,9 +74,13 @@ public class SoaringForecastFragment extends DaggerFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         soaringForecastBinding = DataBindingUtil.inflate(inflater
-                , R.layout.soaring_forecast_rasp_spinners, container, false);
+                , R.layout.fragment_forecast_rasp_spinners, container, false);
         soaringForecastBinding.setLifecycleOwner(getActivity());
         soaringForecastBinding.setViewModel(soaringForecastViewModel);
+
+        forecastTypeAdapter = new ForecastTypeAdapter(new ArrayList<>(),  getContext());
+        soaringForecastBinding.setSpinAdapterForecast(forecastTypeAdapter);
+
         setupViews();
         setObservers();
         return soaringForecastBinding.getRoot();
@@ -108,6 +114,12 @@ public class SoaringForecastFragment extends DaggerFragment {
                 }
                 lastForecastDatePosition = newForecastDatePosition;
             }
+        });
+
+        // Forecasts
+        soaringForecastViewModel.getForecasts().observe(this, forecasts -> {
+            forecastTypeAdapter.clear();
+            forecastTypeAdapter.addAll(forecasts);
         });
 
         soaringForecastViewModel.getForecastPosition().observe(this, newForecastPosition -> {
@@ -273,7 +285,16 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastBinding.soaringForecastSeekbarLayout.setVisibility(
                 soaringForecastBinding.soaringForecastSeekbarLayout.getVisibility() == View.VISIBLE ?
                         View.GONE : View.VISIBLE);
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(Forecast forecast) {
+        BottomSheetBehavior bsb = BottomSheetBehavior.from(soaringForecastBinding.soaringForecastBottomSheet);
+        if (bsb.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+            bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } else {
+            bsb.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
     }
 
 }
