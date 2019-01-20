@@ -6,7 +6,7 @@ import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
 import com.fisincorporated.soaringforecast.airport.search.AirportSearchFragment;
-import com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity;
+import com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
@@ -29,7 +29,7 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
-    abstract WeatherDrawerActivity bindWeatherDrawerActivity();
+    abstract ForecastDrawerActivity bindWeatherDrawerActivity();
 
     // ----- Forecasts ------------------------
     @ContributesAndroidInjector(modules = {SoaringForecastModule.class})

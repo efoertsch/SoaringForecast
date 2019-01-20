@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data class="SoaringForecastBinding">
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="forecastAction"
+            type="com.fisincorporated.soaringforecast.common.Constants.STEP_ACTION"/>
+
+        <variable
+            name="viewModel"
+            type="com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastViewModel"/>
+
+        <variable
+            name="spinAdapterForecast"
+            type="com.fisincorporated.soaringforecast.soaring.forecast.ForecastTypeAdapter"/>
+
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/soaring_forecast_coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/soaring_forecast_constraint_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline_40pct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.40"/>
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline_80pct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.8"/>
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline_100pct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="1.0"/>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/soaring_forecast_model_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_standard"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:layout_marginTop="@dimen/margin_half"
+                android:entries="@{viewModel.modelNames}"
+                android:selectedItemPosition="@={viewModel.modelPosition}"
+                android:textColor="@android:color/black"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_40pct"
+                app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/region_forecast_date_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_standard"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:layout_marginTop="@dimen/margin_half"
+                android:entries="@{viewModel.modelForecastDates}"
+                android:selectedItemPosition="@={viewModel.modelForecastDatePosition}"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_100pct"
+                app:layout_constraintStart_toEndOf="@+id/soaring_forecast_model_spinner"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <!-- android:entries="@{viewModel.forecasts}" -->
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/soaring_forecast_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/region_forecast_date_spinner"
+                android:layout_marginEnd="@dimen/margin_standard"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:layout_marginTop="@dimen/margin_half"
+
+                android:selectedItemPosition="@={viewModel.forecastPosition}"
+                app:adapter="@{spinAdapterForecast}"
+                app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+                app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+                app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_model_spinner"
+                />
+
+            <RelativeLayout
+                android:id="@+id/soaring_forecast_image_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+                app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+                app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_spinner">
+
+                <LinearLayout
+                    android:id="@+id/soaring_forecast_image_looper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/margin_standard"
+                    android:layout_marginStart="@dimen/margin_standard"
+                    android:layout_marginTop="@dimen/margin_half"
+                    android:background="@drawable/black_border"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/soaring_forecast_time_back_arrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_standard"
+                        android:contentDescription="@string/back_arrow"
+                        android:onClick="@{() -> viewModel.onStepClick(forecastAction.BACKWARD)}"
+                        android:tint="@color/colorPrimary"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_left"/>
+
+                    <TextView
+                        android:id="@+id/soaring_forecast_image_local_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:textColor="@android:color/black"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        tools:text="1500"/>
+
+                    <TextView
+                        android:id="@+id/soaring_forecast_time_local_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:text="@string/soaring_forecast_time_local_label"
+                        android:textColor="@android:color/black"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        />
+
+                    <ImageView
+                        android:id="@+id/soaring_forecast_time_forward_arrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_standard"
+                        android:contentDescription="@string/forward_arrow"
+                        android:onClick="@{() -> viewModel.onStepClick(forecastAction.FORWARD)}"
+                        android:tint="@color/colorPrimary"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_right"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/soaring_forecast_loop_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/pause_loop_toggle"
+                    android:onClick="@{() -> viewModel.onStepClick(forecastAction.LOOP)}"
+                    android:text="@{safeUnbox(viewModel.loopRunning) ? @string/pause : @string/loop }"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:tint="@color/colorPrimary"
+
+                    />
+
+            </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/soaring_forecast_map_and_bitmap"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+                >
+
+                <fragment
+                    android:id="@+id/soaring_forecast_map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+            </FrameLayout>
+
+            <com.fisincorporated.soaringforecast.common.TouchImageView
+                android:id="@+id/soaring_forecast_scale_image"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_80pct"
+                app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+                />
+
+            <LinearLayout
+                android:id="@+id/soaring_forecast_seekbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_standard"
+                android:background="@color/offwhite"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="10"
+                app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
+                app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
+                app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+                >
+
+                <TextView
+                    android:id="@+id/soaring_forecast_seekbar_0_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_half"
+                    android:layout_weight="2"
+                    android:gravity="end"
+                    android:text="@string/zero_percent"
+                    />
+
+                <SeekBar
+                    android:id="@+id/soaring_forecast_seekbar_opacity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="6"
+                    android:max="100"
+                    android:min="0"
+                    android:onProgressChanged="@{(sb, value, fromUser)-> viewModel.onOpacityChanged(value)}"
+                    />
+
+                <TextView
+                    android:id="@+id/soaring_forecast_seekbar_100_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_half"
+                    android:layout_weight="2"
+                    android:gravity="start"
+                    android:text="@string/one_hundred_percent"/>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/soaring_forecast_sounding_layout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="@{safeUnbox(viewModel.soundingDisplay) ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+                >
+
+                <com.fisincorporated.soaringforecast.common.TouchImageView
+                    android:id="@+id/soaring_forecast_sounding_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:id="@+id/soaring_forecast_close_sounding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="@dimen/margin_standard"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:contentDescription="@string/string_soaring_forecast_sounding_description"
+                    android:onClick="@{() -> viewModel.soundingImageCloseClick()}"
+                    app:srcCompat="@drawable/ic_close_black_24dp"/>
+
+            </RelativeLayout>
+
+            <ProgressBar
+                android:id="@+id/soaring_forecast_map_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
+                />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/soaring_forecast_bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:orientation="vertical"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="36dp"
+            app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                app:srcCompat="@drawable/chevron_up_24dp"/>
+
+            <TextView
+                android:id="@+id/soaring_forecast_forecast_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/offwhite"
+                android:gravity="center"
+                android:text="@{(viewModel.selectedForecast != null) ? viewModel.selectedForecast.getForecastDescription : @string/space }"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"
+                tools:text="yada yada yada"
+                />
+
+        </LinearLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</layout>

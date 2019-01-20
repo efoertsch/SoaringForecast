@@ -23,7 +23,7 @@
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
         <activity
-            android:name=".drawer.WeatherDrawerActivity"
+            android:name=".soaring.forecast.ForecastDrawerActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -34,53 +34,53 @@
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
-            android:parentActivityName=".drawer.WeatherDrawerActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
+                android:value="com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
         <activity
             android:name=".task.TaskActivity"
-            android:parentActivityName=".drawer.WeatherDrawerActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
+                android:value="com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
         <activity
             android:name=".satellite.SatelliteActivity"
-            android:parentActivityName=".drawer.WeatherDrawerActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
+                android:value="com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
         <activity
             android:name=".airport.AirportActivity"
-            android:parentActivityName=".drawer.WeatherDrawerActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
+                android:value="com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
         <activity
             android:name=".about.AboutActivity"
-            android:parentActivityName=".drawer.WeatherDrawerActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
+                android:value="com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
 
         <activity
             android:name=".windy.WindyActivity"
             android:label="@string/windy"
-            android:parentActivityName=".drawer.WeatherDrawerActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.fisincorporated.soaringforecast.drawer.WeatherDrawerActivity"/>
+                android:value="com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
 
         <meta-data
