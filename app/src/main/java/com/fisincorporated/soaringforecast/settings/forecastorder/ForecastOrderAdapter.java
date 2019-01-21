@@ -71,7 +71,7 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         Collections.swap(getItems(), fromPosition, toPosition);
-        notifyDataSetChanged();
+        notifyItemMoved(fromPosition, toPosition);
         //notifyNewForecastOrder();
         return true;
     }

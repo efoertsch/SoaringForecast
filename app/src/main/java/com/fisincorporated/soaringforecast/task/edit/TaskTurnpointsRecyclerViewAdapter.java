@@ -44,8 +44,8 @@ public class TaskTurnpointsRecyclerViewAdapter
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         Collections.swap(getItems(), fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
         taskAndTurnpointsViewModel.renumberTurnpoints();
-        notifyDataSetChanged();
         return true;
     }
 
