@@ -271,6 +271,7 @@
     <string name="windy_menu_google_map">Google Map</string>
     <string name="windy_menu_topo_map">Topo map</string>
     <string name="space">\u0020</string>
+    <string name="order_forecasts">Order Forecasts</string>
 
 
 </resources>

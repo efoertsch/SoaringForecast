@@ -12,14 +12,19 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.repository.Airport;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteImageType;
 import com.fisincorporated.soaringforecast.satellite.data.SatelliteRegion;
+import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
+import com.fisincorporated.soaringforecast.utils.JSONResourceReader;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -38,6 +43,7 @@ public class AppPreferences {
     private static final String SELECTED_TASK_ID = "SELECTED_TASK_ID";
     private static final String WINDY_ZOOM_LEVEL = "WINDY_ZOOM_LEVEL" ;
     private static final String SELECTED_MODEL_FORECAST_DATE = "SELECTED_MODEL_FORECAST_DATE";
+    private static final String ORDERED_FORECAST_OPTIONS = "ORDERED_FORECAST_OPTIONS";
 
     // These string values are assigned in code so they match what is used in Settings
     private static String DISPLAY_WINDY_MENU_OPTION;
@@ -382,5 +388,32 @@ public class AppPreferences {
         Gson gson = new Gson();
         return gson.fromJson(sharedPreferences.getString(SELECTED_MODEL_FORECAST_DATE, "")
                 ,ModelForecastDate.class);
+    }
+
+    // --------- Forecasts -----------------
+    public Observable<Forecasts> getOrderedForecastList() {
+        return Observable.create(emitter -> {
+            try {
+                Forecasts forecasts = JSONResourceReader.constructUsingGson(
+                        sharedPreferences.getString(ORDERED_FORECAST_OPTIONS,""),Forecasts.class);
+                if (forecasts != null && forecasts.getForecasts().size() > 0) {
+                    emitter.onNext(forecasts);
+                } else {
+                    emitter.onNext(new Forecasts());
+                }
+                emitter.onComplete();
+            } catch (JsonSyntaxException jse) {
+                emitter.onError(jse);
+            }
+        });
+    }
+
+    public void setOrderedForecastList(Forecasts forecasts){
+        Gson gson = new Gson();
+        String json = gson.toJson(forecasts);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ORDERED_FORECAST_OPTIONS, json);
+        editor.apply();
+
     }
 }

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.fisincorporated.soaringforecast.R;
@@ -36,5 +38,11 @@ public class ViewUtilities {
             builder.create().show();
         }
 
+    }
+
+    public static void addRecyclerViewDivider(Context context, int linearLayoutOrientation, RecyclerView recyclerView){
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
+                , linearLayoutOrientation);
+        recyclerView.addItemDecoration(dividerItemDecoration);
     }
 }

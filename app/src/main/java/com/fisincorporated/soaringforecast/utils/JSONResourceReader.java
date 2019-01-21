@@ -68,4 +68,9 @@ public class JSONResourceReader {
         Gson gson = new GsonBuilder().create();
         return gson.fromJson(jsonString, type);
     }
+
+    public static <T> T constructUsingGson(String jsonString, Class<T> type) {
+        Gson gson = new GsonBuilder().create();
+        return gson.fromJson(jsonString, type);
+    }
 }

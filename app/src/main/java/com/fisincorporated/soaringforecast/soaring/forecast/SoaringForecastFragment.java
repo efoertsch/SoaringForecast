@@ -230,9 +230,17 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_select_regions:
                 displayRegionSelections();
                 return true;
+            case R.id.forecast_menu_order_forecasts:
+                displayForecastOrderFragment();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void displayForecastOrderFragment() {
+        SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
+        builder.displayOrderedForecasts();
+        startActivity(builder.build(this.getContext()));
     }
 
     private void displayRegionSelections() {

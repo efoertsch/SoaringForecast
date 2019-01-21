@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -26,6 +25,7 @@ import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.repository.Task;
 import com.fisincorporated.soaringforecast.touchhelper.OnStartDragListener;
 import com.fisincorporated.soaringforecast.touchhelper.SimpleItemTouchHelperCallback;
+import com.fisincorporated.soaringforecast.utils.ViewUtilities;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -73,9 +73,7 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
-                , linearLayoutManager.getOrientation());
-        recyclerView.addItemDecoration(dividerItemDecoration);
+        ViewUtilities.addRecyclerViewDivider(getContext(), linearLayoutManager.getOrientation(), recyclerView);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         //DragListener
