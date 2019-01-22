@@ -272,6 +272,7 @@
     <string name="windy_menu_topo_map">Topo map</string>
     <string name="space">\u0020</string>
     <string name="order_forecasts">Order Forecasts</string>
+    <string name="forecast_order_menu_reset">Reset</string>
 
 
 </resources>

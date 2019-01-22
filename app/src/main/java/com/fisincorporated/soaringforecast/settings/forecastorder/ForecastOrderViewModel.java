@@ -42,16 +42,14 @@ public class ForecastOrderViewModel extends ViewModel implements  ForecastOrderA
      * First try to get forecast list from appPreferences, and if nothing, get default list from appRepository
      */
     public void listOrderedForecasts() {
-        Disposable disposable = appPreferences.getOrderedForecastList().flatMap(new Function<Forecasts, Observable<Forecasts>>() {
-            @Override
-            public Observable<Forecasts> apply(Forecasts orderedForecasts) {
-                if (orderedForecasts != null && orderedForecasts.getForecasts() != null && orderedForecasts.getForecasts().size() > 0) {
-                    return Observable.just(orderedForecasts);
-                } else {
-                    return appRepository.getForecasts().toObservable();
-                }
-            }
-        }).subscribeOn(Schedulers.io())
+        Disposable disposable = appPreferences.getOrderedForecastList()
+                .flatMap((Function<Forecasts, Observable<Forecasts>>) orderedForecasts -> {
+                    if (orderedForecasts != null && orderedForecasts.getForecasts() != null && orderedForecasts.getForecasts().size() > 0) {
+                        return Observable.just(orderedForecasts);
+                    } else {
+                        return appRepository.getForecasts().toObservable();
+                    }
+                }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(orderedForecasts -> {
                             this.orderedForecasts.setValue(orderedForecasts.getForecasts());
@@ -67,11 +65,24 @@ public class ForecastOrderViewModel extends ViewModel implements  ForecastOrderA
         appPreferences.setOrderedForecastList(forecasts);
     }
 
+    public void deleteCustomForecastOrder() {
+        appPreferences.deleteCustomForecastOrder();
+        Disposable disposable = appRepository.getForecasts()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(orderedForecasts -> {
+                            this.orderedForecasts.setValue(orderedForecasts.getForecasts());
+                        }
+                );
+        compositeDisposable.add(disposable);
+    }
+
 
     @Override
     public void onCleared() {
         compositeDisposable.dispose();
         super.onCleared();
     }
+
 
 }

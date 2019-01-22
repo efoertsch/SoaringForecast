@@ -5,12 +5,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -47,6 +49,7 @@ public class ForecastOrderFragment extends DaggerFragment implements OnStartDrag
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         forecastOrderViewModel = ViewModelProviders.of(this).get(ForecastOrderViewModel.class)
                 .setRepositoryAndPreferences(appRepository, appPreferences);
 
@@ -99,19 +102,32 @@ public class ForecastOrderFragment extends DaggerFragment implements OnStartDrag
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.forecast_order_menu_reset:
+                forecastOrderViewModel.deleteCustomForecastOrder();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.forecast_order_menu, menu);
+    }
+
+
+    @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
     }
 
     @Override
     public void onItemClick(Forecast forecast) {
-        BottomSheetBehavior bsb = BottomSheetBehavior.from(forecastOrderListView.forecastOrderBottomSheet);
-        if (bsb.getState() == BottomSheetBehavior.STATE_COLLAPSED){
-            forecastOrderListView.setForecast(forecast);
-            bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } else {
-            bsb.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
-
+          ForecastOrderBottomSheetFragment forecastOrderBottomSheetFragment =
+                  ForecastOrderBottomSheetFragment.newInstance(forecast);
+          forecastOrderBottomSheetFragment.show(getActivity().getSupportFragmentManager(),"forecastDescription");
     }
 }

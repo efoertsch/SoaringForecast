@@ -416,4 +416,11 @@ public class AppPreferences {
         editor.apply();
 
     }
+
+    public void deleteCustomForecastOrder() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(ORDERED_FORECAST_OPTIONS);
+        editor.apply();
+
+    }
 }
