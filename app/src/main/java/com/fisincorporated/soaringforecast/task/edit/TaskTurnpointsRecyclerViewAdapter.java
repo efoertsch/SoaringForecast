@@ -44,8 +44,8 @@ public class TaskTurnpointsRecyclerViewAdapter
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         Collections.swap(getItems(), fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
         taskAndTurnpointsViewModel.renumberTurnpoints();
-        notifyDataSetChanged();
         return true;
     }
 
@@ -54,7 +54,6 @@ public class TaskTurnpointsRecyclerViewAdapter
         // Need to keep track of deleted turnpoints so can delete from db when(if) user saves changes
         taskAndTurnpointsViewModel.deleteTaskTurnpoint(position);
         notifyDataSetChanged();
-
     }
 
 }

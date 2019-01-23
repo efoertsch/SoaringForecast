@@ -17,6 +17,7 @@ import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
 import com.fisincorporated.soaringforecast.soaring.json.Forecast;
 import com.fisincorporated.soaringforecast.soaring.json.ForecastModels;
+import com.fisincorporated.soaringforecast.soaring.json.Forecasts;
 import com.fisincorporated.soaringforecast.soaring.json.Model;
 import com.fisincorporated.soaringforecast.soaring.json.ModelForecastDate;
 import com.fisincorporated.soaringforecast.soaring.json.Region;
@@ -363,32 +364,43 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return forecasts;
     }
 
+    /**
+     * First try to get forecast list from appPreferences, and if nothing, get default list from appRepository
+     */
     private void loadForecasts() {
-        Disposable disposable = appRepository.getForecasts()
-                .subscribeOn(Schedulers.newThread())
+        Disposable disposable = appPreferences.getOrderedForecastList()
+                .flatMap((Function<Forecasts, Observable<Forecasts>>) orderedForecasts -> {
+                    if (orderedForecasts != null && orderedForecasts.getForecasts() != null && orderedForecasts.getForecasts().size() > 0) {
+                        return Observable.just(orderedForecasts);
+                    } else {
+                        return appRepository.getForecasts().toObservable();
+                    }
+                }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(forecasts1 -> {
-                            // rather confusing in naming of forecasts but that is the way it is
-                            forecasts.setValue(forecasts1.getForecasts());
+                .subscribe(orderedForecasts -> {
+                            forecasts.setValue(orderedForecasts.getForecasts());
                             setDefaultSoaringForecast();
                         },
                         t -> {
                             //TODO email stack trace
                             Timber.e(t);
                         });
+
         compositeDisposable.add(disposable);
     }
 
     /**
      *
      */
-    private void setDefaultSoaringForecast() {
+    public void setDefaultSoaringForecast() {
         getSelectedForecast();
-        // TODO cheat here to get wstar - get from appPreferences?
-        if (forecasts.getValue() != null && forecasts.getValue().size() > 1) {
-            selectedForecast.setValue(forecasts.getValue().get(1));
-            forecastPosition.setValue(1);
+        if (forecasts.getValue() != null && forecasts.getValue().size() > 0) {
+            selectedForecast.setValue(forecasts.getValue().get(0));
+            forecastPosition.setValue(0);
         }
+    }
+    public void reloadForecasts() {
+        loadForecasts();
     }
 
     public MutableLiveData<Forecast> getSelectedForecast() {
@@ -714,9 +726,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     // ------- Task display ---------------------
 
-    private void checkIfToDisplayTask(){
-        long currentTaskId =  appPreferences.getSelectedTaskId();
-        if (lastTaskId != currentTaskId){
+    private void checkIfToDisplayTask() {
+        long currentTaskId = appPreferences.getSelectedTaskId();
+        if (lastTaskId != currentTaskId) {
             lastTaskId = currentTaskId;
             getTask(lastTaskId);
         }

@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import com.fisincorporated.soaringforecast.databinding.TurnpointsImportView;
 import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsImporterViewModel;
+import com.fisincorporated.soaringforecast.utils.ViewUtilities;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -54,9 +54,7 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
-                , linearLayoutManager.getOrientation());
-        recyclerView.addItemDecoration(dividerItemDecoration);
+        ViewUtilities.addRecyclerViewDivider(getContext(), linearLayoutManager.getOrientation(), recyclerView);
         recyclerView.setAdapter(recyclerViewAdapter);
         return turnpointsImportView.getRoot();
 

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -22,6 +21,7 @@ import com.fisincorporated.soaringforecast.messages.PopThisFragmentFromBackStack
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.touchhelper.OnStartDragListener;
 import com.fisincorporated.soaringforecast.touchhelper.SimpleItemTouchHelperCallback;
+import com.fisincorporated.soaringforecast.utils.ViewUtilities;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -70,13 +70,11 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskAndTurnpointsViewModel);
 
         //TODO DRY
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext()
-                , linearLayoutManager.getOrientation());
-        recyclerView.addItemDecoration(dividerItemDecoration);
+        ViewUtilities.addRecyclerViewDivider(getContext(), linearLayoutManager.getOrientation(), recyclerView);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         taskAndTurnpointsViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {

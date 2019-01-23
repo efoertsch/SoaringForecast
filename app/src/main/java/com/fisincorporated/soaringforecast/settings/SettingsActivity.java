@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 
 import com.fisincorporated.soaringforecast.common.MasterActivity;
+import com.fisincorporated.soaringforecast.settings.forecastorder.ForecastOrderFragment;
 import com.fisincorporated.soaringforecast.settings.preferences.SettingsPreferenceFragment;
 import com.fisincorporated.soaringforecast.settings.regions.RegionSelectionFragment;
 
@@ -21,6 +22,7 @@ public class SettingsActivity extends MasterActivity {
     private static final String DISPLAY_REQUEST = "DISPLAY_REQUEST";
     private static final String DISPLAY_SETTINGS = "DISPLAY_SETTINGS";
     private static final String SELECT_REGION = "SELECT_REGION";
+    private static final String DISPLAY_ORDER_FORECASTS = "DISPLAY_ORDER_FORECASTS";
 
     private Toolbar toolbar;
 
@@ -39,9 +41,15 @@ public class SettingsActivity extends MasterActivity {
                     return getSettingsFragment();
                 case SELECT_REGION:
                     return getRegionSelectionFragment();
+                case DISPLAY_ORDER_FORECASTS:
+                    return getOrderForecastsFragment();
             }
         }
         return getSettingsFragment();
+    }
+
+    private Fragment getOrderForecastsFragment() {
+        return new ForecastOrderFragment();
     }
 
     private Fragment getRegionSelectionFragment() {
@@ -72,6 +80,11 @@ public class SettingsActivity extends MasterActivity {
 
         public SettingsActivity.Builder displaySelectRegion() {
             bundle.putString(DISPLAY_REQUEST, SELECT_REGION);
+            return this;
+        }
+
+        public SettingsActivity.Builder displayOrderedForecasts() {
+            bundle.putString(DISPLAY_REQUEST, DISPLAY_ORDER_FORECASTS);
             return this;
         }
 

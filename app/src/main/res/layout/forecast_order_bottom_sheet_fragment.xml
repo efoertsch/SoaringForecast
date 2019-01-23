@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="ForecastOrderBottomSheetView">
+
+        <variable
+            name="forecast"
+            type="com.fisincorporated.soaringforecast.soaring.json.Forecast"/>
+
+    </data>
+
+    <LinearLayout
+        android:id="@+id/forecast_order_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/forecast_order_forecast_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@{forecast.forecastNameDisplay}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+            tools:text="MSL Ht of Critical Updraft Strength"
+            />
+
+        <TextView
+            android:id="@+id/forecast_order_forecast_description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:background="@color/offwhite"
+            android:gravity="center"
+            android:maxLines="10"
+            android:text="@{forecast.forecastDescription}"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/black"
+            android:scrollbars="vertical"
+            tools:text="yada yada yada"
+            />
+
+    </LinearLayout>
+</layout>

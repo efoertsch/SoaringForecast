@@ -6,6 +6,7 @@ import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafFragment;
 import com.fisincorporated.soaringforecast.airport.list.AirportListFragment;
 import com.fisincorporated.soaringforecast.airport.search.AirportSearchFragment;
+import com.fisincorporated.soaringforecast.settings.forecastorder.ForecastOrderFragment;
 import com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.satellite.noaa.NoaaSatelliteImageFragment;
@@ -92,6 +93,10 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract SettingsPreferenceFragment bindSettingsPreferenceFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract ForecastOrderFragment bindForecastOrderFragment();
+
 
     // ----- About ------------
     @ContributesAndroidInjector(modules = {})

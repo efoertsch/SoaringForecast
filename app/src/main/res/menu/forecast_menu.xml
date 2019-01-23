@@ -28,4 +28,9 @@
         android:id="@+id/forecast_menu_select_regions"
         android:title="@string/select_region"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/forecast_menu_order_forecasts"
+        android:title="@string/order_forecasts"
+        app:showAsAction="never"/>
 </menu>

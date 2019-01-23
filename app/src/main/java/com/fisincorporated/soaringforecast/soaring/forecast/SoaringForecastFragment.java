@@ -59,6 +59,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     private boolean showClearTaskMenuItem;
     private MenuItem soundingsMenuItem;
     private boolean checkSoundsMenuItem = false;
+    private boolean refreshForecastOrder = false;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +188,10 @@ public class SoaringForecastFragment extends DaggerFragment {
         getActivity().setTitle(R.string.rasp);
         EventBus.getDefault().register(this);
         soaringForecastViewModel.checkForChanges();
+        if (refreshForecastOrder){
+            refreshForecastOrder = false;
+            soaringForecastViewModel.reloadForecasts();
+        }
     }
 
     @Override
@@ -230,9 +235,18 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_select_regions:
                 displayRegionSelections();
                 return true;
+            case R.id.forecast_menu_order_forecasts:
+                displayForecastOrderFragment();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void displayForecastOrderFragment() {
+        refreshForecastOrder = true;
+        SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
+        builder.displayOrderedForecasts();
+        startActivity(builder.build(this.getContext()));
     }
 
     private void displayRegionSelections() {
