@@ -2,6 +2,7 @@ package com.fisincorporated.soaringforecast.settings.forecastorder;
 
 import android.annotation.SuppressLint;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.fisincorporated.soaringforecast.common.recycleradapter.GenericViewHol
 import com.fisincorporated.soaringforecast.databinding.ForecastOrderView;
 import com.fisincorporated.soaringforecast.soaring.json.Forecast;
 import com.fisincorporated.soaringforecast.touchhelper.ItemTouchHelperAdapter;
+import com.fisincorporated.soaringforecast.touchhelper.ItemTouchHelperViewHolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,17 +24,21 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
     // TODO convert to use GenericRecyclerViewAdapter
     private List<Forecast> forecasts;
     private ForecastOrderAdapter.OnItemClickListener onItemClickListener;
-    private ForecastOrderAdapter.NewForecastListListener newForecastListListener;
+    private NewForecastOrderListener newForecastListListener;
 
     public interface OnItemClickListener {
         void onItemClick(Forecast forecast);
     }
 
-    public interface NewForecastListListener {
+    public interface NewForecastOrderListener {
         void newForecastOrder(List<Forecast> forecasts);
     }
 
     public ForecastOrderAdapter() {
+    }
+
+    public void setNewForecastOrderListener(NewForecastOrderListener newForecastListListener){
+        this.newForecastListListener = newForecastListListener;
     }
 
     public ForecastOrderAdapter setOnItemClickListener(ForecastOrderAdapter.OnItemClickListener onItemClickListener) {
@@ -72,7 +78,7 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
     public boolean onItemMove(int fromPosition, int toPosition) {
         Collections.swap(getItems(), fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
-        //notifyNewForecastOrder();
+        notifyNewForecastOrder();
         return true;
     }
 
@@ -88,7 +94,8 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
     }
 
 
-    public static class ForecastOrderViewHolder extends GenericViewHolder<Forecast, ForecastOrderView> {
+    public static class ForecastOrderViewHolder extends GenericViewHolder<Forecast, ForecastOrderView>
+        implements ItemTouchHelperViewHolder{
 
         protected static final int LAYOUT_RESOURCE = R.layout.forecast_order_row;
 
@@ -106,6 +113,16 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
         @Override
         public ForecastOrderView getViewDataBinding() {
             return viewDataBinding;
+        }
+
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY);
+        }
+
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(0);
         }
 
     }

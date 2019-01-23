@@ -68,6 +68,7 @@ public class ForecastOrderFragment extends DaggerFragment implements OnStartDrag
 
         forecastOrderAdapter = new ForecastOrderAdapter();
         forecastOrderAdapter.setOnItemClickListener(this);
+        forecastOrderAdapter.setNewForecastOrderListener(forecastOrderViewModel);
         RecyclerView recyclerView = forecastOrderListView.forecastOrderRecyclerView;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);

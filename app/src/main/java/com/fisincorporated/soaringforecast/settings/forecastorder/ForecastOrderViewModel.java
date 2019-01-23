@@ -17,7 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-public class ForecastOrderViewModel extends ViewModel implements  ForecastOrderAdapter.NewForecastListListener {
+public class ForecastOrderViewModel extends ViewModel implements ForecastOrderAdapter.NewForecastOrderListener {
 
     private MutableLiveData<List<Forecast>> orderedForecasts;
     private AppRepository appRepository;

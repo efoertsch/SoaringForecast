@@ -54,7 +54,6 @@ public class TaskTurnpointsRecyclerViewAdapter
         // Need to keep track of deleted turnpoints so can delete from db when(if) user saves changes
         taskAndTurnpointsViewModel.deleteTaskTurnpoint(position);
         notifyDataSetChanged();
-
     }
 
 }

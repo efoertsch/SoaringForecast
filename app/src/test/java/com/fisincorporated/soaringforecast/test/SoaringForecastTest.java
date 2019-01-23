@@ -28,7 +28,8 @@ import static org.junit.Assert.assertTrue;
 
 public class SoaringForecastTest {
 
-    String raspUrl = "http://thepaavolas.net/rasp/";
+   // String raspUrl = "http://thepaavolas.net/rasp/";
+    String raspUrl = "http://soargbsc.com/rasp/";
     Retrofit retrofit;
     SoaringForecastApi client;
     Regions regions;

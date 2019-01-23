@@ -1,13 +1,6 @@
 {
   "forecasts": [
     {
-      "forecast_name": "nope_therm",
-      "forecast_type": "comment",
-      "forecast_name_display": "- - - THERMAL PARAMETERS - - -",
-      "forecast_description": " ",
-      "forecast_category":"thermal"
-    },
-    {
       "forecast_name": "wstar_bsratio",
       "forecast_type": "",
       "forecast_name_display": "Thermal Updraft Velocity & B/S Ratio",
@@ -127,12 +120,6 @@
       "forecast_category":"thermal"
     },
     {
-      "forecast_name": "nope_wind",
-      "forecast_type": "comment",
-      "forecast_name_display": "- - - WIND PARAMETERS - - -",
-      "forecast_description": ""
-    },
-    {
       "forecast_name": "mslpress",
       "forecast_type": "full",
       "forecast_name_display": "MSL Pressure",
@@ -194,12 +181,6 @@
       "forecast_name_display": "Wind-850mB",
       "forecast_description": "Wind at pressure level of 850 mB plotted with wind barbs.",
       "forecast_category":"wind"
-    },
-    {
-      "forecast_name": "nope_cloud",
-      "forecast_type": "comment",
-      "forecast_name_display": "- - - CLOUD PARAMETERS - - -",
-      "forecast_description": ""
     },
     {
       "forecast_name": "zsfclcldif",
@@ -277,12 +258,6 @@
       "forecast_name_display": "BL Integrated Cloud Water",
       "forecast_description": "This parameter is primarily for DrJack's use.  It predicts the cloud base of extensive clouds based on model-predicted formation of cloud water, giving the lowest height at which the predicted cloud water density is above a criterion value within the BL.  In theory it should be useful predicting OvercastDevelopment (OD) within the BL since it predicts extensive cloudiness, i.e. when BL clouds are predicted to extend over a full model gridcell volume.  However, the criterion to be used to indicate the presence of clouds is problematical since no single value reliably differentiates between 'mist' and 'cloud' concentrations.  This parameter has not yet been verified again actual conditions - comparision to flight observations will be needed to evaluate its usefulness.",
       "forecast_category":"cloud"
-    },
-    {
-      "forecast_name": "nope_wave",
-      "forecast_type": "comment full",
-      "forecast_name_display": "- - - WAVE PARAMETERS - - -",
-      "forecast_description": ""
     },
     {
       "forecast_name": "press1000",
