@@ -201,6 +201,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     }
 
     // ------ Task Turnpoints ---------------------------------
+    // TODO Simplify(?) just pass in task id and get turnpoints here.
     public void setTaskTurnpoints(List<TaskTurnpoint> newTaskTurnpoints) {
         removeTaskTurnpoints();
         taskTurnpoints.clear();
