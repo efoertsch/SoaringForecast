@@ -105,7 +105,9 @@ public class WindyViewModel extends AndroidViewModel {
     private void setWindyModel(WindyModel selectedModelName) {
         working.setValue(true);
         setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setModel(")
+                .append("'")
                 .append(selectedModelName.getCode())
+                .append("'")
                 .append(JAVASCRIPT_END)
                 .toString());
     }
@@ -133,8 +135,11 @@ public class WindyViewModel extends AndroidViewModel {
 
     private void setModelLayer(WindyLayer selectedModelLayer) {
         working.setValue(true);
-        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setLayer(")
-                .append("'" +selectedModelLayer.getCode()+ "'")
+        setCommand( new StringBuilder().append(JAVASCRIPT_START)
+                .append("setLayer(")
+                .append("'")
+                .append(selectedModelLayer.getCode())
+                .append("'")
                 .append(JAVASCRIPT_END)
                 .toString());
     }
@@ -163,8 +168,11 @@ public class WindyViewModel extends AndroidViewModel {
         // Note that webview may not be set up yet but which will cause a
         //"Uncaught ReferenceError: setAltitude is not defined" in chrome log
         working.setValue(true);
-        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setAltitude(")
-                .append("'" + selectedAltitude.getWindyCode() + "'")
+        setCommand( new StringBuilder().append(JAVASCRIPT_START)
+                .append("setAltitude(")
+                .append("'")
+                .append(selectedAltitude.getWindyCode())
+                .append( "'")
                 .append(JAVASCRIPT_END)
                 .toString());
     }

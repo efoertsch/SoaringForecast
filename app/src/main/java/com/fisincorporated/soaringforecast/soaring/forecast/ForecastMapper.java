@@ -72,6 +72,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         // if delay in map getting ready and bounds, sounding locations or task already passed in display them as
         // required
         googleMap.setOnMarkerClickListener(this);
