@@ -46,6 +46,7 @@ public class TaskTurnpointsRecyclerViewAdapter
         Collections.swap(getItems(), fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
         taskAndTurnpointsViewModel.renumberTurnpoints();
+        notifyDataSetChanged();
         return true;
     }
 

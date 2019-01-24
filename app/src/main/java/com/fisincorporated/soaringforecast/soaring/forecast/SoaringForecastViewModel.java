@@ -735,7 +735,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public void getTask(long taskId) {
-        lastTaskId = -1;
         Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
