@@ -123,6 +123,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             forecastTypeAdapter.addAll(forecasts);
         });
 
+        // Databinding doesn't call set... directly so need this observer to kick off forecast change
         soaringForecastViewModel.getForecastPosition().observe(this, newForecastPosition -> {
             if (newForecastPosition != null) {
                 if (lastForecastPosition != -1 && lastForecastPosition != newForecastPosition) {

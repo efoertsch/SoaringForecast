@@ -90,6 +90,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     private boolean displaySoundings;
     private long lastTaskId;
+    private boolean loadRasp;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -364,6 +365,24 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return forecasts;
     }
 
+    public void reloadForecasts() {
+        // If forecast prior to reorder was 0 and now setting new forecast
+        // position to 0, this won't cause reload of forecast bitmaps via
+        // observer logic, to put in boolean to force reload
+        int lastForecastPosition = getLastForecastPosition();
+        if (lastForecastPosition == 0) {
+            loadRasp = true;  // TODO got to be better way
+        }
+        loadForecasts();
+    }
+
+    public int getLastForecastPosition() {
+        return ((forecastPosition == null || forecastPosition.getValue() == null) ?
+                -1 : forecastPosition.getValue());
+
+    }
+
+
     /**
      * First try to get forecast list from appPreferences, and if nothing, get default list from appRepository
      */
@@ -398,9 +417,10 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             selectedForecast.setValue(forecasts.getValue().get(0));
             forecastPosition.setValue(0);
         }
-    }
-    public void reloadForecasts() {
-        loadForecasts();
+        if (loadRasp){
+            loadRaspImages();
+        }
+        loadRasp = false;
     }
 
     public MutableLiveData<Forecast> getSelectedForecast() {
