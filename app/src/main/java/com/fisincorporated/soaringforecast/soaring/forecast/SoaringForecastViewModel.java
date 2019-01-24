@@ -726,7 +726,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     // ------- Task display ---------------------
 
-    private void checkIfToDisplayTask() {
+    public void checkIfToDisplayTask() {
         long currentTaskId = appPreferences.getSelectedTaskId();
         if (lastTaskId != currentTaskId) {
             lastTaskId = currentTaskId;
@@ -734,12 +734,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
-    public void getTask(long taskId) {
+    private void getTask(long taskId) {
         Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(taskTurnpointList -> {
-                            appPreferences.setSelectedTaskId(taskId);
                             taskTurnpoints.setValue(taskTurnpointList);
                         },
                         t -> {

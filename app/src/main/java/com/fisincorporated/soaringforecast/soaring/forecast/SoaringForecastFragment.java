@@ -267,7 +267,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             if ((bundle = data.getExtras()) != null) {
                 long taskId = bundle.getLong(Constants.SELECTED_TASK);
                 if (taskId != 0) {
-                    soaringForecastViewModel.getTask(taskId);
+                    soaringForecastViewModel.checkIfToDisplayTask();
                 }
             }
         }

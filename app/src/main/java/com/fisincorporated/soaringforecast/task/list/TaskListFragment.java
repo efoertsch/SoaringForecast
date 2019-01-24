@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.fisincorporated.soaringforecast.R;
+import com.fisincorporated.soaringforecast.app.AppPreferences;
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericEditClickListener;
 import com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener;
 import com.fisincorporated.soaringforecast.databinding.TaskListView;
@@ -47,6 +48,9 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
 
     @Inject
     AppRepository appRepository;
+
+    @Inject
+    AppPreferences appPreferences;
 
     private List<Task> tasks = new ArrayList<>();
     private TaskListRecyclerViewAdapter recyclerViewAdapter;
@@ -133,6 +137,8 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
 
     @Override
     public void onItemClick(Task task, int position) {
+        //TODO best way to do this?
+        appPreferences.setSelectedTaskId(task.getId());
         EventBus.getDefault().post(new SelectedTask(task.getId()));
     }
 
