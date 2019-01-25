@@ -13,6 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.SeekBar;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
@@ -60,6 +63,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     private MenuItem soundingsMenuItem;
     private boolean checkSoundsMenuItem = false;
     private boolean refreshForecastOrder = false;
+    private AlphaAnimation opacitySliderFadeOut;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +83,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastBinding.setLifecycleOwner(getActivity());
         soaringForecastBinding.setViewModel(soaringForecastViewModel);
 
-        forecastTypeAdapter = new ForecastTypeAdapter(new ArrayList<>(),  getContext());
+        forecastTypeAdapter = new ForecastTypeAdapter(new ArrayList<>(), getContext());
         soaringForecastBinding.setSpinAdapterForecast(forecastTypeAdapter);
 
         setupViews();
@@ -92,7 +96,25 @@ public class SoaringForecastFragment extends DaggerFragment {
         forecastMapper.displayMap((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map));
         // opacity not worth having it bound in viewModel and forwarding changes.
         forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
-        soaringForecastBinding.soaringForecastSeekbarOpacity.setProgress(appPreferences.getForecastOverlayOpacity());
+        soaringForecastBinding.soaringForecastSeekbarOpacity.setProgress(soaringForecastViewModel.getForecastOverlyOpacity());
+        soaringForecastBinding.soaringForecastSeekbarOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                stopOpacitySliderFadeOut();
+                forecastMapper.setForecastOverlayOpacity(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                stopOpacitySliderFadeOut();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                soaringForecastViewModel.setForecastOverlayOpacity(seekBar.getProgress());
+                startOpacitySliderFadeOut();
+            }
+        });
     }
 
     //TODO - lots of observers - consolidate/simplify?
@@ -177,10 +199,6 @@ public class SoaringForecastFragment extends DaggerFragment {
             soaringForecastBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
         });
 
-        // Forecast bitmap opacity
-        soaringForecastViewModel.getForecastOverlyOpacity().observe(this, forecastOverlyOpacity -> {
-            forecastMapper.setForecastOverlayOpacity(forecastOverlyOpacity);
-        });
     }
 
     @Override
@@ -189,7 +207,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         getActivity().setTitle(R.string.rasp);
         EventBus.getDefault().register(this);
         soaringForecastViewModel.checkForChanges();
-        if (refreshForecastOrder){
+        if (refreshForecastOrder) {
             refreshForecastOrder = false;
             soaringForecastViewModel.reloadForecasts();
         }
@@ -293,23 +311,58 @@ public class SoaringForecastFragment extends DaggerFragment {
 
 
     private void displaySoundings(boolean displaySoundings) {
-        soaringForecastViewModel.displaySoundings(displaySoundings);
+        boolean soundingsAvailable = soaringForecastViewModel.displaySoundings(displaySoundings);
+        soundingsMenuItem.setChecked(soundingsAvailable);
     }
 
-    private void displayOpacitySlider() {
-        soaringForecastBinding.soaringForecastSeekbarLayout.setVisibility(
-                soaringForecastBinding.soaringForecastSeekbarLayout.getVisibility() == View.VISIBLE ?
-                        View.GONE : View.VISIBLE);
-    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Forecast forecast) {
         BottomSheetBehavior bsb = BottomSheetBehavior.from(soaringForecastBinding.soaringForecastBottomSheet);
-        if (bsb.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+        if (bsb.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
             bsb.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
+    }
+
+    private void displayOpacitySlider() {
+        soaringForecastBinding.soaringForecastSeekbarLayout.setVisibility(View.VISIBLE);
+        startOpacitySliderFadeOut();
+    }
+
+    private void startOpacitySliderFadeOut() {
+        stopOpacitySliderFadeOut();
+        animateOpacitySliderFadeOut();
+
+    }
+
+    private void stopOpacitySliderFadeOut() {
+        if (opacitySliderFadeOut != null) {
+            opacitySliderFadeOut.cancel();
+        }
+    }
+
+    public void animateOpacitySliderFadeOut() {
+        opacitySliderFadeOut = new AlphaAnimation(1.0f, 0.0f);
+        opacitySliderFadeOut.setDuration(1000);
+        opacitySliderFadeOut.setStartOffset(5000);
+        opacitySliderFadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                soaringForecastBinding.soaringForecastSeekbarLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        soaringForecastBinding.soaringForecastSeekbarLayout.startAnimation(opacitySliderFadeOut);
     }
 
 }

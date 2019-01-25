@@ -3,6 +3,7 @@ package com.fisincorporated.soaringforecast.soaring.forecast;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -22,11 +23,14 @@ import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.about.AboutActivity;
 import com.fisincorporated.soaringforecast.airport.AirportActivity;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
+import com.fisincorporated.soaringforecast.databinding.AppNavDrawerBinding;
+import com.fisincorporated.soaringforecast.messages.CallFailure;
 import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
 import com.fisincorporated.soaringforecast.satellite.SatelliteActivity;
 import com.fisincorporated.soaringforecast.settings.SettingsActivity;
 import com.fisincorporated.soaringforecast.task.TaskActivity;
+import com.fisincorporated.soaringforecast.utils.ViewUtilities;
 import com.fisincorporated.soaringforecast.windy.WindyActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -43,6 +47,7 @@ import dagger.android.support.DaggerAppCompatActivity;
 
 public class ForecastDrawerActivity extends DaggerAppCompatActivity {
 
+    private AppNavDrawerBinding appNavDrawerBinding;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
@@ -56,18 +61,15 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.app_nav_drawer);
-
-        drawerLayout = findViewById(R.id.app_drawer_layout);
-
-        toolbar = findViewById(R.id.toolbar);
+        appNavDrawerBinding = DataBindingUtil.setContentView(this, R.layout.app_nav_drawer);
+        drawerLayout = appNavDrawerBinding.appDrawerLayout;
+        toolbar = appNavDrawerBinding.appDrawerToolbarLayout.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerToggle = setupDrawerToggle();
         drawerToggle.syncState();
         drawerLayout.addDrawerListener(drawerToggle);
 
-        NavigationView navigationView = findViewById(R.id.app_weather_drawer);
+        NavigationView navigationView = appNavDrawerBinding.appWeatherDrawer;
         setupDrawerContent(navigationView);
         checkForGooglePlayServices();
     }
@@ -264,12 +266,6 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         startActivity(browserIntent);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SnackbarMessage message) {
-        Snackbar.make(findViewById(R.id.app_coordinator_layout), message.getMessage(), message.getDuration())
-                .show();
-    }
-
     private void checkForGooglePlayServices() {
         int GooglePlayAvailableCode;
         GooglePlayAvailableCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
@@ -290,6 +286,17 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    private void displayCallFailure(CallFailure callFailure) {
+        ViewUtilities.displayErrorDialog(appNavDrawerBinding.getRoot(), getString(R.string.oops), callFailure.getcallFailure());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SnackbarMessage message) {
+        Snackbar.make(appNavDrawerBinding.appCoordinatorLayout, message.getMessage(), message.getDuration())
+                .show();
     }
 
 }

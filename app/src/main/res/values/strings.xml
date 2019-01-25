@@ -274,5 +274,7 @@
     <string name="order_forecasts">Order Forecasts</string>
     <string name="forecast_order_menu_reset">Reset</string>
 
+    <string name="missing_data_check_internet_cell_service" >Can not load forecast. Check for bad interent/cell service.</string>
+
 
 </resources>

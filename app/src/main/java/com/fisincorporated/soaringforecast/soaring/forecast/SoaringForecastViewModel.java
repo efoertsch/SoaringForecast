@@ -79,7 +79,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<List<Sounding>> soundings;
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
-    private MutableLiveData<Integer> forecastOverlyOpacity = new MutableLiveData<>();
 
     private Sounding selectedSounding;
 
@@ -204,7 +203,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                         throwable -> {
                             Timber.d("Error: %s ", throwable.getMessage());
                             //TODO - put error on bus
-                            EventBus.getDefault().post(new SnackbarMessage(getApplication().getApplicationContext().getString(R.string.oops_error_getting_regions)));
+                            postMessage(getApplication().getApplicationContext().getString(R.string.oops_error_getting_regions));
                             throwable.printStackTrace();
                         });
         compositeDisposable.add(disposable);
@@ -220,7 +219,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             }
         } else {
             // TODO display alert dialog on fragment and go to fragment to select region from available regions.
-            EventBus.getDefault().post(new SnackbarMessage(getApplication().getApplicationContext().getString(R.string.default_region_not_in_available_forecast_regions, appPreferences.getSoaringForecastRegion())));
+            postMessage(getApplication().getApplicationContext().getString(R.string.default_region_not_in_available_forecast_regions
+                    , appPreferences.getSoaringForecastRegion()));
         }
     }
 
@@ -463,19 +463,26 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return soundings;
     }
 
-    private void loadSoundings() {
+    private boolean loadSoundings() {
+        if (selectedRegion == null || selectedRegion.getSoundings() == null) {
+            postMessage(getApplication().getString(R.string.no_soundings_available));
+            return false;
+        }
         List<Sounding> soundingList = selectedRegion.getSoundings();
         soundings.setValue(soundingList);
-        if (soundingList == null) {
-            EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.no_soundings_available)));
+        if (soundingList == null || soundingList.size() == 0) {
+            postMessage(getApplication().getString(R.string.no_soundings_available));
+            return false;
         }
+        return true;
     }
 
-    public void displaySoundings(boolean displaySoundings) {
+    public boolean displaySoundings(boolean displaySoundings) {
         if (this.displaySoundings = displaySoundings) {
-            loadSoundings();
+            return loadSoundings();
         } else {
             soundings.setValue(null);
+            return false;
         }
     }
 
@@ -540,6 +547,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     @SuppressLint("CheckResult")
     private void loadRaspImages() {
+        if (!okToLoadRaspImages()){
+            return;
+        }
         Timber.d("Loading bitmaps");
         stopImageAnimation();
         soundingDisplay.setValue(false);
@@ -568,7 +578,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Timber.e(e);
-                        displayCallFailure(e);
+                        postCallFailureMessage(e);
                     }
 
                     @Override
@@ -578,6 +588,25 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     }
                 });
         compositeDisposable.add(disposableObserver);
+    }
+
+    /**
+     * Make sure all info available before calling to load rasp images
+     * About the only reason(?) this should be really needed is if bad/missing internet service and not
+     * all info loaded.
+     * @return
+     */
+    private boolean okToLoadRaspImages(){
+        if (selectedModelForecastDate.getRegionName() != null
+                && selectedModelForecastDate.getDate() != null
+                && selectedModelForecastDate.getModel() != null
+                && selectedModelForecastDate.getModel().getName() != null
+                && selectedModelForecastDate.getModel().getTimes() != null ) {
+                return true;
+            } else {
+                postMessage(getApplication().getString(R.string.missing_data_check_internet_cell_service));
+                return false;
+        }
     }
 
     private void displayRaspImages() {
@@ -696,10 +725,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         imageMap.put(soaringForecastImage.getForecastTime(), imageSet);
     }
 
-    private void displayCallFailure(Throwable t) {
-        EventBus.getDefault().post(new CallFailure(t.toString()));
-    }
-
     //------- Soundings -------------------
 
     private void loadForecastSoundings(Sounding sounding) {
@@ -725,7 +750,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        displayCallFailure(e);
+                        postCallFailureMessage(e);
                     }
 
                     @Override
@@ -788,21 +813,24 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     //------- Opacity of forecast overly -----------------
-    public void onOpacityChanged(int opacity) {
-        forecastOverlyOpacity.setValue(opacity);
+    public void setForecastOverlayOpacity(int opacity){
         appPreferences.setForecastOverlayOpacity(opacity);
     }
 
-    public MutableLiveData<Integer> getForecastOverlyOpacity() {
-        if (forecastOverlyOpacity == null) {
-            forecastOverlyOpacity = new MutableLiveData<>();
-            forecastOverlyOpacity.setValue(appPreferences.getForecastOverlayOpacity());
-        }
-        return forecastOverlyOpacity;
+    public int getForecastOverlyOpacity() {
+        return appPreferences.getForecastOverlayOpacity();
     }
 
     public void setTaskId(int taskId) {
         appPreferences.setSelectedTaskId(taskId);
+    }
+
+    public void postCallFailureMessage(Throwable t){
+        EventBus.getDefault().post(new CallFailure(t.toString()));
+    }
+
+    public void postMessage(String msg){
+        EventBus.getDefault().post(new SnackbarMessage(msg));
     }
 
     @Override
