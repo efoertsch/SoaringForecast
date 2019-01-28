@@ -315,8 +315,6 @@ public class SoaringForecastFragment extends DaggerFragment {
         soundingsMenuItem.setChecked(soundingsAvailable);
     }
 
-
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Forecast forecast) {
         BottomSheetBehavior bsb = BottomSheetBehavior.from(soaringForecastBinding.soaringForecastBottomSheet);

@@ -49,6 +49,15 @@
         <item name="android:background">@drawable/rounded_rectangle_primary</item>
     </style>
 
+    <style name="DividerSpinnerStyle" parent="android:style/Widget.ListView.DropDown">
+        <item name="android:divider">@color/dividerColor</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+    <style name="DividerSpinnerTheme" parent="AppTheme">
+        <item name="android:dropDownListViewStyle">@style/DividerSpinnerStyle</item>
+    </style>
+
 
 
 

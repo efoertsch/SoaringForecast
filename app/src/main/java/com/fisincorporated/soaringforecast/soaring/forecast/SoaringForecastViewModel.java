@@ -417,7 +417,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             selectedForecast.setValue(forecasts.getValue().get(0));
             forecastPosition.setValue(0);
         }
-        if (loadRasp){
+        if (loadRasp) {
             loadRaspImages();
         }
         loadRasp = false;
@@ -547,7 +547,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     @SuppressLint("CheckResult")
     private void loadRaspImages() {
-        if (!okToLoadRaspImages()){
+        if (!okToLoadRaspImages()) {
             return;
         }
         Timber.d("Loading bitmaps");
@@ -594,18 +594,20 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * Make sure all info available before calling to load rasp images
      * About the only reason(?) this should be really needed is if bad/missing internet service and not
      * all info loaded.
+     *
      * @return
      */
-    private boolean okToLoadRaspImages(){
-        if (selectedModelForecastDate.getRegionName() != null
+    private boolean okToLoadRaspImages() {
+        if (selectedModelForecastDate != null
+                && selectedModelForecastDate.getRegionName() != null
                 && selectedModelForecastDate.getDate() != null
                 && selectedModelForecastDate.getModel() != null
                 && selectedModelForecastDate.getModel().getName() != null
-                && selectedModelForecastDate.getModel().getTimes() != null ) {
-                return true;
-            } else {
-                postMessage(getApplication().getString(R.string.missing_data_check_internet_cell_service));
-                return false;
+                && selectedModelForecastDate.getModel().getTimes() != null ){
+            return true;
+        } else{
+            postMessage(getApplication().getString(R.string.missing_data_check_internet_cell_service));
+            return false;
         }
     }
 
@@ -813,7 +815,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     //------- Opacity of forecast overly -----------------
-    public void setForecastOverlayOpacity(int opacity){
+    public void setForecastOverlayOpacity(int opacity) {
         appPreferences.setForecastOverlayOpacity(opacity);
     }
 
@@ -822,14 +824,15 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public void setTaskId(int taskId) {
+        lastTaskId = taskId;
         appPreferences.setSelectedTaskId(taskId);
     }
 
-    public void postCallFailureMessage(Throwable t){
+    public void postCallFailureMessage(Throwable t) {
         EventBus.getDefault().post(new CallFailure(t.toString()));
     }
 
-    public void postMessage(String msg){
+    public void postMessage(String msg) {
         EventBus.getDefault().post(new SnackbarMessage(msg));
     }
 

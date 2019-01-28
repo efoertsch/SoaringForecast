@@ -18,6 +18,9 @@ public class Forecast {
     @SerializedName("forecast_description")
     @Expose
     private String forecastDescription;   //"A composite plot displaying the Thermal Updraft Velocity ...."
+    @SerializedName("forecast_category")
+    @Expose
+    private String forecastCategory;   //"Thermal", "Wind",
 
     public String getForecastName() {
         return forecastName;
@@ -27,7 +30,7 @@ public class Forecast {
         this.forecastName = forecastName;
     }
 
-    public String getForecastType() {
+    public String egetForecastType() {
         return forecastType;
     }
 
@@ -49,6 +52,10 @@ public class Forecast {
 
     public void setForecastDescription(String forecastDescription) {
         this.forecastDescription = forecastDescription;
+    }
+
+    public String getForecastCategory() {
+        return forecastCategory;
     }
 
     @Override

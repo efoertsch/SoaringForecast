@@ -11,15 +11,13 @@ import android.widget.TextView;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.soaring.json.Forecast;
+import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
 public class ForecastTypeAdapter extends ArrayAdapter<Forecast> implements View.OnClickListener {
-
-    private ArrayList<Forecast> forecasts;
-    Context context;
 
     // View lookup cache
     private static class ViewHolder {
@@ -29,8 +27,6 @@ public class ForecastTypeAdapter extends ArrayAdapter<Forecast> implements View.
 
     public ForecastTypeAdapter(ArrayList<Forecast> forecasts, Context context) {
         super(context, R.layout.forecast_row, forecasts);
-        this.forecasts = forecasts;
-        this.context = context;
 
     }
 
@@ -49,7 +45,13 @@ public class ForecastTypeAdapter extends ArrayAdapter<Forecast> implements View.
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return getForecastView(position, convertView, parent, false);
+    }
 
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        View view = getForecastView(position, convertView, parent, true);
+        //view.setLayoutParams(linearLayoutParams);
+        return view;
     }
 
     @NonNull
@@ -69,16 +71,16 @@ public class ForecastTypeAdapter extends ArrayAdapter<Forecast> implements View.
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.ivForecastInfo.setVisibility(inDropDown ? View.INVISIBLE : View.VISIBLE);
+
+        BitmapImageUtils.getForecastDrawable(forecast.getForecastCategory(), viewHolder.ivForecastInfo);
+        if (!inDropDown) {
+            viewHolder.ivForecastInfo.setOnClickListener(this);
+        }
         viewHolder.txtForecastNameDisplay.setText(forecast.getForecastNameDisplay());
-        viewHolder.ivForecastInfo.setOnClickListener(this);
+
         viewHolder.ivForecastInfo.setTag(position);
         // Return the completed view to render on screen
         return convertView;
     }
 
-    @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        return getForecastView(position, convertView, parent, true);
-    }
 }
