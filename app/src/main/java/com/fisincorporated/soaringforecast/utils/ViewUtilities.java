@@ -15,6 +15,10 @@ public class ViewUtilities {
 
     public  static Activity getActivity(View view) {
         Context context = view.getContext();
+        return getActivity(context);
+    }
+
+    public static Activity getActivity(Context context) {
         while (context instanceof ContextWrapper) {
             if (context instanceof Activity) {
                 return (Activity)context;

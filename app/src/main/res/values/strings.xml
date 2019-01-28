@@ -275,6 +275,8 @@
     <string name="forecast_order_menu_reset">Reset</string>
 
     <string name="missing_data_check_internet_cell_service" >Can not load forecast. Check for bad interent/cell service.</string>
+    <string name="googlemap_not_defined_can_not_create_turnpoint_markers">GoogleMap not defined. Can\'t create turnpoint markers</string>
+    <string name="distance_from_prior_and_start">%1$d/%2$dkm</string>
 
 
 </resources>

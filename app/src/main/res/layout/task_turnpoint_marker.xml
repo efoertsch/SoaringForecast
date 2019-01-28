@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data class="TurnpointMarker">
+
+    </data>
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:id="@+id/turnpoint_marker_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:minEms="6"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sterling Strt"/>
+
+        <TextView
+            android:id="@+id/turnpoint_marker_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:minEms="6"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/turnpoint_marker_name"
+            app:layout_constraintStart_toStartOf="@+id/turnpoint_marker_name"
+            app:layout_constraintTop_toBottomOf="@+id/turnpoint_marker_name"
+            tools:text="180/300km"/>
+
+        <ImageView
+            android:id="@+id/turnpint_marker_pointer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="@+id/turnpoint_marker_distance"
+            app:layout_constraintStart_toStartOf="@+id/turnpoint_marker_distance"
+            app:layout_constraintTop_toBottomOf="@+id/turnpoint_marker_distance"
+            app:srcCompat="@drawable/ic_arrow_drop_down_white_24dp"
+            />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

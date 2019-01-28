@@ -318,7 +318,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
     @Override
     public void onCleared() {
         compositeDisposable.dispose();
-        satelliteImageAnimation.cancel();
+        stopImageAnimation();
         super.onCleared();
     }
 

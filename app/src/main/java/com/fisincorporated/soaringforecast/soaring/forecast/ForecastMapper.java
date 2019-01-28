@@ -1,10 +1,19 @@
 package com.fisincorporated.soaringforecast.soaring.forecast;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.design.widget.Snackbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
+import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.messages.DisplaySounding;
+import com.fisincorporated.soaringforecast.messages.SnackbarMessage;
 import com.fisincorporated.soaringforecast.repository.TaskTurnpoint;
 import com.fisincorporated.soaringforecast.soaring.json.Sounding;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,7 +45,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     //Default for NewEngland - revise if new regions become available
 //    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
 //            , new LatLng(45.0120811, -70.5046997));
-    private LatLngBounds mapLatLngBounds ;
+    private LatLngBounds mapLatLngBounds;
     private List<Sounding> soundings = new ArrayList<>();
     private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
 
@@ -58,15 +67,20 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private double swLong = 0;
     private double neLat = 0;
     private double neLong = 0;
-
+    private Context context;
 
     @Inject
     public ForecastMapper() {
     }
 
-    public void displayMap(SupportMapFragment mapFragment) {
+    public ForecastMapper setContext(Context context) {
+        this.context = context;
+        return this;
+    }
 
+    public ForecastMapper displayMap(SupportMapFragment mapFragment) {
         mapFragment.getMapAsync(this);
+        return this;
     }
 
     @Override
@@ -241,23 +255,53 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                 taskTurnpoint = taskTurnpoints.get(i);
                 if (i == 0) {
                     fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                    placeTaskTurnpointMarker(taskTurnpoint.getTitle()
-                            , String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), fromLatLng);
+                   // placeTaskTurnpointMarker(taskTurnpoint.getTitle()
+                    //        , String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), fromLatLng);
+                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint),fromLatLng);
                 } else {
                     toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                    placeTaskTurnpointMarker(taskTurnpoint.getTitle(),
-                            String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), toLatLng);
+                    //placeTaskTurnpointMarker(taskTurnpoint.getTitle(),
+                    //        String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), toLatLng);
+                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint),toLatLng);
                     drawLine(fromLatLng, toLatLng);
                     fromLatLng = toLatLng;
+
                 }
+                getTurnpointMarkerBitmap(taskTurnpoint);
                 updateMapLatLongCorners(fromLatLng);
             }
             LatLng southwest = new LatLng(swLat, swLong);
             LatLng northeast = new LatLng(neLat, neLong);
             googleMap.setOnMapLoadedCallback(() ->
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
-                    southwest, northeast), 60)));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
+                            southwest, northeast), 60)));
         }
+    }
+
+    private Bitmap getTurnpointMarkerBitmap(TaskTurnpoint taskTurnpoint) {
+        if (googleMap == null) {
+            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.googlemap_not_defined_can_not_create_turnpoint_markers)
+                    , Snackbar.LENGTH_LONG));
+        }
+        View markerView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.task_turnpoint_marker, null);
+
+
+        ((TextView) markerView.findViewById(R.id.turnpoint_marker_name)).setText(taskTurnpoint.getTitle());
+        ((TextView) markerView.findViewById(R.id.turnpoint_marker_distance)).setText(context.getString(R.string.distance_from_prior_and_start
+                , (int) taskTurnpoint.getDistanceFromPriorTurnpoint(), (int) taskTurnpoint.getDistanceFromStartingPoint()));
+
+        markerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        markerView.layout(0, 0, markerView.getMeasuredWidth(), markerView.getMeasuredHeight());
+        Bitmap returnedBitmap = Bitmap.createBitmap(markerView.getMeasuredWidth(), markerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        //canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = markerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        markerView.draw(canvas);
+        return returnedBitmap;
+
     }
 
     /**
@@ -300,6 +344,13 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                 .title(title)
                 .snippet(snippet)
                 .position(latLng));
+        taskTurnpointMarkers.add(marker);
+    }
+
+    private void placeTaskTurnpointMarker(Bitmap bitmap, LatLng latLng) {
+        Marker marker = googleMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
         taskTurnpointMarkers.add(marker);
     }
 

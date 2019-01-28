@@ -93,7 +93,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private void setupViews() {
         // TODO how to get from binding - soaringForecastBinding.soaringForecastMap - need to get as supportMapFragment
-        forecastMapper.displayMap((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map));
+        forecastMapper.setContext(getContext()).displayMap((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map));
         // opacity not worth having it bound in viewModel and forwarding changes.
         forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
         soaringForecastBinding.soaringForecastSeekbarOpacity.setProgress(soaringForecastViewModel.getForecastOverlyOpacity());
