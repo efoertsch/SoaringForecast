@@ -3,11 +3,12 @@ Display soaring forecast and weather information of interest to New England glid
 
 Currently displays:
 1. New England soaring forecasts from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Paavola)
-   SeeYou turnpoints can be imported to the app. Tasks can then be defined and overlaid on the RASP forecast.
-2. Skew-t soundings from selected NE locations (sounding from soarbgsc.com/rasp/ also)
-2. METAR and TAF (from aviationweather.gov)
-3. Satellite images for visibile, water vapor and infrared color/bw images. Satellite images are animated. (aviationweather.gov)
-4. Options to start browsers to display either Dr. Jacks and/or SkySight
+2. SeeYou turnpoints can be imported to the app. Tasks can then be defined and overlaid on the RASP forecast.
+3. Skew-t soundings from selected NE locations (sounding from soarbgsc.com/rasp/ also)
+4. METAR and TAF (from aviationweather.gov)
+5. Satellite images for visibile, water vapor and infrared color/bw images. Satellite images are animated. (aviationweather.gov)
+6. Options to start browsers to display either Dr. Jacks and/or SkySight
+7. Added customized version of Windy with task overlay.
 
 Currently project involves:
 1. Android data binding for MVVM binding.
@@ -15,7 +16,9 @@ Currently project involves:
 3. Dagger2 
 4. Retrofit/OkHTTP3
 5. RxJava/RxAndroid
-6. Some Junit4/AndroidJunit4 testing
+6. Glide 
+7. Webview/Javacript
+8. Some Junit4/AndroidJunit4 testing
 
 http://www.jsonschema2pojo.org/ used to convert JSON strings to Java classes. However some of the generated classes were then modified, so if you regen the classes make sure you add back the mods.
 
