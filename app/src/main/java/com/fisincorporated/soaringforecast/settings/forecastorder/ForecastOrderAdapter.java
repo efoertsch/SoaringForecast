@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.fisincorporated.soaringforecast.R;
@@ -14,6 +13,7 @@ import com.fisincorporated.soaringforecast.databinding.ForecastOrderView;
 import com.fisincorporated.soaringforecast.soaring.json.Forecast;
 import com.fisincorporated.soaringforecast.touchhelper.ItemTouchHelperAdapter;
 import com.fisincorporated.soaringforecast.touchhelper.ItemTouchHelperViewHolder;
+import com.fisincorporated.soaringforecast.utils.BitmapImageUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +21,6 @@ import java.util.List;
 public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, ForecastOrderAdapter.ForecastOrderViewHolder>
         implements ItemTouchHelperAdapter {
 
-    // TODO convert to use GenericRecyclerViewAdapter
-    private List<Forecast> forecasts;
     private ForecastOrderAdapter.OnItemClickListener onItemClickListener;
     private NewForecastOrderListener newForecastListListener;
 
@@ -65,12 +63,8 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
         super.onBindViewHolder(holder, position);
         if (onItemClickListener != null) {
             // Not sure why holder.itemView.setOnClickListner didn't work
-            holder.getViewDataBinding().soaringForecastInfo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClickListener.onItemClick(holder.getViewDataBinding().getForecast());
-                }
-            });
+            holder.getViewDataBinding().soaringForecastInfo.setOnClickListener(v ->
+                    onItemClickListener.onItemClick(holder.getViewDataBinding().getForecast()));
         }
     }
 
@@ -106,8 +100,9 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
             viewDataBinding = bindingView;
         }
 
-        public void onBind(Forecast item, int position) {
-            viewDataBinding.setForecast(item);
+        public void onBind(Forecast forecast, int position) {
+            viewDataBinding.setForecast(forecast);
+            BitmapImageUtils.getForecastDrawable( forecast.getForecastCategory(),viewDataBinding.soaringForecastInfo);
         }
 
         @Override

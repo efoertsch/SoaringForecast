@@ -2,7 +2,9 @@ package com.fisincorporated.soaringforecast.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.widget.ImageView;
 
+import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.cache.BitmapCache;
 import com.fisincorporated.soaringforecast.common.BitmapImage;
 
@@ -74,8 +76,30 @@ public class BitmapImageUtils {
         return bitmap;
     }
 
-    public void clearAllImages(){
+    public void clearAllImages() {
         bitmapCache.clearCache();
+    }
+
+    public static void getForecastDrawable(String forecastCategory, ImageView imageView) {
+        switch (forecastCategory) {
+            case "thermal":
+                imageView.setImageResource(R.drawable.ic_thermal);
+                imageView.setBackgroundColor(imageView.getContext().getResources().getColor(R.color.colorPrimary));
+                return;
+            case "wind":
+                imageView.setImageResource(R.drawable.ic_wind);
+                imageView.setBackgroundColor(imageView.getContext().getResources().getColor(R.color.colorPrimary));
+                return;
+            case "cloud":
+                imageView.setImageResource( R.drawable.ic_cloud_white_24dp);
+                imageView.setBackgroundColor(imageView.getContext().getResources().getColor(R.color.colorPrimary));
+                return;
+            case "wave":
+                imageView.setImageResource(R.drawable.ic_wave);
+                imageView.setBackgroundColor(imageView.getContext().getResources().getColor(R.color.colorPrimary));
+                return;
+        }
+
     }
 
 }

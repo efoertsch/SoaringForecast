@@ -93,15 +93,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/region_forecast_date_spinner"
-                android:layout_marginEnd="@dimen/margin_standard"
-                android:layout_marginStart="@dimen/margin_standard"
-                android:layout_marginTop="@dimen/margin_half"
-
                 android:selectedItemPosition="@={viewModel.forecastPosition}"
                 app:adapter="@{spinAdapterForecast}"
                 app:layout_constraintEnd_toEndOf="@+id/soaring_forecast_constraint_layout"
                 app:layout_constraintStart_toStartOf="@+id/soaring_forecast_constraint_layout"
                 app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_model_spinner"
+                android:theme="@style/DividerSpinnerTheme"
                 />
 
             <RelativeLayout
