@@ -80,6 +80,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
 
+    private MutableLiveData<String> suaRegionName = new MutableLiveData<>();
+
     private Sounding selectedSounding;
 
     // Used to signal changes to UI
@@ -334,6 +336,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             selectedModelForecastDate = newModelForecastDate;
             setRegionLatLngBounds(selectedModelForecastDate);
             appPreferences.setSelectedModelForecastDate(selectedModelForecastDate);
+            setSuaRegionName(selectedRegion.getName());
             loadRaspImages();
         }
     }
@@ -827,6 +830,18 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         lastTaskId = taskId;
         appPreferences.setSelectedTaskId(taskId);
     }
+
+    // SUA (Special Use Airspace of course!)
+
+    public MutableLiveData<String> getSuaRegionName() {
+        return suaRegionName;
+    }
+
+    public void setSuaRegionName(String regionName){
+            suaRegionName.setValue(regionName);
+    }
+
+    // --------------- Messages for the upper management ----------------------
 
     public void postCallFailureMessage(Throwable t) {
         EventBus.getDefault().post(new CallFailure(t.toString()));

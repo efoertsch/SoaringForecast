@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
+import timber.log.Timber;
 
 public class SoaringForecastFragment extends DaggerFragment {
 
@@ -61,9 +62,12 @@ public class SoaringForecastFragment extends DaggerFragment {
     private int lastForecastPosition = -1;
     private boolean showClearTaskMenuItem;
     private MenuItem soundingsMenuItem;
-    private boolean checkSoundsMenuItem = false;
+    private boolean checkSoundingsMenuItem = false;
     private boolean refreshForecastOrder = false;
+    private boolean displaySua = false;
     private AlphaAnimation opacitySliderFadeOut;
+    private MenuItem suaMenuItem;
+    private String lastRegionName;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,10 +176,10 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // List of soundings available
         soaringForecastViewModel.getSoundings().observe(this, soundingList -> {
-            checkSoundsMenuItem = (soundingList != null && soundingList.size() > 0);
+            checkSoundingsMenuItem = (soundingList != null && soundingList.size() > 0);
             forecastMapper.setSoundings(soundingList);
             if (soundingsMenuItem != null) {
-                soundingsMenuItem.setChecked(checkSoundsMenuItem);
+                soundingsMenuItem.setChecked(checkSoundingsMenuItem);
             }
         });
 
@@ -199,11 +203,23 @@ public class SoaringForecastFragment extends DaggerFragment {
             soaringForecastBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
         });
 
+        // Forecast region name for display of SUA (if any)
+        soaringForecastViewModel.getSuaRegionName().observe(this, regionName -> {
+            lastRegionName = regionName;
+            if (appPreferences.getDisplaySua()) {
+                suaMenuItem.setChecked(true);
+                displaySuaOnMap(lastRegionName);
+            }
+
+            //getActivity().invalidateOptionsMenu();
+        });
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Timber.d("onResume");
         getActivity().setTitle(R.string.rasp);
         EventBus.getDefault().register(this);
         soaringForecastViewModel.checkForChanges();
@@ -221,8 +237,10 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
 
+    // Note this occurs *after* onResume
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Timber.d("onCreateOptionsMenu");
         inflater.inflate(R.menu.forecast_menu, menu);
         MenuItem clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
         if (clearTaskMenuItem != null) {
@@ -230,7 +248,9 @@ public class SoaringForecastFragment extends DaggerFragment {
         }
 
         soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
-        soundingsMenuItem.setChecked(checkSoundsMenuItem);
+        soundingsMenuItem.setChecked(checkSoundingsMenuItem);
+
+        suaMenuItem = menu.findItem(R.id.forecast_menu_display_sua);
     }
 
     @Override
@@ -256,10 +276,42 @@ public class SoaringForecastFragment extends DaggerFragment {
                 return true;
             case R.id.forecast_menu_order_forecasts:
                 displayForecastOrderFragment();
+                return true;
+            case R.id.forecast_menu_display_sua:
+                Timber.d("forecast_menu_display_sua was clicked");
+                displaySua();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void displaySua() {
+        Timber.d("displaySua() suaMenuItem.isChecked(): %1$s", suaMenuItem.isChecked());
+        // When menu clicked to be checked it, menuItem still unchecked when you get here
+        // Likewise when clicked and is checked, it is still checked when you get here.
+        if (suaMenuItem.isChecked()) {
+            if (forecastMapper != null) {
+                forecastMapper.removeSuaFromMap();
+                suaMenuItem.setChecked(false);
+            }
+        } else {
+            if (lastRegionName == null) {
+                // sua not displayed by settings so need to get region from viewmodel first
+                if (soaringForecastViewModel.getSuaRegionName() != null) {
+                    lastRegionName = soaringForecastViewModel.getSuaRegionName().getValue();
+                }
+            }
+            displaySuaOnMap(lastRegionName);
+            suaMenuItem.setChecked(true);
+
+        }
+    }
+
+    // Drawing SUA cpu intensive so doing this way to make app more responsive
+    private void displaySuaOnMap(final String regionName) {
+        new Thread(() -> getActivity().runOnUiThread(((Runnable) () -> forecastMapper.setSuaRegionName(regionName)))).start();
+    }
+
 
     private void displayForecastOrderFragment() {
         refreshForecastOrder = true;
@@ -325,6 +377,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         }
     }
 
+    // ---- Opacity for forecast overlay -----------------------
     private void displayOpacitySlider() {
         soaringForecastBinding.soaringForecastSeekbarLayout.setVisibility(View.VISIBLE);
         startOpacitySliderFadeOut();
