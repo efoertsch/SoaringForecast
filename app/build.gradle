@@ -70,12 +70,14 @@ dependencies {
     final SUPPORT_LIBRARY_VERSION = '28.0.0'
     final CONSTRAINT_LIBRARY_VERSION = '1.1.3'
     final GOOGLE_MAPS_VERSION = '16.0.0'
+    final ANDROID_MAPS_UTILS = '0.5+'
     final RX_ANDROID = '2.0.2'
     final RX_JAVA = '2.1.12'
     final RETROFIT = '2.2.0'
     final SIMPLE_XML = '2.1.0'
     final GSON = '2.8.2'
     final GSON_CONVERTER = '2.3.0'
+    final GLIDE = '4.8.0'
     final OKHTTP = '3.8.0'
     final DAGGER = '2.15'
     final TIMBER = '4.7.0'
@@ -150,8 +152,11 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:$ROOM_VERSION"
 
     // Glide for Geos satellite gif
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation "com.github.bumptech.glide:glide:$GLIDE"
+    annotationProcessor "com.github.bumptech.glide:compiler:$GLIDE"
+
+    // For display of SUA GeoJSON and special markers on map
+    implementation "com.google.maps.android:android-maps-utils:$ANDROID_MAPS_UTILS"
 
     // WorkManager
     implementation "android.arch.work:work-runtime:$work_version"

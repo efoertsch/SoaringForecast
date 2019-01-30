@@ -55,6 +55,7 @@ public class AppPreferences {
     private static String ALTITUDE_UNITS_KEY;
     private static String DISTANCE_UNITS_KEY;
     private static String DECODE_TAF_METAR_KEY;
+    private static String SUA_DISPLAY_KEY;
     private static String DISPLAY_FORECAST_SOUNDINGS;
 
     private SharedPreferences sharedPreferences;
@@ -83,7 +84,10 @@ public class AppPreferences {
         ALTITUDE_UNITS_KEY = res.getString(R.string.pref_units_altitude);
         DISTANCE_UNITS_KEY = res.getString(R.string.pref_units_distance);
         DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
+        SUA_DISPLAY_KEY = res.getString(R.string.pref_display_forecast_sua_key);
+
         soaringForecastDefaultRegion = context.getString(R.string.new_england_region);
+
 
         DISPLAY_WINDY_MENU_OPTION =  context.getString(R.string.pref_add_windy_to_menu_key);
         DISPLAY_SKYSIGHT_MENU_OPTION = context.getString(R.string.pref_add_skysight_to_menu_key);
@@ -414,13 +418,21 @@ public class AppPreferences {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(ORDERED_FORECAST_OPTIONS, json);
         editor.apply();
-
     }
 
     public void deleteCustomForecastOrder() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(ORDERED_FORECAST_OPTIONS);
         editor.apply();
+    }
 
+    public void setDisplaySua(boolean displaySua){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SUA_DISPLAY_KEY, displaySua);
+        editor.apply();
+    }
+
+    public boolean getDisplaySua(){
+        return sharedPreferences.getBoolean(SUA_DISPLAY_KEY, true);
     }
 }

@@ -83,6 +83,9 @@
     <string name="pref_display_forecast_soundings_key" translatable="false">Display_forecast_soundings_key</string>
     <string name="pref_display_forecast_soundings">Display Forecast \nSoundings </string>
 
+    <string name="pref_display_forecast_sua_key" translatable="false">Display_forecast_sua_key</string>
+    <string name="pref_display_forecast_sua">Display SUA</string>
+
 
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
     <string name="pref_units_temp">Temperature</string>
@@ -277,6 +280,8 @@
     <string name="missing_data_check_internet_cell_service" >Can not load forecast. Check for bad interent/cell service.</string>
     <string name="googlemap_not_defined_can_not_create_turnpoint_markers">GoogleMap not defined. Can\'t create turnpoint markers</string>
     <string name="distance_from_prior_and_start">%1$d/%2$dkm</string>
+    <string name="display_sua">Display SUA</string>
+    <string name="no_sua_defined_for_specified_region">No SUA defined for %1$s region:</string>
 
 
 </resources>

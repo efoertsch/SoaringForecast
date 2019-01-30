@@ -29,9 +29,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.data.kml.KmlLayer;
 
 import org.greenrobot.eventbus.EventBus;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +61,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private GroundOverlay forecastOverlay;
     private int forecastOverlayOpacity;
     private Marker lastMarkerOpened;
+    private KmlLayer suaLayer;
 
     /**
      * Use to center task route in googleMap frame
@@ -353,5 +357,34 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
         taskTurnpointMarkers.add(marker);
     }
+
+    // TODO improve to allow display of different SUA regions
+    public void setSuaRegionName(String suaRegionName) {
+        if (suaRegionName!= null && suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))){
+            addSuaToMap();
+        } else {
+            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.no_sua_defined_for_specified_region, suaRegionName)
+                    , Snackbar.LENGTH_LONG));
+        }
+    }
+
+    public void addSuaToMap(){
+        try {
+            suaLayer = new KmlLayer(googleMap, R.raw.sterling_sua_kml, context);
+            suaLayer.addLayerToMap();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeSuaFromMap(){
+        if (suaLayer != null) {
+            suaLayer.removeLayerFromMap();
+            suaLayer = null;
+        }
+    }
+
 
 }
