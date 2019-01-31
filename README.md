@@ -25,3 +25,8 @@ http://www.jsonschema2pojo.org/ used to convert JSON strings to Java classes. Ho
 Aviation weather xsd downloaded from https://aviationweather.gov/adds/schema/.
 Used jaxb xjc command to initially create weather POJO classes then editted to fit to simplexml format. (This was faster than using other code generators I found that were available on the web.)
 
+Turnpoint filenames from the New England Worldwide Turnpoint Exchange(http://soaringweb.org/TP/) are hard coded in the app. (It looks like the filenames may change as updates are made and files are generated with a new name.)
+
+Worldwide Turnpoint Exchange (http://soaringweb.org/TP/) SUA file for Sterling converted to KML format (needed for Google Map overly) via https://mygeodata.cloud/converter/.
+
+Airport information for TAF/METARS downloaded from http://ourairports.com/data/. Note that on weekends, the file may be empty (being updated?) for a period of time, but the app should check for that and schedule downloads until what appears to be a full file is available.
