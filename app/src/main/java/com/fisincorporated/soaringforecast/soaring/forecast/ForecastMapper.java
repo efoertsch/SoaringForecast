@@ -45,10 +45,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     private boolean drawingTask = false;
 
-    //Default for NewEngland - revise if new regions become available
-//    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
-//            , new LatLng(45.0120811, -70.5046997));
-    private LatLngBounds mapLatLngBounds;
+    //Default for NewEngland - try to get something displayed quickly rather than blank screen
+   private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
+            , new LatLng(45.0120811, -70.5046997));
+    //private LatLngBounds mapLatLngBounds;
     private List<Sounding> soundings = new ArrayList<>();
     private List<TaskTurnpoint> taskTurnpoints = new ArrayList<>();
 
@@ -252,7 +252,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         if (googleMap == null) {
             return;
         }
-
         if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
             drawingTask = true;
             for (int i = 0; i < taskTurnpoints.size(); ++i) {
