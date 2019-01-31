@@ -42,6 +42,8 @@ import timber.log.Timber;
 
 public class SoaringForecastFragment extends DaggerFragment {
 
+    private static final String TAG = SoaringForecastFragment.class.getSimpleName();
+
     @Inject
     AppRepository appRepository;
 
@@ -70,6 +72,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     private String lastRegionName;
 
     public void onCreate(Bundle savedInstanceState) {
+        //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreate()");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         soaringForecastViewModel = ViewModelProviders.of(this)
@@ -82,6 +85,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreateView()");
         soaringForecastBinding = DataBindingUtil.inflate(inflater
                 , R.layout.fragment_forecast_rasp_spinners, container, false);
         soaringForecastBinding.setLifecycleOwner(getActivity());
@@ -91,7 +95,13 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastBinding.setSpinAdapterForecast(forecastTypeAdapter);
 
         setupViews();
-        setObservers();
+        // attempt to speed up initial screen display
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setObservers();
+            }
+        });
         return soaringForecastBinding.getRoot();
     }
 
@@ -123,6 +133,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     //TODO - lots of observers - consolidate/simplify?
     private void setObservers() {
+        //ElapsedTimeUtil.showElapsedTime(TAG, "startObservers()");
         // RASP models - GFS, NAM, ...
         soaringForecastViewModel.getModelPosition().observe(this, newForecastModelPosition -> {
             if (newForecastModelPosition != null) {
@@ -214,6 +225,8 @@ public class SoaringForecastFragment extends DaggerFragment {
             //getActivity().invalidateOptionsMenu();
         });
 
+        //ElapsedTimeUtil.showElapsedTime(TAG, "end of startObservers()");
+
     }
 
     @Override
@@ -227,6 +240,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             refreshForecastOrder = false;
             soaringForecastViewModel.reloadForecasts();
         }
+        //ElapsedTimeUtil.showElapsedTime(TAG, "end of onResume()");
     }
 
     @Override

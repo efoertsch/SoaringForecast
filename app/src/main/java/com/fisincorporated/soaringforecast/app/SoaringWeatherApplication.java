@@ -26,6 +26,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class SoaringWeatherApplication extends DaggerApplication {
+    private static final String TAG = SoaringWeatherApplication.class.getSimpleName();
 
     protected DiComponent component;
 
@@ -42,10 +43,12 @@ public class SoaringWeatherApplication extends DaggerApplication {
 
     @Override
     public void onCreate() {
+        //ElapsedTimeUtil.init();
         super.onCreate();
         initTimber();
         configureEventBus();
         checkIfAirportDownloadNeeded();
+        //ElapsedTimeUtil.showElapsedTime(TAG,"End of application onCreate()");
     }
 
     @SuppressLint("CheckResult")
@@ -57,6 +60,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
                             if (count < 2000) {
                                 createNotificationChannel();
                                 submitAirportDownloadJob();
+                                Timber.d("Complete airport check (or started downlo");
                             }
                         }, throwable -> {
                             //TODO
