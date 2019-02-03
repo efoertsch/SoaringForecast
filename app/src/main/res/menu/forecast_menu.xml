@@ -20,6 +20,17 @@
         />
 
     <item
+        android:id="@+id/forecast_menu_display_sua"
+        android:title="@string/display_sua"
+        android:checkable="true"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/forecast_menu_order_forecasts"
+        android:title="@string/order_forecasts"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/forecast_menu_opacity_slider"
         android:title="@string/opacity_slider"
         app:showAsAction="never"/>
@@ -28,13 +39,6 @@
         android:id="@+id/forecast_menu_select_regions"
         android:title="@string/select_region"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/forecast_menu_display_sua"
-        android:title="@string/display_sua"
-        android:checkable="true"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/forecast_menu_order_forecasts"
-        android:title="@string/order_forecasts"
-        app:showAsAction="never"/>
+
+
 </menu>

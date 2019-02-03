@@ -1,7 +1,6 @@
 package com.fisincorporated.soaringforecast.airport.list;
 
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -133,12 +132,12 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundColor(Color.LTGRAY);
+            itemView.setBackgroundColor(itemView.getResources().getColor(R.color.drag_color));
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(0);
+            itemView.setBackgroundColor(itemView.getResources().getColor(R.color.drag_drop));
         }
     }
 }

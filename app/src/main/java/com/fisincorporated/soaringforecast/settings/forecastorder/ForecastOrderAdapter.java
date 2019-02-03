@@ -2,7 +2,6 @@ package com.fisincorporated.soaringforecast.settings.forecastorder;
 
 import android.annotation.SuppressLint;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -112,12 +111,12 @@ public class ForecastOrderAdapter extends GenericRecyclerViewAdapter<Forecast, F
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundColor(Color.LTGRAY);
+            itemView.setBackgroundColor(itemView.getResources().getColor(R.color.drag_color));
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(0);
+            itemView.setBackgroundColor(itemView.getResources().getColor(R.color.drag_drop));
         }
 
     }
