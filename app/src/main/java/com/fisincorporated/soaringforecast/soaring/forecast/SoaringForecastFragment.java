@@ -19,7 +19,6 @@ import android.widget.SeekBar;
 
 import com.fisincorporated.soaringforecast.R;
 import com.fisincorporated.soaringforecast.app.AppPreferences;
-import com.fisincorporated.soaringforecast.common.Constants;
 import com.fisincorporated.soaringforecast.databinding.SoaringForecastBinding;
 import com.fisincorporated.soaringforecast.messages.DisplaySounding;
 import com.fisincorporated.soaringforecast.repository.AppRepository;
@@ -43,6 +42,7 @@ import timber.log.Timber;
 public class SoaringForecastFragment extends DaggerFragment {
 
     private static final String TAG = SoaringForecastFragment.class.getSimpleName();
+    private static final int SELECT_TASK = 999;
 
     @Inject
     AppRepository appRepository;
@@ -343,20 +343,17 @@ public class SoaringForecastFragment extends DaggerFragment {
     private void selectTask() {
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
         builder.displayTaskList().enableClickTask(true);
-        startActivityForResult(builder.build(this.getContext()), 999);
+        startActivityForResult(builder.build(this.getContext()), SELECT_TASK);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Bundle bundle;
-        if (requestCode == 999 && data != null) {
-            if ((bundle = data.getExtras()) != null) {
-                long taskId = bundle.getLong(Constants.SELECTED_TASK);
-                if (taskId != 0) {
-                    soaringForecastViewModel.checkIfToDisplayTask();
-                }
-            }
+        if (requestCode == SELECT_TASK) {
+            // Always check for task, user might have reordered turnpoints under same task id
+            // so always check/redisplay
+            soaringForecastViewModel.checkIfToDisplayTask();
         }
     }
+
 
     private void displayTaskClearMenuItem(boolean visible) {
         showClearTaskMenuItem = visible;

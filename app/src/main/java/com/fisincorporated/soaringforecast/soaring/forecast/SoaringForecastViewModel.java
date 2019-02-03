@@ -90,7 +90,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private Constants.FORECAST_SOUNDING forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
 
     private boolean displaySoundings;
-    private long lastTaskId;
     private boolean loadRasp;
 
     public SoaringForecastViewModel(@NonNull Application application) {
@@ -778,9 +777,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public void checkIfToDisplayTask() {
         long currentTaskId = appPreferences.getSelectedTaskId();
-        if (lastTaskId != currentTaskId) {
-            lastTaskId = currentTaskId;
-            getTask(lastTaskId);
+        if (currentTaskId != -1) {
+            getTask(currentTaskId);
         }
     }
 
@@ -827,7 +825,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public void setTaskId(int taskId) {
-        lastTaskId = taskId;
         appPreferences.setSelectedTaskId(taskId);
     }
 

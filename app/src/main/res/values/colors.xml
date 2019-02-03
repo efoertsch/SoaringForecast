@@ -13,4 +13,9 @@
     <color name="colorScreenBackground">#E0E0E0</color>
 
     <item name="dividerColor" type="color">#2F000000</item>
+
+    <color name="drag_color">#FFCCCCCC</color>
+    <color name="drag_drop">#00000000</color>
+
+
 </resources>
