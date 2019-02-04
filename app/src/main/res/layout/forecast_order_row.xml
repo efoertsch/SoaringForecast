@@ -9,7 +9,7 @@
 
         <variable
             name="forecast"
-            type="com.fisincorporated.soaringforecast.soaring.json.Forecast"/>
+            type="org.soaringforecast.rasp.soaring.json.Forecast"/>
     </data>
 
     <LinearLayout

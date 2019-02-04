@@ -11,16 +11,16 @@
 
         <variable
             name="task"
-            type="com.fisincorporated.soaringforecast.repository.Task"/>
+            type="org.soaringforecast.rasp.repository.Task"/>
 
         <variable
             name="clickListener"
-            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.soaringforecast.repository.Task&gt;"
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.Task&gt;"
             />
 
         <variable
             name="editClickListener"
-            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericEditClickListener&lt;com.fisincorporated.soaringforecast.repository.Task&gt;"
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericEditClickListener&lt;org.soaringforecast.rasp.repository.Task&gt;"
             />
 
     </data>

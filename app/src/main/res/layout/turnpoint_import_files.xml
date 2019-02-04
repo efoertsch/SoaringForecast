@@ -6,7 +6,7 @@
 
         <variable
             name="turnpointsImporterViewModel"
-            type="com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsImporterViewModel"/>
+            type="org.soaringforecast.rasp.task.turnpoints.download.TurnpointsImporterViewModel"/>
 
     </data>
 
@@ -24,6 +24,8 @@
             android:layout_marginTop="@dimen/margin_double"
             android:gravity="center_horizontal"
             android:text="@string/turnpoint_files"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:textAppearance="?android:attr/textAppearanceLarge"
             />
 

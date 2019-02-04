@@ -11,12 +11,12 @@
 
         <variable
             name="clickListener"
-            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.soaringforecast.repository.Turnpoint&gt;"
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.Turnpoint&gt;"
             />
 
         <variable
             name="turnpoint"
-            type="com.fisincorporated.soaringforecast.repository.Turnpoint"/>
+            type="org.soaringforecast.rasp.repository.Turnpoint"/>
 
     </data>
 

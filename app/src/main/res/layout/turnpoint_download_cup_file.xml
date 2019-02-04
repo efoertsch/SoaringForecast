@@ -14,7 +14,7 @@
 
         <variable
             name="fileClickListener"
-            type="com.fisincorporated.soaringforecast.task.turnpoints.download.TurnpointsDownloadRecyclerViewAdapter"/>
+            type="org.soaringforecast.rasp.task.turnpoints.download.TurnpointsDownloadRecyclerViewAdapter"/>
 
     </data>
 

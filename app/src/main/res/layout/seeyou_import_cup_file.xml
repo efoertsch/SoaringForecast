@@ -11,11 +11,11 @@
 
         <variable
             name="turnpointFile"
-            type="com.fisincorporated.soaringforecast.task.json.TurnpointFile"/>
+            type="org.soaringforecast.rasp.task.json.TurnpointFile"/>
 
         <variable
             name="fileClickListener"
-            type="com.fisincorporated.soaringforecast.task.turnpoints.seeyou.SeeYouImportRecyclerViewAdapter"/>
+            type="org.soaringforecast.rasp.task.turnpoints.seeyou.SeeYouImportRecyclerViewAdapter"/>
 
     </data>
 

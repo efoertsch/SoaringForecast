@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.settings.regions.RegionSelectionViewModel"/>
+            type="org.soaringforecast.rasp.settings.regions.RegionSelectionViewModel"/>
     </data>
 
 <android.support.constraint.ConstraintLayout

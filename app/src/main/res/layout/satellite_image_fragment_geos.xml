@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.fisincorporated.soaringforecast.common.TouchImageView
+        <org.soaringforecast.rasp.common.TouchImageView
             android:id="@+id/geos_satellite_image_imageView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -23,7 +23,7 @@
             app:layout_constraintRight_toRightOf="parent"
             bind:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/satellite_image_fragment_geos_loop_btn">
-        </com.fisincorporated.soaringforecast.common.TouchImageView>
+        </org.soaringforecast.rasp.common.TouchImageView>
 
         <Button
             android:id="@+id/satellite_image_fragment_geos_loop_btn"
