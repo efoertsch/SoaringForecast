@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.about.AboutViewModel"/>
+            type="org.soaringforecast.rasp.about.AboutViewModel"/>
 
     </data>
 

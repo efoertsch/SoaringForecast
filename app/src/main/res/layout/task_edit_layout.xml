@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.task.edit.TaskAndTurnpointsViewModel"/>
+            type="org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel"/>
 
         <import type="java.lang.Integer"/>
 

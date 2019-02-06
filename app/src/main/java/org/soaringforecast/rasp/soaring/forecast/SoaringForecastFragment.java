@@ -1,0 +1,430 @@
+package org.soaringforecast.rasp.soaring.forecast;
+
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.databinding.DataBindingUtil;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.SeekBar;
+
+import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.app.AppPreferences;
+import org.soaringforecast.rasp.databinding.SoaringForecastBinding;
+import org.soaringforecast.rasp.messages.DisplaySounding;
+import org.soaringforecast.rasp.repository.AppRepository;
+import org.soaringforecast.rasp.settings.SettingsActivity;
+import org.soaringforecast.rasp.soaring.json.Forecast;
+import org.soaringforecast.rasp.task.TaskActivity;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
+import timber.log.Timber;
+
+public class SoaringForecastFragment extends DaggerFragment {
+
+    private static final String TAG = SoaringForecastFragment.class.getSimpleName();
+    private static final int SELECT_TASK = 999;
+
+    @Inject
+    AppRepository appRepository;
+
+    @Inject
+    AppPreferences appPreferences;
+
+    @Inject
+    ForecastMapper forecastMapper;
+
+    @Inject
+    SoaringForecastDownloader soaringForecastDownloader;
+
+    private SoaringForecastViewModel soaringForecastViewModel;
+    private SoaringForecastBinding soaringForecastBinding;
+    private ForecastTypeAdapter forecastTypeAdapter;
+    private int lastForecastModelPosition = -1;
+    private int lastForecastDatePosition = -1;
+    private int lastForecastPosition = -1;
+    private boolean showClearTaskMenuItem;
+    private MenuItem soundingsMenuItem;
+    private boolean checkSoundingsMenuItem = false;
+    private boolean refreshForecastOrder = false;
+    private boolean displaySua = false;
+    private AlphaAnimation opacitySliderFadeOut;
+    private MenuItem suaMenuItem;
+    private String lastRegionName;
+
+    public void onCreate(Bundle savedInstanceState) {
+        //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreate()");
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        soaringForecastViewModel = ViewModelProviders.of(this)
+                .get(SoaringForecastViewModel.class)
+                .setAppRepository(appRepository)
+                .setAppPreferences(appPreferences)
+                .setSoaringForecastDownloader(soaringForecastDownloader);
+    }
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreateView()");
+        soaringForecastBinding = DataBindingUtil.inflate(inflater
+                , R.layout.fragment_forecast_rasp_spinners, container, false);
+        soaringForecastBinding.setLifecycleOwner(getActivity());
+        soaringForecastBinding.setViewModel(soaringForecastViewModel);
+
+        forecastTypeAdapter = new ForecastTypeAdapter(new ArrayList<>(), getContext());
+        soaringForecastBinding.setSpinAdapterForecast(forecastTypeAdapter);
+
+        setupViews();
+        // attempt to speed up initial screen display
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setObservers();
+            }
+        });
+        return soaringForecastBinding.getRoot();
+    }
+
+    private void setupViews() {
+        // TODO how to get from binding - soaringForecastBinding.soaringForecastMap - need to get as supportMapFragment
+        forecastMapper.setContext(getContext()).displayMap((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map));
+        // opacity not worth having it bound in viewModel and forwarding changes.
+        forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
+        soaringForecastBinding.soaringForecastSeekbarOpacity.setProgress(soaringForecastViewModel.getForecastOverlyOpacity());
+        soaringForecastBinding.soaringForecastSeekbarOpacity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                stopOpacitySliderFadeOut();
+                forecastMapper.setForecastOverlayOpacity(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                stopOpacitySliderFadeOut();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                soaringForecastViewModel.setForecastOverlayOpacity(seekBar.getProgress());
+                startOpacitySliderFadeOut();
+            }
+        });
+    }
+
+    //TODO - lots of observers - consolidate/simplify?
+    private void setObservers() {
+        //ElapsedTimeUtil.showElapsedTime(TAG, "startObservers()");
+        // RASP models - GFS, NAM, ...
+        soaringForecastViewModel.getModelPosition().observe(this, newForecastModelPosition -> {
+            if (newForecastModelPosition != null) {
+                if (lastForecastModelPosition != -1 && lastForecastModelPosition != newForecastModelPosition) {
+                    soaringForecastViewModel.setModelPosition(newForecastModelPosition);
+                }
+                lastForecastModelPosition = newForecastModelPosition;
+            }
+        });
+
+        // Dates for the selected model
+        soaringForecastViewModel.getModelForecastDatePosition().observe(this, newForecastDatePosition -> {
+            if (newForecastDatePosition != null) {
+                if (lastForecastDatePosition != -1 && lastForecastDatePosition != newForecastDatePosition) {
+                    soaringForecastViewModel.setModelForecastDatePosition(newForecastDatePosition);
+                }
+                lastForecastDatePosition = newForecastDatePosition;
+            }
+        });
+
+        // Forecasts
+        soaringForecastViewModel.getForecasts().observe(this, forecasts -> {
+            forecastTypeAdapter.clear();
+            forecastTypeAdapter.addAll(forecasts);
+        });
+
+        // Databinding doesn't call set... directly so need this observer to kick off forecast change
+        soaringForecastViewModel.getForecastPosition().observe(this, newForecastPosition -> {
+            if (newForecastPosition != null) {
+                if (lastForecastPosition != -1 && lastForecastPosition != newForecastPosition) {
+                    soaringForecastViewModel.setForecastPosition(newForecastPosition);
+                }
+                lastForecastPosition = newForecastPosition;
+            }
+        });
+
+        // Set the corners of the google map
+        soaringForecastViewModel.getRegionLatLngBounds().observe(this, regionLatngBounds -> {
+            setMapLatLngBounds(regionLatngBounds);
+        });
+
+        // List of turnpoints for a selected task
+        soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
+            if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
+                displayTaskClearMenuItem(true);
+            } else {
+                displayTaskClearMenuItem(false);
+            }
+            forecastMapper.setTaskTurnpoints(taskTurnpoints);
+        });
+
+        // List of soundings available
+        soaringForecastViewModel.getSoundings().observe(this, soundingList -> {
+            checkSoundingsMenuItem = (soundingList != null && soundingList.size() > 0);
+            forecastMapper.setSoundings(soundingList);
+            if (soundingsMenuItem != null) {
+                soundingsMenuItem.setChecked(checkSoundingsMenuItem);
+            }
+        });
+
+        // Get Rasp bitmap for the date/time selected and pass to mapper
+        soaringForecastViewModel.getSelectedSoaringForecastImageSet().observe(this, soaringForecastImageSet -> {
+            if (soaringForecastImageSet != null) {
+                soaringForecastBinding.soaringForecastImageLocalTime.setText(soaringForecastImageSet.getLocalTime());
+                forecastMapper.setGroundOverlay(soaringForecastImageSet.getBodyImage().getBitmap());
+                soaringForecastBinding.soaringForecastScaleImage.setImageBitmap(soaringForecastImageSet.getSideImage().getBitmap());
+            } else {
+                // Happens when user selects another forecast. Minimize confusion as to what is displayed by removing old forecast from map
+                soaringForecastBinding.soaringForecastImageLocalTime.setText("");
+                forecastMapper.setGroundOverlay(null);
+                soaringForecastBinding.soaringForecastScaleImage.setImageBitmap(null);
+            }
+        });
+
+        // Display sounding bitmap for the date/time selected and pass to mapper
+        soaringForecastViewModel.getSoundingForecastImageSet().observe(this, soundingImageSet -> {
+            soaringForecastBinding.soaringForecastImageLocalTime.setText(soundingImageSet.getLocalTime());
+            soaringForecastBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
+        });
+
+        // Forecast region name for display of SUA (if any)
+        soaringForecastViewModel.getSuaRegionName().observe(this, regionName -> {
+            lastRegionName = regionName;
+            if (appPreferences.getDisplaySua()) {
+                suaMenuItem.setChecked(true);
+                displaySuaOnMap(lastRegionName);
+            }
+
+            //getActivity().invalidateOptionsMenu();
+        });
+
+        //ElapsedTimeUtil.showElapsedTime(TAG, "end of startObservers()");
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Timber.d("onResume");
+        getActivity().setTitle(R.string.rasp);
+        EventBus.getDefault().register(this);
+        soaringForecastViewModel.checkForChanges();
+        if (refreshForecastOrder) {
+            refreshForecastOrder = false;
+            soaringForecastViewModel.reloadForecasts();
+        }
+        //ElapsedTimeUtil.showElapsedTime(TAG, "end of onResume()");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+        soaringForecastViewModel.stopImageAnimation();
+    }
+
+
+    // Note this occurs *after* onResume
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Timber.d("onCreateOptionsMenu");
+        inflater.inflate(R.menu.forecast_menu, menu);
+        MenuItem clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
+        if (clearTaskMenuItem != null) {
+            clearTaskMenuItem.setVisible(showClearTaskMenuItem);
+        }
+
+        soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
+        soundingsMenuItem.setChecked(checkSoundingsMenuItem);
+
+        suaMenuItem = menu.findItem(R.id.forecast_menu_display_sua);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.forecast_menu_select_task:
+                selectTask();
+                return true;
+            case R.id.forecast_menu_clear_task:
+                forecastMapper.removeTaskTurnpoints();
+                soaringForecastViewModel.setTaskId(-1);
+                displayTaskClearMenuItem(false);
+                return true;
+            case R.id.forecast_menu_opacity_slider:
+                displayOpacitySlider();
+                return true;
+            case R.id.forecast_menu_toggle_sounding_points:
+                displaySoundings(!soundingsMenuItem.isChecked());
+                return true;
+            case R.id.forecast_menu_select_regions:
+                displayRegionSelections();
+                return true;
+            case R.id.forecast_menu_order_forecasts:
+                displayForecastOrderFragment();
+                return true;
+            case R.id.forecast_menu_display_sua:
+                Timber.d("forecast_menu_display_sua was clicked");
+                displaySua();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void displaySua() {
+        Timber.d("displaySua() suaMenuItem.isChecked(): %1$s", suaMenuItem.isChecked());
+        // When menu clicked to be checked it, menuItem still unchecked when you get here
+        // Likewise when clicked and is checked, it is still checked when you get here.
+        if (suaMenuItem.isChecked()) {
+            if (forecastMapper != null) {
+                forecastMapper.removeSuaFromMap();
+                suaMenuItem.setChecked(false);
+            }
+        } else {
+            if (lastRegionName == null) {
+                // sua not displayed by settings so need to get region from viewmodel first
+                if (soaringForecastViewModel.getSuaRegionName() != null) {
+                    lastRegionName = soaringForecastViewModel.getSuaRegionName().getValue();
+                }
+            }
+            displaySuaOnMap(lastRegionName);
+            suaMenuItem.setChecked(true);
+
+        }
+    }
+
+    // Drawing SUA cpu intensive so doing this way to make app more responsive
+    private void displaySuaOnMap(final String regionName) {
+        new Thread(() -> getActivity().runOnUiThread(((Runnable) () -> forecastMapper.setSuaRegionName(regionName)))).start();
+    }
+
+
+    private void displayForecastOrderFragment() {
+        refreshForecastOrder = true;
+        SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
+        builder.displayOrderedForecasts();
+        startActivity(builder.build(this.getContext()));
+    }
+
+    private void displayRegionSelections() {
+        SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
+        builder.displaySelectRegion();
+        startActivity(builder.build(this.getContext()));
+    }
+
+    private void selectTask() {
+        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
+        builder.displayTaskList().enableClickTask(true);
+        startActivityForResult(builder.build(this.getContext()), SELECT_TASK);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SELECT_TASK) {
+            // Always check for task, user might have reordered turnpoints under same task id
+            // so always check/redisplay
+            soaringForecastViewModel.checkIfToDisplayTask();
+        }
+    }
+
+
+    private void displayTaskClearMenuItem(boolean visible) {
+        showClearTaskMenuItem = visible;
+        getActivity().invalidateOptionsMenu();
+    }
+
+
+    private void setMapLatLngBounds(LatLngBounds latLngBounds) {
+        if (latLngBounds != null) {
+            forecastMapper.setMapLatLngBounds(latLngBounds);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DisplaySounding displaySounding) {
+        soaringForecastViewModel.setSelectedSounding(displaySounding.getSounding());
+    }
+
+
+    private void displaySoundings(boolean displaySoundings) {
+        boolean soundingsAvailable = soaringForecastViewModel.displaySoundings(displaySoundings);
+        soundingsMenuItem.setChecked(soundingsAvailable);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(Forecast forecast) {
+        BottomSheetBehavior bsb = BottomSheetBehavior.from(soaringForecastBinding.soaringForecastBottomSheet);
+        if (bsb.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } else {
+            bsb.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
+    }
+
+    // ---- Opacity for forecast overlay -----------------------
+    private void displayOpacitySlider() {
+        soaringForecastBinding.soaringForecastSeekbarLayout.setVisibility(View.VISIBLE);
+        startOpacitySliderFadeOut();
+    }
+
+    private void startOpacitySliderFadeOut() {
+        stopOpacitySliderFadeOut();
+        animateOpacitySliderFadeOut();
+
+    }
+
+    private void stopOpacitySliderFadeOut() {
+        if (opacitySliderFadeOut != null) {
+            opacitySliderFadeOut.cancel();
+        }
+    }
+
+    public void animateOpacitySliderFadeOut() {
+        opacitySliderFadeOut = new AlphaAnimation(1.0f, 0.0f);
+        opacitySliderFadeOut.setDuration(1000);
+        opacitySliderFadeOut.setStartOffset(5000);
+        opacitySliderFadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                soaringForecastBinding.soaringForecastSeekbarLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        soaringForecastBinding.soaringForecastSeekbarLayout.startAnimation(opacitySliderFadeOut);
+    }
+
+}

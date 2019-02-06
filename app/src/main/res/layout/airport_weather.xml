@@ -7,23 +7,23 @@
 
         <import type="android.view.View"/>
 
-        <import type="com.fisincorporated.soaringforecast.utils.ConversionUtils"/>
+        <import type="org.soaringforecast.rasp.utils.ConversionUtils"/>
 
         <variable
             name="displayPrefs"
-            type="com.fisincorporated.soaringforecast.airport.airportweather.WeatherMetarTafPreferences"/>
+            type="org.soaringforecast.rasp.airport.airportweather.WeatherMetarTafPreferences"/>
 
         <variable
             name="airportMetarTaf"
-            type="com.fisincorporated.soaringforecast.data.AirportMetarTaf"/>
+            type="org.soaringforecast.rasp.data.AirportMetarTaf"/>
 
         <variable
             name="metar"
-            type="com.fisincorporated.soaringforecast.data.metars.Metar"/>
+            type="org.soaringforecast.rasp.data.metars.Metar"/>
 
         <variable
             name="taf"
-            type="com.fisincorporated.soaringforecast.data.taf.TAF"/>
+            type="org.soaringforecast.rasp.data.taf.TAF"/>
 
     </data>
 

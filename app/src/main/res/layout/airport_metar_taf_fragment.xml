@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.fisincorporated.soaringforecast.soaring.forecast.ForecastDrawerActivity">
+        tools:context="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity">
 
     <data  class="AirportMetarTafView">
 
@@ -10,7 +10,7 @@
 
         <variable
             name="viewmodel"
-            type="com.fisincorporated.soaringforecast.airport.airportweather.AirportMetarTafViewModel"/>
+            type="org.soaringforecast.rasp.airport.airportweather.AirportMetarTafViewModel"/>
     </data>
 
         <RelativeLayout

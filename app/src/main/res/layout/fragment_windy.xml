@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.windy.WindyViewModel"/>
+            type="org.soaringforecast.rasp.windy.WindyViewModel"/>
 
     </data>
 

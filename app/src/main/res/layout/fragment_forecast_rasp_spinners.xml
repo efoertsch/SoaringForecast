@@ -10,15 +10,15 @@
 
         <variable
             name="forecastAction"
-            type="com.fisincorporated.soaringforecast.common.Constants.STEP_ACTION"/>
+            type="org.soaringforecast.rasp.common.Constants.STEP_ACTION"/>
 
         <variable
             name="viewModel"
-            type="com.fisincorporated.soaringforecast.soaring.forecast.SoaringForecastViewModel"/>
+            type="org.soaringforecast.rasp.soaring.forecast.SoaringForecastViewModel"/>
 
         <variable
             name="spinAdapterForecast"
-            type="com.fisincorporated.soaringforecast.soaring.forecast.ForecastTypeAdapter"/>
+            type="org.soaringforecast.rasp.soaring.forecast.ForecastTypeAdapter"/>
 
     </data>
 
@@ -199,7 +199,7 @@
 
             </FrameLayout>
 
-            <com.fisincorporated.soaringforecast.common.TouchImageView
+            <org.soaringforecast.rasp.common.TouchImageView
                 android:id="@+id/soaring_forecast_scale_image"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -265,7 +265,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/soaring_forecast_image_time"
                 >
 
-                <com.fisincorporated.soaringforecast.common.TouchImageView
+                <org.soaringforecast.rasp.common.TouchImageView
                     android:id="@+id/soaring_forecast_sounding_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>

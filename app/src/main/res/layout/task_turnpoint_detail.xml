@@ -13,11 +13,11 @@
 
         <variable
             name="taskTurnpoint"
-            type="com.fisincorporated.soaringforecast.repository.TaskTurnpoint"/>
+            type="org.soaringforecast.rasp.repository.TaskTurnpoint"/>
 
         <variable
             name="clickListener"
-            type="com.fisincorporated.soaringforecast.common.recycleradapter.GenericListClickListener&lt;com.fisincorporated.soaringforecast.repository.TaskTurnpoint&gt;"
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.TaskTurnpoint&gt;"
             />
 
     </data>
