@@ -17,6 +17,12 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.SeekBar;
 
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.SoaringForecastBinding;
@@ -25,12 +31,6 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.json.Forecast;
 import org.soaringforecast.rasp.task.TaskActivity;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLngBounds;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -66,7 +66,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     private MenuItem soundingsMenuItem;
     private boolean checkSoundingsMenuItem = false;
     private boolean refreshForecastOrder = false;
-    private boolean displaySua = false;
+    private boolean displaySuaMenuCheck = false;
     private AlphaAnimation opacitySliderFadeOut;
     private MenuItem suaMenuItem;
     private String lastRegionName;
@@ -129,6 +129,8 @@ public class SoaringForecastFragment extends DaggerFragment {
                 startOpacitySliderFadeOut();
             }
         });
+
+        displaySuaMenuCheck = appPreferences.getDisplaySua();
     }
 
     //TODO - lots of observers - consolidate/simplify?
@@ -265,6 +267,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         soundingsMenuItem.setChecked(checkSoundingsMenuItem);
 
         suaMenuItem = menu.findItem(R.id.forecast_menu_display_sua);
+        suaMenuItem.setChecked(displaySuaMenuCheck);
     }
 
     @Override
@@ -307,6 +310,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             if (forecastMapper != null) {
                 forecastMapper.removeSuaFromMap();
                 suaMenuItem.setChecked(false);
+                displaySuaMenuCheck = false;
             }
         } else {
             if (lastRegionName == null) {
@@ -317,6 +321,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             }
             displaySuaOnMap(lastRegionName);
             suaMenuItem.setChecked(true);
+            displaySuaMenuCheck = true;
 
         }
     }
