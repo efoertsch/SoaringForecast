@@ -11,11 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.messages.DisplaySounding;
-import org.soaringforecast.rasp.messages.SnackbarMessage;
-import org.soaringforecast.rasp.repository.TaskTurnpoint;
-import org.soaringforecast.rasp.soaring.json.Sounding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,6 +27,11 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.greenrobot.eventbus.EventBus;
+import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.messages.DisplaySounding;
+import org.soaringforecast.rasp.messages.SnackbarMessage;
+import org.soaringforecast.rasp.repository.TaskTurnpoint;
+import org.soaringforecast.rasp.soaring.json.Sounding;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private boolean drawingTask = false;
 
     //Default for NewEngland - try to get something displayed quickly rather than blank screen
-   private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
+    private LatLngBounds mapLatLngBounds = new LatLngBounds(new LatLng(41.2665329, -73.6473083)
             , new LatLng(45.0120811, -70.5046997));
     //private LatLngBounds mapLatLngBounds;
     private List<Sounding> soundings = new ArrayList<>();
@@ -61,7 +61,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private GroundOverlay forecastOverlay;
     private int forecastOverlayOpacity;
     private Marker lastMarkerOpened;
-    private KmlLayer suaLayer;
+    private KmlLayer kmlLayer;
 
     /**
      * Use to center task route in googleMap frame
@@ -258,14 +258,14 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                 taskTurnpoint = taskTurnpoints.get(i);
                 if (i == 0) {
                     fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
-                   // placeTaskTurnpointMarker(taskTurnpoint.getTitle()
+                    // placeTaskTurnpointMarker(taskTurnpoint.getTitle()
                     //        , String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), fromLatLng);
-                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint),fromLatLng);
+                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint), fromLatLng);
                 } else {
                     toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
                     //placeTaskTurnpointMarker(taskTurnpoint.getTitle(),
                     //        String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), toLatLng);
-                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint),toLatLng);
+                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint), toLatLng);
                     drawLine(fromLatLng, toLatLng);
                     fromLatLng = toLatLng;
 
@@ -287,7 +287,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                     , Snackbar.LENGTH_LONG));
         }
         View markerView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.task_turnpoint_marker, null);
-
 
         ((TextView) markerView.findViewById(R.id.turnpoint_marker_name)).setText(taskTurnpoint.getTitle());
         ((TextView) markerView.findViewById(R.id.turnpoint_marker_distance)).setText(context.getString(R.string.distance_from_prior_and_start
@@ -359,31 +358,37 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     // TODO improve to allow display of different SUA regions
     public void setSuaRegionName(String suaRegionName) {
-        if (suaRegionName!= null && suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))){
-            addSuaToMap();
-        } else {
-            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.no_sua_defined_for_specified_region, suaRegionName)
+        try {
+            if (suaRegionName != null) {
+                if (suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
+                    kmlLayer = new KmlLayer(googleMap, R.raw.sterling_sua_kml, context);
+                    kmlLayer.addLayerToMap();
+                } else if (suaRegionName.equalsIgnoreCase(context.getString(R.string.mifflin_region))) {
+                    kmlLayer = new KmlLayer(googleMap, R.raw.mifflin8_sua_kml, context);
+                    kmlLayer.addLayerToMap();
+                }
+            } else {
+                EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.no_sua_defined_for_specified_region, suaRegionName)
+                        , Snackbar.LENGTH_LONG));
+            }
+        } catch (XmlPullParserException e) {
+            // TODO report exception
+            e.printStackTrace();
+            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.oops_error_loading_sua_file, suaRegionName)
+                    , Snackbar.LENGTH_LONG));
+        } catch (IOException e) {
+            // TODO report exception
+            e.printStackTrace();
+            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.oops_error_loading_sua_file, suaRegionName)
                     , Snackbar.LENGTH_LONG));
         }
     }
 
-    public void addSuaToMap(){
-        try {
-            suaLayer = new KmlLayer(googleMap, R.raw.sterling_sua_kml, context);
-            suaLayer.addLayerToMap();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void removeSuaFromMap() {
+        if (kmlLayer != null) {
+            kmlLayer.removeLayerFromMap();
+            kmlLayer = null;
         }
     }
-
-    public void removeSuaFromMap(){
-        if (suaLayer != null) {
-            suaLayer.removeLayerFromMap();
-            suaLayer = null;
-        }
-    }
-
 
 }
