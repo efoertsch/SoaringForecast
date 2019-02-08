@@ -8,6 +8,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.Constants;
@@ -24,9 +27,6 @@ import org.soaringforecast.rasp.soaring.json.Region;
 import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.soaring.json.Sounding;
 import org.soaringforecast.rasp.utils.ImageAnimator;
-import com.google.android.gms.maps.model.LatLngBounds;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -605,9 +605,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 && selectedModelForecastDate.getDate() != null
                 && selectedModelForecastDate.getModel() != null
                 && selectedModelForecastDate.getModel().getName() != null
-                && selectedModelForecastDate.getModel().getTimes() != null ){
+                && selectedModelForecastDate.getModel().getTimes() != null) {
             return true;
-        } else{
+        } else {
             postMessage(getApplication().getString(R.string.missing_data_check_internet_cell_service));
             return false;
         }
@@ -664,7 +664,14 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public void selectForecastImage(int index) {
-        SoaringForecastImageSet imageSet = imageMap.get(forecastTimes.get(index));
+        SoaringForecastImageSet imageSet;
+        if (imageMap != null
+                && forecastTimes != null
+                && forecastTimes.size() > index) {
+            imageSet = imageMap.get(forecastTimes.get(index));
+        } else {
+            imageSet = null;
+        }
         switch (forecastSounding) {
             case FORECAST:
                 displayForecastImageSet(imageSet);
@@ -681,7 +688,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     && imageSet.getBodyImage() != null) {
                 selectedSoaringForecastImageSet.setValue(imageSet);
             } else {
-                Timber.d("imageSet side and or bodyImage is null");
+                selectedSoaringForecastImageSet.setValue(null);
+                postMessage(getApplication().getApplicationContext().getString(R.string.oops_body_or_side_image_null));
             }
         } else {
             selectedSoaringForecastImageSet.setValue(null);
@@ -834,8 +842,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return suaRegionName;
     }
 
-    public void setSuaRegionName(String regionName){
-            suaRegionName.setValue(regionName);
+    public void setSuaRegionName(String regionName) {
+        suaRegionName.setValue(regionName);
     }
 
     // --------------- Messages for the upper management ----------------------
