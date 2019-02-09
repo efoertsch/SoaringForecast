@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.common.recycleradapter.GenericViewHolder;
 import org.soaringforecast.rasp.databinding.TurnpointsImportView;
@@ -27,8 +28,13 @@ import dagger.android.support.DaggerFragment;
 import io.reactivex.disposables.CompositeDisposable;
 
 public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHolder> extends DaggerFragment {
+
     @Inject
     AppRepository appRepository;
+
+    @Inject
+    AppPreferences appPreferences;
+
     protected TurnpointsImportView turnpointsImportView;
     protected TurnpointsImporterViewModel turnpointsImporterViewModel;
     protected GenericRecyclerViewAdapter<T, VH > recyclerViewAdapter;
@@ -38,7 +44,8 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
         super.onCreate(savedInstanceState);
         turnpointsImporterViewModel = ViewModelProviders.of(this)
                 .get(TurnpointsImporterViewModel.class)
-                .setAppRepository(appRepository);
+                .setAppRepository(appRepository)
+                .setAppPreferences(appPreferences);
     }
 
     public View onCreateView(LayoutInflater inflater,

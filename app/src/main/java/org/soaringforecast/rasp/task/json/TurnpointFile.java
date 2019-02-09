@@ -9,12 +9,19 @@ public class TurnpointFile {
     @SerializedName("state")
     @Expose
     private String state;
+
     @SerializedName("location")
     @Expose
     private String location;
+
     @SerializedName("filename")
     @Expose
     private String filename;
+
+    @SerializedName("description")
+    @Expose
+    private String description;
+
     @SerializedName("date")
     @Expose
     private String date;
@@ -41,6 +48,14 @@ public class TurnpointFile {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDate() {
