@@ -285,6 +285,7 @@
     <string name="mifflin_region">Mifflin</string>
     <string name="oops_error_loading_sua_file">Oops! An error occured loading the %1$s sua file!</string>
     <string name="oops_body_or_side_image_null">Oops! Main forecast and/or scale image missing.</string>
+    <string name="sua_property">%1$s : %2$s</string>
 
 
 </resources>

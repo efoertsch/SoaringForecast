@@ -6,9 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.IntegerRes;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,19 +28,23 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.data.kml.KmlLayer;
+import com.google.maps.android.data.Feature;
+import com.google.maps.android.data.geojson.GeoJsonLayer;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.messages.DisplaySounding;
 import org.soaringforecast.rasp.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.soaring.json.Sounding;
-import org.xmlpull.v1.XmlPullParserException;
+import org.soaringforecast.rasp.utils.ViewUtilities;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -61,7 +69,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private GroundOverlay forecastOverlay;
     private int forecastOverlayOpacity;
     private Marker lastMarkerOpened;
-    private KmlLayer kmlLayer;
+    private GeoJsonLayer geoJsonLayer = null;
 
     /**
      * Use to center task route in googleMap frame
@@ -357,37 +365,72 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     }
 
     // TODO improve to allow display of different SUA regions
+    @SuppressLint("ResourceType")
     public void setSuaRegionName(String suaRegionName) {
-        try {
-            if (suaRegionName != null) {
-                if (suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
-                    kmlLayer = new KmlLayer(googleMap, R.raw.sterling_sua_kml, context);
-                    kmlLayer.addLayerToMap();
-                } else if (suaRegionName.equalsIgnoreCase(context.getString(R.string.mifflin_region))) {
-                    kmlLayer = new KmlLayer(googleMap, R.raw.mifflin8_sua_kml, context);
-                    kmlLayer.addLayerToMap();
-                }
+        if (suaRegionName != null) {
+            int geoJsonRawId = 0;
+            if (suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
+                geoJsonRawId = R.raw.sterlng7_sua_geojson;
+            } else if (suaRegionName.equalsIgnoreCase(context.getString(R.string.mifflin_region))) {
+                geoJsonRawId = R.raw.mifflin8_sua_geojson;
+            }
+
+            if (geoJsonRawId != 0) {
+                addGeoJsonLayerToMap(geoJsonRawId, suaRegionName);
             } else {
                 EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.no_sua_defined_for_specified_region, suaRegionName)
                         , Snackbar.LENGTH_LONG));
             }
-        } catch (XmlPullParserException e) {
-            // TODO report exception
-            e.printStackTrace();
-            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.oops_error_loading_sua_file, suaRegionName)
-                    , Snackbar.LENGTH_LONG));
-        } catch (IOException e) {
-            // TODO report exception
-            e.printStackTrace();
-            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.oops_error_loading_sua_file, suaRegionName)
-                    , Snackbar.LENGTH_LONG));
         }
     }
 
+    private void addGeoJsonLayerToMap(@IntegerRes int geoJsonid, String suaRegionName) {
+        try {
+            geoJsonLayer = new GeoJsonLayer(googleMap, geoJsonid, context);
+            geoJsonLayer.setOnFeatureClickListener((GeoJsonLayer.GeoJsonOnFeatureClickListener) feature -> {
+                displaSuaDetails(feature);
+            });
+
+        } catch (IOException e) {
+            postError(e, suaRegionName);
+        } catch (JSONException e) {
+            postError(e, suaRegionName);
+        }
+        geoJsonLayer.addLayerToMap();
+    }
+
+    private void displaSuaDetails(Feature feature) {
+        ArrayList<String> suaProperties = new ArrayList<>();
+        Iterator it = feature.getProperties().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            suaProperties.add(context.getString(R.string.sua_property, pair.getKey(), pair.getValue()));
+        }
+        if (suaProperties.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            LayoutInflater inflater = ViewUtilities.getActivity(context).getLayoutInflater();
+            View suaPropertiesView = inflater.inflate(R.layout.sua_properties_list, null);
+            builder.setView(suaPropertiesView);
+            ListView suaPropertiesListView =   suaPropertiesView.findViewById(R.id.sua_properties_listview);
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
+            arrayAdapter.addAll(suaProperties);
+            suaPropertiesListView.setAdapter(arrayAdapter);
+            builder.setTitle("SUA");
+            builder.show();
+        }
+    }
+
+    private void postError(Exception e, String suaRegionName) {
+        // TODO report exception
+        e.printStackTrace();
+        EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.oops_error_loading_sua_file, suaRegionName)
+                , Snackbar.LENGTH_LONG));
+    }
+
     public void removeSuaFromMap() {
-        if (kmlLayer != null) {
-            kmlLayer.removeLayerFromMap();
-            kmlLayer = null;
+        if (geoJsonLayer != null) {
+            geoJsonLayer.removeLayerFromMap();
+            geoJsonLayer = null;
         }
     }
 
