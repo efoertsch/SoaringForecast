@@ -384,6 +384,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
     }
 
+    // TODO iterate through features and assign color to each based on type of SUA
     private void addGeoJsonLayerToMap(@IntegerRes int geoJsonid, String suaRegionName) {
         try {
             geoJsonLayer = new GeoJsonLayer(googleMap, geoJsonid, context);
@@ -396,6 +397,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         } catch (JSONException e) {
             postError(e, suaRegionName);
         }
+
         geoJsonLayer.addLayerToMap();
     }
 
