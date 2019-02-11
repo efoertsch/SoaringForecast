@@ -282,6 +282,10 @@
     <string name="distance_from_prior_and_start">%1$d/%2$dkm</string>
     <string name="display_sua">Display SUA</string>
     <string name="no_sua_defined_for_specified_region">No SUA defined for %1$s region:</string>
+    <string name="mifflin_region">Mifflin</string>
+    <string name="oops_error_loading_sua_file">Oops! An error occured loading the %1$s sua file!</string>
+    <string name="oops_body_or_side_image_null">Oops! Main forecast and/or scale image missing.</string>
+    <string name="sua_property">%1$s : %2$s</string>
 
 
 </resources>

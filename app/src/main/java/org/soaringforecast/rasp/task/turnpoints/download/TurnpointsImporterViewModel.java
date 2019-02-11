@@ -6,7 +6,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.os.Environment;
 
-import org.soaringforecast.rasp.common.Constants;
+import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.retrofit.TurnpointFileApi;
@@ -34,6 +34,7 @@ import timber.log.Timber;
 public class TurnpointsImporterViewModel extends ViewModel {
 
     private AppRepository appRepository;
+    private AppPreferences appPreferences;
     private OkHttpClient okHttpClient;
 
     private MutableLiveData<List<TurnpointFile>> turnpointFiles = new MutableLiveData();
@@ -42,6 +43,11 @@ public class TurnpointsImporterViewModel extends ViewModel {
 
     public TurnpointsImporterViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
+        return this;
+    }
+
+    public TurnpointsImporterViewModel setAppPreferences(AppPreferences appPreferences) {
+        this.appPreferences = appPreferences;
         return this;
     }
 
@@ -64,7 +70,7 @@ public class TurnpointsImporterViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public LiveData<List<TurnpointFile>> getTurnpointFiles() {
-        Disposable disposable = appRepository.getTurnpointFiles(Constants.NEWENGLAND_REGION)
+        Disposable disposable = appRepository.getTurnpointFiles(appPreferences.getSoaringForecastRegion())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(turnpointFileList ->

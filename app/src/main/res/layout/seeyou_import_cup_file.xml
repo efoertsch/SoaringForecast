@@ -42,11 +42,11 @@
             tools:text="MA"/>
 
         <TextView
-            android:id="@+id/turnpoint_select_location"
+            android:id="@+id/turnpoint_select_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_double"
-            android:text="@{turnpointFile.getLocation}"
+            android:text="@{turnpointFile.getDescription}"
             android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintStart_toEndOf="@+id/turnpoint_select_state"
             app:layout_constraintTop_toTopOf="parent"
@@ -56,11 +56,10 @@
             android:id="@+id/turnpoint_select_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_double"
             android:text="@{turnpointFile.getDate}"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintStart_toEndOf="@+id/turnpoint_select_location"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/turnpoint_select_description"
+            app:layout_constraintTop_toBottomOf="@+id/turnpoint_select_description"
             tools:text="09/02/2016"/>
 
 
