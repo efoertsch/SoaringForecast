@@ -8,6 +8,9 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.repository.Airport;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageType;
@@ -15,8 +18,6 @@ import org.soaringforecast.rasp.satellite.data.SatelliteRegion;
 import org.soaringforecast.rasp.soaring.json.Forecasts;
 import org.soaringforecast.rasp.soaring.json.ModelForecastDate;
 import org.soaringforecast.rasp.utils.JSONResourceReader;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +45,7 @@ public class AppPreferences {
     private static final String WINDY_ZOOM_LEVEL = "WINDY_ZOOM_LEVEL" ;
     private static final String SELECTED_MODEL_FORECAST_DATE = "SELECTED_MODEL_FORECAST_DATE";
     private static final String ORDERED_FORECAST_OPTIONS = "ORDERED_FORECAST_OPTIONS";
+    private static final String DISPLAY_TURNPOINTS = "DISPLAY_TURNPOINTS";
 
     // These string values are assigned in code so they match what is used in Settings
     private static String DISPLAY_WINDY_MENU_OPTION;
@@ -432,7 +434,17 @@ public class AppPreferences {
         editor.apply();
     }
 
-    public boolean getDisplaySua(){
+     public boolean getDisplaySua(){
         return sharedPreferences.getBoolean(SUA_DISPLAY_KEY, true);
+    }
+
+    public void setDisplayTurnpoints(boolean displayTurnpoints){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(DISPLAY_TURNPOINTS, displayTurnpoints);
+        editor.apply();
+    }
+
+    public boolean getDisplayTurnpoints(){
+        return sharedPreferences.getBoolean(DISPLAY_TURNPOINTS, true);
     }
 }

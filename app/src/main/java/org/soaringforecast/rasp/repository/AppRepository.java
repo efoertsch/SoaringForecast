@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Environment;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonSyntaxException;
 
 import org.soaringforecast.rasp.R;
@@ -235,6 +236,11 @@ public class AppRepository {
 
     public Maybe<Turnpoint> checkForAtLeastOneTurnpoint() {
         return turnpointDao.checkForAtLeastOneTurnpoint();
+    }
+
+    public Maybe<List<Turnpoint>> getTurnpointsInRegion(LatLng swLatLong, LatLng neLatLng){
+        return turnpointDao.getTurnpointsInRegion((float) swLatLong.latitude,(float) swLatLong.longitude
+                , (float) neLatLng.latitude, (float) neLatLng.longitude);
     }
 
     // ---------- Task ------------------

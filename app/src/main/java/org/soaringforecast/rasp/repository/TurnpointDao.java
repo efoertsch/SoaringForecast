@@ -29,4 +29,8 @@ public interface TurnpointDao extends BaseDao<Turnpoint> {
     @Query("Select * from turnpoint  ORDER BY id ASC LIMIT 1")
     Maybe<Turnpoint> checkForAtLeastOneTurnpoint();
 
+
+    @Query("Select * from turnpoint where latitudeDeg between :swLatitudeDeg and :neLatitudeDeg  and longitudeDeg between :swLongitudeDeg and :neLongitudeDeg")
+    Maybe<List<Turnpoint>> getTurnpointsInRegion(float swLatitudeDeg, float swLongitudeDeg, float neLatitudeDeg, float neLongitudeDeg);
+
 }

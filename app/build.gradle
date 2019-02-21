@@ -10,8 +10,8 @@ android {
         versionCode 7
         versionName "1.4"
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
-        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunner "org.soaringforecast.aviationweather.app.OverrideApplicationTestRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "org.soaringforecast.rasp.app.OverrideApplicationTestRunner"
 
         // to use any vector drawables
         vectorDrawables.useSupportLibrary = true

@@ -1,7 +1,13 @@
 package org.soaringforecast.rasp.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.widget.ImageView;
 
 import org.soaringforecast.rasp.R;
@@ -10,6 +16,7 @@ import org.soaringforecast.rasp.common.BitmapImage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -61,6 +68,12 @@ public class BitmapImageUtils {
                     Timber.d("good bitmap ");
                     return bitmap;
                 }
+            } else {
+                 Set<String > names =  response.headers().names();
+                 for (String name: names){
+                     Timber.d("Response.headers().name: %1$s, value: %2$s", name, response.header(name));
+                 }
+
             }
         } catch (IOException e) {
             Timber.d("%s  IOException ", url);
@@ -100,6 +113,21 @@ public class BitmapImageUtils {
                 return;
         }
 
+    }
+
+    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = (DrawableCompat.wrap(drawable)).mutate();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
 }
