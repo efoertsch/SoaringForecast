@@ -410,7 +410,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             // TODO reimplement after Google fixes bugs
             // Bug when clicking on map, may not get correct feature, also still getting click event
             // after layer removed from map
-            geoJsonLayer.setOnFeatureClickListener(geoJsonOnFeatureClickListener);
+            //geoJsonLayer.setOnFeatureClickListener(geoJsonOnFeatureClickListener);
         } catch (IOException e) {
             postError(e, suaRegionName);
         } catch (JSONException e) {
