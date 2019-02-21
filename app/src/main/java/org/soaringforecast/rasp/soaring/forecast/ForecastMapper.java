@@ -37,7 +37,9 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.messages.DisplaySounding;
 import org.soaringforecast.rasp.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
+import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.json.Sounding;
+import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
 import java.io.IOException;
@@ -47,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 
 public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -63,13 +67,17 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private List<Marker> taskTurnpointMarkers = new ArrayList<>();
     private List<Polyline> taskTurnpointLines = new ArrayList<>();
     private List<Marker> soundingMarkers = new ArrayList<>();
-
     private GoogleMap googleMap;
 
     private GroundOverlay forecastOverlay;
     private int forecastOverlayOpacity;
     private Marker lastMarkerOpened;
     private GeoJsonLayer geoJsonLayer = null;
+
+    private List<Marker> turnpointMarkers = new ArrayList<>();
+    private List<Turnpoint> turnpoints;
+    private Bitmap largeTurnpointBitmap;
+    private Bitmap smallerTurnpointBitmap;
 
     /**
      * Use to center task route in googleMap frame
@@ -80,6 +88,8 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private double neLat = 0;
     private double neLong = 0;
     private Context context;
+    private boolean listenToLayerClicks;
+    private int zoomLevel;
 
     @Inject
     public ForecastMapper() {
@@ -99,6 +109,15 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                zoomLevel = (int) googleMap.getCameraPosition().zoom;
+                Timber.d("Zoom level: %1$d", (int) googleMap.getCameraPosition().zoom);
+                mapTurnpoints();
+
+            }
+        });
         // if delay in map getting ready and bounds, sounding locations or task already passed in display them as
         // required
         googleMap.setOnMarkerClickListener(this);
@@ -196,7 +215,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             for (Marker marker : soundingMarkers) {
                 marker.setVisible(display);
             }
-
         }
     }
 
@@ -364,6 +382,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         taskTurnpointMarkers.add(marker);
     }
 
+    //----- Draw SUA -------------------------------
     // TODO improve to allow display of different SUA regions
     @SuppressLint("ResourceType")
     public void setSuaRegionName(String suaRegionName) {
@@ -388,10 +407,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private void addGeoJsonLayerToMap(@IntegerRes int geoJsonid, String suaRegionName) {
         try {
             geoJsonLayer = new GeoJsonLayer(googleMap, geoJsonid, context);
-            geoJsonLayer.setOnFeatureClickListener((GeoJsonLayer.GeoJsonOnFeatureClickListener) feature -> {
-                displaSuaDetails(feature);
-            });
-
+            // TODO reimplement after Google fixes bugs
+            // Bug when clicking on map, may not get correct feature, also still getting click event
+            // after layer removed from map
+            //geoJsonLayer.setOnFeatureClickListener(geoJsonOnFeatureClickListener);
         } catch (IOException e) {
             postError(e, suaRegionName);
         } catch (JSONException e) {
@@ -401,11 +420,15 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         geoJsonLayer.addLayerToMap();
     }
 
+    private GeoJsonLayer.GeoJsonOnFeatureClickListener geoJsonOnFeatureClickListener = feature -> {
+        displaSuaDetails(feature);
+    };
+
     private void displaSuaDetails(Feature feature) {
         ArrayList<String> suaProperties = new ArrayList<>();
         Iterator it = feature.getProperties().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry pair = (Map.Entry) it.next();
             suaProperties.add(context.getString(R.string.sua_property, pair.getKey(), pair.getValue()));
         }
         if (suaProperties.size() > 0) {
@@ -413,7 +436,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             LayoutInflater inflater = ViewUtilities.getActivity(context).getLayoutInflater();
             View suaPropertiesView = inflater.inflate(R.layout.sua_properties_list, null);
             builder.setView(suaPropertiesView);
-            ListView suaPropertiesListView =   suaPropertiesView.findViewById(R.id.sua_properties_listview);
+            ListView suaPropertiesListView = suaPropertiesView.findViewById(R.id.sua_properties_listview);
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
             arrayAdapter.addAll(suaProperties);
             suaPropertiesListView.setAdapter(arrayAdapter);
@@ -429,11 +452,66 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                 , Snackbar.LENGTH_LONG));
     }
 
+    // Simply going geoJsonLayer.removeLayerFromMap still leaves GeoJsonOnFeatureClickListener active (some bug)
+    // so remove the features one by 1
     public void removeSuaFromMap() {
         if (geoJsonLayer != null) {
+            // click listener continues to function even when layer removed from map, so set flag (for now) to
+            // indicate to ignore clicks
             geoJsonLayer.removeLayerFromMap();
             geoJsonLayer = null;
         }
+    }
+
+
+    // ---- Turnpoints -----------------------------
+    public void mapTurnpoints(List<Turnpoint> turnpoints) {
+        this.turnpoints = turnpoints;
+        mapTurnpoints();
+
+    }
+
+    private void  mapTurnpoints() {
+        Bitmap turnpointBitmap;
+        if (googleMap == null) {
+            return;
+        }
+        clearTurnpointMarkers();
+        if (largeTurnpointBitmap == null) {
+            largeTurnpointBitmap = BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.ic_turnpoint);
+        }
+        if (turnpoints != null) {
+            if (zoomLevel <= 7) {
+                // use smaller bitmap icon
+                if (smallerTurnpointBitmap == null) {
+                    smallerTurnpointBitmap = Bitmap.createScaledBitmap(largeTurnpointBitmap, largeTurnpointBitmap.getWidth() / 2, largeTurnpointBitmap.getHeight() / 2, true);
+                }
+                turnpointBitmap = smallerTurnpointBitmap;
+            } else {
+                turnpointBitmap = largeTurnpointBitmap;
+            }
+            for (Turnpoint turnpoint : turnpoints) {
+                placeTurnpointMarker(turnpoint.getTitle(), turnpoint.getDescription(), new LatLng(turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg())
+                        , turnpointBitmap);
+            }
+        }
+    }
+
+    private void placeTurnpointMarker(String title, String snippet, LatLng latLng, Bitmap bitmap) {
+        Marker marker = googleMap.addMarker(new MarkerOptions()
+                .title(title)
+                .snippet(snippet)
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                .position(latLng));
+        turnpointMarkers.add(marker);
+    }
+
+
+    private void clearTurnpointMarkers() {
+        for (Marker marker : turnpointMarkers) {
+            marker.remove();
+        }
+        turnpointMarkers.clear();
     }
 
 }

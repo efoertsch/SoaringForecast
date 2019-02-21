@@ -8,6 +8,7 @@ import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
 import org.soaringforecast.rasp.soaring.json.ForecastModels;
 import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
+import org.soaringforecast.rasp.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,11 +32,14 @@ public class SoaringForecastDownloader {
 
     private SoaringForecastApi client;
 
+    private StringUtils stringUtils;
+
     @Inject
-    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils, String raspUrl) {
+    public SoaringForecastDownloader(SoaringForecastApi client, BitmapImageUtils bitmapImageUtils, String raspUrl, StringUtils stringUtils) {
         this.client = client;
         this.bitmapImageUtils = bitmapImageUtils;
         this.raspUrl = raspUrl;
+        this.stringUtils = stringUtils;
     }
 
     /**
@@ -117,25 +121,23 @@ public class SoaringForecastDownloader {
     public Single<SoaringForecastImage> getSoaringForecastImageObservable(String region, String yyyymmddDate, String forecastType,
                                                                           String forecastParameter, String forecastTime, String bitmapType, FORECAST_SOUNDING forecastSounding) {
         final String parmUrl;
-        if (forecastTime.startsWith("old ")) {
 
-        }
         switch (forecastSounding) {
             case FORECAST:
                 parmUrl = getSoaringForecastUrlParm(region, yyyymmddDate, forecastType, forecastParameter
-                        , stripOldIfNeeded(forecastTime), bitmapType);
+                        , stringUtils.stripOldIfNeeded(forecastTime), bitmapType);
                 Timber.d("calling parmUrl %1$s", parmUrl);
                 break;
             case SOUNDING:
                 parmUrl = getSoaringForecastSoundingUrlParm(region, yyyymmddDate, forecastType, forecastParameter
-                        , forecastTime, bitmapType);
+                        , stringUtils.stripOldIfNeeded(forecastTime), bitmapType);
                 break;
             default:
                 parmUrl = "xxxx";
         }
 
         SoaringForecastImage soaringForecastImage = getSoaringForcastImage(region, yyyymmddDate, forecastType
-                , forecastParameter, stripOldIfNeeded(forecastTime), bitmapType, parmUrl);
+                , forecastParameter, stringUtils.stripOldIfNeeded(forecastTime), bitmapType, parmUrl);
 
         return Single.create(emitter -> {
             try {
@@ -147,13 +149,6 @@ public class SoaringForecastDownloader {
         });
     }
 
-    private String stripOldIfNeeded(String forecastTime) {
-        if (forecastTime.startsWith("old ") && forecastTime.length() > 4) {
-            return forecastTime.substring(4);
-        } else {
-            return forecastTime;
-        }
-    }
 
     @NonNull
     public SoaringForecastImage getSoaringForcastImage(String region, String

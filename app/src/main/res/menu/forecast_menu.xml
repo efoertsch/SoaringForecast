@@ -26,6 +26,12 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/forecast_menu_display_turnpoints"
+        android:title="@string/display_turnpoints"
+        android:checkable="true"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/forecast_menu_order_forecasts"
         android:title="@string/order_forecasts"
         app:showAsAction="never"/>

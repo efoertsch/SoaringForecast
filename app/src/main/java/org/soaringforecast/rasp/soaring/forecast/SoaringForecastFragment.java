@@ -31,6 +31,7 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.json.Forecast;
 import org.soaringforecast.rasp.task.TaskActivity;
+import org.soaringforecast.rasp.utils.StringUtils;
 
 import java.util.ArrayList;
 
@@ -56,6 +57,9 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Inject
     SoaringForecastDownloader soaringForecastDownloader;
 
+    @Inject
+    StringUtils stringUtils;
+
     private SoaringForecastViewModel soaringForecastViewModel;
     private SoaringForecastBinding soaringForecastBinding;
     private ForecastTypeAdapter forecastTypeAdapter;
@@ -70,6 +74,8 @@ public class SoaringForecastFragment extends DaggerFragment {
     private AlphaAnimation opacitySliderFadeOut;
     private MenuItem suaMenuItem;
     private String lastRegionName;
+    private MenuItem turnpointsMenuItem;
+    private boolean turnpointsMenuItemIsChecked;
 
     public void onCreate(Bundle savedInstanceState) {
         //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreate()");
@@ -79,7 +85,8 @@ public class SoaringForecastFragment extends DaggerFragment {
                 .get(SoaringForecastViewModel.class)
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
-                .setSoaringForecastDownloader(soaringForecastDownloader);
+                .setSoaringForecastDownloader(soaringForecastDownloader)
+                .setStringUtils(stringUtils);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -227,6 +234,11 @@ public class SoaringForecastFragment extends DaggerFragment {
             //getActivity().invalidateOptionsMenu();
         });
 
+        // --- Turnpoints ------------------------------
+        soaringForecastViewModel.getRegionTurnpoints().observe(this, turnpoints -> {
+            forecastMapper.mapTurnpoints(turnpoints);
+        });
+
         //ElapsedTimeUtil.showElapsedTime(TAG, "end of startObservers()");
 
     }
@@ -267,7 +279,15 @@ public class SoaringForecastFragment extends DaggerFragment {
         soundingsMenuItem.setChecked(checkSoundingsMenuItem);
 
         suaMenuItem = menu.findItem(R.id.forecast_menu_display_sua);
-        suaMenuItem.setChecked(displaySuaMenuCheck);
+        if (suaMenuItem != null) {
+            suaMenuItem.setChecked(displaySuaMenuCheck);
+        }
+
+        turnpointsMenuItem = menu.findItem(R.id.forecast_menu_display_turnpoints);
+        if (turnpointsMenuItem != null){
+            turnpointsMenuItem.setChecked(turnpointsMenuItemIsChecked);
+        }
+
     }
 
     @Override
@@ -297,10 +317,15 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_display_sua:
                 Timber.d("forecast_menu_display_sua was clicked");
                 displaySua();
+                return true;
+            case R.id.forecast_menu_display_turnpoints:
+                displayTurnpoints(!turnpointsMenuItem.isChecked());
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     private void displaySua() {
         Timber.d("displaySua() suaMenuItem.isChecked(): %1$s", suaMenuItem.isChecked());
@@ -329,6 +354,12 @@ public class SoaringForecastFragment extends DaggerFragment {
     // Drawing SUA cpu intensive so doing this way to make app more responsive
     private void displaySuaOnMap(final String regionName) {
         new Thread(() -> getActivity().runOnUiThread(((Runnable) () -> forecastMapper.setSuaRegionName(regionName)))).start();
+    }
+
+    private void displayTurnpoints(boolean checked) {
+        turnpointsMenuItemIsChecked = checked;
+        soaringForecastViewModel.displayTurnpoints(checked);
+        turnpointsMenuItem.setChecked(checked);
     }
 
 

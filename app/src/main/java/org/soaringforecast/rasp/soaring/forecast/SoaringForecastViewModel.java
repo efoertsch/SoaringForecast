@@ -18,6 +18,7 @@ import org.soaringforecast.rasp.messages.CallFailure;
 import org.soaringforecast.rasp.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
+import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.json.Forecast;
 import org.soaringforecast.rasp.soaring.json.ForecastModels;
 import org.soaringforecast.rasp.soaring.json.Forecasts;
@@ -27,6 +28,7 @@ import org.soaringforecast.rasp.soaring.json.Region;
 import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.soaring.json.Sounding;
 import org.soaringforecast.rasp.utils.ImageAnimator;
+import org.soaringforecast.rasp.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,6 +84,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     private MutableLiveData<String> suaRegionName = new MutableLiveData<>();
 
+    private MutableLiveData<List<Turnpoint>> regionTurnpoints = new MutableLiveData<>();
+
     private Sounding selectedSounding;
 
     // Used to signal changes to UI
@@ -91,6 +95,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     private boolean displaySoundings;
     private boolean loadRasp;
+
+    private StringUtils stringUtils;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -108,6 +114,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public SoaringForecastViewModel setSoaringForecastDownloader(SoaringForecastDownloader soaringForecastDownloader) {
         this.soaringForecastDownloader = soaringForecastDownloader;
+        return this;
+    }
+
+    public SoaringForecastViewModel setStringUtils(StringUtils stringUtils) {
+        this.stringUtils = stringUtils;
         return this;
     }
 
@@ -637,7 +648,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         soaringForecastImageAnimation = ImageAnimator.getInitAnimator(0, numberForecastTimes
                 , 15000, ValueAnimator.INFINITE);
         soaringForecastImageAnimation.addUpdateListener(updatedAnimation -> {
-//                Timber.d("RunnableJob is being run by %1$s ( %2$d )",  thread.getName(), thread.getId() );
+            Timber.d("RunnableJob is being run by %1$s ( %2$d )", thread.getName(), thread.getId());
             int index = (int) updatedAnimation.getAnimatedValue();
             //Timber.d("animation index: %d  ", index);
             if (index > numberForecastTimes - 1) {
@@ -668,7 +679,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         if (imageMap != null
                 && forecastTimes != null
                 && forecastTimes.size() > index) {
-            imageSet = imageMap.get(forecastTimes.get(index));
+            imageSet = imageMap.get(stringUtils.stripOldIfNeeded(forecastTimes.get(index)));
         } else {
             imageSet = null;
         }
@@ -738,7 +749,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     //------- Soundings -------------------
-
     private void loadForecastSoundings(Sounding sounding) {
         stopImageAnimation();
         working.setValue(true);
@@ -781,6 +791,16 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         startImageAnimation();
     }
 
+
+    public Sounding getSelectedSounding() {
+        return selectedSounding;
+    }
+
+    public void setSelectedSounding(Sounding selectedSounding) {
+        this.selectedSounding = selectedSounding;
+        loadForecastSoundings(selectedSounding);
+    }
+
     // ------- Task display ---------------------
 
     public void checkIfToDisplayTask() {
@@ -814,13 +834,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return taskTurnpoints;
     }
 
-    public Sounding getSelectedSounding() {
-        return selectedSounding;
-    }
-
-    public void setSelectedSounding(Sounding selectedSounding) {
-        this.selectedSounding = selectedSounding;
-        loadForecastSoundings(selectedSounding);
+    public void setTaskId(int taskId) {
+        appPreferences.setSelectedTaskId(taskId);
     }
 
     //------- Opacity of forecast overly -----------------
@@ -832,10 +847,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return appPreferences.getForecastOverlayOpacity();
     }
 
-    public void setTaskId(int taskId) {
-        appPreferences.setSelectedTaskId(taskId);
-    }
-
     // SUA (Special Use Airspace of course!)
 
     public MutableLiveData<String> getSuaRegionName() {
@@ -844,6 +855,42 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public void setSuaRegionName(String regionName) {
         suaRegionName.setValue(regionName);
+    }
+
+    // ---- Region turnpoints ---------------
+
+    public void displayTurnpoints(boolean checked) {
+        if (checked) {
+            findTurnpointsInSelectedRegion();
+        } else {
+            getRegionTurnpoints();
+        }
+
+    }
+
+    public MutableLiveData<List<Turnpoint>> getRegionTurnpoints() {
+        regionTurnpoints.setValue(new ArrayList<>());
+        return regionTurnpoints;
+    }
+
+    public void findTurnpointsInSelectedRegion() {
+        if (regionLatLngBounds != null) {
+            Disposable disposable = appRepository.getTurnpointsInRegion(regionLatLngBounds.getValue().southwest, regionLatLngBounds.getValue().northeast)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(turnpointList -> {
+                                if (turnpointList != null && turnpointList.size() > 0) {
+                                    regionTurnpoints.setValue(turnpointList);
+                                } else {
+                                    EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.no_turnpoints_to_display_none_loaded)));
+                                }
+                            },
+                            t -> {
+                                //TODO email stack trace
+                                Timber.e(t);
+                            });
+            compositeDisposable.add(disposable);
+        }
     }
 
     // --------------- Messages for the upper management ----------------------

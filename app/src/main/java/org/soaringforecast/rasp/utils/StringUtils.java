@@ -41,4 +41,15 @@ public class StringUtils {
         return null;
 
     }
+
+    public String stripOldIfNeeded(String examineString) {
+        if (examineString.startsWith("old ") && examineString.length() > 4) {
+            return examineString.substring(4);
+        } else {
+            return examineString;
+        }
+    }
+
+
+
 }

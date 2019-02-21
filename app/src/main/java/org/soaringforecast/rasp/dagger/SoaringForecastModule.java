@@ -4,6 +4,7 @@ import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
 import org.soaringforecast.rasp.retrofit.SoaringForecastRetrofit;
 import org.soaringforecast.rasp.soaring.forecast.SoaringForecastDownloader;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
+import org.soaringforecast.rasp.utils.StringUtils;
 
 import javax.inject.Named;
 
@@ -24,8 +25,8 @@ public class SoaringForecastModule {
 
     @Provides
     public SoaringForecastDownloader provideSoaringForecastDownloader(@Named("no_interceptor")OkHttpClient okHttpClient,
-                                                                      BitmapImageUtils bitmapImageUtils,  @Named("rasp_url")String raspUrl) {
-        return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient, raspUrl), bitmapImageUtils, raspUrl);
+                                                                      BitmapImageUtils bitmapImageUtils,  @Named("rasp_url")String raspUrl, StringUtils stringUtils) {
+        return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient, raspUrl), bitmapImageUtils, raspUrl, stringUtils);
     }
 
     // Used for webview.loadUrl()
@@ -40,6 +41,12 @@ public class SoaringForecastModule {
     @Named("windyHtmlFileName")
     public String getWindyHtmlFileName(){
         return WINDY_HTML_FILENAME;
+    }
+
+
+    @Provides
+    public StringUtils getStringUtils(){
+        return new StringUtils();
     }
 
 }
