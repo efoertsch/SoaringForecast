@@ -24,7 +24,7 @@ public class SoaringForecastModule {
     }
 
     @Provides
-    public SoaringForecastDownloader provideSoaringForecastDownloader(@Named("no_interceptor")OkHttpClient okHttpClient,
+    public SoaringForecastDownloader provideSoaringForecastDownloader(@Named("interceptor")OkHttpClient okHttpClient,
                                                                       BitmapImageUtils bitmapImageUtils,  @Named("rasp_url")String raspUrl, StringUtils stringUtils) {
         return new SoaringForecastDownloader(providesSoaringForecastApi(okHttpClient, raspUrl), bitmapImageUtils, raspUrl, stringUtils);
     }
