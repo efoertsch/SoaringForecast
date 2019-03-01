@@ -648,7 +648,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         soaringForecastImageAnimation = ImageAnimator.getInitAnimator(0, numberForecastTimes
                 , 15000, ValueAnimator.INFINITE);
         soaringForecastImageAnimation.addUpdateListener(updatedAnimation -> {
-            Timber.d("RunnableJob is being run by %1$s ( %2$d )", thread.getName(), thread.getId());
+            //Timber.d("RunnableJob is being run by %1$s ( %2$d )", thread.getName(), thread.getId());
             int index = (int) updatedAnimation.getAnimatedValue();
             //Timber.d("animation index: %d  ", index);
             if (index > numberForecastTimes - 1) {

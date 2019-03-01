@@ -61,6 +61,7 @@ public class SoaringForecastDownloader {
      * @throws IOException
      */
     public Single<ForecastModels> getForecastModels(String region, String  regionForecastDate) {
+        //Timber.d("Url:  %1$s/%2$s/status.json", region, regionForecastDate);
         return client.getForecastModels(region + "/" + regionForecastDate + "/status.json");
     }
 
@@ -176,7 +177,7 @@ public class SoaringForecastDownloader {
      */
     public String getSoaringForecastUrlParm(String region, String yyyymmddDate, String
             forecastType, String forecastParameter, String forecastTime, String bitmapType) {
-        return String.format("%s/%s/%s/%s.curr.%slst.d2.%s.png", region, yyyymmddDate
+        return String.format("%s/%s/%s/%s.%slocal.d2.%s.png", region, yyyymmddDate
                 , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType);
     }
 
@@ -192,7 +193,7 @@ public class SoaringForecastDownloader {
 
     public String getSoaringForecastSoundingUrlParm(String region, String yyyymmddDate, String
             forecastType, String soundingIndex, String forecastTime, String bitmapType) {
-        return String.format("%s/%s/%s/sounding%s.curr.%slst.d2.png", region, yyyymmddDate
+        return String.format("%s/%s/%s/sounding%s.%slocal.d2.png", region, yyyymmddDate
                 , forecastType.toLowerCase(), soundingIndex, forecastTime, bitmapType);
     }
 
