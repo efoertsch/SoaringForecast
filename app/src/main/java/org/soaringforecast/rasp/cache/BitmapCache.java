@@ -10,7 +10,7 @@ import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 
 
 // Disk cache from https://developer.android.com/topic/performance/graphics/cache-bitmap.html and modified accordingly
@@ -28,6 +28,7 @@ public class BitmapCache {
     private Cache<String, Bitmap> memoryCache;
     private DiskLruImageCache diskLruImageCache;
     private Context context;
+    private HashMap<String, Long> cacheEntryTime;
 
     // Needed to make public for unit testing
     // TODO how to make private (mock context, AyncTask)
@@ -47,8 +48,7 @@ public class BitmapCache {
         memoryCache = new Cache2kBuilder<String, Bitmap>() {
         }
                 .name("Bitmap Cache")
-                .eternal(false)
-                .expireAfterWrite(10, TimeUnit.MINUTES)    // expire/refresh after 10 minutes
+                .eternal(true)
                 .entryCapacity(22)
                 .build();
     }
