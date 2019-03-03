@@ -10,7 +10,6 @@ import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
 
 import java.io.File;
-import java.util.HashMap;
 
 
 // Disk cache from https://developer.android.com/topic/performance/graphics/cache-bitmap.html and modified accordingly
@@ -28,7 +27,6 @@ public class BitmapCache {
     private Cache<String, Bitmap> memoryCache;
     private DiskLruImageCache diskLruImageCache;
     private Context context;
-    private HashMap<String, Long> cacheEntryTime;
 
     // Needed to make public for unit testing
     // TODO how to make private (mock context, AyncTask)

@@ -644,11 +644,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         stopImageAnimation();
         // need to 'overshoot' the animation to be able to get the last image value
         Thread thread = Thread.currentThread();
-        Timber.d("Creating animation on %1$s ( %2$d )", thread.getName(), thread.getId());
+        //Timber.d("Creating animation on %1$s ( %2$d )", thread.getName(), thread.getId());
         soaringForecastImageAnimation = ImageAnimator.getInitAnimator(0, numberForecastTimes
                 , 15000, ValueAnimator.INFINITE);
         soaringForecastImageAnimation.addUpdateListener(updatedAnimation -> {
-            Timber.d("RunnableJob is being run by %1$s ( %2$d )", thread.getName(), thread.getId());
+            //Timber.d("RunnableJob is being run by %1$s ( %2$d )", thread.getName(), thread.getId());
             int index = (int) updatedAnimation.getAnimatedValue();
             //Timber.d("animation index: %d  ", index);
             if (index > numberForecastTimes - 1) {
