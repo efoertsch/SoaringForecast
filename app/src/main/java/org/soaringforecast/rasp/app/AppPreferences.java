@@ -21,6 +21,8 @@ import org.soaringforecast.rasp.utils.JSONResourceReader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,10 +44,11 @@ public class AppPreferences {
     private static final String FORECAST_OVERLAY_OPACITY = "FORECAST_OVERLAY_OPACITY";
     private static final String ICAO_CODE_DELIMITER = " ";
     private static final String SELECTED_TASK_ID = "SELECTED_TASK_ID";
-    private static final String WINDY_ZOOM_LEVEL = "WINDY_ZOOM_LEVEL" ;
+    private static final String WINDY_ZOOM_LEVEL = "WINDY_ZOOM_LEVEL";
     private static final String SELECTED_MODEL_FORECAST_DATE = "SELECTED_MODEL_FORECAST_DATE";
     private static final String ORDERED_FORECAST_OPTIONS = "ORDERED_FORECAST_OPTIONS";
     private static final String DISPLAY_TURNPOINTS = "DISPLAY_TURNPOINTS";
+    private static final String CLEAR_CACHE_TIME_MINUTES = "CLEAR_CACHE_TIME_MINUTES";
 
     // These string values are assigned in code so they match what is used in Settings
     private static String DISPLAY_WINDY_MENU_OPTION;
@@ -72,6 +75,8 @@ public class AppPreferences {
     private String soaringForecastModel;
     private String soaringForecastDefaultRegion;
 
+    private List<CacheTimeListener> cacheTimeListeners = Collections.synchronizedList(new ArrayList());
+
     @Inject
     public AppPreferences(Context context, String airportPrefs) {
 
@@ -90,8 +95,7 @@ public class AppPreferences {
 
         soaringForecastDefaultRegion = context.getString(R.string.new_england_region);
 
-
-        DISPLAY_WINDY_MENU_OPTION =  context.getString(R.string.pref_add_windy_to_menu_key);
+        DISPLAY_WINDY_MENU_OPTION = context.getString(R.string.pref_add_windy_to_menu_key);
         DISPLAY_SKYSIGHT_MENU_OPTION = context.getString(R.string.pref_add_skysight_to_menu_key);
         DISPLAY_DR_JACKS_MENU_OPTION = context.getString(R.string.pref_add_dr_jacks_to_menu_key);
 
@@ -120,6 +124,8 @@ public class AppPreferences {
             setDistanceUnitsDisplay(imperialDistanceUnits);
             sharedPreferences.edit().putBoolean(DEFAULT_PREFS_SET, true).apply();
         }
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
 
     }
 
@@ -332,47 +338,47 @@ public class AppPreferences {
     }
 
 
-    public boolean isAnyForecastOptionDisplayed(){
+    public boolean isAnyForecastOptionDisplayed() {
         return isWindyDisplayed() || isSkySightDisplayed() || isDrJacksDisplayed();
     }
 
-    public boolean isWindyDisplayed(){
+    public boolean isWindyDisplayed() {
         return sharedPreferences.getBoolean(DISPLAY_WINDY_MENU_OPTION, true);
     }
 
-    public boolean isSkySightDisplayed(){
+    public boolean isSkySightDisplayed() {
         return sharedPreferences.getBoolean(DISPLAY_SKYSIGHT_MENU_OPTION, false);
     }
 
-    public boolean isDrJacksDisplayed(){
+    public boolean isDrJacksDisplayed() {
         return sharedPreferences.getBoolean(DISPLAY_DR_JACKS_MENU_OPTION, false);
     }
 
-    public void setForecastOverlayOpacity(int opacity){
+    public void setForecastOverlayOpacity(int opacity) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(FORECAST_OVERLAY_OPACITY, opacity);
         editor.apply();
     }
 
-    public int getForecastOverlayOpacity(){
-       return sharedPreferences.getInt(FORECAST_OVERLAY_OPACITY, 30);
+    public int getForecastOverlayOpacity() {
+        return sharedPreferences.getInt(FORECAST_OVERLAY_OPACITY, 30);
     }
 
-    public void setDisplayForecastSoundings(boolean display){
+    public void setDisplayForecastSoundings(boolean display) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(DISPLAY_FORECAST_SOUNDINGS,  display);
+        editor.putBoolean(DISPLAY_FORECAST_SOUNDINGS, display);
         editor.apply();
     }
 
-    public boolean getDisplayForecastSoundings(){
+    public boolean getDisplayForecastSoundings() {
         return sharedPreferences.getBoolean(DISPLAY_FORECAST_SOUNDINGS, true);
     }
 
-    public long getSelectedTaskId(){
+    public long getSelectedTaskId() {
         return sharedPreferences.getLong(SELECTED_TASK_ID, -1L);
     }
 
-    public void setSelectedTaskId(long selectedTaskId){
+    public void setSelectedTaskId(long selectedTaskId) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putLong(SELECTED_TASK_ID, selectedTaskId);
         editor.apply();
@@ -393,7 +399,7 @@ public class AppPreferences {
     public ModelForecastDate getSelectedModelForecastDate() {
         Gson gson = new Gson();
         return gson.fromJson(sharedPreferences.getString(SELECTED_MODEL_FORECAST_DATE, "")
-                ,ModelForecastDate.class);
+                , ModelForecastDate.class);
     }
 
     // --------- Forecasts -----------------
@@ -401,7 +407,7 @@ public class AppPreferences {
         return Observable.create(emitter -> {
             try {
                 Forecasts forecasts = JSONResourceReader.constructUsingGson(
-                        sharedPreferences.getString(ORDERED_FORECAST_OPTIONS,""),Forecasts.class);
+                        sharedPreferences.getString(ORDERED_FORECAST_OPTIONS, ""), Forecasts.class);
                 if (forecasts != null && forecasts.getForecasts().size() > 0) {
                     emitter.onNext(forecasts);
                 } else {
@@ -414,7 +420,7 @@ public class AppPreferences {
         });
     }
 
-    public void setOrderedForecastList(Forecasts forecasts){
+    public void setOrderedForecastList(Forecasts forecasts) {
         Gson gson = new Gson();
         String json = gson.toJson(forecasts);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -428,23 +434,77 @@ public class AppPreferences {
         editor.apply();
     }
 
-    public void setDisplaySua(boolean displaySua){
+    public void setDisplaySua(boolean displaySua) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(SUA_DISPLAY_KEY, displaySua);
         editor.apply();
     }
 
-     public boolean getDisplaySua(){
+    public boolean getDisplaySua() {
         return sharedPreferences.getBoolean(SUA_DISPLAY_KEY, true);
     }
 
-    public void setDisplayTurnpoints(boolean displayTurnpoints){
+    public void setDisplayTurnpoints(boolean displayTurnpoints) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(DISPLAY_TURNPOINTS, displayTurnpoints);
         editor.apply();
     }
 
-    public boolean getDisplayTurnpoints(){
+    public boolean getDisplayTurnpoints() {
         return sharedPreferences.getBoolean(DISPLAY_TURNPOINTS, true);
     }
+
+
+    /**
+     *
+     * @param minutes
+     */
+    public void setClearCacheTime(int minutes) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(CLEAR_CACHE_TIME_MINUTES, minutes);
+        editor.apply();
+    }
+
+    /**
+     *
+     * @return time in minutes
+     */
+    public int getClearCacheTime() {
+        return sharedPreferences.getInt(CLEAR_CACHE_TIME_MINUTES, 5);
+    }
+
+    // ---- listeners for changes to shared preferences
+
+    SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener = (sharedPreferences, key) -> {
+        if (key.equals(CLEAR_CACHE_TIME_MINUTES)) {
+            int minutes = getClearCacheTime();
+            synchronized (cacheTimeListeners) {
+                // must be in synchronized block
+                Iterator it = cacheTimeListeners.iterator();
+                while (it.hasNext()) {
+                    ((CacheTimeListener) it.next()).cacheTimeLimit(minutes);
+                }
+            }
+        }
+    };
+
+
+    // Registering listeners this way so no dependency on sharedpreferences by listeners
+    public void registerCacheTimeChangeListener(CacheTimeListener cacheTimeListener) {
+        synchronized (cacheTimeListeners) {
+            if (!cacheTimeListeners.contains(cacheTimeListener)) {
+                cacheTimeListeners.add(cacheTimeListener);
+            }
+        }
+    }
+
+    public void unregisterCacheTimeChangeListener(CacheTimeListener cacheTimeListener) {
+        synchronized (cacheTimeListeners) {
+            cacheTimeListeners.remove(cacheTimeListener);
+        }
+
+    }
+
 }
+
+
