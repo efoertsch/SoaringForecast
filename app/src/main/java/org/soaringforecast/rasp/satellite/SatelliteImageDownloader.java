@@ -1,14 +1,10 @@
 package org.soaringforecast.rasp.satellite;
 
-import android.annotation.SuppressLint;
-
+import org.cache2k.Cache;
 import org.soaringforecast.rasp.satellite.data.SatelliteImage;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageInfo;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.TimeUtils;
-
-import org.cache2k.Cache;
-import org.reactivestreams.Subscription;
 
 import java.util.Calendar;
 import java.util.List;
@@ -16,6 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import timber.log.Timber;
 
@@ -25,7 +22,6 @@ public class SatelliteImageDownloader {
     // Remaining URL string similar to .../20180326/16/20180326_1600_sat_irbw_alb.jpg
     private static final String SATELLITE_URL = "https://aviationweather.gov/data/obs/sat/us/";
 
-    private Subscription subscription;
     private SatelliteImageInfo satelliteImageInfo;
 
     @Inject
@@ -36,14 +32,7 @@ public class SatelliteImageDownloader {
 
 
     @Inject
-    SatelliteImageDownloader() {
-    }
-
-    @SuppressLint("CheckResult")
-    public Observable<Void> loadSatelliteImages(String area, String type) {
-        satelliteImageInfo = createSatelliteImageInfo(TimeUtils.getUtcRightNow(), area, type);
-        return getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames());
-
+    public SatelliteImageDownloader() {
     }
 
     private void confirmLoad() {
@@ -55,7 +44,18 @@ public class SatelliteImageDownloader {
         }
     }
 
-    public static SatelliteImageInfo createSatelliteImageInfo(Calendar imageTime, String area, String type) {
+
+    /**
+     * Create a list of times to start process of finding available Noaa satellite images
+     * At one point images produced every quarter hour, but not seem to be produced every 15 minutes starting as some random part of the hour
+     * @param imageTime
+     * @param area
+     * @param type
+     * @param plusMinusMinutes
+     * @param calenderPeriods
+     * @return
+     */
+    public static SatelliteImageInfo createSatelliteImageInfo(Calendar imageTime, String area, String type, int plusMinusMinutes, int calenderPeriods) {
         SatelliteImageInfo satelliteImageInfo = new SatelliteImageInfo();
         String satelliteImageName;
         Calendar satelliteImageTime;
@@ -63,43 +63,79 @@ public class SatelliteImageDownloader {
         String imageSuffix = getImageNameSuffix(area, type);
         satelliteImageTime = (Calendar) imageTime.clone();
 
-        TimeUtils.setCalendarToQuarterHour(satelliteImageTime);
         satelliteImageName = TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime) + imageSuffix;
         satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime, 0);
 
         // time string will be in ascending order
-        for (int i = 0; i < 14; ++i) {
-            satelliteImageTime = (Calendar) satelliteImageTime.clone();
-            satelliteImageTime.add(Calendar.MINUTE, -15);
+        for (int i = 0; i < calenderPeriods; ++i) {
+            satelliteImageTime = TimeUtils.addXMinutesToCalendar((Calendar) satelliteImageTime.clone(),plusMinusMinutes);
             satelliteImageName = TimeUtils.formatCalendarToSatelliteImageUtcDate(satelliteImageTime) + imageSuffix;
             satelliteImageInfo.addSatelliteImageInfo(satelliteImageName, satelliteImageTime, 0);
         }
         return satelliteImageInfo;
     }
 
+
     // In format of  ..._sat_irbw_alb.jpg
     public static String getImageNameSuffix(String area, String type) {
         return new StringBuilder().append("_sat_").append(type).append("_").append(area).append(".jpg").toString();
+    }
+
+    public Single<SatelliteImageInfo> getSatelliteImageInfoSingle(final String area, final String type) {
+        return Single.create(emitter -> {
+            try {
+                int mostCurrentBitmapIndex = 0 ;
+                SatelliteImage satelliteImage;
+                Calendar rightNow = TimeUtils.getUtcRightNow();
+                SatelliteImageInfo satelliteImageInfo = SatelliteImageDownloader.createSatelliteImageInfo(rightNow
+                        , area, type, -1, 30);
+                // This loop finds the most current satellite image. Need the time of image to then go back in 15 min increments to get older images
+                for (int i = satelliteImageInfo.getSatelliteImageNames().size() -1 ; i >= 0; --i) {
+                    satelliteImage = new SatelliteImage(satelliteImageInfo.getSatelliteImageName(i));
+                    getBitmapImage(satelliteImage);
+                    if (satelliteImage.getBitmap() != null) {
+                        mostCurrentBitmapIndex = i;
+                        Timber.d(" bitmap for %s was found", satelliteImage.getImageName());
+                        break;
+                    }
+                }
+                // Now that we know time of most recent image, create new array of times, stepping back in time in 15 min increments for older images.
+                // (Most recent time, from above, is at end of list)
+                satelliteImageInfo = SatelliteImageDownloader.createSatelliteImageInfo(satelliteImageInfo.getSatelliteImageCalendar(mostCurrentBitmapIndex)
+                        , area, type, -15, 14);
+                emitter.onSuccess(satelliteImageInfo);
+            } catch (Exception e) {
+                emitter.onError(e);
+                Timber.e(e);
+            }
+        });
+
     }
 
 
     public Observable<Void> getImageDownloaderObservable(final List<String> satelliteImageNames) {
         return Observable.fromIterable(satelliteImageNames)
                 .flatMap((Function<String, Observable<Void>>) satelliteImageName -> {
+                    SatelliteImage satelliteImage = new SatelliteImage(satelliteImageName);
                     if (satelliteImageCache.get(satelliteImageName) == null) {
-                        SatelliteImage satelliteImage = new SatelliteImage(satelliteImageName);
                         getBitmapImage(satelliteImage);
-                        satelliteImageCache.put(satelliteImageName, satelliteImage);
-                        Timber.d(" %s %s", satelliteImage.getImageName()
-                                , satelliteImageCache.containsKey(satelliteImageName) ?
-                                        String.format(" was cached.%s", (satelliteImage.isImageLoaded() ? " w/good bitmap" : " no bitmap")) : " not cached.");
+                        if (satelliteImage.isImageLoaded()) {
+                            satelliteImageCache.put(satelliteImageName, satelliteImage);
+                            Timber.d(" %s %s", satelliteImage.getImageName()
+                                    , satelliteImageCache.containsKey(satelliteImageName) ?
+                                            String.format(" was cached.%s", (satelliteImage.isImageLoaded() ? " w/good bitmap" : " no bitmap")) : " not cached.");
+                        }
                     }
                     return Observable.empty();
                 });
     }
 
-    private void getBitmapImage(final SatelliteImage satelliteImage) {
+    public void getBitmapImage(final SatelliteImage satelliteImage) {
         bitmapImageUtils.getBitmapImage(satelliteImage, SATELLITE_URL, satelliteImage.getImageName());
+    }
+
+    public String getSatelliteUrl(){
+        return SATELLITE_URL;
     }
 
 

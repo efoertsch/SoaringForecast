@@ -77,6 +77,18 @@ public class TimeUtils {
         return calendarMinus15Minutes;
     }
 
+    /**
+     * Add (+minutes) or substract (-minutes) from calender
+     * @param calendar
+     * @param minutes  Add minutes if positive or substract if negative
+     * @return   new calender +/- minutes
+     */
+    public static Calendar addXMinutesToCalendar(Calendar calendar, int minutes){
+        Calendar calendarPlusXMinutes = (Calendar) calendar.clone();
+        calendarPlusXMinutes.add(Calendar.MINUTE, minutes);
+        return calendarPlusXMinutes;
+    }
+
     public static Calendar getUtcRightNow() {
         return Calendar.getInstance(utcTimeZone);
     }
