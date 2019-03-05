@@ -120,8 +120,9 @@ public class AirportSearchFragment extends DaggerFragment implements AirportList
 
             @Override
             public boolean onQueryTextChange(String search) {
-
-                if (search.length() > 2) {
+                if (search == null || search.length() <= 2) {
+                    runSearch("");
+                } if (search.length() > 2) {
                     runSearch(search);
                 }
                 return false;
@@ -148,5 +149,6 @@ public class AirportSearchFragment extends DaggerFragment implements AirportList
     public void onItemClick(Airport airport) {
         airportSearchViewModel.addAirportIcaoCodeToSelectedAirports(airport.getIdent());
         EventBus.getDefault().post(new SnackbarMessage(getString(R.string.icao_added_for_metar_taf, airport.getIdent()), Snackbar.LENGTH_SHORT));
+        searchView.setQuery("", true);
     }
 }
