@@ -50,7 +50,7 @@ public class AirportSearchViewModel extends ViewModel {
     @SuppressLint("CheckResult")
     public LiveData<List<Airport>> searchAirports(String search) {
         if (search == null || search.isEmpty()) {
-            searchAirports.getValue().clear();
+            searchAirports.setValue(null);
         } else {
             if (searchDisposable != null) {
                 compositeDisposable.delete(searchDisposable);
