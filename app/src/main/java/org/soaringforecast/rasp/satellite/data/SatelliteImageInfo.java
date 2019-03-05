@@ -14,11 +14,12 @@ import java.util.TimeZone;
 public class SatelliteImageInfo {
 
     private static final String imageTimeFormat = "MM/dd HH:mm";
-    private DateFormat utcFormat;
-    private DateFormat localFormat;
+    private static DateFormat utcFormat;
+    private static DateFormat localFormat;
     private List<String> satelliteImageNames = new ArrayList<>();
     private List<String> satelliteImageUTCTimes = new ArrayList<>();
     private List<String> satelliteImageLocalTimes = new ArrayList<>();
+    private List<Calendar> satelliteImageCalendars = new ArrayList<>();
 
     public SatelliteImageInfo() {
         utcFormat = new SimpleDateFormat(imageTimeFormat);
@@ -32,19 +33,50 @@ public class SatelliteImageInfo {
         satelliteImageNames.add(index, satelliteImageName);
         satelliteImageUTCTimes.add(index, utcFormat.format(satelliteImageTime.getTime()));
         satelliteImageLocalTimes.add(index, localFormat.format(satelliteImageTime.getTime()));
+        satelliteImageCalendars.add(index, satelliteImageTime);
     }
 
     public List<String> getSatelliteImageNames() {
         return satelliteImageNames;
     }
 
+    public String getSatelliteImageName(int index) {
+        if (index < satelliteImageNames.size()) {
+            return satelliteImageNames.get(index);
+        }
+        return null;
+    }
+
     public List<String> getSatelliteImageUTCTimes() {
         return satelliteImageUTCTimes;
+    }
+
+    public String getSatelliteImageUTCTime(int index) {
+        if (index < satelliteImageUTCTimes.size()) {
+            return satelliteImageUTCTimes.get(index);
+        }
+        return null;
     }
 
     public List<String> getSatelliteImageLocalTimes() {
         return satelliteImageLocalTimes;
     }
 
+    public String getSatelliteImageLocalTime(int index) {
+        if (index < satelliteImageLocalTimes.size()) {
+            return satelliteImageLocalTimes.get(index);
+        }
+        return null;
+    }
 
+    public List<Calendar> getSatelliteImageCalendars() {
+        return satelliteImageCalendars;
+    }
+
+    public Calendar getSatelliteImageCalendar(int index) {
+        if (index < satelliteImageCalendars.size()) {
+            return satelliteImageCalendars.get(index);
+        }
+        return null;
+    }
 }

@@ -1,6 +1,7 @@
 package org.soaringforecast.rasp.satellite.noaa;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
@@ -8,6 +9,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
+import org.cache2k.Cache;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.repository.AppRepository;
@@ -17,12 +19,10 @@ import org.soaringforecast.rasp.satellite.data.SatelliteImageInfo;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageType;
 import org.soaringforecast.rasp.satellite.data.SatelliteRegion;
 import org.soaringforecast.rasp.utils.ImageAnimator;
-import org.soaringforecast.rasp.utils.TimeUtils;
-
-import org.cache2k.Cache;
 
 import java.util.List;
 
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -104,38 +104,65 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
             imageTypePosition.setValue(satelliteImageTypes.getValue().indexOf(selectedSatelliteImageType));
         }
         localTimeDisplay.setValue("");
-        loadSatelliteImages();
+        findMostRecentSatelliteImage();
     }
 
-    protected void loadSatelliteImages() {
+    @SuppressLint("CheckResult")
+    protected void findMostRecentSatelliteImage(){
         working.setValue(true);
         stopImageAnimation();
-        satelliteImageInfo = SatelliteImageDownloader.createSatelliteImageInfo(TimeUtils.getUtcRightNow()
-                , selectedSatelliteRegion.getCode()
-                , selectedSatelliteImageType.getCode());
         selectedSatelliteImage.setValue(null);
 
-        Disposable disposable = satelliteImageDownloader.getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
+        satelliteImageDownloader.getSatelliteImageInfoSingle(selectedSatelliteRegion.getCode()
+                , selectedSatelliteImageType.getCode())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<Void>() {
+                .subscribeWith(new SingleObserver<SatelliteImageInfo>() {
+
                     @Override
-                    public void onStart() {
+                    public void onSubscribe(Disposable d) {
+                        compositeDisposable.add(d);
                     }
 
                     @Override
-                    public void onNext(Void aVoid) {
+                    public void onSuccess(SatelliteImageInfo satelliteImageInfo) {
+                        saveSatelliteImageInfo(satelliteImageInfo);
+                        loadSatelliteImages();
+                        startImageAnimation();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        //TODO send up distress flare
+                        // TODO report
+                        Timber.e(e);
+                    }
+                });
+
+    }
+
+    private void saveSatelliteImageInfo(SatelliteImageInfo satelliteImageInfo) {
+        this.satelliteImageInfo = satelliteImageInfo;
+    }
+
+    protected void loadSatelliteImages() {
+        working.setValue(true);
+
+       Disposable disposable = satelliteImageDownloader.getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<Void>() {
+                    @Override
+                    public void onNext(Void aVoid) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
                     }
 
                     @Override
                     public void onComplete() {
-                        confirmLoad();
-                        startImageAnimation();
 
                     }
                 });
@@ -273,7 +300,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         if (!selectedSatelliteRegion.equals(satelliteRegion)) {
             selectedSatelliteRegion = satelliteRegion;
             appPreferences.setSatelliteRegion(satelliteRegion);
-            loadSatelliteImages();
+            findMostRecentSatelliteImage();
         }
     }
 
@@ -307,7 +334,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
         if (!selectedSatelliteImageType.equals(satelliteImageType)) {
             selectedSatelliteImageType = satelliteImageType;
             appPreferences.setSatelliteImageType(satelliteImageType);
-            loadSatelliteImages();
+            findMostRecentSatelliteImage();
         }
     }
 

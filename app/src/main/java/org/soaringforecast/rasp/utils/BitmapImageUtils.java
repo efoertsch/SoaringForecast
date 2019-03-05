@@ -16,7 +16,6 @@ import org.soaringforecast.rasp.common.BitmapImage;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -51,7 +50,7 @@ public class BitmapImageUtils {
 
     }
 
-    private Bitmap download(final String url) {
+    public Bitmap download(final String url) {
         Bitmap bitmap = null;
         //Timber.d("Calling to get: %s", url);
         Response response = null;
@@ -69,10 +68,10 @@ public class BitmapImageUtils {
                     return bitmap;
                 }
             } else {
-                 Set<String > names =  response.headers().names();
-                 for (String name: names){
-                     Timber.d("Response.headers().name: %1$s, value: %2$s", name, response.header(name));
-                 }
+//                 Set<String > names =  response.headers().names();
+//                 for (String name: names){
+//                     Timber.d("Response.headers().name: %1$s, value: %2$s", name, response.header(name));
+//                 }
 
             }
         } catch (IOException e) {

@@ -86,7 +86,7 @@ dependencies {
     final RUNNER = '1.0.1'
     final UIAUTOMATOR = '2.1.3'
     final JUNIT = '4.12'
-    final MOCKITO = '2.4.0'
+    final MOCKITO = '2.24.5'
     final EVENT_BUS = '3.1.1'
     final MEMORY_CACHE = '1.0.2.Final'
     final DISK_CACHE = '2.0.2'
