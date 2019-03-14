@@ -50,7 +50,7 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
     public void onResume() {
         super.onResume();
         turnpointsImporterViewModel.getCupFiles().observe(this, files -> {
-            if (files.size() == 0) {
+            if (files == null || files.size() == 0) {
                 displayNoTurnpointFilesDialog();
             } else {
                 recyclerViewAdapter.setItems(files, true);

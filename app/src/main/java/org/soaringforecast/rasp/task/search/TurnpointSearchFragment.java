@@ -18,16 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.messages.GoToTurnpointImport;
-import org.soaringforecast.rasp.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class TurnpointSearchFragment extends Fragment implements GenericListClickListener<Turnpoint> {
 
@@ -158,6 +156,7 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
                     noTurnpointsDialog = null;
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
+                    noTurnpointsDialog = null;
                     returnToPreviousScreen();
 
                 });
@@ -167,7 +166,8 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
     }
 
     private void returnToPreviousScreen() {
-        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+        getActivity().finish();
+        //EventBus.getDefault().post(new PopThisFragmentFromBackStack());
     }
 
     private void addTurnpoints() {
