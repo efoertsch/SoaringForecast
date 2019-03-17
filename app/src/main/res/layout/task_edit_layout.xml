@@ -126,7 +126,8 @@
             android:scaleType="fitXY"
             android:visibility="@{safeUnbox(viewModel.needToSaveUpdates) ? View.VISIBLE : View.GONE}"
             app:fabSize="normal"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/edit_task_add_turnpoints"
+            app:layout_constraintTop_toTopOf="@+id/edit_task_add_turnpoints"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_save"
             />
