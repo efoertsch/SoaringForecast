@@ -144,7 +144,10 @@ public class AppRepository {
                 ArrayList<File> cupFileList = new ArrayList<>();
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                 File filesInDirectory[] = path.listFiles(new AppRepository.ImageFileFilter());
-                cupFileList.addAll(new ArrayList<>(Arrays.asList(filesInDirectory)));
+                // May not have any files downloaded to Downloads directory
+                if (filesInDirectory != null) {
+                    cupFileList.addAll(new ArrayList<>(Arrays.asList(filesInDirectory)));
+                }
                 emitter.onSuccess(cupFileList);
                 emitter.onComplete();
             } catch (Exception e) {

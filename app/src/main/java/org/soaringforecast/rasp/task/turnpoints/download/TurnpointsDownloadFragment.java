@@ -1,5 +1,6 @@
 package org.soaringforecast.rasp.task.turnpoints.download;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,16 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.messages.ImportFile;
+import org.soaringforecast.rasp.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.messages.SnackbarMessage;
 import org.soaringforecast.rasp.task.turnpoints.CommonTurnpointsImportFragment;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -28,8 +31,14 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import pub.devrel.easypermissions.EasyPermissions;
+import timber.log.Timber;
 
-public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<File, TurnpointsDownloadViewHolder> {
+public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<File, TurnpointsDownloadViewHolder>
+        implements EasyPermissions.PermissionCallbacks {
+
+    private static final int READ_DOWNLOADS_ACCESS = 2222;
+    private boolean bypassOnResume = false;
 
     @Inject
     public TurnpointsDownloadFragment() {
@@ -38,7 +47,14 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        // Check for permission to read downloads directory
+        if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            getTurnpoints();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.rational_read_downloads_dir), READ_DOWNLOADS_ACCESS, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        return view;
     }
 
     @Override
@@ -46,11 +62,10 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
         return new TurnpointsDownloadRecyclerViewAdapter(null);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void getTurnpoints() {
+        // have permission so check for downloaded files
         turnpointsImporterViewModel.getCupFiles().observe(this, files -> {
-            if (files.size() == 0) {
+            if (files == null || files.size() == 0) {
                 displayNoTurnpointFilesDialog();
             } else {
                 recyclerViewAdapter.setItems(files, true);
@@ -59,9 +74,36 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        turnpointsImporterViewModel.getCupFiles().removeObservers(this);
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        Timber.d("Permission has been granted");
+        if (requestCode == READ_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            getTurnpoints();
+        }
+    }
+
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        if (requestCode == READ_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Timber.d("Permission has been denied");
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.no_permission_to_read_downloads_dir)
+                    .setTitle(R.string.permission_denied)
+                    .setPositiveButton(R.string.ok, (dialog, id) -> {
+                        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+            bypassOnResume = true;
+        }
     }
 
     private void displayNoTurnpointFilesDialog() {
@@ -119,6 +161,5 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
                         });
         compositeDisposable.add(disposable);
     }
-
 
 }

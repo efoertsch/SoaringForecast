@@ -51,13 +51,14 @@ public class TurnpointsImporterViewModel extends ViewModel {
         return this;
     }
 
-    public TurnpointsImporterViewModel setOkHttpClient(OkHttpClient okHttpClient){
+    public TurnpointsImporterViewModel setOkHttpClient(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
         return this;
     }
 
     @SuppressLint("CheckResult")
     public LiveData<List<File>> getCupFiles() {
+
         Disposable disposable = appRepository.getDownloadedCupFileList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -133,7 +134,6 @@ public class TurnpointsImporterViewModel extends ViewModel {
     }
 
     /**
-     *
      * @param responseBody
      * @return
      * @throws IOException
@@ -189,6 +189,5 @@ public class TurnpointsImporterViewModel extends ViewModel {
         compositeDisposable.dispose();
         super.onCleared();
     }
-
 
 }
