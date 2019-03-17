@@ -288,6 +288,9 @@
     <string name="sua_property">%1$s : %2$s</string>
     <string name="display_turnpoints">Display Turnpoints</string>
     <string name="no_turnpoints_to_display_none_loaded">No turnpoints to display. None loaded?</string>
+    <string name="rational_read_downloads_dir">Permission is needed to look for *.cup files in the Downloads directory.</string>
+    <string name="no_permission_to_read_downloads_dir">Permission to read Downloads directory was denied. Can not check for/import custom turnpoint files.</string>
+    <string name="permission_denied">PERMISSION DENIED</string>
 
 
 </resources>
