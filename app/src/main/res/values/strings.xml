@@ -277,7 +277,7 @@
     <string name="order_forecasts">Order Forecasts</string>
     <string name="forecast_order_menu_reset">Reset</string>
 
-    <string name="missing_data_check_internet_cell_service" >Can not load forecast. Check for bad interent/cell service.</string>
+    <string name="missing_data_check_internet_cell_service">Can not load forecast. Check for bad interent/cell service.</string>
     <string name="googlemap_not_defined_can_not_create_turnpoint_markers">GoogleMap not defined. Can\'t create turnpoint markers</string>
     <string name="distance_from_prior_and_start">%1$d/%2$dkm</string>
     <string name="display_sua">Display SUA</string>
@@ -291,6 +291,8 @@
     <string name="rational_read_downloads_dir">Permission is needed to look for *.cup files in the Downloads directory.</string>
     <string name="no_permission_to_read_downloads_dir">Permission to read Downloads directory was denied. Can not check for/import custom turnpoint files.</string>
     <string name="permission_denied">PERMISSION DENIED</string>
-
+    <string name="turnpoint_airport_info_window_text">%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s </string>
+    <string name="turnpoint_non_airport_info_window_text">%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s </string>
+    <string name="unknow_error_in_render">Unkown\nError in rendering info</string>
 
 </resources>

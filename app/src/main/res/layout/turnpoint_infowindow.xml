@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    >
+
+    <TextView
+        android:id="@+id/turnpoint_infowindow_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="15"
+        android:scrollbars="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/white"
+        tools:text="Turn Point, DDH, Airport, RW width: 75, Fuel: 100LL"/>
+    <ImageView
+        android:id="@+id/turnpint_marker_pointer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@+id/turnpoint_infowindow_info"
+        app:layout_constraintStart_toStartOf="@+id/turnpoint_infowindow_info"
+        app:layout_constraintTop_toBottomOf="@+id/turnpoint_infowindow_info"
+        app:srcCompat="@drawable/ic_arrow_drop_down_white_24dp"
+        />
+
+</android.support.constraint.ConstraintLayout>
