@@ -243,6 +243,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             marker.showInfoWindow();
             return true;
         }
+        if (marker.getTag() instanceof TaskTurnpoint) {
+            return true;
+        }
         if (marker.getTag() instanceof Sounding) {
             EventBus.getDefault().post(new DisplaySounding((Sounding) marker.getTag()));
             return true;
@@ -291,12 +294,12 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                     fromLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
                     // placeTaskTurnpointMarker(taskTurnpoint.getTitle()
                     //        , String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), fromLatLng);
-                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint), fromLatLng);
+                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint), fromLatLng, taskTurnpoint);
                 } else {
                     toLatLng = new LatLng(taskTurnpoint.getLatitudeDeg(), taskTurnpoint.getLongitudeDeg());
                     //placeTaskTurnpointMarker(taskTurnpoint.getTitle(),
                     //        String.format("%1$.1fkm", taskTurnpoint.getDistanceFromStartingPoint()), toLatLng);
-                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint), toLatLng);
+                    placeTaskTurnpointMarker(getTurnpointMarkerBitmap(taskTurnpoint), toLatLng, taskTurnpoint);
                     drawLine(fromLatLng, toLatLng);
                     fromLatLng = toLatLng;
 
@@ -372,18 +375,13 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         taskTurnpointLines.add(polyline);
     }
 
-    private void placeTaskTurnpointMarker(String title, String snippet, LatLng latLng) {
-        Marker marker = googleMap.addMarker(new MarkerOptions()
-                .title(title)
-                .snippet(snippet)
-                .position(latLng));
-        taskTurnpointMarkers.add(marker);
-    }
 
-    private void placeTaskTurnpointMarker(Bitmap bitmap, LatLng latLng) {
+
+    private void placeTaskTurnpointMarker(Bitmap bitmap, LatLng latLng, TaskTurnpoint taskTurnpoint) {
         Marker marker = googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+        marker.setTag(taskTurnpoint);
         taskTurnpointMarkers.add(marker);
     }
 
@@ -489,7 +487,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             if (zoomLevel <= 7) {
                 // use smaller bitmap icon
                 if (smallerTurnpointBitmap == null) {
-                    smallerTurnpointBitmap = Bitmap.createScaledBitmap(largeTurnpointBitmap, largeTurnpointBitmap.getWidth() / 2, largeTurnpointBitmap.getHeight() / 2, true);
+                    smallerTurnpointBitmap = Bitmap.createScaledBitmap(largeTurnpointBitmap
+                            , largeTurnpointBitmap.getWidth() / 2, largeTurnpointBitmap.getHeight() / 2
+                            , true);
                 }
                 turnpointBitmap = smallerTurnpointBitmap;
             } else {
@@ -503,7 +503,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     private void placeTurnpointMarker(Turnpoint turnpoint, Bitmap bitmap) {
         Marker marker = googleMap.addMarker(new MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                         .position(new LatLng(turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg()))
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
                 marker.setTag(turnpoint);
