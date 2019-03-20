@@ -17,6 +17,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.SeekBar;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -320,6 +321,18 @@ public class SoaringForecastFragment extends DaggerFragment {
                 return true;
             case R.id.forecast_menu_display_turnpoints:
                 displayTurnpoints(!turnpointsMenuItem.isChecked());
+                return true;
+            case R.id.forecast_menu_map_topo:
+                forecastMapper.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                return true;
+            case R.id.forecast_menu_map_satellite:
+                forecastMapper.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                return true;
+            case R.id.forecast_menu_map_roadmap:
+                forecastMapper.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                return true;
+            case R.id.forecast_menu_map_hybrid:
+                forecastMapper.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

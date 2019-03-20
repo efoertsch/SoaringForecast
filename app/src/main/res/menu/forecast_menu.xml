@@ -31,6 +31,21 @@
         android:checkable="true"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/forecast_menu_map_background"
+          android:title="@string/map_background" >
+
+        <menu>
+            <item android:id="@+id/forecast_menu_map_topo"
+                  android:title="@string/terrain" />
+            <item android:id="@+id/forecast_menu_map_satellite"
+                  android:title="@string/satellite" />
+            <item android:id="@+id/forecast_menu_map_roadmap"
+                  android:title="@string/roadmap" />
+            <item android:id="@+id/forecast_menu_map_hybrid"
+                  android:title="@string/hybrid" />
+        </menu>
+    </item>
+
     <item
         android:id="@+id/forecast_menu_order_forecasts"
         android:title="@string/order_forecasts"

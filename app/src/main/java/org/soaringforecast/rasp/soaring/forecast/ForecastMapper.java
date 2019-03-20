@@ -93,6 +93,8 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private Context context;
     private boolean listenToLayerClicks;
     private int zoomLevel;
+    // MapType must be one of GoogleMap.MAP_TYPE_xxxx
+    private int mapType = GoogleMap.MAP_TYPE_TERRAIN;
 
     @Inject
     public ForecastMapper() {
@@ -111,7 +113,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        googleMap.setMapType(mapType);
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
@@ -129,6 +131,13 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         displaySoundingMarkers(true);
         createSoundingMarkers();
         plotTaskTurnpoints();
+    }
+
+    public void setMapType(int mapType){
+        this.mapType = mapType;
+        if (googleMap != null){
+            googleMap.setMapType(mapType);
+        }
     }
 
 
@@ -484,7 +493,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             largeTurnpointBitmap = BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.ic_turnpoint);
         }
         if (turnpoints != null) {
-            if (zoomLevel <= 7) {
+            if (zoomLevel <= 8) {
                 // use smaller bitmap icon
                 if (smallerTurnpointBitmap == null) {
                     smallerTurnpointBitmap = Bitmap.createScaledBitmap(largeTurnpointBitmap

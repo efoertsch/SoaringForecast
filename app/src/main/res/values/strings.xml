@@ -294,5 +294,10 @@
     <string name="turnpoint_airport_info_window_text">%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s </string>
     <string name="turnpoint_non_airport_info_window_text">%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s </string>
     <string name="unknow_error_in_render">Unkown\nError in rendering info</string>
+    <string name="map_background">Map Background</string>
+    <string name="terrain">Terrain</string>
+    <string name="satellite">Satellite</string>
+    <string name="roadmap">Roadmap</string>
+    <string name="hybrid">Hybrid</string>
 
 </resources>
