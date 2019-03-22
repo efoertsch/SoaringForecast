@@ -35,6 +35,7 @@ import com.google.maps.android.data.geojson.GeoJsonLayer;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.messages.DisplayPointForecast;
 import org.soaringforecast.rasp.messages.DisplaySounding;
 import org.soaringforecast.rasp.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
@@ -56,7 +57,7 @@ import timber.log.Timber;
 /**
  * Responsible for handling map display
  */
-public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapLongClickListener {
 
     private boolean drawingTask = false;
 
@@ -126,6 +127,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         // if delay in map getting ready and bounds, sounding locations or task already passed in display them as
         // required
         googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMapLongClickListener(this);
         googleMap.setInfoWindowAdapter(new TurnpointInfoWindowAdapter());
         updateMapBounds();
         displaySoundingMarkers(true);
@@ -133,9 +135,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         plotTaskTurnpoints();
     }
 
-    public void setMapType(int mapType){
+    public void setMapType(int mapType) {
         this.mapType = mapType;
-        if (googleMap != null){
+        if (googleMap != null) {
             googleMap.setMapType(mapType);
         }
     }
@@ -512,9 +514,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     private void placeTurnpointMarker(Turnpoint turnpoint, Bitmap bitmap) {
         Marker marker = googleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg()))
-                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-                marker.setTag(turnpoint);
+                .position(new LatLng(turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg()))
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+        marker.setTag(turnpoint);
         turnpointMarkers.add(marker);
     }
 
@@ -525,13 +527,30 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         turnpointMarkers.clear();
     }
 
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        EventBus.getDefault().post(new DisplayPointForecast(latLng));
+    }
+
+    public void displayPointForecast(PointForecast pointForecast) {
+        if (googleMap != null) {
+            Marker marker = googleMap.addMarker(new MarkerOptions()
+                    .position(pointForecast.getLatLng())
+                    .icon(BitmapDescriptorFactory.fromBitmap(
+                            BitmapImageUtils.getBitmapFromVectorDrawable(context,R.drawable.transparent_marker)))); // transparent image
+            marker.setTag(pointForecast);
+            marker.showInfoWindow();
+        }
+
+    }
+
     //------------------------------------------------------------------------------------
     class TurnpointInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         private final View turnpointInfoWindowView;
         private final TextView turnpointInfoWindowInfo;
 
         TurnpointInfoWindowAdapter() {
-            turnpointInfoWindowView =((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+            turnpointInfoWindowView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                     .inflate(R.layout.turnpoint_infowindow, null);
             turnpointInfoWindowInfo = turnpointInfoWindowView.findViewById(R.id.turnpoint_infowindow_info);
             turnpointInfoWindowInfo.setMovementMethod(new ScrollingMovementMethod());
@@ -547,31 +566,37 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
 
         private void render(Marker marker, TextView view) {
-            try {
-                Turnpoint turnpoint = (Turnpoint) marker.getTag();
-                switch (turnpoint.getStyle()) {
-                    case "2":
-                    case "4":
-                    case "5":
-                        view.setText(context.getString(R.string.turnpoint_airport_info_window_text
-                                , turnpoint.getTitle(), turnpoint.getCode()
-                                , turnpoint.getStyleName()
-                                , turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg()
-                                , turnpoint.getElevation()
-                                , turnpoint.getDirection(), turnpoint.getLength()
-                                , turnpoint.getFrequency()
-                                , turnpoint.getDescription()));
-                    default:
-                        view.setText(context.getString(R.string.turnpoint_non_airport_info_window_text
-                                , turnpoint.getTitle(), turnpoint.getCode()
-                                , turnpoint.getStyleName()
-                                , turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg()
-                                , turnpoint.getElevation()
-                                , turnpoint.getDescription()));
+            if (marker.getTag() instanceof Turnpoint) {
+                try {
+                    Turnpoint turnpoint = (Turnpoint) marker.getTag();
+                    switch (turnpoint.getStyle()) {
+                        case "2":
+                        case "4":
+                        case "5":
+                            view.setText(context.getString(R.string.turnpoint_airport_info_window_text
+                                    , turnpoint.getTitle(), turnpoint.getCode()
+                                    , turnpoint.getStyleName()
+                                    , turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg()
+                                    , turnpoint.getElevation()
+                                    , turnpoint.getDirection(), turnpoint.getLength()
+                                    , turnpoint.getFrequency()
+                                    , turnpoint.getDescription()));
+                        default:
+                            view.setText(context.getString(R.string.turnpoint_non_airport_info_window_text
+                                    , turnpoint.getTitle(), turnpoint.getCode()
+                                    , turnpoint.getStyleName()
+                                    , turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg()
+                                    , turnpoint.getElevation()
+                                    , turnpoint.getDescription()));
+                    }
+
+                } catch (NumberFormatException nfe) {
+                    view.setText(context.getString(R.string.unknow_error_in_render));
                 }
 
-            } catch (NumberFormatException nfe) {
-                view.setText(context.getString(R.string.unknow_error_in_render));
+            } else if (marker.getTag() instanceof PointForecast) {
+                PointForecast pointForecast = (PointForecast) marker.getTag();
+                view.setText(pointForecast.getForecastText());
             }
 
         }

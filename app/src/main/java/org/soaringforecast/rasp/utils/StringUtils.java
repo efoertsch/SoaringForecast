@@ -1,11 +1,16 @@
 package org.soaringforecast.rasp.utils;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 import timber.log.Timber;
 
@@ -48,6 +53,11 @@ public class StringUtils {
         } else {
             return examineString;
         }
+    }
+
+    public static HashMap<String, String> getHashMapFromStringRes(Context context, @StringRes int stringRes) {
+        return new Gson().fromJson(context.getString(stringRes), new TypeToken<HashMap<String, String>>(){}.getType());
+
     }
 
 

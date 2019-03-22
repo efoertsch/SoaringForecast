@@ -126,6 +126,10 @@ dependencies {
         exclude module: 'xpp3'
     }
 
+    // For cgi call to get specific lat/long forecast
+    implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
+
+
     // GSON (JSON)
     implementation "com.google.code.gson:gson:$GSON"
     implementation "com.squareup.retrofit2:converter-gson:$GSON_CONVERTER"

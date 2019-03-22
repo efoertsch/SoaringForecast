@@ -10,7 +10,7 @@ public class SoaringForecastRetrofit {
 
     private Retrofit retrofit;
 
-    public SoaringForecastRetrofit(OkHttpClient okHttpClient, String raspUrl ){
+    public SoaringForecastRetrofit(OkHttpClient okHttpClient, String raspUrl) {
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(raspUrl)
                 .client(okHttpClient)

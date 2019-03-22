@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.SoaringForecastBinding;
+import org.soaringforecast.rasp.messages.DisplayPointForecast;
 import org.soaringforecast.rasp.messages.DisplaySounding;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.settings.SettingsActivity;
@@ -240,6 +241,11 @@ public class SoaringForecastFragment extends DaggerFragment {
             forecastMapper.mapTurnpoints(turnpoints);
         });
 
+        // Point forecast
+        soaringForecastViewModel.getPointForecast().observe(this, pointForecast -> {
+            forecastMapper.displayPointForecast(pointForecast);
+        });
+
         //ElapsedTimeUtil.showElapsedTime(TAG, "end of startObservers()");
 
     }
@@ -435,6 +441,11 @@ public class SoaringForecastFragment extends DaggerFragment {
         } else {
             bsb.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DisplayPointForecast pointForecast) {
+        soaringForecastViewModel.displayPointForecast(pointForecast.getLatLng());
     }
 
     // ---- Opacity for forecast overlay -----------------------

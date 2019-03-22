@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.BuildConfig;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.dagger.AppModule;
@@ -13,8 +14,6 @@ import org.soaringforecast.rasp.dagger.DiComponent;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.workmanager.AirportsImportWorker;
 
-import org.greenrobot.eventbus.EventBus;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -22,6 +21,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -55,7 +55,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
     void checkIfAirportDownloadNeeded() {
         appRepository.getCountOfAirports()
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(count -> {
                             if (count < 2000) {
                                 createNotificationChannel();

@@ -299,5 +299,6 @@
     <string name="satellite">Satellite</string>
     <string name="roadmap">Roadmap</string>
     <string name="hybrid">Hybrid</string>
+    <string name="no_point_forecast_available">No point forecast available for %1$s.</string>
 
 </resources>

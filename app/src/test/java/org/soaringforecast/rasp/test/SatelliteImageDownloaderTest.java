@@ -79,7 +79,8 @@ public class SatelliteImageDownloaderTest {
 
     @Test
     public void makeSure15ImageTimes(){
-        SatelliteImageInfo satelliteImageInfo = SatelliteImageDownloader.createSatelliteImageInfo(Calendar.getInstance(TimeZone.getTimeZone("UTC")), "alb", "vis");
+        SatelliteImageInfo satelliteImageInfo = SatelliteImageDownloader.createSatelliteImageInfo(Calendar.getInstance(TimeZone.getTimeZone("UTC")), "alb", "vis"
+        ,-15, 15);
         assertThat("Must be 15 images", satelliteImageInfo.getSatelliteImageNames().size(),equalTo(15));
     }
 

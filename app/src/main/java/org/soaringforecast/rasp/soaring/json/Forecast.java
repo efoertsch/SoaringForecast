@@ -30,7 +30,7 @@ public class Forecast {
         this.forecastName = forecastName;
     }
 
-    public String egetForecastType() {
+    public String getForecastType() {
         return forecastType;
     }
 
