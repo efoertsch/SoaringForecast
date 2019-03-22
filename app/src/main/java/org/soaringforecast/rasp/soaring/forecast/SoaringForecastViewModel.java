@@ -8,6 +8,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import org.greenrobot.eventbus.EventBus;
@@ -97,6 +98,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private boolean loadRasp;
 
     private StringUtils stringUtils;
+    private  HashMap<String,String> pointForecastConversion;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -910,4 +912,25 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         super.onCleared();
     }
 
+    /**
+     *
+     * @param latLng Get point forecast based on current forecast type at latlng
+     */
+
+    public void displayPointForecast(LatLng latLng) {
+        if (pointForecastConversion == null) {
+            pointForecastConversion = stringUtils.getHashMapFromStringRes(getApplication().getApplicationContext()
+                    , R.string.point_forecast_parm_conversion);
+        }
+        if (selectedForecast.getValue() != null) {
+           String pointForecastValue =  pointForecastConversion.get(selectedForecast.getValue());
+           if (pointForecastValue != null){
+               Disposable disposable = soaringForecastDownloader.getPointForecastAtLatLong(selectedRegion.getName()
+                       , selectedModelForecastDate.getDate()
+                       , selectedModelName,
+                       ,forecastTimes
+           }
+        });
+
+    }
 }

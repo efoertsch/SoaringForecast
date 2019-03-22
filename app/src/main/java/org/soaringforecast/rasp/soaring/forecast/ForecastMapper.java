@@ -35,6 +35,7 @@ import com.google.maps.android.data.geojson.GeoJsonLayer;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.messages.DisplayPointForecast;
 import org.soaringforecast.rasp.messages.DisplaySounding;
 import org.soaringforecast.rasp.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
@@ -56,7 +57,7 @@ import timber.log.Timber;
 /**
  * Responsible for handling map display
  */
-public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapLongClickListener {
 
     private boolean drawingTask = false;
 
@@ -523,6 +524,11 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             marker.remove();
         }
         turnpointMarkers.clear();
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+            EventBus.getDefault().post(new DisplayPointForecast(latLng));
     }
 
     //------------------------------------------------------------------------------------

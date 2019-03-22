@@ -1,5 +1,7 @@
 package org.soaringforecast.rasp.test;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.soaringforecast.rasp.cache.BitmapCache;
 import org.soaringforecast.rasp.dagger.OkHttpClientModule;
 import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
@@ -12,13 +14,13 @@ import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.soaring.json.Sounding;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import java.io.IOException;
 import java.util.List;
 
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
@@ -39,7 +41,7 @@ public class SoaringForecastTest {
 
     @Before
     public void createRetrofit() {
-        retrofit = new SoaringForecastRetrofit(new OkHttpClientModule().getOkHttpClient(new LoggingInterceptor()), raspUrl).getRetrofit();
+        retrofit = new SoaringForecastRetrofit(new OkHttpClientModule(). getOkHttpClient(new LoggingInterceptor()), raspUrl).getRetrofit();
         client = retrofit.create(SoaringForecastApi.class);
     }
 
@@ -118,6 +120,20 @@ public class SoaringForecastTest {
         assertNotNull(model.getCenter());
         assertNotNull(model.getCorners());
         assertNotNull(model.getTimes());
+    }
+
+    @Test
+    //region=NewEngland&date=2019-03-20&model=gfs&time=1000&lat=43.132009&lon=-72.157325&param=wstar bsratio
+    //    @POST("cgi/get_rasp_blipspot.cgi")
+    public void shouldGetALatLongPointForecastSeparateHeaderParmsTest() throws IOException {
+        Response<ResponseBody> response = client.getLatLongPointForecast(
+                "NewEngland","2019-03-22","gfs","1100","43.132009","-72.157325",
+                "wstar+bsratio").blockingGet();
+        assertEquals("OK",response.message());
+        System.out.println(response.body().string());
+        assertNotNull(response);
+
+
     }
 
 }
