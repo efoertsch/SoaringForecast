@@ -31,18 +31,22 @@ import org.soaringforecast.rasp.soaring.json.Sounding;
 import org.soaringforecast.rasp.utils.ImageAnimator;
 import org.soaringforecast.rasp.utils.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import timber.log.Timber;
 
 public class SoaringForecastViewModel extends AndroidViewModel {
@@ -98,7 +102,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private boolean loadRasp;
 
     private StringUtils stringUtils;
-    private  HashMap<String,String> pointForecastConversion;
+    private HashMap<String, String> pointForecastConversion;
+    private MutableLiveData<PointForecast> pointForecastText;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -208,7 +213,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      */
     private void getRegionForecastDates() {
         Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(regionList -> {
                             regions = regionList;
@@ -261,7 +266,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                             return soaringForecastDownloader.getForecastModels(region.getName(), regionForecastDate).toObservable()
                                     .doOnNext(region::addForecastModels);
                         })
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<ForecastModels>() {
                     @Override
@@ -577,7 +582,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 , selectedModelForecastDate.getModel().getName()
                 , selectedForecast.getValue().getForecastName()
                 , selectedModelForecastDate.getModel().getTimes())
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<SoaringForecastImage>() {
                     @Override
@@ -760,7 +765,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                 , selectedModelForecastDate.getModel().getName()
                 , sounding.getPosition() + ""
                 , selectedModelForecastDate.getModel().getTimes())
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<SoaringForecastImage>() {
                     @Override
@@ -912,25 +917,66 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         super.onCleared();
     }
 
+
+    public MutableLiveData<PointForecast> getPointForecast() {
+        if (pointForecastText == null) {
+            pointForecastText = new MutableLiveData<>();
+        }
+        return pointForecastText;
+    }
+
     /**
-     *
      * @param latLng Get point forecast based on current forecast type at latlng
      */
 
-    public void displayPointForecast(LatLng latLng) {
+    public void displayPointForecast(final LatLng latLng) {
+        stopImageAnimation();
         if (pointForecastConversion == null) {
             pointForecastConversion = stringUtils.getHashMapFromStringRes(getApplication().getApplicationContext()
                     , R.string.point_forecast_parm_conversion);
         }
-        if (selectedForecast.getValue() != null) {
-           String pointForecastValue =  pointForecastConversion.get(selectedForecast.getValue());
-           if (pointForecastValue != null){
-               Disposable disposable = soaringForecastDownloader.getPointForecastAtLatLong(selectedRegion.getName()
-                       , selectedModelForecastDate.getDate()
-                       , selectedModelName,
-                       ,forecastTimes
-           }
-        });
+        if (selectedForecast.getValue() != null && selectedForecast.getValue().getForecastName() != null
+                && selectedSoaringForecastImageSet != null) {
+            String pointForecastValue = pointForecastConversion.get(selectedForecast.getValue().getForecastName());
+            if (pointForecastValue != null) {
+                soaringForecastDownloader.getPointForecastAtLatLong(selectedRegion.getName()
+                        , selectedModelForecastDate.getDate()
+                        , selectedModelName.toLowerCase()
+                        , selectedSoaringForecastImageSet.getValue().getLocalTime()
+                        , String.valueOf(latLng.latitude)
+                        , String.valueOf(latLng.longitude)
+                        , pointForecastValue)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new SingleObserver<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                compositeDisposable.add(d);
+                            }
+
+                            @Override
+                            public void onSuccess(Response<ResponseBody> responseBodyResponse) {
+                                if (responseBodyResponse.isSuccessful()) {
+                                    try {
+                                        pointForecastText.setValue(new PointForecast(latLng,
+                                                responseBodyResponse.body().string()));
+                                    } catch (IOException ioe) {
+                                        // TODO report error
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                // TODO report error
+                            }
+
+                        });
+            } else {
+                pointForecastText.setValue(new PointForecast(latLng
+                        , getApplication().getString(R.string.no_point_forecast_available, selectedForecast.getValue().getForecastNameDisplay())));
+            }
+        }
 
     }
 }

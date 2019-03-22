@@ -65,7 +65,7 @@ public class RegionSelectionViewModel extends AndroidViewModel {
     private void getRegionForecastDates() {
         working.setValue(true);
         Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(newRegionForecastDates -> {
                             regions.setValue(newRegionForecastDates.getRegions());

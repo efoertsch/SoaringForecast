@@ -26,7 +26,6 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
-import retrofit2.http.Field;
 import timber.log.Timber;
 
 
@@ -248,6 +247,6 @@ public class SoaringForecastDownloader implements CacheTimeListener {
 
     public Single<Response<ResponseBody>> getPointForecastAtLatLong(String region, String date, String model
             , String time, String lat, String lon, String forecastType) {
-       return client.getLatLongPointForecast(region, date, model, time, lat, lon, forecastType)
+       return client.getLatLongPointForecast(region, date, model, time, lat, lon, forecastType);
     }
 }

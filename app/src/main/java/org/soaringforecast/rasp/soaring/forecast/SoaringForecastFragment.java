@@ -241,6 +241,11 @@ public class SoaringForecastFragment extends DaggerFragment {
             forecastMapper.mapTurnpoints(turnpoints);
         });
 
+        // Point forecast
+        soaringForecastViewModel.getPointForecast().observe(this, pointForecast -> {
+            forecastMapper.displayPointForecast(pointForecast);
+        });
+
         //ElapsedTimeUtil.showElapsedTime(TAG, "end of startObservers()");
 
     }
@@ -440,7 +445,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplayPointForecast pointForecast) {
-        soaringForecastViewModel.displayPointForecast(pointForecast.getLatLng().);
+        soaringForecastViewModel.displayPointForecast(pointForecast.getLatLng());
     }
 
     // ---- Opacity for forecast overlay -----------------------
