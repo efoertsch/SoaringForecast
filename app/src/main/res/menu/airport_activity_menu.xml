@@ -13,8 +13,8 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/airport_activity_metar_options"
-        android:title="@string/airport_menu_metar_options"
+        android:id="@+id/airport_activity_metar_settings"
+        android:title="@string/airport_menu_metar_settings"
         app:showAsAction="never"/>
 
 </menu>

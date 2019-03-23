@@ -82,8 +82,9 @@ public class AirportActivity extends MasterActivity {
     }
 
     private void displaySettingsActivity() {
-        Intent i = new Intent(this, SettingsActivity.class);
-        startActivity(i);
+        SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
+        builder.displaySettings();
+        startActivity(builder.build(this));
     }
 
     public static class Builder {
