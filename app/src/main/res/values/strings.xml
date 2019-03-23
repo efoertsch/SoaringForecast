@@ -237,7 +237,7 @@
     <string name="geos_ne">GEOS NE</string>
     <string name="airport_menu_list">List</string>
     <string name="airport_menu_add">Add</string>
-    <string name="airport_menu_metar_options">Options</string>
+    <string name="airport_menu_metar_settings">Settings</string>
     <string name="no_metar_taf_airports_selected">No airports have been selected yet. Would you like to add some?</string>
     <string name="new_task_name">New Task</string>
     <string name="error_adding_task_and_turnpoints">An error occurrred adding the task and turnpoints to the database.</string>

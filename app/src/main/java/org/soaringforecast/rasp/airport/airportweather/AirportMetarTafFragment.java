@@ -118,7 +118,7 @@ public class AirportMetarTafFragment extends DaggerFragment {
             case R.id.airport_activity_menu_list:
                 airportListFragment();
                 return true;
-            case R.id.airport_activity_metar_options:
+            case R.id.airport_activity_metar_settings:
                 displaySettingsMenu();
                 return true;
             default:
