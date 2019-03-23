@@ -7,8 +7,8 @@ android {
         applicationId "org.soaringforecast.rasp"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 9
-        versionName "1.5.1"
+        versionCode 10
+        versionName "1.5.2"
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         //testInstrumentationRunner "org.soaringforecast.rasp.app.OverrideApplicationTestRunner"
