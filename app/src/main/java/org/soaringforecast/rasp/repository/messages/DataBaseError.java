@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.messages;
+package org.soaringforecast.rasp.repository.messages;
 
 public class DataBaseError {
 

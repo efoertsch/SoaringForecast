@@ -9,8 +9,8 @@ import org.soaringforecast.rasp.common.recycleradapter.GenericEditClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.databinding.TaskView;
-import org.soaringforecast.rasp.messages.DeleteTask;
-import org.soaringforecast.rasp.messages.RenumberedTaskList;
+import org.soaringforecast.rasp.task.messages.DeleteTask;
+import org.soaringforecast.rasp.task.messages.RenumberedTaskList;
 import org.soaringforecast.rasp.repository.Task;
 import org.soaringforecast.rasp.touchhelper.ItemTouchHelperAdapter;
 

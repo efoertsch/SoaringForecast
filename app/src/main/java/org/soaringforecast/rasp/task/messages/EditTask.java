@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.messages;
+package org.soaringforecast.rasp.task.messages;
 
 
 // User wants to edit/add a new task

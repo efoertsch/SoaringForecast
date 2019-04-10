@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.messages;
+package org.soaringforecast.rasp.task.messages;
 
 import org.soaringforecast.rasp.task.json.TurnpointFile;
 

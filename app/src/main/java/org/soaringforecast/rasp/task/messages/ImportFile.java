@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.messages;
+package org.soaringforecast.rasp.task.messages;
 
 import java.io.File;
 

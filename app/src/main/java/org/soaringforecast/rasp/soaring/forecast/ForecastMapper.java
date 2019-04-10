@@ -33,18 +33,16 @@ import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONException;
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.messages.DisplayPointForecast;
-import org.soaringforecast.rasp.messages.DisplaySounding;
-import org.soaringforecast.rasp.messages.SnackbarMessage;
+import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
+import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.json.Sounding;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +55,8 @@ import timber.log.Timber;
 /**
  * Responsible for handling map display
  */
-public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapLongClickListener {
+public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapLongClickListener
+        , GoogleMap.OnInfoWindowClickListener, GoogleMap.OnInfoWindowCloseListener {
 
     private boolean drawingTask = false;
 
@@ -128,9 +127,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         // required
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapLongClickListener(this);
-        googleMap.setInfoWindowAdapter(new TurnpointInfoWindowAdapter());
+        googleMap.setInfoWindowAdapter(new MapperInfoWindowAdapter());
+        googleMap.setOnInfoWindowClickListener(this);
+        googleMap.setOnInfoWindowCloseListener(this);
         updateMapBounds();
-        displaySoundingMarkers(true);
         createSoundingMarkers();
         plotTaskTurnpoints();
     }
@@ -141,7 +141,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             googleMap.setMapType(mapType);
         }
     }
-
 
     public void setMapLatLngBounds(LatLngBounds mapLatLngBounds) {
         this.mapLatLngBounds = mapLatLngBounds;
@@ -201,7 +200,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     public void setSoundings(List<Sounding> soundings) {
         this.soundings.clear();
         if (soundings == null || soundings.size() == 0) {
-            displaySoundingMarkers(false);
+            removeSoundingMarkers();
         } else {
             this.soundings.addAll(soundings);
             createSoundingMarkers();
@@ -219,53 +218,20 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             latLng = new LatLng(sounding.getLat(), sounding.getLng());
             marker = googleMap.addMarker(new MarkerOptions().position(latLng)
                     .title(sounding.getLocation()));
-            soundingMarkers.add(marker);
             marker.setTag(sounding);
-            displaySoundingMarkers(true);
+            soundingMarkers.add(marker);
         }
     }
 
-    private void displaySoundingMarkers(boolean display) {
+    private void removeSoundingMarkers() {
         if (soundingMarkers != null && soundingMarkers.size() > 0) {
             for (Marker marker : soundingMarkers) {
-                marker.setVisible(display);
+                marker.remove();
             }
         }
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        // Check if there is an open info window (currently would just be taskmarker)
-        if (lastMarkerOpened != null) {
-            // Close the info window
-            lastMarkerOpened.hideInfoWindow();
-
-            // Is the marker the same marker that was already open
-            if (lastMarkerOpened.equals(marker)) {
-                // Nullify the last opened object
-                lastMarkerOpened = null;
-                // Return so that the info window isn't opened again
-                return true;
-            }
-        }
-
-        if (marker.getTag() instanceof Turnpoint) {
-            lastMarkerOpened = marker;
-            marker.showInfoWindow();
-            return true;
-        }
-        if (marker.getTag() instanceof TaskTurnpoint) {
-            return true;
-        }
-        if (marker.getTag() instanceof Sounding) {
-            EventBus.getDefault().post(new DisplaySounding((Sounding) marker.getTag()));
-            return true;
-        }
-        return false;
     }
 
     // ------ Task Turnpoints ---------------------------------
-    // TODO Simplify(?) just pass in task id and get turnpoints here.
     public void setTaskTurnpoints(List<TaskTurnpoint> newTaskTurnpoints) {
         removeTaskTurnpoints();
         taskTurnpoints.clear();
@@ -377,7 +343,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         if (latLng.longitude > neLong) {
             neLong = latLng.longitude;
         }
-
     }
 
     private void drawLine(LatLng fromLatLng, LatLng toLatLng) {
@@ -387,13 +352,42 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     }
 
 
-
     private void placeTaskTurnpointMarker(Bitmap bitmap, LatLng latLng, TaskTurnpoint taskTurnpoint) {
         Marker marker = googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
         marker.setTag(taskTurnpoint);
         taskTurnpointMarkers.add(marker);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if (lastMarkerOpened != null) {
+            // Close the info window
+            lastMarkerOpened.hideInfoWindow();
+
+            // Is the marker the same marker that was already open
+            if (lastMarkerOpened.equals(marker)) {
+                // Nullify the last opened object
+                lastMarkerOpened = null;
+                // Return so that the info window isn't opened again
+                return true;
+            }
+        }
+
+        if (marker.getTag() instanceof Turnpoint) {
+            lastMarkerOpened = marker;
+            marker.showInfoWindow();
+            return true;
+        }
+        if (marker.getTag() instanceof TaskTurnpoint) {
+            return true;
+        }
+        if (marker.getTag() instanceof Sounding) {
+            EventBus.getDefault().post(new DisplaySounding((Sounding) marker.getTag()));
+            return true;
+        }
+        return false;
     }
 
     //----- Draw SUA -------------------------------
@@ -423,22 +417,19 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             geoJsonLayer = new GeoJsonLayer(googleMap, geoJsonid, context);
             // TODO reimplement after Google fixes bugs
             // Bug when clicking on map, may not get correct feature, also still getting click event
-            // after layer removed from map
+            // after layer removed from map so listener not currently used.
             //geoJsonLayer.setOnFeatureClickListener(geoJsonOnFeatureClickListener);
-        } catch (IOException e) {
-            postError(e, suaRegionName);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             postError(e, suaRegionName);
         }
-
         geoJsonLayer.addLayerToMap();
     }
 
     private GeoJsonLayer.GeoJsonOnFeatureClickListener geoJsonOnFeatureClickListener = feature -> {
-        displaSuaDetails(feature);
+        displaySuaDetails(feature);
     };
 
-    private void displaSuaDetails(Feature feature) {
+    private void displaySuaDetails(Feature feature) {
         ArrayList<String> suaProperties = new ArrayList<>();
         Iterator it = feature.getProperties().iterator();
         while (it.hasNext()) {
@@ -455,7 +446,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             arrayAdapter.addAll(suaProperties);
             suaPropertiesListView.setAdapter(arrayAdapter);
             builder.setTitle("SUA");
-            builder.show();
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+            alertDialog.setCanceledOnTouchOutside(true);
         }
     }
 
@@ -477,12 +470,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
     }
 
-
     // ---- Turnpoints -----------------------------
     public void mapTurnpoints(List<Turnpoint> turnpoints) {
         this.turnpoints = turnpoints;
         mapTurnpoints();
-
     }
 
     private void mapTurnpoints() {
@@ -537,28 +528,40 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(pointForecast.getLatLng())
                     .icon(BitmapDescriptorFactory.fromBitmap(
-                            BitmapImageUtils.getBitmapFromVectorDrawable(context,R.drawable.transparent_marker)))); // transparent image
+                            BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.transparent_marker)))); // transparent image
             marker.setTag(pointForecast);
             marker.showInfoWindow();
         }
 
     }
 
-    //------------------------------------------------------------------------------------
-    class TurnpointInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-        private final View turnpointInfoWindowView;
-        private final TextView turnpointInfoWindowInfo;
+    //--------- InfoWindow ---------------------------------------------------------------------------
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        marker.hideInfoWindow();
+    }
 
-        TurnpointInfoWindowAdapter() {
-            turnpointInfoWindowView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+    @Override
+    public void onInfoWindowClose(Marker marker) {
+        if (marker.getTag() instanceof PointForecast) {
+            marker.remove();
+        }
+    }
+
+    class MapperInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+        private final View mapperInfoWindowView;
+        private final TextView mapperInfoWindowInfo;
+
+        MapperInfoWindowAdapter() {
+            mapperInfoWindowView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                     .inflate(R.layout.turnpoint_infowindow, null);
-            turnpointInfoWindowInfo = turnpointInfoWindowView.findViewById(R.id.turnpoint_infowindow_info);
-            turnpointInfoWindowInfo.setMovementMethod(new ScrollingMovementMethod());
+            mapperInfoWindowInfo = mapperInfoWindowView.findViewById(R.id.turnpoint_infowindow_info);
+            mapperInfoWindowInfo.setMovementMethod(new ScrollingMovementMethod());
         }
 
         public View getInfoWindow(Marker marker) {
-            render(marker, turnpointInfoWindowInfo);
-            return turnpointInfoWindowView;
+            render(marker, mapperInfoWindowInfo);
+            return mapperInfoWindowView;
         }
 
         public View getInfoContents(Marker marker) {

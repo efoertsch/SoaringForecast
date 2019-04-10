@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.messages;
+package org.soaringforecast.rasp.soaring.messages;
 
 import org.soaringforecast.rasp.soaring.json.Sounding;
 

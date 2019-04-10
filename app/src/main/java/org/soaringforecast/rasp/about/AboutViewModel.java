@@ -10,7 +10,7 @@ import android.text.Spanned;
 
 import org.soaringforecast.rasp.BuildConfig;
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.messages.SnackbarMessage;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.AppRepository;
 
 import org.greenrobot.eventbus.EventBus;

@@ -15,7 +15,7 @@ import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.common.recycleradapter.GenericViewHolder;
 import org.soaringforecast.rasp.databinding.TurnpointsImportView;
-import org.soaringforecast.rasp.messages.PopThisFragmentFromBackStack;
+import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.task.turnpoints.download.TurnpointsImporterViewModel;
 import org.soaringforecast.rasp.utils.ViewUtilities;
