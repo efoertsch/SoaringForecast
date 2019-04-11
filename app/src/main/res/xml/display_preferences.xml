@@ -6,13 +6,19 @@
         android:title="@string/rasp_forecast_options">
         <android.support.v7.preference.SwitchPreferenceCompat
             android:defaultValue="true"
+            android:key="@string/pref_display_forecast_sua_key"
+            android:title="@string/pref_display_forecast_sua"/>
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
             android:key="@string/pref_display_forecast_soundings_key"
             android:title="@string/pref_display_forecast_soundings"/>
 
         <android.support.v7.preference.SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="@string/pref_display_forecast_sua_key"
-            android:title="@string/pref_display_forecast_sua"/>
+            android:defaultValue="false"
+            android:key="@string/pref_display_turnpoints_key"
+            android:title="@string/pref_display_turnpoints"/>
+
     </PreferenceCategory>
 
 

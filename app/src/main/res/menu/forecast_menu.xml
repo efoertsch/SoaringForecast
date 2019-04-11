@@ -13,6 +13,13 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/forecast_menu_display_options"
+        android:title="@string/forecast_menu_display_options"
+        app:showAsAction="never"
+        />
+
+    <!-- replaced by above
+    <item
         android:id="@+id/forecast_menu_toggle_sounding_points"
         android:title="@string/forecast_menu_toggle_sounds"
         android:checkable="true"
@@ -30,6 +37,7 @@
         android:title="@string/display_turnpoints"
         android:checkable="true"
         app:showAsAction="never"/>
+    -->
 
     <item android:id="@+id/forecast_menu_map_background"
           android:title="@string/map_background" >
