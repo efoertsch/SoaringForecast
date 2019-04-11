@@ -10,9 +10,9 @@ import org.soaringforecast.rasp.airport.airportweather.AirportMetarTafFragment;
 import org.soaringforecast.rasp.airport.list.AirportListFragment;
 import org.soaringforecast.rasp.airport.search.AirportSearchFragment;
 import org.soaringforecast.rasp.common.MasterActivity;
-import org.soaringforecast.rasp.messages.AddAirportEvent;
-import org.soaringforecast.rasp.messages.DisplayAirportList;
-import org.soaringforecast.rasp.messages.DisplaySettings;
+import org.soaringforecast.rasp.airport.messages.AddAirportEvent;
+import org.soaringforecast.rasp.airport.messages.DisplayAirportList;
+import org.soaringforecast.rasp.settings.messages.DisplaySettings;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 
 import org.greenrobot.eventbus.Subscribe;

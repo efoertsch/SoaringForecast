@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.messages;
+package org.soaringforecast.rasp.airport.messages;
 
 import org.soaringforecast.rasp.repository.Airport;
 

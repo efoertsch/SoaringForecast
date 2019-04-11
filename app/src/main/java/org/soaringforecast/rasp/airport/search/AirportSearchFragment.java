@@ -22,7 +22,7 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.airport.list.AirportListAdapter;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.AirportSearchView;
-import org.soaringforecast.rasp.messages.SnackbarMessage;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.Airport;
 import org.soaringforecast.rasp.repository.AppRepository;
 

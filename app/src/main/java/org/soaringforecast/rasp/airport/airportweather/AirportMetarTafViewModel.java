@@ -14,8 +14,8 @@ import org.soaringforecast.rasp.data.metars.Metar;
 import org.soaringforecast.rasp.data.metars.MetarResponse;
 import org.soaringforecast.rasp.data.taf.TAF;
 import org.soaringforecast.rasp.data.taf.TafResponse;
-import org.soaringforecast.rasp.messages.CallFailure;
-import org.soaringforecast.rasp.messages.ResponseError;
+import org.soaringforecast.rasp.common.messages.CallFailure;
+import org.soaringforecast.rasp.retrofit.messages.ResponseError;
 import org.soaringforecast.rasp.repository.Airport;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.retrofit.AviationWeatherApi;
@@ -88,7 +88,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     }
 
     public MutableLiveData<List<Airport>> getAirportList() {
-        if (airportList == null){
+        if (airportList == null) {
             airportList = new MutableLiveData<>();
             airportList.setValue(new ArrayList<>());
         }
@@ -241,14 +241,13 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
         }
     }
 
-    private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable
-            t) {
+    private void displayCallFailure(Call<? extends AviationWeatherResponse> call, Throwable t) {
         EventBus.getDefault().post(new CallFailure(t.toString()));
 
     }
 
     @Override
-    public void onCleared(){
+    public void onCleared() {
         compositeDisposable.dispose();
         super.onCleared();
     }

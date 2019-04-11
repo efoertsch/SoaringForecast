@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.messages;
+package org.soaringforecast.rasp.common.messages;
 
 import android.support.design.widget.Snackbar;
 

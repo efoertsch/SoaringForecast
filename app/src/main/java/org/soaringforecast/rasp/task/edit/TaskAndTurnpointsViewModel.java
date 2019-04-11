@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.ObservableViewModel;
-import org.soaringforecast.rasp.messages.DataBaseError;
+import org.soaringforecast.rasp.repository.messages.DataBaseError;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Task;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;

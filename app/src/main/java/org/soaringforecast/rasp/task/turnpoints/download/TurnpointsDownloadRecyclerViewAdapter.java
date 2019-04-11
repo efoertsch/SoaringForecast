@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.databinding.CupFileView;
-import org.soaringforecast.rasp.messages.ImportFile;
+import org.soaringforecast.rasp.task.messages.ImportFile;
 
 import org.greenrobot.eventbus.EventBus;
 

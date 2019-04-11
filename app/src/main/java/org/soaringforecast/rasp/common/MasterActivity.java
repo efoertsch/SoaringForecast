@@ -12,8 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.messages.PopThisFragmentFromBackStack;
-import org.soaringforecast.rasp.messages.SnackbarMessage;
+import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
