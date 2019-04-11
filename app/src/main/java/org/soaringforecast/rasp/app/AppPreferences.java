@@ -47,7 +47,6 @@ public class AppPreferences {
     private static final String WINDY_ZOOM_LEVEL = "WINDY_ZOOM_LEVEL";
     private static final String SELECTED_MODEL_FORECAST_DATE = "SELECTED_MODEL_FORECAST_DATE";
     private static final String ORDERED_FORECAST_OPTIONS = "ORDERED_FORECAST_OPTIONS";
-    private static final String DISPLAY_TURNPOINTS = "DISPLAY_TURNPOINTS";
     private static final String CLEAR_CACHE_TIME_MINUTES = "CLEAR_CACHE_TIME_MINUTES";
 
     // These string values are assigned in code so they match what is used in Settings
@@ -60,8 +59,9 @@ public class AppPreferences {
     private static String ALTITUDE_UNITS_KEY;
     private static String DISTANCE_UNITS_KEY;
     private static String DECODE_TAF_METAR_KEY;
-    private static String SUA_DISPLAY_KEY;
-    private static String DISPLAY_FORECAST_SOUNDINGS;
+    private static String DISPLAY_SUA_KEY;
+    private static String DISPLAY_FORECAST_SOUNDINGS_KEY;
+    private static String DISPLAY_TURNPOINTS_KEY;
 
     private SharedPreferences sharedPreferences;
     private boolean rawTafMetar;
@@ -91,7 +91,8 @@ public class AppPreferences {
         ALTITUDE_UNITS_KEY = res.getString(R.string.pref_units_altitude);
         DISTANCE_UNITS_KEY = res.getString(R.string.pref_units_distance);
         DECODE_TAF_METAR_KEY = res.getString(R.string.pref_decode_taf_metar_key);
-        SUA_DISPLAY_KEY = res.getString(R.string.pref_display_forecast_sua_key);
+        DISPLAY_SUA_KEY = res.getString(R.string.pref_display_forecast_sua_key);
+        DISPLAY_TURNPOINTS_KEY = res.getString(R.string.pref_display_turnpoints_key);
 
         soaringForecastDefaultRegion = context.getString(R.string.new_england_region);
 
@@ -99,7 +100,7 @@ public class AppPreferences {
         DISPLAY_SKYSIGHT_MENU_OPTION = context.getString(R.string.pref_add_skysight_to_menu_key);
         DISPLAY_DR_JACKS_MENU_OPTION = context.getString(R.string.pref_add_dr_jacks_to_menu_key);
 
-        DISPLAY_FORECAST_SOUNDINGS = context.getString(R.string.pref_display_forecast_soundings_key);
+        DISPLAY_FORECAST_SOUNDINGS_KEY = context.getString(R.string.pref_display_forecast_soundings_key);
 
         // these should never be needed but use these default values
         rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
@@ -366,12 +367,12 @@ public class AppPreferences {
 
     public void setDisplayForecastSoundings(boolean display) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(DISPLAY_FORECAST_SOUNDINGS, display);
+        editor.putBoolean(DISPLAY_FORECAST_SOUNDINGS_KEY, display);
         editor.apply();
     }
 
     public boolean getDisplayForecastSoundings() {
-        return sharedPreferences.getBoolean(DISPLAY_FORECAST_SOUNDINGS, true);
+        return sharedPreferences.getBoolean(DISPLAY_FORECAST_SOUNDINGS_KEY, true);
     }
 
     public long getSelectedTaskId() {
@@ -436,22 +437,22 @@ public class AppPreferences {
 
     public void setDisplaySua(boolean displaySua) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(SUA_DISPLAY_KEY, displaySua);
+        editor.putBoolean(DISPLAY_SUA_KEY, displaySua);
         editor.apply();
     }
 
     public boolean getDisplaySua() {
-        return sharedPreferences.getBoolean(SUA_DISPLAY_KEY, true);
+        return sharedPreferences.getBoolean(DISPLAY_SUA_KEY, true);
     }
 
     public void setDisplayTurnpoints(boolean displayTurnpoints) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(DISPLAY_TURNPOINTS, displayTurnpoints);
+        editor.putBoolean(DISPLAY_TURNPOINTS_KEY, displayTurnpoints);
         editor.apply();
     }
 
     public boolean getDisplayTurnpoints() {
-        return sharedPreferences.getBoolean(DISPLAY_TURNPOINTS, true);
+        return sharedPreferences.getBoolean(DISPLAY_TURNPOINTS_KEY, false);
     }
 
 

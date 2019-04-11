@@ -81,10 +81,13 @@
     <string name="pref_add_dr_jacks_to_menu">Add Dr. Jacks to Menu </string>
 
     <string name="pref_display_forecast_soundings_key" translatable="false">Display_forecast_soundings_key</string>
-    <string name="pref_display_forecast_soundings">Display Forecast \nSoundings </string>
+    <string name="pref_display_forecast_soundings">Display Sounding Locations</string>
 
     <string name="pref_display_forecast_sua_key" translatable="false">Display_forecast_sua_key</string>
     <string name="pref_display_forecast_sua">Display SUA</string>
+
+    <string name="pref_display_turnpoints_key" translatable="false">Display_turnpoints_key</string>
+    <string name="pref_display_turnpoints">Display Turnpoints</string>
 
 
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
@@ -300,5 +303,7 @@
     <string name="roadmap">Roadmap</string>
     <string name="hybrid">Hybrid</string>
     <string name="no_point_forecast_available">No point forecast available for %1$s.</string>
+    <string name="forecast_menu_display_options">Display Options</string>
+    <string name="sua">Special Use Airspace</string>
 
 </resources>

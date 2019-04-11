@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,11 +28,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.SoaringForecastBinding;
-import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
-import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.json.Forecast;
+import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
+import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.utils.StringUtils;
 
@@ -69,15 +70,12 @@ public class SoaringForecastFragment extends DaggerFragment {
     private int lastForecastDatePosition = -1;
     private int lastForecastPosition = -1;
     private boolean showClearTaskMenuItem;
-    private MenuItem soundingsMenuItem;
-    private boolean checkSoundingsMenuItem = false;
+    private boolean displaySoundings = false;
     private boolean refreshForecastOrder = false;
-    private boolean displaySuaMenuCheck = false;
+    private boolean displaySUA = false;
     private AlphaAnimation opacitySliderFadeOut;
-    private MenuItem suaMenuItem;
     private String lastRegionName;
-    private MenuItem turnpointsMenuItem;
-    private boolean turnpointsMenuItemIsChecked;
+    private boolean displayTurnpoints;
 
     public void onCreate(Bundle savedInstanceState) {
         //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreate()");
@@ -139,7 +137,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             }
         });
 
-        displaySuaMenuCheck = appPreferences.getDisplaySua();
+        displaySUA = appPreferences.getDisplaySua();
     }
 
     //TODO - lots of observers - consolidate/simplify?
@@ -198,11 +196,9 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // List of soundings available
         soaringForecastViewModel.getSoundings().observe(this, soundingList -> {
-            checkSoundingsMenuItem = (soundingList != null && soundingList.size() > 0);
+            displaySoundings = (soundingList != null && soundingList.size() > 0);
             forecastMapper.setSoundings(soundingList);
-            if (soundingsMenuItem != null) {
-                soundingsMenuItem.setChecked(checkSoundingsMenuItem);
-            }
+
         });
 
         // Get Rasp bitmap for the date/time selected and pass to mapper
@@ -228,8 +224,8 @@ public class SoaringForecastFragment extends DaggerFragment {
         // Forecast region name for display of SUA (if any)
         soaringForecastViewModel.getSuaRegionName().observe(this, regionName -> {
             lastRegionName = regionName;
-            if (appPreferences.getDisplaySua()) {
-                suaMenuItem.setChecked(true);
+            displaySUA = appPreferences.getDisplaySua();
+            if (displaySUA) {
                 displaySuaOnMap(lastRegionName);
             }
 
@@ -238,6 +234,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // --- Turnpoints ------------------------------
         soaringForecastViewModel.getRegionTurnpoints().observe(this, turnpoints -> {
+            displayTurnpoints = (turnpoints != null && turnpoints.size() > 0);
             forecastMapper.mapTurnpoints(turnpoints);
         });
 
@@ -282,18 +279,18 @@ public class SoaringForecastFragment extends DaggerFragment {
             clearTaskMenuItem.setVisible(showClearTaskMenuItem);
         }
 
-        soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
-        soundingsMenuItem.setChecked(checkSoundingsMenuItem);
-
-        suaMenuItem = menu.findItem(R.id.forecast_menu_display_sua);
-        if (suaMenuItem != null) {
-            suaMenuItem.setChecked(displaySuaMenuCheck);
-        }
-
-        turnpointsMenuItem = menu.findItem(R.id.forecast_menu_display_turnpoints);
-        if (turnpointsMenuItem != null){
-            turnpointsMenuItem.setChecked(turnpointsMenuItemIsChecked);
-        }
+//        soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
+//        soundingsMenuItem.setChecked(displaySoundings);
+//
+//        suaMenuItem = menu.findItem(R.id.forecast_menu_display_sua);
+//        if (suaMenuItem != null) {
+//            suaMenuItem.setChecked(displaySUA);
+//        }
+//
+//        turnpointsMenuItem = menu.findItem(R.id.forecast_menu_display_turnpoints);
+//        if (turnpointsMenuItem != null) {
+//            turnpointsMenuItem.setChecked(displayTurnpoints);
+//        }
 
     }
 
@@ -312,21 +309,14 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_opacity_slider:
                 displayOpacitySlider();
                 return true;
-            case R.id.forecast_menu_toggle_sounding_points:
-                displaySoundings(!soundingsMenuItem.isChecked());
+            case R.id.forecast_menu_display_options:
+                showDisplayOptionsDialog();
                 return true;
             case R.id.forecast_menu_select_regions:
                 displayRegionSelections();
                 return true;
             case R.id.forecast_menu_order_forecasts:
                 displayForecastOrderFragment();
-                return true;
-            case R.id.forecast_menu_display_sua:
-                Timber.d("forecast_menu_display_sua was clicked");
-                displaySua();
-                return true;
-            case R.id.forecast_menu_display_turnpoints:
-                displayTurnpoints(!turnpointsMenuItem.isChecked());
                 return true;
             case R.id.forecast_menu_map_topo:
                 forecastMapper.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
@@ -346,15 +336,13 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
 
-    private void displaySua() {
-        Timber.d("displaySua() suaMenuItem.isChecked(): %1$s", suaMenuItem.isChecked());
+    private void displaySua(boolean displaySua) {
+        Timber.d("displaySua() suaMenuItem.isChecked(): %1$s", displaySoundings);
         // When menu clicked to be checked it, menuItem still unchecked when you get here
         // Likewise when clicked and is checked, it is still checked when you get here.
-        if (suaMenuItem.isChecked()) {
+        if (!displaySua) {
             if (forecastMapper != null) {
                 forecastMapper.removeSuaFromMap();
-                suaMenuItem.setChecked(false);
-                displaySuaMenuCheck = false;
             }
         } else {
             if (lastRegionName == null) {
@@ -364,8 +352,6 @@ public class SoaringForecastFragment extends DaggerFragment {
                 }
             }
             displaySuaOnMap(lastRegionName);
-            suaMenuItem.setChecked(true);
-            displaySuaMenuCheck = true;
 
         }
     }
@@ -373,12 +359,6 @@ public class SoaringForecastFragment extends DaggerFragment {
     // Drawing SUA cpu intensive so doing this way to make app more responsive
     private void displaySuaOnMap(final String regionName) {
         new Thread(() -> getActivity().runOnUiThread(((Runnable) () -> forecastMapper.setSuaRegionName(regionName)))).start();
-    }
-
-    private void displayTurnpoints(boolean checked) {
-        turnpointsMenuItemIsChecked = checked;
-        soaringForecastViewModel.displayTurnpoints(checked);
-        turnpointsMenuItem.setChecked(checked);
     }
 
 
@@ -427,11 +407,6 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.setSelectedSounding(displaySounding.getSounding());
     }
 
-
-    private void displaySoundings(boolean displaySoundings) {
-        boolean soundingsAvailable = soaringForecastViewModel.displaySoundings(displaySoundings);
-        soundingsMenuItem.setChecked(soundingsAvailable);
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Forecast forecast) {
@@ -487,4 +462,45 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastBinding.soaringForecastSeekbarLayout.startAnimation(opacitySliderFadeOut);
     }
 
+    //--- Display Soundings/SUA/Turnpoints dialog --------------------------------------------------
+    private void showDisplayOptionsDialog() {
+        final String[] displayOptions = {getString(R.string.forecast_menu_toggle_sounds),
+                getString(R.string.sua), getString(R.string.turnpoints_no_hyphen)};
+        final boolean[] displayOptionsChecked = {displaySoundings, displaySUA, displayTurnpoints};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Display");
+        builder.setMultiChoiceItems(displayOptions, displayOptionsChecked,
+                (dialog, item, isChecked) -> displayOptionsChecked[item] = isChecked);
+        builder.setPositiveButton(R.string.ok,
+                (dialog, which) -> {
+                    for (int i = 0; i < displayOptionsChecked.length; ++i) {
+                        switch (i) {
+                            case 0:
+                                displaySoundings = soaringForecastViewModel.displaySoundings(displayOptionsChecked[i]);
+                                break;
+                            case 1:
+                                if (displaySUA != displayOptionsChecked[i]) {
+                                    displaySua(displayOptionsChecked[i]);
+                                    displaySUA = displayOptionsChecked[i];
+                                }
+                                break;
+                            case 2:
+                                if (displayTurnpoints != displayOptionsChecked[i]) {
+                                    soaringForecastViewModel.displayTurnpoints(displayOptionsChecked[i]);
+                                    displayTurnpoints = displayOptionsChecked[i];
+                                }
+                                break;
+                        }
+                    }
+                });
+        builder.setNegativeButton(R.string.cancel,
+                (dialog, which) -> {
+                    //dismiss - no changes
+                });
+        AlertDialog displayOptionsMenu = builder.create();
+        displayOptionsMenu.show();
+
+    }
 }
+
+

@@ -98,7 +98,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> soundingDisplay = new MutableLiveData<>();
     private Constants.FORECAST_SOUNDING forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
 
-    private boolean displaySoundings;
     private boolean loadRasp;
 
     private StringUtils stringUtils;
@@ -233,7 +232,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         if (selectedRegion != null) {
             loadForecastModels(selectedRegion);
             // see if soundings should be displayed
-            if (displaySoundings = appPreferences.getDisplayForecastSoundings()) {
+            if (appPreferences.getDisplayForecastSoundings()) {
                 loadSoundings();
             }
         } else {
@@ -370,6 +369,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         if (modelForecastDate != null) {
             regionLatLngBounds.setValue(new LatLngBounds(modelForecastDate.getModel().getSouthWestLatLng()
                     , modelForecastDate.getModel().getNorthEastLatLng()));
+            if (appPreferences.getDisplayTurnpoints()){
+                findTurnpointsInSelectedRegion();
+            }
         }
     }
 
@@ -498,7 +500,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public boolean displaySoundings(boolean displaySoundings) {
-        if (this.displaySoundings = displaySoundings) {
+        if (displaySoundings) {
             return loadSoundings();
         } else {
             soundings.setValue(null);
@@ -881,7 +883,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     public void findTurnpointsInSelectedRegion() {
-        if (regionLatLngBounds != null) {
+        if (regionLatLngBounds != null && regionLatLngBounds.getValue() != null) {
             Disposable disposable = appRepository.getTurnpointsInRegion(regionLatLngBounds.getValue().southwest, regionLatLngBounds.getValue().northeast)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
