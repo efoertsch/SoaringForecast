@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntegerRes;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
@@ -34,12 +35,12 @@ import com.google.maps.android.data.geojson.GeoJsonLayer;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
-import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.json.Sounding;
+import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
+import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
@@ -217,7 +218,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         for (Sounding sounding : soundings) {
             latLng = new LatLng(sounding.getLat(), sounding.getLng());
             marker = googleMap.addMarker(new MarkerOptions().position(latLng)
-                    .title(sounding.getLocation()));
+                    .icon(BitmapDescriptorFactory.fromBitmap(getSoundingMarker(sounding.getLocation()))));
             marker.setTag(sounding);
             soundingMarkers.add(marker);
         }
@@ -603,6 +604,27 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             }
 
         }
+    }
+
+    // ------------ Sounding markers
+    private Bitmap getSoundingMarker(String location) {
+        View soundingsPin;
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        soundingsPin = inflater.inflate(R.layout.soundings_pin, null);
+        TextView locationView = soundingsPin.findViewById(R.id.soundings_pin_location);
+        locationView.setText(location.length() < 4 ? location : location.substring(0,3));
+        soundingsPin.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT));
+        soundingsPin.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        //Assign a size and position to the view and all of its descendants
+       soundingsPin.layout(0, 0, soundingsPin.getMeasuredWidth(), soundingsPin.getMeasuredHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(soundingsPin.getWidth(), soundingsPin.getHeight(), Bitmap.Config.ARGB_8888);
+        soundingsPin.layout(0, 0, soundingsPin.getMeasuredWidth(), soundingsPin.getMeasuredHeight());
+        soundingsPin.draw(new Canvas(bitmap));
+        return bitmap;
     }
 
 }
