@@ -2,14 +2,22 @@ package org.soaringforecast.rasp.soaring.forecast;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IntegerRes;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -34,12 +42,12 @@ import com.google.maps.android.data.geojson.GeoJsonLayer;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
-import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.json.Sounding;
+import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
+import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
@@ -93,6 +101,11 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private Context context;
     private boolean listenToLayerClicks;
     private int zoomLevel;
+    private int soundingsTextZoomLevel = 0;
+    private float soundingsTextSize;
+    private ScaleDrawable soundingsSkewTDrawable;
+    private Resources resources;
+
     // MapType must be one of GoogleMap.MAP_TYPE_xxxx
     private int mapType = GoogleMap.MAP_TYPE_TERRAIN;
 
@@ -102,6 +115,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     public ForecastMapper setContext(Context context) {
         this.context = context;
+        resources = context.getResources();
         return this;
     }
 
@@ -117,10 +131,13 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                zoomLevel = (int) googleMap.getCameraPosition().zoom;
-                Timber.d("Zoom level: %1$d", (int) googleMap.getCameraPosition().zoom);
-                mapTurnpoints();
-
+                int newZoom = (int) googleMap.getCameraPosition().zoom;
+                if (newZoom != zoomLevel) {
+                    zoomLevel = newZoom;
+                    Timber.d("Zoom level: %1$d", (int) googleMap.getCameraPosition().zoom);
+                    mapTurnpoints();
+                    mapSoundingMarkers();
+                }
             }
         });
         // if delay in map getting ready and bounds, sounding locations or task already passed in display them as
@@ -131,7 +148,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         googleMap.setOnInfoWindowClickListener(this);
         googleMap.setOnInfoWindowCloseListener(this);
         updateMapBounds();
-        createSoundingMarkers();
+        mapSoundingMarkers();
         plotTaskTurnpoints();
     }
 
@@ -203,21 +220,22 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             removeSoundingMarkers();
         } else {
             this.soundings.addAll(soundings);
-            createSoundingMarkers();
+            mapSoundingMarkers();
         }
     }
 
-    private void createSoundingMarkers() {
+    private void mapSoundingMarkers() {
         if (googleMap == null) {
             return;
         }
+        removeSoundingMarkers();
         soundingMarkers.clear();
         LatLng latLng;
         Marker marker;
         for (Sounding sounding : soundings) {
             latLng = new LatLng(sounding.getLat(), sounding.getLng());
             marker = googleMap.addMarker(new MarkerOptions().position(latLng)
-                    .title(sounding.getLocation()));
+                    .icon(BitmapDescriptorFactory.fromBitmap( createSoundingMarker(sounding.getLocation()))));
             marker.setTag(sounding);
             soundingMarkers.add(marker);
         }
@@ -604,5 +622,73 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
         }
     }
+
+    // ------------ Sounding markers
+    private Bitmap createSoundingMarker(String location) {
+        View soundingsPin;
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        soundingsPin = inflater.inflate(R.layout.soundings_pin, null);
+        TextView locationView = soundingsPin.findViewById(R.id.soundings_pin_location);
+        locationView.setText(location.length() < 5 ? location : location.substring(0, 5));
+
+        // zoomLevel may be 0 if camera hasn't moved to location yet, if 0 using 8 as default
+        if (soundingsTextZoomLevel == 0 || (soundingsTextZoomLevel != zoomLevel && zoomLevel != 0 )) {
+            soundingsTextZoomLevel = (zoomLevel == 0 ? 8 : zoomLevel);
+            soundingsTextSize = soundingsTextZoomLevel <= 7 ? resources.getDimension(R.dimen.text_size_regular)
+                    : resources.getDimension(R.dimen.text_size_extra_large);
+            soundingsSkewTDrawable = createSoundingMarkerIcon(locationView, (int) soundingsTextSize, R.drawable.skew_t);
+        }
+
+        locationView.setTextSize(TypedValue.COMPLEX_UNIT_PX, soundingsTextSize);
+        locationView.setCompoundDrawablesWithIntrinsicBounds(soundingsSkewTDrawable, null, null, null);
+
+        soundingsPin.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT));
+        soundingsPin.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        //Assign a size and position to the view and all of its descendants
+        soundingsPin.layout(0, 0, soundingsPin.getMeasuredWidth(), soundingsPin.getMeasuredHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(soundingsPin.getWidth(), soundingsPin.getHeight(), Bitmap.Config.ARGB_8888);
+        soundingsPin.layout(0, 0, soundingsPin.getMeasuredWidth(), soundingsPin.getMeasuredHeight());
+        soundingsPin.draw(new Canvas(bitmap));
+        return bitmap;
+    }
+
+    private ScaleDrawable createSoundingMarkerIcon(TextView textView, int size, @DrawableRes int drawable) {
+        Drawable underlyingDrawable =
+                new BitmapDrawable(resources, BitmapFactory.decodeResource(resources, drawable));
+
+        // Wrap to scale up to the TextView height
+        final ScaleDrawable scaledDrawable =
+                new ScaleDrawable(underlyingDrawable, Gravity.CENTER, 1F, 1F) {
+                    // Give this drawable a height being at
+                    // TextView text size. It will be
+                    // used by
+                    // TextView.setCompoundDrawablesWithIntrinsicBounds
+                    public int getIntrinsicHeight() {
+                        return   size;
+                    }
+
+                    public int getIntrinsicWidth() {
+                        return  size;
+                    }
+                };
+
+        // Set explicitly level else the default value
+        // (0) will prevent .draw to effectively draw
+        // the underlying Drawable
+        scaledDrawable.setLevel(10000);
+        textView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right,
+                                       int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                textView.setCompoundDrawablesWithIntrinsicBounds(scaledDrawable, null, null, null);
+            }
+        });
+       return scaledDrawable;
+    }
+
 
 }
