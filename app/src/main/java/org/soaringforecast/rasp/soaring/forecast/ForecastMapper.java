@@ -630,8 +630,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         soundingsPin = inflater.inflate(R.layout.soundings_pin, null);
         TextView locationView = soundingsPin.findViewById(R.id.soundings_pin_location);
         locationView.setText(location.length() < 5 ? location : location.substring(0, 5));
-        //locationView.setTextSize(zoomLevel <= 6 ? R.dimen.text_size_regular : R.dimen.text_size_extra_large);
-        //setSoundingMarkerIcon(locationView, R.drawable.skew_t);
 
         // zoomLevel may be 0 if camera hasn't moved to location yet, if 0 using 8 as default
         if (soundingsTextZoomLevel == 0 || (soundingsTextZoomLevel != zoomLevel && zoomLevel != 0 )) {
@@ -643,7 +641,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
         locationView.setTextSize(TypedValue.COMPLEX_UNIT_PX, soundingsTextSize);
         locationView.setCompoundDrawablesWithIntrinsicBounds(soundingsSkewTDrawable, null, null, null);
-
 
         soundingsPin.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT));
@@ -684,59 +681,14 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         // the underlying Drawable
         scaledDrawable.setLevel(10000);
         textView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-
             @Override
             public void onLayoutChange(View v, int left, int top, int right,
                                        int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 textView.setCompoundDrawablesWithIntrinsicBounds(scaledDrawable, null, null, null);
             }
         });
-
        return scaledDrawable;
     }
 
-
-    private void setSoundingMarkerIcon(final TextView textView, @DrawableRes int drawable) {
-        Drawable underlyingDrawable =
-                new BitmapDrawable(resources, BitmapFactory.decodeResource(resources, drawable));
-
-        // Wrap to scale up to the TextView height
-        final ScaleDrawable scaledLeft =
-                new ScaleDrawable(underlyingDrawable, Gravity.CENTER, 1F, 1F) {
-                    // Give this drawable a height being at
-                    // TextView text size. It will be
-                    // used by
-                    // TextView.setCompoundDrawablesWithIntrinsicBounds
-                    public int getIntrinsicHeight() {
-                        return (int) textView.getTextSize();
-                    }
-
-                    public int getIntrinsicWidth() {
-                        return (int) textView.getTextSize();
-                    }
-                };
-
-        // Set explicitly level else the default value
-        // (0) will prevent .draw to effectively draw
-        // the underlying Drawable
-        scaledLeft.setLevel(10000);
-
-        // Set the drawable as a component of the
-        // TextView
-        textView.setCompoundDrawablesWithIntrinsicBounds(
-                scaledLeft, null, null, null);
-
-        // If the text is changed, we need to
-        // re-register the Drawable to recompute the
-        // bounds given the new TextView height
-        textView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right,
-                                       int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                textView.setCompoundDrawablesWithIntrinsicBounds(scaledLeft, null, null, null);
-            }
-        });
-    }
 
 }
