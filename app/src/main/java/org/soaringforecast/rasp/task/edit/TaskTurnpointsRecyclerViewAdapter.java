@@ -1,6 +1,7 @@
 package org.soaringforecast.rasp.task.edit;
 
 import android.databinding.DataBindingUtil;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -39,7 +40,7 @@ public class TaskTurnpointsRecyclerViewAdapter
     public void onBindViewHolder(TaskTurnpointViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         //TODO get better way to do following
-        holder.getViewDataBinding().setClickListener(itemClickListener);
+       // holder.getViewDataBinding().setClickListener(itemClickListener);
     }
 
 
@@ -53,7 +54,13 @@ public class TaskTurnpointsRecyclerViewAdapter
 
     @Override
     public void dragCompleted() {
-        notifyDataSetChanged();
+        final Runnable r = new Runnable() {
+            public void run() {
+                notifyDataSetChanged();
+            }
+        };
+        new Handler().post(r);
+
     }
 
 
