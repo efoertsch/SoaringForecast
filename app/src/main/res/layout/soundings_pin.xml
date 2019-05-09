@@ -13,12 +13,14 @@
         android:id="@+id/soundings_pin_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_half"
+        android:layout_marginEnd="@dimen/margin_half"
+        android:background="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/text_size_small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@android:color/white"
         tools:text="Ste"/>
+
     <ImageView
         android:id="@+id/turnpint_marker_pointer"
         android:layout_width="wrap_content"
