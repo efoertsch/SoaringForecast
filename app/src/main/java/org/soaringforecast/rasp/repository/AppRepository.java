@@ -299,7 +299,8 @@ public class AppRepository {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
                     if (taskTurnpoint.getId() == 0) {
-                        taskTurnpointDao.insert(taskTurnpoint);
+                        long id = taskTurnpointDao.insert(taskTurnpoint);
+                        taskTurnpoint.setId(id);
                     } else {
                         taskTurnpointDao.update(taskTurnpoint);
                     }
@@ -338,8 +339,7 @@ public class AppRepository {
     }
 
     @SuppressLint("CheckResult")
-    public Single<Long> addNewTaskAndTurnpoints(Task
-                                                        task, List<TaskTurnpoint> taskTurnpoints) {
+    public Single<Long> addNewTaskAndTurnpoints(Task task, List<TaskTurnpoint> taskTurnpoints) {
         return Single.create((SingleOnSubscribe<Long>) emitter -> {
             try {
                 long taskId = taskDao.insert(task);
@@ -347,6 +347,9 @@ public class AppRepository {
                     taskTurnpoint.setTaskId(taskId);
                 }
                 long[] keys = taskTurnpointDao.insertAll(taskTurnpoints);
+                for (int i = 0 ; i < keys.length; ++i){
+                    taskTurnpoints.get(i).setId(keys[i]);
+                }
                 emitter.onSuccess(taskId);
             } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);
