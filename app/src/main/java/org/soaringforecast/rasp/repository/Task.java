@@ -15,7 +15,7 @@ public class Task {
     private String taskName = "";
 
     //In Kilometers
-    private float distance;
+    private float distance = 0;
 
     private int taskOrder;
 
