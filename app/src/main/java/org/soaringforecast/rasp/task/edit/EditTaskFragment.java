@@ -10,20 +10,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
-import org.soaringforecast.rasp.databinding.EditTaskView;
-import org.soaringforecast.rasp.task.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
+import org.soaringforecast.rasp.databinding.EditTaskView;
 import org.soaringforecast.rasp.repository.AppRepository;
+import org.soaringforecast.rasp.task.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.touchhelper.OnStartDragListener;
 import org.soaringforecast.rasp.touchhelper.SimpleItemTouchHelperCallback;
 import org.soaringforecast.rasp.utils.ViewUtilities;
-
-import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
@@ -55,6 +57,31 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
                 .get(TaskAndTurnpointsViewModel.class)
                 .setAppRepository(appRepository)
                 .setTaskId(taskId);
+
+        setHasOptionsMenu(true);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.edit_task_menu, menu);
+        MenuItem item = menu.findItem(R.id.edit_task_menu_clone);
+        item.setVisible(taskId != 0);
+        item.setEnabled(taskId != 0);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_task_menu_clone:
+                taskAndTurnpointsViewModel.cloneTask();
+                return true;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -62,7 +89,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
                              @Nullable Bundle savedInstanceState) {
 
         editTaskView = DataBindingUtil.inflate(inflater, R.layout.task_edit_layout, container, false);
-        editTaskView.setLifecycleOwner(this); // update UI based on livedata changes.
+        editTaskView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
 
         editTaskView.setViewModel(taskAndTurnpointsViewModel);
 
@@ -79,7 +106,8 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
         taskAndTurnpointsViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
             recyclerViewAdapter.setItems(taskTurnpoints);
-
+            taskId = (taskTurnpoints != null && taskTurnpoints.size() > 0) ?  taskTurnpoints.get(0).getTaskId() : 0;
+            getActivity().invalidateOptionsMenu();
         });
 
         //TODO DRY
@@ -91,7 +119,11 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         editTaskView.editTaskAddTurnpoints.setOnClickListener(v -> goToAddTaskTurnpoints());
 
         saveFab = editTaskView.editTaskSaveTask;
-        saveFab.setOnClickListener(v -> taskAndTurnpointsViewModel.saveTask());
+        saveFab.setOnClickListener(v -> {
+                    taskAndTurnpointsViewModel.saveTask();
+                    getActivity().invalidateOptionsMenu();
+                }
+        );
 
         return editTaskView.getRoot();
     }
@@ -106,7 +138,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     }
 
     private void displayTitle() {
-        if (taskId == -1) {
+        if (taskId == 0) {
             getActivity().setTitle(R.string.add_task);
         } else {
             getActivity().setTitle(R.string.edit_task);
@@ -124,6 +156,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
     @Override
     public boolean okToGoBack() {
+        // why am I not using observer?
         if (taskAndTurnpointsViewModel.getNeedToSaveUpdates().getValue() == null
                 || !taskAndTurnpointsViewModel.getNeedToSaveUpdates().getValue()) {
             return true;
