@@ -68,6 +68,7 @@
             tools:text="300.1k"
             android:layout_marginStart="@dimen/margin_double"
             app:layout_constraintStart_toStartOf="parent"
+            android:onClick="@{()->clickListener.onItemClick(task, position)}"
             app:layout_constraintTop_toBottomOf="@+id/task_detail_taskname"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@{String.format(@string/distance_km,task.distance)}"

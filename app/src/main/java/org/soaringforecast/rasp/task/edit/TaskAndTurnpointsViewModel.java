@@ -159,6 +159,21 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         }
     }
 
+    public void cloneTask(){
+        task.setId(0);
+        taskId = 0;
+        List<TaskTurnpoint> clonedTaskTurnpoints = taskTurnpoints.getValue();
+        if (clonedTaskTurnpoints != null) {
+            for (TaskTurnpoint taskTurnpoint : clonedTaskTurnpoints){
+                taskTurnpoint.setId(0);
+                taskTurnpoint.setTaskId(0);
+            }
+        }
+        deletedTaskTurnpoints.clear();
+        needToSaveUpdates.setValue(true);
+        taskTurnpoints.setValue(clonedTaskTurnpoints);
+    }
+
     public void saveTask() {
         Disposable disposable;
         working.setValue(true);

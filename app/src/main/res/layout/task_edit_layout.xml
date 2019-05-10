@@ -12,8 +12,6 @@
             name="viewModel"
             type="org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel"/>
 
-        <import type="java.lang.Integer"/>
-
     </data>
 
     <android.support.constraint.ConstraintLayout

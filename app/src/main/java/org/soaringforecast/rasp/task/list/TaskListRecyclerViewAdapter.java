@@ -20,24 +20,24 @@ import java.util.Collections;
 import java.util.List;
 
 public class TaskListRecyclerViewAdapter
-        extends GenericRecyclerViewAdapter<Task,TaskListViewHolder>
+        extends GenericRecyclerViewAdapter<Task, TaskListViewHolder>
         implements ItemTouchHelperAdapter {
 
     private GenericListClickListener<Task> itemClickListener;
     private GenericEditClickListener<Task> editClickListener;
 
-    public TaskListRecyclerViewAdapter(List<Task> items){
+    public TaskListRecyclerViewAdapter(List<Task> items) {
         super(items);
     }
 
-    public TaskListRecyclerViewAdapter setEditItemClickListener(GenericEditClickListener<Task> genericEditClickListener ) {
-        this.editClickListener =  genericEditClickListener;
+    public TaskListRecyclerViewAdapter setEditItemClickListener(GenericEditClickListener<Task> genericEditClickListener) {
+        this.editClickListener = genericEditClickListener;
         return this;
 
     }
 
-    public TaskListRecyclerViewAdapter setItemClickListener(GenericListClickListener<Task> genericListClickListener ) {
-        this.itemClickListener =  genericListClickListener;
+    public TaskListRecyclerViewAdapter setItemClickListener(GenericListClickListener<Task> genericListClickListener) {
+        this.itemClickListener = genericListClickListener;
         return this;
     }
 
@@ -51,15 +51,15 @@ public class TaskListRecyclerViewAdapter
     @Override
     public void onBindViewHolder(TaskListViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-       if (itemClickListener != null) {
-           holder.getViewDataBinding().setClickListener(itemClickListener);
-       }
+        if (itemClickListener != null) {
+            holder.getViewDataBinding().setClickListener(itemClickListener);
+        }
         if (editClickListener != null) {
             holder.getViewDataBinding().setEditClickListener(editClickListener);
         }
     }
 
-    public void updateTaskList(List<Task> Tasks){
+    public void updateTaskList(List<Task> Tasks) {
         getItems().clear();
         getItems().addAll(Tasks);
         notifyDataSetChanged();
@@ -81,9 +81,9 @@ public class TaskListRecyclerViewAdapter
         renumberTaskOrder();
     }
 
-    private void renumberTaskOrder(){
+    private void renumberTaskOrder() {
         int i = 0;
-        for (Task task: getItems()){
+        for (Task task : getItems()) {
             task.setTaskOrder(i++);
         }
         EventBus.getDefault().post(new RenumberedTaskList(getItems()));
