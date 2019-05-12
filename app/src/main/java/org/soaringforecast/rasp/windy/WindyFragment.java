@@ -90,7 +90,7 @@ public class WindyFragment extends DaggerFragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-        // prevent popups and new windows (but do not override the onCreateWindow() )
+        // prevents popups and new windows by not not overriding the onCreateWindow() )
         webView.getSettings().setSupportMultipleWindows(true);
 
         webView.setWebViewClient(new WebViewClient() {
@@ -101,14 +101,16 @@ public class WindyFragment extends DaggerFragment {
                     return false;
                 }
                 // Otherwise, start browser
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                // URL from clicking windy icon in form of https://www.windy.com/?utm_medium=efoertsch&utm_source=api4
+                // doesn't work (as of 5/12/2019) so use format below.
+                //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                Intent intent = new Intent(Intent.ACTION_VIEW
+                        , Uri.parse(getString(R.string.windy_com_parm,windyViewModel.getLat()
+                        , windyViewModel.getLong())));
                 startActivity(intent);
                 return true;
             }
 
-            public void onPageFinished(WebView view, String url) {
-                // ???
-            }
         });
 
         webView.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

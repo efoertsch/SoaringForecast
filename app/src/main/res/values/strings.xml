@@ -306,5 +306,6 @@
     <string name="forecast_menu_display_options">Display Options</string>
     <string name="sua">Special Use Airspace</string>
     <string name="clone">Clone</string>
+    <string name="windy_com_parm">http://www.windy.com/?%1$.4f,%2$.4f</string>
 
 </resources>
