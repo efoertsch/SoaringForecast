@@ -31,7 +31,7 @@ import org.soaringforecast.rasp.databinding.SoaringForecastBinding;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.json.Forecast;
-import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
+import org.soaringforecast.rasp.soaring.messages.DisplayLatLngForecast;
 import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.utils.StringUtils;
@@ -240,7 +240,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // Point forecast
         soaringForecastViewModel.getPointForecast().observe(this, pointForecast -> {
-            forecastMapper.displayPointForecast(pointForecast);
+            forecastMapper.displayLatLngForecast(pointForecast);
         });
 
         //ElapsedTimeUtil.showElapsedTime(TAG, "end of startObservers()");
@@ -419,8 +419,8 @@ public class SoaringForecastFragment extends DaggerFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(DisplayPointForecast pointForecast) {
-        soaringForecastViewModel.displayPointForecast(pointForecast.getLatLng());
+    public void onMessageEvent(DisplayLatLngForecast latLngForecast) {
+        soaringForecastViewModel.displayLatLngForecast(latLngForecast.getLatLng());
     }
 
     // ---- Opacity for forecast overlay -----------------------

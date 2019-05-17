@@ -102,7 +102,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     private StringUtils stringUtils;
     private HashMap<String, String> pointForecastConversion;
-    private MutableLiveData<PointForecast> pointForecastText;
+    private MutableLiveData<LatLngForecast> pointForecastText;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -369,7 +369,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         if (modelForecastDate != null) {
             regionLatLngBounds.setValue(new LatLngBounds(modelForecastDate.getModel().getSouthWestLatLng()
                     , modelForecastDate.getModel().getNorthEastLatLng()));
-            if (appPreferences.getDisplayTurnpoints()){
+            if (appPreferences.getDisplayTurnpoints()) {
                 findTurnpointsInSelectedRegion();
             }
         }
@@ -920,7 +920,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
 
-    public MutableLiveData<PointForecast> getPointForecast() {
+    public MutableLiveData<LatLngForecast> getPointForecast() {
         if (pointForecastText == null) {
             pointForecastText = new MutableLiveData<>();
         }
@@ -931,23 +931,32 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * @param latLng Get point forecast based on current forecast type at latlng
      */
 
-    public void displayPointForecast(final LatLng latLng) {
+    public void displayLatLngForecast(final LatLng latLng) {
+        String latLngForecastParms;
         stopImageAnimation();
-        if (pointForecastConversion == null) {
-            pointForecastConversion = stringUtils.getHashMapFromStringRes(getApplication().getApplicationContext()
-                    , R.string.point_forecast_parm_conversion);
-        }
+//        if (latLngForecastParms == null) {
+//            latLngForecastParms = stringUtils.getHashMapFromStringRes(getApplication().getApplicationContext()
+//                    , R.string.point_forecast_parm_conversion);
+//        }
         if (selectedForecast.getValue() != null && selectedForecast.getValue().getForecastName() != null
                 && selectedSoaringForecastImageSet != null) {
-            String pointForecastValue = pointForecastConversion.get(selectedForecast.getValue().getForecastName());
-            if (pointForecastValue != null) {
-                soaringForecastDownloader.getPointForecastAtLatLong(selectedRegion.getName()
+            //latLngForecastParms = pointForecastConversion.get(selectedForecast.getValue().getForecastName());
+            switch (selectedForecast.getValue().getForecastCategory()) {
+                case "wave":
+                    latLngForecastParms = getApplication().getString(R.string.location_forecast_wave_parms);
+                    break;
+                default:
+                    latLngForecastParms = getApplication().getString(R.string.location_forecast_standard_parms);
+            }
+
+            if (latLngForecastParms != null) {
+                soaringForecastDownloader.getLatLngForecast(selectedRegion.getName()
                         , selectedModelForecastDate.getDate()
                         , selectedModelName.toLowerCase()
                         , selectedSoaringForecastImageSet.getValue().getLocalTime()
                         , String.valueOf(latLng.latitude)
                         , String.valueOf(latLng.longitude)
-                        , pointForecastValue)
+                        , latLngForecastParms)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<Response<ResponseBody>>() {
@@ -960,7 +969,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                             public void onSuccess(Response<ResponseBody> responseBodyResponse) {
                                 if (responseBodyResponse.isSuccessful()) {
                                     try {
-                                        pointForecastText.setValue(new PointForecast(latLng,
+                                        pointForecastText.setValue(new LatLngForecast(latLng,
                                                 responseBodyResponse.body().string()));
                                     } catch (IOException ioe) {
                                         // TODO report error
@@ -975,8 +984,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
                         });
             } else {
-                pointForecastText.setValue(new PointForecast(latLng
-                        , getApplication().getString(R.string.no_point_forecast_available, selectedForecast.getValue().getForecastNameDisplay())));
+                pointForecastText.setValue(new LatLngForecast(latLng
+                        , getApplication().getString(R.string.no_location_forecast_available, selectedForecast.getValue().getForecastNameDisplay())));
             }
         }
 

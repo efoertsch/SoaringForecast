@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="point_forecast_parm_conversion">{\"wstar_bsratio\":\"wstar bsratio\", \"zsfclclmask\":\"zsfclcldif zsfclcl\"
+    <string name="point_forecast_parm_conversion" translatable="false">{\"wstar_bsratio\":\"wstar bsratio\"
+        , \"zsfclclmask\":\"zsfclcldif zsfclcl\"
         , \"zblclmask\":\"zblcldif zblcl\"
         , \"sfcwind0\":\"sfcwind0spd sfcwind0dir\"
         , \"sfcwind\":\"sfcwindspd sfcwinddir\"
@@ -12,4 +13,8 @@
         , \"press700\":\"press700 press700wspd press700wdir\"
         , \"press500\":\"press500 press500wspd press500wdir\"
         , \"wind950\":\"wind950spd wind950dir\"}</string>
+
+    <string name="location_forecast_standard_parms" translatable="false">wstar bsratio zsfclcldif zsfclcl zblcldif zblcl  blwindspd blwinddir </string>
+    <string name="location_forecast_wave_parms" translatable="false">press1000 press1000wspd press1000wdir press950 press950wspd press950wdir press850 press850wspd press850wdir" +
+                        " press700 press700wspd press700wdir press500 press500wspd press500wdir</string>
 </resources>

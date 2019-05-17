@@ -245,7 +245,7 @@ public class SoaringForecastDownloader implements CacheTimeListener {
     }
 
 
-    public Single<Response<ResponseBody>> getPointForecastAtLatLong(String region, String date, String model
+    public Single<Response<ResponseBody>> getLatLngForecast(String region, String date, String model
             , String time, String lat, String lon, String forecastType) {
        return client.getLatLongPointForecast(region, date, model, time, lat, lon, forecastType);
     }

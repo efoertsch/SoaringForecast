@@ -46,7 +46,7 @@ import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.json.Sounding;
-import org.soaringforecast.rasp.soaring.messages.DisplayPointForecast;
+import org.soaringforecast.rasp.soaring.messages.DisplayLatLngForecast;
 import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.ViewUtilities;
@@ -538,16 +538,16 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        EventBus.getDefault().post(new DisplayPointForecast(latLng));
+        EventBus.getDefault().post(new DisplayLatLngForecast(latLng));
     }
 
-    public void displayPointForecast(PointForecast pointForecast) {
+    public void displayLatLngForecast(LatLngForecast latLngForecast) {
         if (googleMap != null) {
             Marker marker = googleMap.addMarker(new MarkerOptions()
-                    .position(pointForecast.getLatLng())
+                    .position(latLngForecast.getLatLng())
                     .icon(BitmapDescriptorFactory.fromBitmap(
                             BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.transparent_marker)))); // transparent image
-            marker.setTag(pointForecast);
+            marker.setTag(latLngForecast);
             marker.showInfoWindow();
         }
 
@@ -561,7 +561,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     @Override
     public void onInfoWindowClose(Marker marker) {
-        if (marker.getTag() instanceof PointForecast) {
+        if (marker.getTag() instanceof LatLngForecast) {
             marker.remove();
         }
     }
@@ -615,9 +615,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                     view.setText(context.getString(R.string.unknow_error_in_render));
                 }
 
-            } else if (marker.getTag() instanceof PointForecast) {
-                PointForecast pointForecast = (PointForecast) marker.getTag();
-                view.setText(pointForecast.getForecastText());
+            } else if (marker.getTag() instanceof LatLngForecast) {
+                LatLngForecast latLngForecast = (LatLngForecast) marker.getTag();
+                view.setText(latLngForecast.getForecastText());
             }
 
         }

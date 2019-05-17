@@ -127,13 +127,28 @@ public class SoaringForecastTest {
     //    @POST("cgi/get_rasp_blipspot.cgi")
     public void shouldGetALatLongPointForecastSeparateHeaderParmsTest() throws IOException {
         Response<ResponseBody> response = client.getLatLongPointForecast(
-                "NewEngland","2019-03-22","gfs","1100","43.132009","-72.157325",
-                "wstar+bsratio").blockingGet();
-        assertEquals("OK",response.message());
+                "NewEngland", "2019-05-16", "rap", "1100", "43.132009", "-72.157325",
+                "wstar bsratio zsfclcldif zsfclcl zblcldif zblcl sfcwind0spd sfcwind0dir sfcwindspd sfcwinddir blwindspd blwinddir bltopwindspd bltopwinddir").blockingGet();
+        assertEquals("OK", response.message());
         System.out.println(response.body().string());
         assertNotNull(response);
 
+    }
+
+    @Test
+    //region=NewEngland&date=2019-03-20&model=gfs&time=1000&lat=43.132009&lon=-72.157325&param=wstar bsratio
+    //    @POST("cgi/get_rasp_blipspot.cgi")
+    public void shouldGetALatLongWaveForecastSeparateHeaderParmsTest() throws IOException {
+        Response<ResponseBody> response = client.getLatLongPointForecast(
+                "NewEngland", "2019-05-17", "rap", "1100", "43.132009", "-72.157325",
+                "press1000 press1000wspd press1000wdir press950 press950wspd press950wdir press850 press850wspd press850wdir" +
+                        " press700 press700wspd press700wdir press500 press500wspd press500wdir").blockingGet();
+        assertEquals("OK", response.message());
+        System.out.println(response.body().string());
+        assertNotNull(response);
 
     }
+
+
 
 }

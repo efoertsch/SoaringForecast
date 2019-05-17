@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import timber.log.Timber;
 
@@ -60,6 +61,10 @@ public class StringUtils {
 
     }
 
+    public static LinkedHashMap<String, String> getLinkedHashMapFromStringRes(Context context, @StringRes int stringRes) {
+        return new Gson().fromJson(context.getString(stringRes), new TypeToken<LinkedHashMap<String, String>>(){}.getType());
+
+        }
 
 
 }
