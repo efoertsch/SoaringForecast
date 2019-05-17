@@ -2,11 +2,11 @@ package org.soaringforecast.rasp.soaring.forecast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class PointForecast {
+public class LatLngForecast {
     private final LatLng latLng;
     private final String forecastText;
 
-    public PointForecast(LatLng latLng, String forecastText) {
+    public LatLngForecast(LatLng latLng, String forecastText) {
         this.latLng = latLng;
         this.forecastText = forecastText;
     }
