@@ -8,7 +8,7 @@ public class LatLngForecast {
 
     public LatLngForecast(LatLng latLng, String forecastText) {
         this.latLng = latLng;
-        this.forecastText = forecastText;
+        this.forecastText = forecastText.trim();
     }
 
     public LatLng getLatLng() {
