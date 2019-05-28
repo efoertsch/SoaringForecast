@@ -538,7 +538,12 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        EventBus.getDefault().post(new DisplayLatLngForecast(latLng));
+        try {
+            EventBus.getDefault().post(new DisplayLatLngForecast(latLng));
+        } catch (Exception e){
+            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.oops_try_that_again), Snackbar.LENGTH_SHORT));
+        }
+        
     }
 
     public void displayLatLngForecast(LatLngForecast latLngForecast) {
