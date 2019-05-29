@@ -197,7 +197,8 @@ const options = {
   // Optional: Initial state of the map
   lat: getLat(),
   lon: getLong(),
-  zoom: getZoom()
+  zoom: getZoom(),
+  isolines: 'pressure'
 };
 // Initialize Windy API
 windyInit(options, windyAPI => {
