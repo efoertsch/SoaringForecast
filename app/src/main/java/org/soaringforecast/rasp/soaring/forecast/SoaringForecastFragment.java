@@ -276,7 +276,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         inflater.inflate(R.menu.forecast_menu, menu);
         MenuItem clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
         if (clearTaskMenuItem != null) {
-            clearTaskMenuItem.setVisible(showClearTaskMenuItem);
+            clearTaskMenuItem.setEnabled(showClearTaskMenuItem);
         }
 
 //        soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
