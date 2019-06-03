@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import org.soaringforecast.rasp.utils.CSVUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 //SeeYou cup file format
 //Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description
@@ -15,6 +16,9 @@ import java.util.List;
 
 @Entity(indices = {@Index(value = {"title", "code"}, unique = true), @Index("code")})
 public class Turnpoint {
+
+    private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
+    private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s ";
 
     @NonNull
     @PrimaryKey(autoGenerate = true)
@@ -233,7 +237,7 @@ public class Turnpoint {
 
     }
 
-    public String getStyleName(){
+    public String getStyleName() {
         return getStyleName(style);
     }
 
@@ -278,6 +282,32 @@ public class Turnpoint {
             default:
                 return "Unknown";
         }
+    }
+
+    public String getFormattedTurnpointDetails() {
+        String turnpointDetails;
+        switch (style) {
+            case "2":
+            case "4":
+            case "5":
+                turnpointDetails = String.format(Locale.getDefault(), AIRPORT_DETAILS
+                        , getTitle(), getCode()
+                        , getStyleName()
+                        , getLatitudeDeg(), getLongitudeDeg()
+                        , getElevation()
+                        , getDirection(), getLength()
+                        , getFrequency()
+                        , getDescription());
+                break;
+            default:
+                turnpointDetails = String.format(Locale.getDefault(), NON_AIRPORT_DETAILS
+                        , getTitle(), getCode()
+                        , getStyleName()
+                        , getLatitudeDeg(), getLongitudeDeg()
+                        , getElevation()
+                        , getDescription());
+        }
+        return turnpointDetails;
     }
 
 }
