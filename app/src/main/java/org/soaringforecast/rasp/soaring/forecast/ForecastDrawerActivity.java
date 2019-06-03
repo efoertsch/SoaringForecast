@@ -19,25 +19,28 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.about.AboutActivity;
-import org.soaringforecast.rasp.airport.AirportActivity;
-import org.soaringforecast.rasp.app.AppPreferences;
-import org.soaringforecast.rasp.databinding.AppNavDrawerBinding;
-import org.soaringforecast.rasp.common.messages.CallFailure;
-import org.soaringforecast.rasp.common.messages.SnackbarMessage;
-import org.soaringforecast.rasp.repository.AppRepository;
-import org.soaringforecast.rasp.satellite.SatelliteActivity;
-import org.soaringforecast.rasp.settings.SettingsActivity;
-import org.soaringforecast.rasp.task.TaskActivity;
-import org.soaringforecast.rasp.utils.ViewUtilities;
-import org.soaringforecast.rasp.windy.WindyActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.about.AboutActivity;
+import org.soaringforecast.rasp.airport.AirportActivity;
+import org.soaringforecast.rasp.app.AppPreferences;
+import org.soaringforecast.rasp.common.messages.CallFailure;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
+import org.soaringforecast.rasp.databinding.AppNavDrawerBinding;
+import org.soaringforecast.rasp.repository.AppRepository;
+import org.soaringforecast.rasp.satellite.SatelliteActivity;
+import org.soaringforecast.rasp.settings.SettingsActivity;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.task.TaskActivity;
+import org.soaringforecast.rasp.turnpointview.IAmDone;
+import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
+import org.soaringforecast.rasp.utils.ViewUtilities;
+import org.soaringforecast.rasp.windy.WindyActivity;
 
 import javax.inject.Inject;
 
@@ -191,11 +194,17 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         drawerLayout.closeDrawers();
     }
 
-    private void displayFragment(Fragment fragment, boolean addToBackstack) {
-        // Replacing any existing fragment
+    private void displayFragment(Fragment fragment, boolean replace, boolean addToBackstack) {
+        FragmentTransaction fragmentTransaction;
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
-                .replace(R.id.app_frame_layout, fragment);
+        if (replace) {
+            fragmentTransaction = fragmentManager.beginTransaction()
+                    .replace(R.id.app_frame_layout, fragment);
+        } else {
+            fragmentTransaction = fragmentManager.beginTransaction()
+                    .add(R.id.app_frame_layout, fragment);
+        }
+
         if (addToBackstack) {
             fragmentTransaction.addToBackStack(null);
         }
@@ -212,6 +221,7 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         WindyActivity.Builder builder = WindyActivity.Builder.getBuilder();
         startActivity(builder.build(this));
     }
+
     private void displayAirportMetarTaf() {
         AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
         builder.displayMetarTaf();
@@ -241,7 +251,7 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     }
 
     private void displaySoaringForecasts() {
-        displayFragment(new SoaringForecastFragment(), false);
+        displayFragment(new SoaringForecastFragment(), true, false);
     }
 
     private void displayTaskList() {
@@ -299,4 +309,18 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
                 .show();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
+        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
+        displayFragment(turnpointSatelliteViewFragment, false, true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onIAmDoneMessageEvent(IAmDone iAmDone) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.app_frame_layout);
+        getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
+    }
 }
+
+

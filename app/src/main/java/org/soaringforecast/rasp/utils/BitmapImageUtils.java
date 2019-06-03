@@ -1,11 +1,16 @@
 package org.soaringforecast.rasp.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.widget.ImageView;
@@ -22,6 +27,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import timber.log.Timber;
 
+// TODO separate cache logic from other bitmap stuff
 public class BitmapImageUtils {
 
     private BitmapCache bitmapCache;
@@ -114,11 +120,10 @@ public class BitmapImageUtils {
 
     }
 
-    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
-        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (DrawableCompat.wrap(drawable)).mutate();
-        }
+
+
+    public static Bitmap getBitmapFromVectorDrawable(Context context, @DrawableRes int drawableId) {
+        Drawable drawable = getDrawableFromVectorDrawable(context, drawableId);
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
                 drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -127,6 +132,87 @@ public class BitmapImageUtils {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    private static Drawable getDrawableFromVectorDrawable(Context context,@DrawableRes int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = (DrawableCompat.wrap(drawable)).mutate();
+        }
+        return drawable;
+    }
+
+    public static Bitmap getBitmapWithTextOverVectorDrawable(Context context, @DrawableRes int drawableRes, String text){
+        Drawable drawable =  getDrawableFromVectorDrawable(context, drawableRes);
+        return drawTextOnDrawable(context, drawable, text);
+    }
+
+    public static Drawable getDrawable(Context context, @DrawableRes int drawableRes){
+        Resources resources = context.getResources();
+        return resources.getDrawable(drawableRes);
+    }
+
+    public static Bitmap drawTextOnDrawable(Context context, Drawable drawable, String text) {
+        Canvas canvas = new Canvas();
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(bitmap);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        drawable.draw(canvas);
+
+        float scale = context.getResources().getDisplayMetrics().density;
+        Bitmap.Config bitmapConfig = bitmap.getConfig();
+
+        if (bitmapConfig == null) {
+            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+        }
+        bitmap = bitmap.copy(bitmapConfig, true);
+        canvas = new Canvas(bitmap);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        /* SET FONT COLOR (e.g. WHITE -> rgb(255,255,255)) */
+        paint.setColor(Color.rgb(0, 0, 0));
+        /* SET FONT SIZE (e.g. 15) */
+        paint.setTextSize((int) (12 * scale));
+        /* SET SHADOW WIDTH, POSITION AND COLOR (e.g. BLACK) */
+        //paint.setShadowLayer(1f, 0f, 1f, Color.BLACK);
+
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        int x = (bitmap.getWidth() - bounds.width()) / 2;
+        int y = (bitmap.getHeight() + bounds.height()) / 2;
+        canvas.drawText(text, x, y, paint);
+
+        return bitmap;
+    }
+
+    public static Bitmap drawTextOnBitmap(Context context,Bitmap bitmap, String text) {
+        Bitmap newCopyBitmap;
+        Canvas canvas ;
+
+        float scale = context.getResources().getDisplayMetrics().density;
+        Bitmap.Config bitmapConfig = bitmap.getConfig();
+
+        if (bitmapConfig == null) {
+            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+        }
+        newCopyBitmap = bitmap.copy(bitmapConfig, true);
+        canvas = new Canvas(newCopyBitmap);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        /* SET FONT COLOR (e.g. WHITE -> rgb(255,255,255)) */
+        paint.setColor(Color.rgb(0, 0, 0));
+        /* SET FONT SIZE (e.g. 15) */
+        paint.setTextSize((int) (12 * scale));
+        /* SET SHADOW WIDTH, POSITION AND COLOR (e.g. BLACK) */
+        //paint.setShadowLayer(1f, 0f, 1f, Color.BLACK);
+
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        int x = (bitmap.getWidth() - bounds.width()) / 2;
+        int y = (bitmap.getHeight() + bounds.height()) / 2;
+        canvas.drawText(text, x, y, paint);
+
+        return newCopyBitmap;
     }
 
 }
