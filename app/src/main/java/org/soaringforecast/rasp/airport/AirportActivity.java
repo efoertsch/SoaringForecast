@@ -56,12 +56,12 @@ public class AirportActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddAirportEvent event) {
-        replaceWithThisFragment(getAirportSearchFragment(), true);
+        displayFragment(getAirportSearchFragment(), true, true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplayAirportList event) {
-        replaceWithThisFragment(getAirportListFragment(), true);
+        displayFragment(getAirportListFragment(), true,true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

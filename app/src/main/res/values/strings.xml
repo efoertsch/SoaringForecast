@@ -249,6 +249,7 @@
     <string name="error_searching_turnpoints">An error occurred searching the turnpoint database.</string>
     <string name="error_getting_number_of_turnpoints">An error occurred getting the number of turnpoints.</string>
     <string name="error_reading_task">Error reading task from database.</string>
+    <string name="error_reading_turnpoint">Oops. Turnpoint %1$s/%2$s not found."</string>
     <string name="settings">Settings</string>
     <string name="metar_taf_preferences">METAR/TAF preferences</string>
     <string name="other_forecast_options">Other Forecasts</string>

@@ -648,8 +648,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private Bitmap getSizedTurnpointBitmap(int zoomLevel) {
         int sizingRatio = 1;
         if (zoomLevel <= 8 || zoomLevel > 9 ) {
+            // will resize this as needed
             startingTurnpointBitmap = BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.ic_turnpoint_red_48dp);
         } else {
+            // zoomlevel 9 no resizing
             startingTurnpointBitmap = BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.ic_turnpoint_red_32dp);
         }
         if (zoomLevel <= 7) {
@@ -659,7 +661,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         } else if (zoomLevel >= 9) {
             sizingRatio = 1;
         }
-        // use smaller bitmap icon
+        // note only bitmaps for zoom level  9 or more don't get resized
         return  Bitmap.createScaledBitmap(startingTurnpointBitmap
                         , startingTurnpointBitmap.getWidth() / sizingRatio, startingTurnpointBitmap.getHeight() / sizingRatio
                         , true);

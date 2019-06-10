@@ -28,7 +28,6 @@ import timber.log.Timber;
 
 public class TurnpointSatelliteViewFragment extends Fragment implements OnMapReadyCallback {
 
-    private static View dialogView;
     private Turnpoint turnpoint;
     private ProgressBar progressBar;
 
@@ -41,7 +40,6 @@ public class TurnpointSatelliteViewFragment extends Fragment implements OnMapRea
     private void setTurnpoint(Turnpoint turnpoint) {
         this.turnpoint = turnpoint;
     }
-
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
