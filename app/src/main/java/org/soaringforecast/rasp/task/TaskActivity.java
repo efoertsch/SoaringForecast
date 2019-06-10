@@ -91,22 +91,22 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTask event) {
-        replaceWithThisFragment(new EditTaskFragment().setTaskId( event.getTaskId()), true);
+        displayFragment(new EditTaskFragment().setTaskId( event.getTaskId()), true, true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        replaceWithThisFragment(new TurnpointSearchFragment(), true);
+        displayFragment(new TurnpointSearchFragment(), true,true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToTurnpointImport event) {
-        replaceWithThisFragment(getSeeYouImportFragment(),true);
+        displayFragment(getSeeYouImportFragment(),true,true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToDownloadImport event) {
-        replaceWithThisFragment(getTurnpointsDownloadFragment(), true);
+        displayFragment(getTurnpointsDownloadFragment(), true,true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

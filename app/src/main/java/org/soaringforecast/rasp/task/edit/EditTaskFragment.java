@@ -22,6 +22,9 @@ import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.databinding.EditTaskView;
 import org.soaringforecast.rasp.repository.AppRepository;
+import org.soaringforecast.rasp.repository.TaskTurnpoint;
+import org.soaringforecast.rasp.repository.messages.DataBaseError;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.task.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.touchhelper.OnStartDragListener;
 import org.soaringforecast.rasp.touchhelper.SimpleItemTouchHelperCallback;
@@ -30,6 +33,10 @@ import org.soaringforecast.rasp.utils.ViewUtilities;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class EditTaskFragment extends DaggerFragment implements OnStartDragListener, CheckBeforeGoingBack {
 
@@ -43,11 +50,34 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     private FloatingActionButton saveFab;
     private ItemTouchHelper itemTouchHelper;
     private EditTaskView editTaskView;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
     public EditTaskFragment setTaskId(long taskId) {
         this.taskId = taskId;
         return this;
+    }
+
+    private View.OnClickListener onItemClickListener = view -> {
+       TaskTurnpoint taskTurnpoint = (TaskTurnpoint) view.getTag();
+       // find corresponding turnpoint
+        getTurnpointFromTaskTurnpoint(taskTurnpoint);
+
+
+    };
+
+    private void getTurnpointFromTaskTurnpoint(TaskTurnpoint taskTurnpoint) {
+        Disposable disposable = appRepository.getTurnpoint(taskTurnpoint.getTitle(), taskTurnpoint.getCode())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(turnpoint-> {
+                            EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
+                        },
+                        t -> {
+                            EventBus.getDefault().post(new DataBaseError(getContext().getString(R.string.error_reading_turnpoint, taskTurnpoint.getTitle(),
+                                    taskTurnpoint.getCode()), t));
+                        });
+        compositeDisposable.add(disposable);
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -95,6 +125,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
         RecyclerView recyclerView = editTaskView.editTaskRecyclerView;
         recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskAndTurnpointsViewModel);
+        recyclerViewAdapter.setOnItemClickListener(onItemClickListener);
 
         //TODO DRY
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
@@ -135,6 +166,12 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         // if just added all turnpoints via search, the task distance will not be updated by observer in createView
         // ( as this fragment paused while adding turnpoints, so make sure ui update occurs.
         editTaskView.editTaskDistance.setText(getString(R.string.distance_km, taskAndTurnpointsViewModel.getTaskDistance().getValue()));
+    }
+
+    @Override
+    public void onStop(){
+        compositeDisposable.dispose();
+        super.onStop();
     }
 
     private void displayTitle() {

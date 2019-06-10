@@ -3,6 +3,7 @@ package org.soaringforecast.rasp.task.edit;
 import android.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.soaringforecast.rasp.R;
@@ -22,6 +23,7 @@ public class TaskTurnpointsRecyclerViewAdapter
 
     private GenericListClickListener<TaskTurnpoint> itemClickListener;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
+    private View.OnClickListener onItemClickListener;
 
     public TaskTurnpointsRecyclerViewAdapter(TaskAndTurnpointsViewModel taskAndTurnpointsViewModel) {
         super(taskAndTurnpointsViewModel.getTaskTurnpoints().getValue());
@@ -71,7 +73,12 @@ public class TaskTurnpointsRecyclerViewAdapter
         notifyDataSetChanged();
     }
 
-    public static class TaskTurnpointViewHolder extends GenericViewHolder<TaskTurnpoint, TaskTurnpointView>
+    public void setOnItemClickListener(View.OnClickListener itemClickListener) {
+        onItemClickListener = itemClickListener;
+    }
+
+
+    public class TaskTurnpointViewHolder extends GenericViewHolder<TaskTurnpoint, TaskTurnpointView>
             implements ItemTouchHelperViewHolder {
 
         private TaskTurnpointView viewDataBinding;
@@ -86,6 +93,8 @@ public class TaskTurnpointsRecyclerViewAdapter
         public void onBind(TaskTurnpoint item, int position) {
             viewDataBinding.setTaskTurnpoint(item);
             viewDataBinding.setPosition(position);
+            viewDataBinding.taskTurnpointDetailLayout.setTag(item);
+            viewDataBinding.taskTurnpointDetailLayout.setOnClickListener(onItemClickListener);
         }
 
         @Override

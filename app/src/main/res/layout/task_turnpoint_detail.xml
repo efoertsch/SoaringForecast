@@ -24,7 +24,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/task_turnpoint_detail_layout">
 
         <TextView
             android:id="@+id/task_turnpoint_name"

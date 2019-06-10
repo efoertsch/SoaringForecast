@@ -75,12 +75,12 @@ public class SatelliteActivity extends MasterActivity {
             case R.id.satellite_menu_geos:
                 satelliteType = GEOS_SATELLITE;
                 toggleSatelliteMenuOptions();
-                displayNewFragment(getGeosSatelliteFragment());
+                displayFragment(getGeosSatelliteFragment(), true, false);
                 return true;
             case R.id.satellite_menu_noaa:
                 satelliteType = NOAA_SATELLITE;
                 toggleSatelliteMenuOptions();
-                displayNewFragment(getNoaaSatelliteFragment());
+                displayFragment(getNoaaSatelliteFragment(), true, false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
