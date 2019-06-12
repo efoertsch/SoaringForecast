@@ -135,6 +135,8 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         displayFragment(turnpointSatelliteViewFragment, false, true);
     }
 
+
+    // TODO consolidate IAamDone and popCurrentFragment
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onIAmDoneMessageEvent(IAmDone iAmDone) {
         FragmentManager fragmentManager = getSupportFragmentManager();

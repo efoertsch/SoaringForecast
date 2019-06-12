@@ -17,6 +17,7 @@ public class TurnpointSearchListAdapter extends GenericRecyclerViewAdapter<Turnp
 
     private List<Turnpoint> turnpoints = new ArrayList<>();
     private GenericListClickListener<Turnpoint> itemClickListener;
+    private GenericListClickListener<Turnpoint> satelliteImageClickListener;
     private NewTurnpointListListener newTurnpointListListener;
 
     public interface NewTurnpointListListener {
@@ -29,6 +30,10 @@ public class TurnpointSearchListAdapter extends GenericRecyclerViewAdapter<Turnp
 
     public void setOnItemClickListener(GenericListClickListener<Turnpoint> turnpointGenericListClickListener ) {
         this.itemClickListener =  turnpointGenericListClickListener;
+    }
+
+    public void setSateliteOnItemClickListener(GenericListClickListener<Turnpoint> satelliteGenericListClickListener ) {
+        this.satelliteImageClickListener =  satelliteGenericListClickListener;
     }
 
 
@@ -51,6 +56,7 @@ public class TurnpointSearchListAdapter extends GenericRecyclerViewAdapter<Turnp
     public void onBindViewHolder(TurnpointSearchViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         holder.getViewDataBinding().setClickListener(itemClickListener);
+        holder.getViewDataBinding().setSatelliteClickListener(satelliteImageClickListener);
     }
 
 }
