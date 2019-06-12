@@ -15,57 +15,88 @@
             />
 
         <variable
+            name="satelliteClickListener"
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.Turnpoint&gt;"
+            />
+
+        <variable
             name="turnpoint"
             type="org.soaringforecast.rasp.repository.Turnpoint"/>
 
     </data>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/turnpoint_layout"
+        android:id="@+id/turnpoint_search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{()->clickListener.onItemClick(turnpoint, position)}"
-        android:clickable="true"
-        android:focusable="true"
         android:background="?selectableItemBackground"
         >
 
-        <TextView
-            android:id="@+id/turnpoint_code"
+        <ImageView
+            android:contentDescription="@string/action_satellite_images"
+            android:id="@+id/turnpoint_search_satellite_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_half"
-            android:layout_marginEnd="@dimen/margin_half"
-            android:maxEms="5"
-            android:padding="@dimen/margin_half"
-            android:text="@{turnpoint.getCode}"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="3B3"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{()->satelliteClickListener.onItemClick(turnpoint, position)}"
+            app:srcCompat="@drawable/ic_satellite_blue_48dp"/>
 
-        <TextView
-            android:id="@+id/turnpoint_title"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/turnpoint_search_text_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_half"
-            android:layout_marginEnd="@dimen/margin_half"
-            android:padding="@dimen/margin_half"
-            android:text="@{turnpoint.getTitle}"
-            android:textAllCaps="true"
-            app:layout_constraintStart_toEndOf="@+id/turnpoint_code"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{()->clickListener.onItemClick(turnpoint, position)}"
+            app:layout_constraintLeft_toRightOf="@id/turnpoint_search_satellite_image"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Sterling"/>
+            >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_half"
-            android:layout_marginStart="@dimen/margin_double"
-            android:layout_marginBottom="@dimen/margin_standard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/turnpoint_code"
-            android:text="@{turnpoint.getStyleName()}"
-            tools:text="small airport"/>
+            <TextView
+                android:id="@+id/turnpoint_search_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_half"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:maxEms="5"
+                android:padding="@dimen/margin_half"
+                android:text="@{turnpoint.getCode}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="3B3"/>
+
+            <TextView
+                android:id="@+id/turnpoint_search_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_half"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:padding="@dimen/margin_half"
+                android:text="@{turnpoint.getTitle}"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toEndOf="@+id/turnpoint_search_code"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Sterling"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_double"
+                android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:text="@{turnpoint.getStyleName()}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/turnpoint_search_code"
+                tools:text="small airport"/>
+        </android.support.constraint.ConstraintLayout>
+
+
 
     </android.support.constraint.ConstraintLayout>
 

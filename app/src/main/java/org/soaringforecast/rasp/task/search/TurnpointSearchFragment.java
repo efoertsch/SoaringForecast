@@ -1,7 +1,7 @@
 package org.soaringforecast.rasp.task.search;
 
-import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -17,22 +17,40 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
-import org.soaringforecast.rasp.task.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
+import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel;
+import org.soaringforecast.rasp.task.messages.GoToTurnpointImport;
+import org.soaringforecast.rasp.utils.ViewUtilities;
 
-public class TurnpointSearchFragment extends Fragment implements GenericListClickListener<Turnpoint> {
+public class TurnpointSearchFragment extends Fragment {
 
     private SearchView searchView;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
     private TurnpointSearchListAdapter turnpointSearchListAdapter;
     private AlertDialog noTurnpointsDialog;
+
+    private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
+        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
+        taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
+        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle()), Snackbar.LENGTH_SHORT));
+        searchView.setQuery("", true);
+    };
+
+    private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
+        if (searchView != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchView .getWindowToken(), 0);
+        }
+        EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
+    };
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,12 +66,16 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
         View rootView = inflater.inflate(R.layout.turnpoint_search_layout, null);
 
         turnpointSearchListAdapter = new TurnpointSearchListAdapter();
-        turnpointSearchListAdapter.setOnItemClickListener(this);
+        turnpointSearchListAdapter.setOnItemClickListener(turnpointTextClickListener);
+        turnpointSearchListAdapter.setSateliteOnItemClickListener(satelliteOnItemClickListener);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.turnpoint_search_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        ViewUtilities.addRecyclerViewDivider(getContext(), linearLayoutManager.getOrientation(), recyclerView);
         recyclerView.setAdapter(turnpointSearchListAdapter);
         return rootView;
     }
@@ -121,16 +143,6 @@ public class TurnpointSearchFragment extends Fragment implements GenericListClic
 
     private void runSearch(String search) {
         taskAndTurnpointsViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
-    }
-
-    @SuppressLint("CheckResult")
-    @Override
-    public void onItemClick(Turnpoint turnpoint, int position) {
-        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
-        taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
-        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle()), Snackbar.LENGTH_SHORT));
-        searchView.setQuery("", true);
-
     }
 
     private void checkForAtLeastOneTurnpoint() {

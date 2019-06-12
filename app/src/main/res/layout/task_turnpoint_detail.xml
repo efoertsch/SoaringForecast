@@ -23,71 +23,101 @@
     </data>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/task_turnpoint_detail_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/task_turnpoint_detail_layout">
+        android:background="?selectableItemBackground"
+        android:descendantFocusability="afterDescendants"
+        android:clickable="true"
+        android:focusable="true"
+        >
 
-        <TextView
-            android:id="@+id/task_turnpoint_name"
-            android:layout_width="0dp"
+        <ImageView
+            android:id="@+id/task_turnpoint_satellite_image"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_standard"
             android:clickable="true"
-            android:ellipsize="end"
             android:focusable="true"
             android:onClick="@{()->clickListener.onItemClick(taskTurnpoint, position)}"
-            android:text="@{taskTurnpoint.title}"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintEnd_toStartOf="@id/task_turnpoint_start_finish"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Sterling Start"/>
+            app:srcCompat="@drawable/ic_satellite_blue_48dp"/>
 
-        <TextView
-            android:id="@+id/task_turnpoint_start_finish"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_standard"
-            android:layout_marginTop="@dimen/margin_standard"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:clickable="true"
-            android:focusable="true"
-            android:ellipsize="end"
-            android:text='@{position == 0 ?  @string/start : (taskTurnpoint.lastTurnpoint ? @string/finish : "" )}'
-            android:textAppearance="?android:attr/textAppearanceMedium"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/task_turnpoint_text_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Start"/>
+            app:layout_constraintStart_toEndOf="@+id/task_turnpoint_satellite_image"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/task_turnpoint_distance_from_prior_turnpoint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_standard"
-            android:layout_marginStart="@dimen/margin_double"
-            android:text="@{@string/display_km_from_prior_turnpoint(taskTurnpoint.distanceFromPriorTurnpoint)}"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_name"
-            app:layout_constraintStart_toStartOf="parent"
-            android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"
-            tools:text="From prior point: 50.1km"/>
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline_70pct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.70"/>
 
-        <TextView
-            android:id="@+id/task_turnpoint_distance_from_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_double"
-            android:layout_marginTop="@dimen/margin_standard"
-            android:layout_marginEnd="@dimen/margin_standard"
-            android:text="@{@string/display_km_from_start(taskTurnpoint.distanceFromStartingPoint)}"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_distance_from_prior_turnpoint"
-            android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"
-            tools:text="From start: 100.1km"/>
+            <TextView
+                android:id="@+id/task_turnpoint_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:ellipsize="end"
+                android:text="@{taskTurnpoint.title}"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_70pct"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Sterling "/>
 
+            <TextView
+                android:id="@+id/task_turnpoint_start_finish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:layout_marginEnd="@dimen/margin_standard"
+                android:text='@{position == 0 ?  @string/start : (taskTurnpoint.lastTurnpoint ? @string/finish : "" )}'
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_70pct"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Start"/>
+
+            <TextView
+                android:id="@+id/task_turnpoint_distance_from_prior_turnpoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_double"
+                android:layout_marginTop="@dimen/margin_half"
+                android:text="@{@string/display_km_from_prior_turnpoint(taskTurnpoint.distanceFromPriorTurnpoint)}"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_name"
+                tools:text="From prior point: 50.1km"/>
+
+            <TextView
+                android:id="@+id/task_turnpoint_distance_from_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_double"
+                android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginEnd="@dimen/margin_standard"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:text="@{@string/display_km_from_start(taskTurnpoint.distanceFromStartingPoint)}"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:visibility="@{position == 0 ? View.GONE : View.VISIBLE}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_distance_from_prior_turnpoint"
+                tools:text="From start: 100.1km"/>
+
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
+
 
 </layout>

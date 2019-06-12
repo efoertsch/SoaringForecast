@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -43,6 +45,7 @@ public class TurnpointSatelliteViewFragment extends Fragment implements OnMapRea
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
 
@@ -64,6 +67,12 @@ public class TurnpointSatelliteViewFragment extends Fragment implements OnMapRea
         turnpointView.setText(turnpoint.getFormattedTurnpointDetails());
         turnpointView.setMovementMethod(new ScrollingMovementMethod());
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
     }
 
     private void removeFragment() {

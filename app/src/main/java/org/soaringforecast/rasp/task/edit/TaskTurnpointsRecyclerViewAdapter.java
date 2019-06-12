@@ -3,7 +3,6 @@ package org.soaringforecast.rasp.task.edit;
 import android.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import org.soaringforecast.rasp.R;
@@ -23,13 +22,15 @@ public class TaskTurnpointsRecyclerViewAdapter
 
     private GenericListClickListener<TaskTurnpoint> itemClickListener;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
-    private View.OnClickListener onItemClickListener;
 
     public TaskTurnpointsRecyclerViewAdapter(TaskAndTurnpointsViewModel taskAndTurnpointsViewModel) {
         super(taskAndTurnpointsViewModel.getTaskTurnpoints().getValue());
         this.taskAndTurnpointsViewModel = taskAndTurnpointsViewModel;
     }
 
+    public void setItemClickListener(GenericListClickListener<TaskTurnpoint> taskTurnpointGenericListClickListener) {
+        itemClickListener = taskTurnpointGenericListClickListener;
+    }
 
     @Override
     public TaskTurnpointViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,10 +42,7 @@ public class TaskTurnpointsRecyclerViewAdapter
     @Override
     public void onBindViewHolder(TaskTurnpointViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        //TODO get better way to do following
-       // holder.getViewDataBinding().setClickListener(itemClickListener);
     }
-
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
@@ -73,10 +71,6 @@ public class TaskTurnpointsRecyclerViewAdapter
         notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(View.OnClickListener itemClickListener) {
-        onItemClickListener = itemClickListener;
-    }
-
 
     public class TaskTurnpointViewHolder extends GenericViewHolder<TaskTurnpoint, TaskTurnpointView>
             implements ItemTouchHelperViewHolder {
@@ -93,8 +87,7 @@ public class TaskTurnpointsRecyclerViewAdapter
         public void onBind(TaskTurnpoint item, int position) {
             viewDataBinding.setTaskTurnpoint(item);
             viewDataBinding.setPosition(position);
-            viewDataBinding.taskTurnpointDetailLayout.setTag(item);
-            viewDataBinding.taskTurnpointDetailLayout.setOnClickListener(onItemClickListener);
+            viewDataBinding.setClickListener(itemClickListener);
         }
 
         @Override

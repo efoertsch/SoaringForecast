@@ -20,6 +20,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
+import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.databinding.EditTaskView;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
@@ -58,8 +59,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         return this;
     }
 
-    private View.OnClickListener onItemClickListener = view -> {
-       TaskTurnpoint taskTurnpoint = (TaskTurnpoint) view.getTag();
+    private GenericListClickListener<TaskTurnpoint> onItemClickListener = (taskTurnpoint, position) -> {
        // find corresponding turnpoint
         getTurnpointFromTaskTurnpoint(taskTurnpoint);
 
@@ -125,7 +125,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
         RecyclerView recyclerView = editTaskView.editTaskRecyclerView;
         recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskAndTurnpointsViewModel);
-        recyclerViewAdapter.setOnItemClickListener(onItemClickListener);
+        recyclerViewAdapter.setItemClickListener(onItemClickListener);
 
         //TODO DRY
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
