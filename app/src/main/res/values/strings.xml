@@ -90,6 +90,17 @@
     <string name="pref_display_turnpoints">Display Turnpoints</string>
 
 
+    <string name="pref_display_turnpoint_satellite_view_key" translatable="false">Display_turnpoint_satellite_view_key</string>
+    <string name="pref_display_turnpoint_satellite_view">Display Turnpoint Satellite View</string>
+    <string name="pref_display_turnpoint_satellite_summary_text">On click on turnpoint on map</string>
+
+    <string name="pref_display_turnpoint_infowindow_view_key" translatable="false">Display_turnpoint_infowindow_key</string>
+    <string name="pref_display_turnpoint_infowindow_view">Display Turnpoint InfoWindow</string>
+    <string name="pref_display_turnpoint_infowindow_summary_text">On click on turnpoint on map</string>
+
+
+
+
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
     <string name="pref_units_temp">Temperature</string>
     <string name="pref_units_temp_centigrade_label">Centigrade</string>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:key="rasp_forecast_options_preferences_key"
@@ -18,6 +20,19 @@
             android:defaultValue="false"
             android:key="@string/pref_display_turnpoints_key"
             android:title="@string/pref_display_turnpoints"/>
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/pref_display_turnpoint_satellite_view_key"
+            android:title="@string/pref_display_turnpoint_satellite_view"
+            app:summary="On click on turnpoint on map"/>
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/pref_display_turnpoint_infowindow_view_key"
+            android:title="@string/pref_display_turnpoint_infowindow_view"
+            app:summary="On click on turnpoint on map"/>
+
 
     </PreferenceCategory>
 
