@@ -46,6 +46,7 @@ import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
@@ -113,6 +114,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     // MapType must be one of GoogleMap.MAP_TYPE_xxxx
     private int mapType = GoogleMap.MAP_TYPE_TERRAIN;
     private LatLngBounds visibleLatLngBounds;
+    private AppPreferences appPreferences;
 
     @Inject
     public ForecastMapper() {
@@ -121,6 +123,11 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     public ForecastMapper setContext(Context context) {
         this.context = context;
         resources = context.getResources();
+        return this;
+    }
+
+    public ForecastMapper setAppPreferences(AppPreferences appPreferences){
+        this.appPreferences = appPreferences;
         return this;
     }
 
@@ -403,8 +410,12 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
         if (marker.getTag() instanceof Turnpoint) {
             lastMarkerOpened = marker;
-            EventBus.getDefault().post(new DisplayTurnpoint((Turnpoint) marker.getTag()));
-            //marker.showInfoWindow();
+            if (appPreferences.getDisplayTurnpointSatelliteView()) {
+                EventBus.getDefault().post(new DisplayTurnpoint((Turnpoint) marker.getTag()));
+            }
+            if (appPreferences.getDisplayTurnpointInfoWindowView()) {
+                marker.showInfoWindow();
+            }
             return true;
         }
         if (marker.getTag() instanceof TaskTurnpoint) {
@@ -454,7 +465,8 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                             } else if (getContainerFeature(polygon) != null) {
                                 listener.onFeatureClick(getContainerFeature(polygon));
                             } else {
-                                // listener.onFeatureClick(getFeature(multiObjectHandler(polygon)));
+                                // listener.onFeatureClick(getFeature(multiObjectHandler(polygon))); // commented out as getFeature is private so would give syntax error
+                                                                                                     // Fortunately project doesn't require this functionality
                             }
                         }
                     });
@@ -472,7 +484,8 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                                 ForecastMapper.this.onMarkerClick(marker);
                                 return true;
                             } else {
-                                // listener.onFeatureClick(getFeature(multiObjectHandler(marker)));
+                                // listener.onFeatureClick(getFeature(multiObjectHandler(marker))); // commented out as getFeature is private so would give syntax error
+                                                                                    // Fortunately project doesn't require this functionality
                             }
                             return false;
                         }
@@ -486,7 +499,8 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                             } else if (getContainerFeature(polyline) != null) {
                                 listener.onFeatureClick(getContainerFeature(polyline));
                             } else {
-                                //listener.onFeatureClick(getFeature(multiObjectHandler(polyline)));
+                                //listener.onFeatureClick(getFeature(multiObjectHandler(polyline)));// commented out as getFeature is private so would give syntax error
+                                                                                                   // Fortunately project doesn't require this functionality
                             }
                         }
                     });

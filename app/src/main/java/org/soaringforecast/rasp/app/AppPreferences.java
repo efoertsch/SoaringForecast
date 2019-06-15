@@ -49,6 +49,7 @@ public class AppPreferences {
     private static final String ORDERED_FORECAST_OPTIONS = "ORDERED_FORECAST_OPTIONS";
     private static final String CLEAR_CACHE_TIME_MINUTES = "CLEAR_CACHE_TIME_MINUTES";
 
+
     // These string values are assigned in code so they match what is used in Settings
     private static String DISPLAY_WINDY_MENU_OPTION;
     private static String DISPLAY_SKYSIGHT_MENU_OPTION;
@@ -62,6 +63,9 @@ public class AppPreferences {
     private static String DISPLAY_SUA_KEY;
     private static String DISPLAY_FORECAST_SOUNDINGS_KEY;
     private static String DISPLAY_TURNPOINTS_KEY;
+    private static String DISPLAY_TURNPOINT_SATELLITE_VIEW;
+    private static String DISPLAY_TURNPOINT_INFOWINDOW_VIEW;
+
 
     private SharedPreferences sharedPreferences;
     private boolean rawTafMetar;
@@ -74,6 +78,7 @@ public class AppPreferences {
     private String satelliteImageTypeVis;
     private String soaringForecastModel;
     private String soaringForecastDefaultRegion;
+
 
     private List<CacheTimeListener> cacheTimeListeners = Collections.synchronizedList(new ArrayList());
 
@@ -101,6 +106,8 @@ public class AppPreferences {
         DISPLAY_DR_JACKS_MENU_OPTION = context.getString(R.string.pref_add_dr_jacks_to_menu_key);
 
         DISPLAY_FORECAST_SOUNDINGS_KEY = context.getString(R.string.pref_display_forecast_soundings_key);
+        DISPLAY_TURNPOINT_SATELLITE_VIEW = context.getString(R.string.pref_display_turnpoint_satellite_view_key);
+        DISPLAY_TURNPOINT_INFOWINDOW_VIEW = context.getString(R.string.pref_display_turnpoint_infowindow_view_key);
 
         // these should never be needed but use these default values
         rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
@@ -504,6 +511,17 @@ public class AppPreferences {
             cacheTimeListeners.remove(cacheTimeListener);
         }
 
+    }
+
+
+    // setter handled bu SettingsPreferenceFragment, default value must match value in display_preferences.xml
+    public boolean getDisplayTurnpointSatelliteView() {
+        return sharedPreferences.getBoolean(DISPLAY_TURNPOINT_SATELLITE_VIEW, true);
+    }
+
+    // setter handled bu SettingsPreferenceFragment, default value must match value in display_preferences.xml
+    public boolean getDisplayTurnpointInfoWindowView() {
+        return sharedPreferences.getBoolean(DISPLAY_TURNPOINT_INFOWINDOW_VIEW, true);
     }
 
 }
