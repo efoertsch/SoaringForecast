@@ -638,9 +638,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             return;
         }
         clearTurnpointMarkers();
-        sizedTurnpointBitmap = getSizedTurnpointBitmap(zoomLevel);
+        //sizedTurnpointBitmap = getSizedTurnpointBitmap(zoomLevel);
             for (Turnpoint turnpoint : turnpoints) {
                 if (turnpointWithinMapBounds(turnpoint)) {
+                    sizedTurnpointBitmap = TurnpointBitmapUtil.getSizedTurnpointBitmap(context, turnpoint, zoomLevel);
                     if (zoomLevel >= 8) {
                         turnpointBitmap = BitmapImageUtils.drawTextOnBitmap(context, sizedTurnpointBitmap,
                                 (turnpoint.getTitle().length() <= 4) ? turnpoint.getTitle() : turnpoint.getTitle().substring(0, 4));
