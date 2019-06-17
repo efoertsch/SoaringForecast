@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.repository.Turnpoint;
-import org.soaringforecast.rasp.utils.BitmapImageUtils;
+import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtil;
 
 import timber.log.Timber;
 
@@ -93,7 +93,7 @@ public class TurnpointSatelliteViewFragment extends Fragment implements OnMapRea
             }
         });
 
-        Bitmap turnpointBitmap = BitmapImageUtils.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_turnpoint);
+        Bitmap turnpointBitmap = TurnpointBitmapUtil.getSizedTurnpointBitmap(getContext(), turnpoint, 8);
         Marker marker = googleMap.addMarker(new MarkerOptions()
                 .position(turnppointLatLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(turnpointBitmap)));

@@ -310,4 +310,12 @@ public class Turnpoint {
         return turnpointDetails;
     }
 
+    public boolean isGrassOrGliderAirport(){
+        return (style.equals("2") || style.equals("4"));
+    }
+
+    public boolean isHardSurfaceAirport(){
+        return style.equals("5");
+    }
+
 }
