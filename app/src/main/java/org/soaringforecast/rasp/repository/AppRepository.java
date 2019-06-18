@@ -241,8 +241,8 @@ public class AppRepository {
         return turnpointDao.checkForAtLeastOneTurnpoint();
     }
 
-    public Maybe<List<Turnpoint>> getTurnpointsInRegion(LatLng swLatLong, LatLng neLatLng){
-        return turnpointDao.getTurnpointsInRegion((float) swLatLong.latitude,(float) swLatLong.longitude
+    public Maybe<List<Turnpoint>> getTurnpointsInRegion(LatLng swLatLong, LatLng neLatLng) {
+        return turnpointDao.getTurnpointsInRegion((float) swLatLong.latitude, (float) swLatLong.longitude
                 , (float) neLatLng.latitude, (float) neLatLng.longitude);
     }
 
@@ -315,7 +315,10 @@ public class AppRepository {
         return Completable.fromAction(() -> {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
-                    taskTurnpointDao.deleteTaskTurnpoint(taskTurnpoint.getTaskId(), taskTurnpoint.getTitle(), taskTurnpoint.getCode());
+                    // if taskturnpoint id = 0 then it was added to task, then deleted(swiped) so not in database to delete
+                    if (taskTurnpoint.getId() != 0) {
+                        taskTurnpointDao.deleteTaskTurnpoint(taskTurnpoint.getId());
+                    }
                 }
             } catch (Throwable throwable) {
                 throw Exceptions.propagate(throwable);
@@ -347,7 +350,7 @@ public class AppRepository {
                     taskTurnpoint.setTaskId(taskId);
                 }
                 long[] keys = taskTurnpointDao.insertAll(taskTurnpoints);
-                for (int i = 0 ; i < keys.length; ++i){
+                for (int i = 0; i < keys.length; ++i) {
                     taskTurnpoints.get(i).setId(keys[i]);
                 }
                 emitter.onSuccess(taskId);
@@ -405,7 +408,7 @@ public class AppRepository {
     }
 
     // ---------- Windy arrays ------------------------
-    public List<WindyModel> getWindyModels(){
+    public List<WindyModel> getWindyModels() {
         if (windyModels == null) {
             windyModels = new ArrayList<WindyModel>();
             Resources res = context.getResources();
@@ -413,7 +416,7 @@ public class AppRepository {
                 String[] imageTypes = res.getStringArray(R.array.windy_models);
                 for (int i = 0; i < imageTypes.length; ++i) {
                     WindyModel windyModel = new WindyModel(imageTypes[i]);
-                   windyModels.add(windyModel);
+                    windyModels.add(windyModel);
                 }
             } catch (Resources.NotFoundException ignored) {
             }
@@ -422,7 +425,7 @@ public class AppRepository {
         return windyModels;
     }
 
-    public List<WindyLayer> getWindyLayers(){
+    public List<WindyLayer> getWindyLayers() {
         if (windyLayers == null) {
             windyLayers = new ArrayList<WindyLayer>();
             Resources res = context.getResources();
@@ -439,7 +442,7 @@ public class AppRepository {
         return windyLayers;
     }
 
-    public List<WindyAltitude> getWindyAltitudes(){
+    public List<WindyAltitude> getWindyAltitudes() {
         if (windyAltitudes == null) {
             windyAltitudes = new ArrayList<WindyAltitude>();
             Resources res = context.getResources();

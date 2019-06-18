@@ -193,6 +193,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         } else {
             disposable = appRepository.updateTaskAndTurnpoints(task, taskTurnpoints.getValue(), deletedTaskTurnpoints)
                     .subscribe(() -> {
+                        deletedTaskTurnpoints.clear();
                         needToSaveUpdates.setValue(false);
                         working.setValue(false);
                     }, t -> {
