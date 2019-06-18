@@ -315,9 +315,8 @@ public class AppRepository {
         return Completable.fromAction(() -> {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
-                    // if taskturnpoint id = 0 then it was added but never saved to database
+                    // if taskturnpoint id = 0 then it was added to task, then deleted(swiped) so not in database to delete
                     if (taskTurnpoint.getId() != 0) {
-
                         taskTurnpointDao.deleteTaskTurnpoint(taskTurnpoint.getId(), taskTurnpoint.getTaskId());
                     }
                 }
