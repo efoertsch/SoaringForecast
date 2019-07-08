@@ -12,9 +12,6 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageType;
 import org.soaringforecast.rasp.satellite.data.SatelliteRegion;
 import org.soaringforecast.rasp.soaring.json.Forecasts;
-import org.soaringforecast.rasp.task.json.TurnpointFile;
-import org.soaringforecast.rasp.task.json.TurnpointFiles;
-import org.soaringforecast.rasp.task.json.TurnpointRegion;
 import org.soaringforecast.rasp.utils.JSONResourceReader;
 import org.soaringforecast.rasp.windy.WindyAltitude;
 import org.soaringforecast.rasp.windy.WindyLayer;
@@ -168,34 +165,6 @@ public class AppRepository {
             }
             return false;
         }
-
-    }
-
-    // ----------- Turnpoint download (SeeYou cup files) ------------------
-    public Maybe<List<TurnpointFile>> getTurnpointFiles(String regionName) {
-        return Maybe.create(emitter -> {
-            try {
-                List<TurnpointRegion> turnpointRegions = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_download_list))
-                        .constructUsingGson((TurnpointFiles.class)).getTurnpointRegions();
-                if (turnpointRegions != null && !turnpointRegions.isEmpty()) {
-                    emitter.onSuccess(getRegionFiles(turnpointRegions, regionName));
-                } else {
-                    emitter.onComplete();
-                }
-            } catch (Exception e) {
-                emitter.onError(e);
-            }
-        });
-    }
-
-    private List<TurnpointFile> getRegionFiles
-            (List<TurnpointRegion> turnpointRegions, String regionName) {
-        for (TurnpointRegion turnpointRegion : turnpointRegions) {
-            if (turnpointRegion.getRegion().equals(regionName)) {
-                return turnpointRegion.getTurnpointFiles();
-            }
-        }
-        return new ArrayList<>();
 
     }
 

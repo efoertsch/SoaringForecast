@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
+import org.soaringforecast.rasp.retrofit.GBSCJsonApi;
 import org.soaringforecast.rasp.task.messages.GoToDownloadImport;
 import org.soaringforecast.rasp.task.messages.ImportSeeYouFile;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
@@ -39,6 +40,9 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
     OkHttpClient okHttpClient;
 
     @Inject
+    GBSCJsonApi gbscJsonApi;
+
+    @Inject
     public SeeYouImportFragment() {
     }
 
@@ -49,6 +53,8 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        turnpointsImporterViewModel.setGBSCJsonApi(gbscJsonApi);
+
         setHasOptionsMenu(true);
     }
 
