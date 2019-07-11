@@ -3,26 +3,30 @@ package org.soaringforecast.rasp.test;
 import org.junit.Before;
 import org.junit.Test;
 import org.soaringforecast.rasp.dagger.OkHttpClientModule;
-import org.soaringforecast.rasp.retrofit.GBSCJsonApi;
+import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
-import org.soaringforecast.rasp.retrofit.SoaringForecastRetrofit;
+import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
+import org.soaringforecast.rasp.soaring.json.SUAGeoJsonFiles;
 import org.soaringforecast.rasp.task.json.TurnpointRegions;
 
 import io.reactivex.Single;
 import retrofit2.Retrofit;
 
+import static junit.framework.TestCase.assertNotNull;
+
 public class GBSCJsonTest {
 
     String gbscJsonUrl = "http://soargbsc.com/soaringforecast/";
     Retrofit retrofit;
-    GBSCJsonApi client;
+    JSONServerApi client;
     TurnpointRegions turnpointRegions;
+    SUAGeoJsonFiles suaGeoJsonFiles;
 
 
     @Before
     public void createRetrofit() {
-        retrofit = new SoaringForecastRetrofit(new OkHttpClientModule(). getOkHttpClient(new LoggingInterceptor()), gbscJsonUrl).getRetrofit();
-        client = retrofit.create(GBSCJsonApi.class);
+        retrofit = new ForecastServerRetrofit(new OkHttpClientModule(). getOkHttpClient(new LoggingInterceptor()), gbscJsonUrl).getRetrofit();
+        client = retrofit.create(JSONServerApi.class);
     }
 
 
@@ -31,11 +35,23 @@ public class GBSCJsonTest {
         Single<TurnpointRegions> single = client.getTurnpointRegions();
         single.test().assertNoErrors();
         single.subscribe(turnpointRegions -> {
-            System.out.println(" Got Turnpoint files successfully downloaded");
+            assertNotNull(turnpointRegions);
+            System.out.println(" Got Turnpoint files");
             GBSCJsonTest.this.turnpointRegions = turnpointRegions;
         });
     }
 
+
+    @Test
+    public void shouldGetSUAJsonFilesFromGBSC(){
+        Single<SUAGeoJsonFiles> single = client.getSUARegions();
+         single.test().assertNoErrors();
+        single.subscribe(suaRegions -> {
+            assertNotNull(suaRegions);
+            System.out.println(" Got SUA file ");
+            GBSCJsonTest.this.suaGeoJsonFiles = suaRegions;
+        });
+    }
 
 
 

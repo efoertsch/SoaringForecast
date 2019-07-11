@@ -73,7 +73,7 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointSearchFragment bindTurnpointSearchFragment();
 
-    @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
+    @ContributesAndroidInjector(modules = {RegionTurnpointsModule.class})
     abstract SeeYouImportFragment bindSeeYouImportFragment();
 
     @ContributesAndroidInjector(modules = {})

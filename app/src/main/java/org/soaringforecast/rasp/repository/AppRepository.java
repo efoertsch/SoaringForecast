@@ -125,7 +125,7 @@ public class AppRepository {
     public Single<Forecasts> getForecasts() {
         return Single.create(emitter -> {
             try {
-                Forecasts forecasts = (new JSONResourceReader(context.getResources(), R.raw.forecast_options)).constructUsingGson(Forecasts.class);
+                Forecasts forecasts = (new JSONResourceReader(context.getResources(), R.raw.forecast_options_json)).constructUsingGson(Forecasts.class);
                 emitter.onSuccess(forecasts);
             } catch (JsonSyntaxException jse) {
                 emitter.onError(jse);

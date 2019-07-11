@@ -12,23 +12,47 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Url;
+import retrofit2.http.Path;
 
 /**
  * Calls to www.soargbsc.com/rasp
  */
 public interface SoaringForecastApi {
 
-    // Construct URL as BASE_URL + "current.json
-    @GET()
-    Single<Regions> getForecastDates(@Url String url);
+    /**
+     * Get initial JSON from server that contains available forecast regions, soundings available for the region
+     * and list of dates for which forecasts are available
+     * @param currentJson - something like "current.json"
+     * @return
+     */
+    @GET("/rasp/{currentJson}")
+    Single<Regions> getForecastDates(@Path("currentJson") String currentJson);
 
 
-    // Construct URL as BASE_URL + "NewEngland/2018-03-30/status.json"
-    @GET
-    Single<ForecastModels> getForecastModels(@Url String url);
+    /**
+     * For given region and date find the
+     *  - forecast models (gfs, nam,...) that are available
+     *  - lat/long corners for that model forecast
+     *  - and times that the model forecast is available
+     * @param statusJson - something like "NewEngland/2018-03-30/status.json"
+     * @return
+     */
+
+    @GET("/rasp/{statusJson}")
+    Single<ForecastModels> getForecastModels(@Path("statusJson") String statusJson);
 
 
+    /**
+     * For the given lat/long get a set of point forecasts for the given region/date/model/time
+     * @param region - e.g. NewEngland
+     * @param date - e.g. 2018-03-30
+     * @param model - e.g. gfs
+     * @param time - e.g. 1100
+     * @param lat - latitude
+     * @param lon - longitude
+     * @param forecastType - e.g. "wstar bsratio zsfclcldif zsfclcl zblcldif zblcl ... "
+     * @return - response body that contains text forecast(s)
+     */
     @POST("cgi/get_rasp_blipspot.cgi")
     @FormUrlEncoded
     Single<Response<ResponseBody>> getLatLongPointForecast(
@@ -37,7 +61,7 @@ public interface SoaringForecastApi {
             @Field(value = "model", encoded = true) String model,
             @Field(value = "time", encoded = true) String time,
             @Field(value = "lat", encoded = true) String lat,
-            @Field(value = "lon", encoded = true)String lon,
+            @Field(value = "lon", encoded = true) String lon,
             @Field(value = "param", encoded = true) String forecastType
     );
 

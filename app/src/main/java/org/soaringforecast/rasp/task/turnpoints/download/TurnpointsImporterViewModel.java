@@ -9,7 +9,7 @@ import android.os.Environment;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
-import org.soaringforecast.rasp.retrofit.GBSCJsonApi;
+import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.TurnpointFileApi;
 import org.soaringforecast.rasp.retrofit.TurnpointFileRetrofit;
 import org.soaringforecast.rasp.task.json.TurnpointFile;
@@ -38,7 +38,7 @@ public class TurnpointsImporterViewModel extends ViewModel {
     private AppRepository appRepository;
     private AppPreferences appPreferences;
     private OkHttpClient okHttpClient;
-    private GBSCJsonApi gbscJsonApi;
+    private JSONServerApi JSONServerApi;
 
     private MutableLiveData<List<TurnpointFile>> turnpointFiles = new MutableLiveData();
     private MutableLiveData<List<File>> cupFiles = new MutableLiveData();
@@ -60,8 +60,8 @@ public class TurnpointsImporterViewModel extends ViewModel {
         return this;
     }
 
-    public TurnpointsImporterViewModel setGBSCJsonApi(GBSCJsonApi gbscJsonApi){
-        this.gbscJsonApi = gbscJsonApi;
+    public TurnpointsImporterViewModel setGBSCJsonApi(JSONServerApi JSONServerApi){
+        this.JSONServerApi = JSONServerApi;
         return this;
     }
 
@@ -83,9 +83,9 @@ public class TurnpointsImporterViewModel extends ViewModel {
     }
 
     @SuppressLint("CheckResult")
-    // Get list of selected .cup(SeeYou) files based on JSON from soargbsc.com/soaringforecast/turnpoint_download_list
+    // Get list of selected .cup(SeeYou) files based on JSON from soargbsc.com/soaringforecast/turnpoint_regions.json
     public LiveData<List<TurnpointFile>> getTurnpointFiles() {
-        Disposable disposable = gbscJsonApi.getTurnpointRegions()
+        Disposable disposable = JSONServerApi.getTurnpointRegions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(turnpointRegions -> {

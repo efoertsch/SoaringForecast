@@ -4,12 +4,14 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -57,7 +59,18 @@ public class StringUtils {
     }
 
     public static HashMap<String, String> getHashMapFromStringRes(Context context, @StringRes int stringRes) {
-        return new Gson().fromJson(context.getString(stringRes), new TypeToken<HashMap<String, String>>(){}.getType());
+        return getHashMapFromString(context.getString(stringRes));
+    }
+
+    public static String convertHashMapToJsonString(HashMap<String, String> hashMap){
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.enableComplexMapKeySerialization().setPrettyPrinting().create();
+        Type type = new TypeToken<HashMap<String,String>>(){}.getType();
+        return gson.toJson(hashMap, type);
+    }
+
+    public static HashMap<String, String> getHashMapFromString(String string) {
+        return new Gson().fromJson(string, new TypeToken<HashMap<String, String>>(){}.getType());
 
     }
 

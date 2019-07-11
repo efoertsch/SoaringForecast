@@ -434,17 +434,17 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     public void setSuaRegionName(String suaRegionName) {
         if (suaRegionName != null) {
             int geoJsonRawId = 0;
-            if (suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
-                geoJsonRawId = R.raw.sterlng7_sua_geojson;
+         /*   if (suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
+                geoJsonRawId = R.raw.sterlng7_sua;
             } else if (suaRegionName.equalsIgnoreCase(context.getString(R.string.mifflin_region))) {
-                geoJsonRawId = R.raw.mifflin8_sua_geojson;
+                geoJsonRawId = R.raw.mifflin8_sua;
             }
             if (geoJsonRawId != 0) {
                 addGeoJsonLayerToMap(geoJsonRawId, suaRegionName);
             } else {
                 EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.no_sua_defined_for_specified_region, suaRegionName)
                         , Snackbar.LENGTH_LONG));
-            }
+            }*/
         }
     }
 

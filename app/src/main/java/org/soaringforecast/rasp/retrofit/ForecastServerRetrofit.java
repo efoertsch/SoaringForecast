@@ -6,11 +6,11 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SoaringForecastRetrofit {
+public class ForecastServerRetrofit {
 
     private Retrofit retrofit;
 
-    public SoaringForecastRetrofit(OkHttpClient okHttpClient, String raspUrl) {
+    public ForecastServerRetrofit(OkHttpClient okHttpClient, String raspUrl) {
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(raspUrl)
                 .client(okHttpClient)

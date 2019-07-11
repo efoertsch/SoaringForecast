@@ -6,7 +6,7 @@ import org.soaringforecast.rasp.cache.BitmapCache;
 import org.soaringforecast.rasp.dagger.OkHttpClientModule;
 import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
-import org.soaringforecast.rasp.retrofit.SoaringForecastRetrofit;
+import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
 import org.soaringforecast.rasp.soaring.json.ForecastModels;
 import org.soaringforecast.rasp.soaring.json.Model;
 import org.soaringforecast.rasp.soaring.json.Region;
@@ -41,7 +41,7 @@ public class SoaringForecastTest {
 
     @Before
     public void createRetrofit() {
-        retrofit = new SoaringForecastRetrofit(new OkHttpClientModule(). getOkHttpClient(new LoggingInterceptor()), raspUrl).getRetrofit();
+        retrofit = new ForecastServerRetrofit(new OkHttpClientModule(). getOkHttpClient(new LoggingInterceptor()), raspUrl).getRetrofit();
         client = retrofit.create(SoaringForecastApi.class);
     }
 

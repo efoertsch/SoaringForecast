@@ -3,7 +3,7 @@ package org.soaringforecast.rasp.soaring.json;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-// Load  from raw/forecast_options
+// Load  from raw/forecast_options_json.json
 public class Forecast {
 
     @SerializedName("forecast_name")
