@@ -12,7 +12,7 @@ import okhttp3.OkHttpClient;
 public class RegionTurnpointsModule extends ForecastServerModule {
     
     @Provides
-    public JSONServerApi providesRegionTurnpointsJsonApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("rasp_url") String raspUrl) {
+    public JSONServerApi providesRegionTurnpointsJsonApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("forecast_server_url") String raspUrl) {
         return getForecastServerRetrofit(okHttpClient, raspUrl).getRetrofit().create(JSONServerApi.class);
     }
 

@@ -1,6 +1,6 @@
 package org.soaringforecast.rasp.retrofit;
 
-import org.soaringforecast.rasp.soaring.json.SUAGeoJsonFiles;
+import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
 import org.soaringforecast.rasp.task.json.TurnpointRegions;
 
 import io.reactivex.Single;
@@ -19,7 +19,7 @@ public interface JSONServerApi {
 
     // Get list of SUA files
     @GET("/soaringforecast/sua_regions.json")
-    Single<SUAGeoJsonFiles> getSUARegions();
+    Single<SUARegionFiles> getSUARegions();
 
     @Streaming
     @GET("/soaringforecast/{suaFilename}")

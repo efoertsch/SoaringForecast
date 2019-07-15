@@ -320,5 +320,6 @@
     <string name="windy_com_parm">http://www.windy.com/?%1$.4f,%2$.4f</string>
     <string name="oops_try_that_again">Oops. Try that again</string>
     <string name="close">Close</string>
+    <string name="error_getting_sua_file_for_region">Error getting SUA file for %1$s</string>
 
 </resources>

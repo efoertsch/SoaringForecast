@@ -30,8 +30,8 @@ import static org.junit.Assert.assertTrue;
 
 public class SoaringForecastTest {
 
-   // String raspUrl = "http://thepaavolas.net/rasp/";
-    String raspUrl = "http://soargbsc.com/rasp/";
+   // String raspUrl = "http://thepaavolas.net/";
+    String raspUrl = "http://soargbsc.com/";
     Retrofit retrofit;
     SoaringForecastApi client;
     Regions regions;
@@ -80,7 +80,7 @@ public class SoaringForecastTest {
         assertNotNull("NewEngland Region missing from status.json", region);
         System.out.println(region.toString());
         for (String date : region.getDates()) {
-            Single<ForecastModels> single = client.getForecastModels(region.getName() + "/" + date + "/status.json");
+            Single<ForecastModels> single = client.getForecastModels(region.getName() , date);
             single.subscribe(this::forecastModelShouldHaveNameCenterCornersAndTimes);
         }
     }
@@ -104,7 +104,7 @@ public class SoaringForecastTest {
         Region region = regions.getRegion("NewEngland");
         System.out.println(region.toString());
         for (String date : region.getDates()) {
-            Single<ForecastModels> single = client.getForecastModels(region.getName() + "/" + date + "/status.json");
+            Single<ForecastModels> single = client.getForecastModels(region.getName() , date);
             single.subscribe(this::forecastModelShouldHaveNameCenterCornersAndTimes);
         }
     }

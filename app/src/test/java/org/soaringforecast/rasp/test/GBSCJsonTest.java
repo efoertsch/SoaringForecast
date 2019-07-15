@@ -6,7 +6,7 @@ import org.soaringforecast.rasp.dagger.OkHttpClientModule;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
 import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
-import org.soaringforecast.rasp.soaring.json.SUAGeoJsonFiles;
+import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
 import org.soaringforecast.rasp.task.json.TurnpointRegions;
 
 import io.reactivex.Single;
@@ -20,7 +20,7 @@ public class GBSCJsonTest {
     Retrofit retrofit;
     JSONServerApi client;
     TurnpointRegions turnpointRegions;
-    SUAGeoJsonFiles suaGeoJsonFiles;
+    SUARegionFiles suaRegionFiles;
 
 
     @Before
@@ -44,12 +44,12 @@ public class GBSCJsonTest {
 
     @Test
     public void shouldGetSUAJsonFilesFromGBSC(){
-        Single<SUAGeoJsonFiles> single = client.getSUARegions();
+        Single<SUARegionFiles> single = client.getSUARegions();
          single.test().assertNoErrors();
         single.subscribe(suaRegions -> {
             assertNotNull(suaRegions);
             System.out.println(" Got SUA file ");
-            GBSCJsonTest.this.suaGeoJsonFiles = suaRegions;
+            GBSCJsonTest.this.suaRegionFiles = suaRegions;
         });
     }
 

@@ -10,9 +10,9 @@ public class ForecastServerRetrofit {
 
     private Retrofit retrofit;
 
-    public ForecastServerRetrofit(OkHttpClient okHttpClient, String raspUrl) {
+    public ForecastServerRetrofit(OkHttpClient okHttpClient, String forecastServerUrl) {
         Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(raspUrl)
+                .baseUrl(forecastServerUrl)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create());

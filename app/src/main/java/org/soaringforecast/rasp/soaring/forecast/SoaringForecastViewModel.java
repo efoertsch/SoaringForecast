@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.Constants;
@@ -70,39 +71,34 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private MutableLiveData<List<ModelForecastDate>> modelForecastDates = new MutableLiveData<>();
     private MutableLiveData<Integer> modelForecastDatePosition = new MutableLiveData<>();
     private ModelForecastDate selectedModelForecastDate;
-
     private MutableLiveData<List<Forecast>> forecasts = new MutableLiveData<>();
     private MutableLiveData<Integer> forecastPosition = new MutableLiveData<>();
     private MutableLiveData<Forecast> selectedForecast = new MutableLiveData<>();
-
-    private Regions regions;
-    private Region selectedRegion;
     private MutableLiveData<LatLngBounds> regionLatLngBounds = new MutableLiveData<>();
-
     private HashMap<String, SoaringForecastImageSet> imageMap = new HashMap<>();
     private MutableLiveData<SoaringForecastImageSet> selectedSoaringForecastImageSet = new MutableLiveData<>();
     private MutableLiveData<SoaringForecastImageSet> selectedSoundingForecastImageSet = new MutableLiveData<>();
-
     private MutableLiveData<List<Sounding>> soundings;
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
-
-    private MutableLiveData<String> suaRegionName = new MutableLiveData<>();
-
+    private MutableLiveData<JSONObject> suaJSONObject = new MutableLiveData<>();
     private MutableLiveData<List<Turnpoint>> regionTurnpoints = new MutableLiveData<>();
-
-    private Sounding selectedSounding;
-
+    private MutableLiveData<LatLngForecast> pointForecastText;
     // Used to signal changes to UI
     private MutableLiveData<Boolean> working = new MutableLiveData<>();
     private MutableLiveData<Boolean> soundingDisplay = new MutableLiveData<>();
+
+    private Regions regions;
+    private Region selectedRegion;
+    private Sounding selectedSounding;
+
+
     private Constants.FORECAST_SOUNDING forecastSounding = Constants.FORECAST_SOUNDING.FORECAST;
-
     private boolean loadRasp;
-
     private StringUtils stringUtils;
     private HashMap<String, String> pointForecastConversion;
-    private MutableLiveData<LatLngForecast> pointForecastText;
+    private SUAHandler suaHandler;
+    private boolean displaySUA;
 
     public SoaringForecastViewModel(@NonNull Application application) {
         super(application);
@@ -125,6 +121,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public SoaringForecastViewModel setStringUtils(StringUtils stringUtils) {
         this.stringUtils = stringUtils;
+        return this;
+    }
+
+    public SoaringForecastViewModel setSuaHandler(SUAHandler suaHandler) {
+        this.suaHandler = suaHandler;
         return this;
     }
 
@@ -352,7 +353,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             selectedModelForecastDate = newModelForecastDate;
             setRegionLatLngBounds(selectedModelForecastDate);
             appPreferences.setSelectedModelForecastDate(selectedModelForecastDate);
-            setSuaRegionName(selectedRegion.getName());
+            checkToDisplaySuaForRegion(selectedRegion.getName());
             loadRaspImages();
         }
     }
@@ -856,18 +857,41 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return appPreferences.getForecastOverlayOpacity();
     }
 
-    // SUA (Special Use Airspace of course!)
-
-    public MutableLiveData<String> getSuaRegionName() {
-        return suaRegionName;
+    // ------------------ SUA (Special Use Airspace of course!) -----------------------
+    public MutableLiveData<JSONObject> getSuaJSONObject() {
+        return suaJSONObject;
     }
 
-    public void setSuaRegionName(String regionName) {
-        suaRegionName.setValue(regionName);
+    public void setSuaJSONObject(JSONObject suaJSONObject) {
+        this.suaJSONObject.setValue(suaJSONObject);
+    }
+
+    public void checkToDisplaySuaForRegion(String regionName){
+        if (shouldDisplaySUA()) {
+            Observable<JSONObject> suaJSONObjectObservable = suaHandler.displaySuaForRegion(regionName);
+            Disposable disposable = suaJSONObjectObservable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(suaJSONObject -> {
+                        setSuaJSONObject(suaJSONObject);
+                    });
+            compositeDisposable.add(disposable);
+        }
+
+    }
+
+    public boolean shouldDisplaySUA() {
+        return appPreferences.getDisplaySua();
+    }
+
+    public void displaySua(boolean displaySUA) {
+        appPreferences.setDisplaySua(displaySUA);
+        if (displaySUA){
+            checkToDisplaySuaForRegion(selectedRegion.getName());
+        }
+        setSuaJSONObject(null);
     }
 
     // ---- Region turnpoints ---------------
-
     public void displayTurnpoints(boolean checked) {
         if (checked) {
             findTurnpointsInSelectedRegion();
@@ -990,4 +1014,5 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
 
     }
+
 }

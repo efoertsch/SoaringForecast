@@ -3,7 +3,7 @@ package org.soaringforecast.rasp.soaring.json;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class SUAGeoJsonFile {
+public class SUARegion {
 
     @SerializedName("region")
     @Expose

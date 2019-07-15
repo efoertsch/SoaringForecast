@@ -34,12 +34,13 @@ public interface SoaringForecastApi {
      *  - forecast models (gfs, nam,...) that are available
      *  - lat/long corners for that model forecast
      *  - and times that the model forecast is available
-     * @param statusJson - something like "NewEngland/2018-03-30/status.json"
+     * @param region - e.g. "NewEngland
+     * @param date - e.g. 2018-03-30"
      * @return
      */
 
-    @GET("/rasp/{statusJson}")
-    Single<ForecastModels> getForecastModels(@Path("statusJson") String statusJson);
+    @GET("/rasp/{region}/{date}/status.json")
+    Single<ForecastModels> getForecastModels(@Path("region") String region, @Path("date") String date);
 
 
     /**

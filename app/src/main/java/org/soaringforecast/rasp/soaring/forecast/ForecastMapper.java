@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -45,6 +44,7 @@ import com.google.maps.android.data.geojson.GeoJsonLayer;
 import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
@@ -115,6 +115,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private int mapType = GoogleMap.MAP_TYPE_TERRAIN;
     private LatLngBounds visibleLatLngBounds;
     private AppPreferences appPreferences;
+    private JSONObject suaJSONObject;
 
     @Inject
     public ForecastMapper() {
@@ -126,7 +127,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         return this;
     }
 
-    public ForecastMapper setAppPreferences(AppPreferences appPreferences){
+    public ForecastMapper setAppPreferences(AppPreferences appPreferences) {
         this.appPreferences = appPreferences;
         return this;
     }
@@ -164,10 +165,11 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         updateMapBounds();
         mapSoundingMarkers();
         plotTaskTurnpoints();
+        addSUAGeoJsonLayerToMap();
     }
 
     private void getMapLatLngBounds() {
-        visibleLatLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds ;
+        visibleLatLngBounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
         Timber.d("New mapbounds sw: %1$s  ne: %2$s", visibleLatLngBounds.southwest.toString(), visibleLatLngBounds.northeast.toString());
     }
 
@@ -431,29 +433,25 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     //----- Draw SUA -------------------------------
     // TODO improve to allow display of different SUA regions
     @SuppressLint("ResourceType")
-    public void setSuaRegionName(String suaRegionName) {
-        if (suaRegionName != null) {
-            int geoJsonRawId = 0;
-         /*   if (suaRegionName.equalsIgnoreCase(context.getString(R.string.new_england_region))) {
-                geoJsonRawId = R.raw.sterlng7_sua;
-            } else if (suaRegionName.equalsIgnoreCase(context.getString(R.string.mifflin_region))) {
-                geoJsonRawId = R.raw.mifflin8_sua;
-            }
-            if (geoJsonRawId != 0) {
-                addGeoJsonLayerToMap(geoJsonRawId, suaRegionName);
-            } else {
-                EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.no_sua_defined_for_specified_region, suaRegionName)
-                        , Snackbar.LENGTH_LONG));
-            }*/
+    public void setSua(JSONObject suaJSONObject) {
+        if (suaJSONObject == null) {
+            removeSuaFromMap();
+        } else {
+            this.suaJSONObject = suaJSONObject;
+            addSUAGeoJsonLayerToMap();
         }
     }
 
     // Overriding setOnFeatureClickListener as it doesn't properly handle existing markers
     // And due to override, can't call multiObjectHandler as it is private in library.
     // TODO - see about turning existing markers to GeoJsonPoints
-    private void addGeoJsonLayerToMap(@IntegerRes int geoJsonid, String suaRegionName) {
+    private void addSUAGeoJsonLayerToMap() {
+        if (googleMap == null || suaJSONObject == null) {
+            return;
+        }
+
         try {
-            geoJsonLayer = new GeoJsonLayer(googleMap, geoJsonid, context) {
+            geoJsonLayer = new GeoJsonLayer(googleMap, suaJSONObject) {
                 @Override
                 public void setOnFeatureClickListener(final OnFeatureClickListener listener) {
                     GoogleMap map = getMap();
@@ -466,7 +464,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                                 listener.onFeatureClick(getContainerFeature(polygon));
                             } else {
                                 // listener.onFeatureClick(getFeature(multiObjectHandler(polygon))); // commented out as getFeature is private so would give syntax error
-                                                                                                     // Fortunately project doesn't require this functionality
+                                // Fortunately project doesn't require this functionality
                             }
                         }
                     });
@@ -485,7 +483,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                                 return true;
                             } else {
                                 // listener.onFeatureClick(getFeature(multiObjectHandler(marker))); // commented out as getFeature is private so would give syntax error
-                                                                                    // Fortunately project doesn't require this functionality
+                                // Fortunately project doesn't require this functionality
                             }
                             return false;
                         }
@@ -500,7 +498,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                                 listener.onFeatureClick(getContainerFeature(polyline));
                             } else {
                                 //listener.onFeatureClick(getFeature(multiObjectHandler(polyline)));// commented out as getFeature is private so would give syntax error
-                                                                                                   // Fortunately project doesn't require this functionality
+                                // Fortunately project doesn't require this functionality
                             }
                         }
                     });
@@ -512,7 +510,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             // after layer removed from map so listener not currently used.
             geoJsonLayer.setOnFeatureClickListener(geoJsonOnFeatureClickListener);
         } catch (Exception e) {
-            postError(e, suaRegionName);
+            Timber.e(e);
         }
         geoJsonLayer.addLayerToMap();
     }
@@ -607,12 +605,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
     }
 
-    private void postError(Exception e, String suaRegionName) {
-        // TODO report exception
-        e.printStackTrace();
-        EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.oops_error_loading_sua_file, suaRegionName)
-                , Snackbar.LENGTH_LONG));
-    }
 
     // Simply going geoJsonLayer.removeLayerFromMap still leaves GeoJsonOnFeatureClickListener active (some bug)
     // so remove the features one by 1
@@ -623,6 +615,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             geoJsonLayer.removeLayerFromMap();
             geoJsonLayer = null;
         }
+        suaJSONObject = null;
     }
 
     // ---- Turnpoints -----------------------------
@@ -639,30 +632,30 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
         clearTurnpointMarkers();
         //sizedTurnpointBitmap = getSizedTurnpointBitmap(zoomLevel);
-            for (Turnpoint turnpoint : turnpoints) {
-                if (turnpointWithinMapBounds(turnpoint)) {
-                    sizedTurnpointBitmap = TurnpointBitmapUtil.getSizedTurnpointBitmap(context, turnpoint, zoomLevel);
-                    if (zoomLevel >= 8) {
-                        turnpointBitmap = BitmapImageUtils.drawTextOnBitmap(context, sizedTurnpointBitmap,
-                                (turnpoint.getTitle().length() <= 4) ? turnpoint.getTitle() : turnpoint.getTitle().substring(0, 4));
-                    } else {
-                        turnpointBitmap = sizedTurnpointBitmap;
-                    }
-                    placeTurnpointMarker(turnpoint, turnpointBitmap);
+        for (Turnpoint turnpoint : turnpoints) {
+            if (turnpointWithinMapBounds(turnpoint)) {
+                sizedTurnpointBitmap = TurnpointBitmapUtil.getSizedTurnpointBitmap(context, turnpoint, zoomLevel);
+                if (zoomLevel >= 8) {
+                    turnpointBitmap = BitmapImageUtils.drawTextOnBitmap(context, sizedTurnpointBitmap,
+                            (turnpoint.getTitle().length() <= 4) ? turnpoint.getTitle() : turnpoint.getTitle().substring(0, 4));
+                } else {
+                    turnpointBitmap = sizedTurnpointBitmap;
                 }
+                placeTurnpointMarker(turnpoint, turnpointBitmap);
             }
+        }
     }
 
     private boolean turnpointWithinMapBounds(Turnpoint turnpoint) {
         return (turnpoint.getLatitudeDeg() <= visibleLatLngBounds.northeast.latitude
-              &&  turnpoint.getLatitudeDeg() >= visibleLatLngBounds.southwest.latitude
-                && turnpoint.getLongitudeDeg() <=  visibleLatLngBounds.northeast.longitude
-            && turnpoint.getLongitudeDeg() >= visibleLatLngBounds.southwest.longitude);
+                && turnpoint.getLatitudeDeg() >= visibleLatLngBounds.southwest.latitude
+                && turnpoint.getLongitudeDeg() <= visibleLatLngBounds.northeast.longitude
+                && turnpoint.getLongitudeDeg() >= visibleLatLngBounds.southwest.longitude);
     }
 
     private Bitmap getSizedTurnpointBitmap(int zoomLevel) {
         int sizingRatio = 1;
-        if (zoomLevel <= 8 || zoomLevel > 9 ) {
+        if (zoomLevel <= 8 || zoomLevel > 9) {
             // will resize this as needed
             startingTurnpointBitmap = BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.ic_turnpoint_red_48dp);
         } else {
@@ -670,16 +663,16 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             startingTurnpointBitmap = BitmapImageUtils.getBitmapFromVectorDrawable(context, R.drawable.ic_turnpoint_red_32dp);
         }
         if (zoomLevel <= 7) {
-           sizingRatio = 3;
+            sizingRatio = 3;
         } else if (zoomLevel == 8) {
             sizingRatio = 2;
         } else if (zoomLevel >= 9) {
             sizingRatio = 1;
         }
         // note only bitmaps for zoom level  9 or more don't get resized
-        return  Bitmap.createScaledBitmap(startingTurnpointBitmap
-                        , startingTurnpointBitmap.getWidth() / sizingRatio, startingTurnpointBitmap.getHeight() / sizingRatio
-                        , true);
+        return Bitmap.createScaledBitmap(startingTurnpointBitmap
+                , startingTurnpointBitmap.getWidth() / sizingRatio, startingTurnpointBitmap.getHeight() / sizingRatio
+                , true);
 
     }
 
