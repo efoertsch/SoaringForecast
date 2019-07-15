@@ -33,7 +33,7 @@ public abstract class UIBuildersModule {
     abstract ForecastDrawerActivity bindWeatherDrawerActivity();
 
     // ----- Forecasts ------------------------
-    @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
+    @ContributesAndroidInjector(modules = {SoaringForecastModule.class, SUAModule.class})
     abstract SoaringForecastFragment bindSoaringForecastFragmentSpinner();
 
     @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
@@ -73,7 +73,7 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointSearchFragment bindTurnpointSearchFragment();
 
-    @ContributesAndroidInjector(modules = {})
+    @ContributesAndroidInjector(modules = {RegionTurnpointsModule.class})
     abstract SeeYouImportFragment bindSeeYouImportFragment();
 
     @ContributesAndroidInjector(modules = {})

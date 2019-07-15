@@ -9,9 +9,11 @@ import android.os.Environment;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
+import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.TurnpointFileApi;
 import org.soaringforecast.rasp.retrofit.TurnpointFileRetrofit;
 import org.soaringforecast.rasp.task.json.TurnpointFile;
+import org.soaringforecast.rasp.task.json.TurnpointRegion;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,10 +38,12 @@ public class TurnpointsImporterViewModel extends ViewModel {
     private AppRepository appRepository;
     private AppPreferences appPreferences;
     private OkHttpClient okHttpClient;
+    private JSONServerApi JSONServerApi;
 
     private MutableLiveData<List<TurnpointFile>> turnpointFiles = new MutableLiveData();
     private MutableLiveData<List<File>> cupFiles = new MutableLiveData();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
 
     public TurnpointsImporterViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
@@ -56,6 +60,15 @@ public class TurnpointsImporterViewModel extends ViewModel {
         return this;
     }
 
+    public TurnpointsImporterViewModel setGBSCJsonApi(JSONServerApi JSONServerApi){
+        this.JSONServerApi = JSONServerApi;
+        return this;
+    }
+
+    /**
+     * Get list of .cup(SeeYou) files in the devices Downloads directory
+     * @return
+     */
     @SuppressLint("CheckResult")
     public LiveData<List<File>> getCupFiles() {
 
@@ -70,12 +83,21 @@ public class TurnpointsImporterViewModel extends ViewModel {
     }
 
     @SuppressLint("CheckResult")
+    // Get list of selected .cup(SeeYou) files based on JSON from soargbsc.com/soaringforecast/turnpoint_regions.json
     public LiveData<List<TurnpointFile>> getTurnpointFiles() {
-        Disposable disposable = appRepository.getTurnpointFiles(appPreferences.getSoaringForecastRegion())
+        Disposable disposable = JSONServerApi.getTurnpointRegions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(turnpointFileList ->
-                                turnpointFiles.setValue(turnpointFileList)
+                .subscribe(turnpointRegions -> {
+                            String currentRegion =  appPreferences.getSoaringForecastRegion();
+                            List<TurnpointRegion> turnpointRegionList = turnpointRegions.getTurnpointRegions();
+                            for (TurnpointRegion turnpointRegion: turnpointRegionList){
+                                if (turnpointRegion.getRegion().equals(currentRegion)){
+                                    turnpointFiles.setValue(turnpointRegion.getTurnpointFiles());
+                                    break;
+                                }
+                            }
+                        }
                         , Timber::e);
         compositeDisposable.add(disposable);
         return turnpointFiles;

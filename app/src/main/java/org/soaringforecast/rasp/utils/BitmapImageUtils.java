@@ -28,6 +28,7 @@ import okhttp3.Response;
 import timber.log.Timber;
 
 // TODO separate cache logic from other bitmap stuff
+//TODO use retrofit @STREAM to download bitmaps and clean up how url assembled
 public class BitmapImageUtils {
 
     private BitmapCache bitmapCache;

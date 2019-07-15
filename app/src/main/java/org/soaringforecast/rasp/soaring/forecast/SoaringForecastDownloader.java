@@ -59,7 +59,6 @@ public class SoaringForecastDownloader implements CacheTimeListener {
      *
      * @return
      * @throws IOException
-     * @throws NullPointerException
      */
     public Single<Regions> getRegionForecastDates() {
         return client.getForecastDates("current.json");
@@ -74,7 +73,7 @@ public class SoaringForecastDownloader implements CacheTimeListener {
      */
     public Single<ForecastModels> getForecastModels(String region, String regionForecastDate) {
         //Timber.d("Url:  %1$s/%2$s/status.json", region, regionForecastDate);
-        return client.getForecastModels(region + "/" + regionForecastDate + "/status.json");
+        return client.getForecastModels(region , regionForecastDate );
     }
 
     /**
@@ -176,6 +175,7 @@ public class SoaringForecastDownloader implements CacheTimeListener {
         return soaringForecastImage;
     }
 
+
     /**
      * @param region
      * @param yyyymmddDate
@@ -185,9 +185,10 @@ public class SoaringForecastDownloader implements CacheTimeListener {
      * @param bitmapType
      * @return something like NewEngland/2018-03-31/gfs/wstar_bsratio.1500local.d2.body.png
      */
+    //TODO cleanup how url created - use @PATH parms? (But what about creating cache name?)
     public String getSoaringForecastUrlParm(String region, String yyyymmddDate, String
             forecastType, String forecastParameter, String forecastTime, String bitmapType) {
-        return String.format("%s/%s/%s/%s.%slocal.d2.%s.png", region, yyyymmddDate
+        return String.format("/rasp/%s/%s/%s/%s.%slocal.d2.%s.png", region, yyyymmddDate
                 , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType);
     }
 
@@ -200,10 +201,10 @@ public class SoaringForecastDownloader implements CacheTimeListener {
      * @param bitmapType
      * @return something like NewEngland/2018-08-31/nam/sounding3.1200local.d2.png
      */
-
+    //TODO cleanup how url created - use @PATH parms? (But what about creating cache name?)
     public String getSoaringForecastSoundingUrlParm(String region, String yyyymmddDate, String
             forecastType, String soundingIndex, String forecastTime, String bitmapType) {
-        return String.format("%s/%s/%s/sounding%s.%slocal.d2.png", region, yyyymmddDate
+        return String.format("/rasp/%s/%s/%s/sounding%s.%slocal.d2.png", region, yyyymmddDate
                 , forecastType.toLowerCase(), soundingIndex, forecastTime, bitmapType);
     }
 

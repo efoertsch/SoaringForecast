@@ -63,6 +63,9 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Inject
     StringUtils stringUtils;
 
+    @Inject
+    SUAHandler suaHandler;
+
     private SoaringForecastViewModel soaringForecastViewModel;
     private SoaringForecastBinding soaringForecastBinding;
     private ForecastTypeAdapter forecastTypeAdapter;
@@ -86,7 +89,8 @@ public class SoaringForecastFragment extends DaggerFragment {
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
                 .setSoaringForecastDownloader(soaringForecastDownloader)
-                .setStringUtils(stringUtils);
+                .setStringUtils(stringUtils)
+                .setSuaHandler(suaHandler);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -223,14 +227,8 @@ public class SoaringForecastFragment extends DaggerFragment {
         });
 
         // Forecast region name for display of SUA (if any)
-        soaringForecastViewModel.getSuaRegionName().observe(this, regionName -> {
-            lastRegionName = regionName;
-            displaySUA = appPreferences.getDisplaySua();
-            if (displaySUA) {
-                displaySuaOnMap(lastRegionName);
-            }
-
-            //getActivity().invalidateOptionsMenu();
+        soaringForecastViewModel.getSuaJSONObject().observe(this, suaJSONOject -> {
+                forecastMapper.setSua(suaJSONOject);
         });
 
         // --- Turnpoints ------------------------------
@@ -279,20 +277,6 @@ public class SoaringForecastFragment extends DaggerFragment {
         if (clearTaskMenuItem != null) {
             clearTaskMenuItem.setEnabled(showClearTaskMenuItem);
         }
-
-//        soundingsMenuItem = menu.findItem(R.id.forecast_menu_toggle_sounding_points);
-//        soundingsMenuItem.setChecked(displaySoundings);
-//
-//        suaMenuItem = menu.findItem(R.id.forecast_menu_display_sua);
-//        if (suaMenuItem != null) {
-//            suaMenuItem.setChecked(displaySUA);
-//        }
-//
-//        turnpointsMenuItem = menu.findItem(R.id.forecast_menu_display_turnpoints);
-//        if (turnpointsMenuItem != null) {
-//            turnpointsMenuItem.setChecked(displayTurnpoints);
-//        }
-
     }
 
     @Override
@@ -334,32 +318,6 @@ public class SoaringForecastFragment extends DaggerFragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-
-    private void displaySua(boolean displaySua) {
-        Timber.d("displaySua() suaMenuItem.isChecked(): %1$s", displaySoundings);
-        // When menu clicked to be checked it, menuItem still unchecked when you get here
-        // Likewise when clicked and is checked, it is still checked when you get here.
-        if (!displaySua) {
-            if (forecastMapper != null) {
-                forecastMapper.removeSuaFromMap();
-            }
-        } else {
-            if (lastRegionName == null) {
-                // sua not displayed by settings so need to get region from viewmodel first
-                if (soaringForecastViewModel.getSuaRegionName() != null) {
-                    lastRegionName = soaringForecastViewModel.getSuaRegionName().getValue();
-                }
-            }
-            displaySuaOnMap(lastRegionName);
-
-        }
-    }
-
-    // Drawing SUA cpu intensive so doing this way to make app more responsive
-    private void displaySuaOnMap(final String regionName) {
-        new Thread(() -> getActivity().runOnUiThread(((Runnable) () -> forecastMapper.setSuaRegionName(regionName)))).start();
     }
 
 
@@ -481,7 +439,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                                 break;
                             case 1:
                                 if (displaySUA != displayOptionsChecked[i]) {
-                                    displaySua(displayOptionsChecked[i]);
+                                    soaringForecastViewModel.displaySua(displayOptionsChecked[i]);
                                     displaySUA = displayOptionsChecked[i];
                                 }
                                 break;

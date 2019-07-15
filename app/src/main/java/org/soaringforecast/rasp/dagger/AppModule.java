@@ -76,10 +76,10 @@ public class AppModule {
         return new LoggingInterceptor();
     }
 
-    @Provides @Named("rasp_url")
+    @Provides @Named("forecast_server_url")
     @Singleton
     public String getRaspUrl(){
-        return appContext.getString(R.string.rasp_url);
+        return appContext.getString(R.string.forecast_server_url);
     }
 
     @Provides

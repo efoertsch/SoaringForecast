@@ -6,7 +6,7 @@ import org.soaringforecast.rasp.cache.BitmapCache;
 import org.soaringforecast.rasp.dagger.OkHttpClientModule;
 import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
-import org.soaringforecast.rasp.retrofit.SoaringForecastRetrofit;
+import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
 import org.soaringforecast.rasp.soaring.json.ForecastModels;
 import org.soaringforecast.rasp.soaring.json.Model;
 import org.soaringforecast.rasp.soaring.json.Region;
@@ -30,8 +30,8 @@ import static org.junit.Assert.assertTrue;
 
 public class SoaringForecastTest {
 
-   // String raspUrl = "http://thepaavolas.net/rasp/";
-    String raspUrl = "http://soargbsc.com/rasp/";
+   // String raspUrl = "http://thepaavolas.net/";
+    String raspUrl = "http://soargbsc.com/";
     Retrofit retrofit;
     SoaringForecastApi client;
     Regions regions;
@@ -41,7 +41,7 @@ public class SoaringForecastTest {
 
     @Before
     public void createRetrofit() {
-        retrofit = new SoaringForecastRetrofit(new OkHttpClientModule(). getOkHttpClient(new LoggingInterceptor()), raspUrl).getRetrofit();
+        retrofit = new ForecastServerRetrofit(new OkHttpClientModule(). getOkHttpClient(new LoggingInterceptor()), raspUrl).getRetrofit();
         client = retrofit.create(SoaringForecastApi.class);
     }
 
@@ -80,7 +80,7 @@ public class SoaringForecastTest {
         assertNotNull("NewEngland Region missing from status.json", region);
         System.out.println(region.toString());
         for (String date : region.getDates()) {
-            Single<ForecastModels> single = client.getForecastModels(region.getName() + "/" + date + "/status.json");
+            Single<ForecastModels> single = client.getForecastModels(region.getName() , date);
             single.subscribe(this::forecastModelShouldHaveNameCenterCornersAndTimes);
         }
     }
@@ -104,7 +104,7 @@ public class SoaringForecastTest {
         Region region = regions.getRegion("NewEngland");
         System.out.println(region.toString());
         for (String date : region.getDates()) {
-            Single<ForecastModels> single = client.getForecastModels(region.getName() + "/" + date + "/status.json");
+            Single<ForecastModels> single = client.getForecastModels(region.getName() , date);
             single.subscribe(this::forecastModelShouldHaveNameCenterCornersAndTimes);
         }
     }
