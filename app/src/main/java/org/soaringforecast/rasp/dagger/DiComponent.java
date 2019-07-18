@@ -16,6 +16,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
         , AppRepositoryModule.class
         , ChannelIdModule.class
         , OkHttpClientModule.class
+        ,TurnpointBitmapUtilsModule.class
         })
 
 public interface DiComponent extends

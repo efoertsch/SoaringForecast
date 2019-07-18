@@ -25,6 +25,7 @@ import org.soaringforecast.rasp.databinding.EditTaskView;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
+import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.task.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.touchhelper.OnStartDragListener;
@@ -44,8 +45,10 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     @Inject
     AppRepository appRepository;
 
-    private long taskId;
+    @Inject
+    public TurnpointBitmapUtils turnpointBitmapUtils;
 
+    private long taskId;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
     private TaskTurnpointsRecyclerViewAdapter recyclerViewAdapter;
     private FloatingActionButton saveFab;
@@ -60,9 +63,8 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     }
 
     private GenericListClickListener<TaskTurnpoint> onItemClickListener = (taskTurnpoint, position) -> {
-       // find corresponding turnpoint
+        // find corresponding turnpoint
         getTurnpointFromTaskTurnpoint(taskTurnpoint);
-
 
     };
 
@@ -70,7 +72,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         Disposable disposable = appRepository.getTurnpoint(taskTurnpoint.getTitle(), taskTurnpoint.getCode())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(turnpoint-> {
+                .subscribe(turnpoint -> {
                             EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
                         },
                         t -> {
@@ -124,8 +126,11 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
         editTaskView.setViewModel(taskAndTurnpointsViewModel);
 
         RecyclerView recyclerView = editTaskView.editTaskRecyclerView;
-        recyclerViewAdapter = new TaskTurnpointsRecyclerViewAdapter(taskAndTurnpointsViewModel);
-        recyclerViewAdapter.setItemClickListener(onItemClickListener);
+        recyclerViewAdapter = TaskTurnpointsRecyclerViewAdapter.getInstance()
+                .setTaskAndTurnpointViewModel(taskAndTurnpointsViewModel)
+                .setItemClickListener(onItemClickListener)
+                .setTurnpointBitmapUtils(turnpointBitmapUtils)
+                .setAppRepository(appRepository);
 
         //TODO DRY
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
@@ -137,7 +142,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
         taskAndTurnpointsViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
             recyclerViewAdapter.setItems(taskTurnpoints);
-            taskId = (taskTurnpoints != null && taskTurnpoints.size() > 0) ?  taskTurnpoints.get(0).getTaskId() : 0;
+            taskId = (taskTurnpoints != null && taskTurnpoints.size() > 0) ? taskTurnpoints.get(0).getTaskId() : 0;
             getActivity().invalidateOptionsMenu();
         });
 
@@ -169,7 +174,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         compositeDisposable.dispose();
         super.onStop();
     }

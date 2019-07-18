@@ -23,6 +23,10 @@
             name="turnpoint"
             type="org.soaringforecast.rasp.repository.Turnpoint"/>
 
+        <variable
+            name="turnpointBitmapUtils"
+            type="org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -44,7 +48,7 @@
             android:clickable="true"
             android:focusable="true"
             android:onClick="@{()->satelliteClickListener.onItemClick(turnpoint, position)}"
-            app:srcCompat="@drawable/ic_satellite_blue_48dp"/>
+            android:src="@{turnpointBitmapUtils.getDrawableTurnpointImage(context, turnpoint)}"/>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/turnpoint_search_text_layout"

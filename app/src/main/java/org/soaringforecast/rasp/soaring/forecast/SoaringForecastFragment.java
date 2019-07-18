@@ -66,6 +66,9 @@ public class SoaringForecastFragment extends DaggerFragment {
     @Inject
     SUAHandler suaHandler;
 
+    @Inject
+    TurnpointBitmapUtils turnpointBitmapUtils;
+
     private SoaringForecastViewModel soaringForecastViewModel;
     private SoaringForecastBinding soaringForecastBinding;
     private ForecastTypeAdapter forecastTypeAdapter;
@@ -118,8 +121,10 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private void setupViews() {
         // TODO how to get from binding - soaringForecastBinding.soaringForecastMap - need to get as supportMapFragment
-        forecastMapper.setContext(getContext()).displayMap((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map));
-        forecastMapper.setAppPreferences(appPreferences);
+        forecastMapper.setContext(getContext())
+                .displayMap((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.soaring_forecast_map))
+                .setAppPreferences(appPreferences)
+                .setTurnpointBitmapUtils(turnpointBitmapUtils);
         // opacity not worth having it bound in viewModel and forwarding changes.
         forecastMapper.setForecastOverlayOpacity(appPreferences.getForecastOverlayOpacity());
         soaringForecastBinding.soaringForecastSeekbarOpacity.setProgress(soaringForecastViewModel.getForecastOverlyOpacity());
@@ -228,7 +233,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // Forecast region name for display of SUA (if any)
         soaringForecastViewModel.getSuaJSONObject().observe(this, suaJSONOject -> {
-                forecastMapper.setSua(suaJSONOject);
+            forecastMapper.setSua(suaJSONOject);
         });
 
         // --- Turnpoints ------------------------------

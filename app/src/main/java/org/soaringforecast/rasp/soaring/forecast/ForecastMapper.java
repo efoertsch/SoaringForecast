@@ -116,6 +116,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private LatLngBounds visibleLatLngBounds;
     private AppPreferences appPreferences;
     private JSONObject suaJSONObject;
+    private TurnpointBitmapUtils turnpointBitmapUtils;
 
     @Inject
     public ForecastMapper() {
@@ -129,6 +130,11 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     public ForecastMapper setAppPreferences(AppPreferences appPreferences) {
         this.appPreferences = appPreferences;
+        return this;
+    }
+
+    public ForecastMapper setTurnpointBitmapUtils(TurnpointBitmapUtils turnpointBitmapUtils) {
+        this.turnpointBitmapUtils = turnpointBitmapUtils;
         return this;
     }
 
@@ -631,10 +637,9 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             return;
         }
         clearTurnpointMarkers();
-        //sizedTurnpointBitmap = getSizedTurnpointBitmap(zoomLevel);
         for (Turnpoint turnpoint : turnpoints) {
             if (turnpointWithinMapBounds(turnpoint)) {
-                sizedTurnpointBitmap = TurnpointBitmapUtil.getSizedTurnpointBitmap(context, turnpoint, zoomLevel);
+                sizedTurnpointBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(context, turnpoint, zoomLevel);
                 if (zoomLevel >= 8) {
                     turnpointBitmap = BitmapImageUtils.drawTextOnBitmap(context, sizedTurnpointBitmap,
                             (turnpoint.getTitle().length() <= 4) ? turnpoint.getTitle() : turnpoint.getTitle().substring(0, 4));

@@ -20,6 +20,7 @@
             type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.TaskTurnpoint&gt;"
             />
 
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -33,7 +34,7 @@
         >
 
         <ImageView
-            android:id="@+id/task_turnpoint_satellite_image"
+            android:id="@+id/task_turnpoint_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -42,7 +43,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_satellite_blue_48dp"/>
+            />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/task_turnpoint_text_layout"
@@ -51,7 +52,7 @@
             android:layout_marginStart="8dp"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/task_turnpoint_satellite_image"
+            app:layout_constraintStart_toEndOf="@+id/task_turnpoint_icon"
             app:layout_constraintTop_toTopOf="parent">
 
             <android.support.constraint.Guideline
