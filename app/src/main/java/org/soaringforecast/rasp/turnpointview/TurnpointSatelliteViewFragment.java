@@ -2,7 +2,6 @@ package org.soaringforecast.rasp.turnpointview;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,14 +23,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.repository.Turnpoint;
-import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtil;
+import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
 import timber.log.Timber;
 
-public class TurnpointSatelliteViewFragment extends Fragment implements OnMapReadyCallback {
+public class TurnpointSatelliteViewFragment extends DaggerFragment implements OnMapReadyCallback {
 
     private Turnpoint turnpoint;
     private ProgressBar progressBar;
+
+    @Inject
+    public TurnpointBitmapUtils turnpointBitmapUtils;
 
     public static TurnpointSatelliteViewFragment newInstance(Turnpoint turnpoint) {
         TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = new TurnpointSatelliteViewFragment();
@@ -93,7 +98,7 @@ public class TurnpointSatelliteViewFragment extends Fragment implements OnMapRea
             }
         });
 
-        Bitmap turnpointBitmap = TurnpointBitmapUtil.getSizedTurnpointBitmap(getContext(), turnpoint, 8);
+        Bitmap turnpointBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpoint, 8);
         Marker marker = googleMap.addMarker(new MarkerOptions()
                 .position(turnppointLatLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(turnpointBitmap)));

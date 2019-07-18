@@ -6,13 +6,13 @@ import org.soaringforecast.rasp.airport.AirportActivity;
 import org.soaringforecast.rasp.airport.airportweather.AirportMetarTafFragment;
 import org.soaringforecast.rasp.airport.list.AirportListFragment;
 import org.soaringforecast.rasp.airport.search.AirportSearchFragment;
-import org.soaringforecast.rasp.settings.forecastorder.ForecastOrderFragment;
-import org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity;
 import org.soaringforecast.rasp.satellite.SatelliteActivity;
 import org.soaringforecast.rasp.satellite.noaa.NoaaSatelliteImageFragment;
 import org.soaringforecast.rasp.settings.SettingsActivity;
+import org.soaringforecast.rasp.settings.forecastorder.ForecastOrderFragment;
 import org.soaringforecast.rasp.settings.preferences.SettingsPreferenceFragment;
 import org.soaringforecast.rasp.settings.regions.RegionSelectionFragment;
+import org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity;
 import org.soaringforecast.rasp.soaring.forecast.SoaringForecastFragment;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
@@ -20,6 +20,7 @@ import org.soaringforecast.rasp.task.list.TaskListFragment;
 import org.soaringforecast.rasp.task.search.TurnpointSearchFragment;
 import org.soaringforecast.rasp.task.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.task.turnpoints.seeyou.SeeYouImportFragment;
+import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.windy.WindyActivity;
 import org.soaringforecast.rasp.windy.WindyFragment;
 
@@ -78,6 +79,9 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointsDownloadFragment bindTurnpointsImportFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointSatelliteViewFragment bindTurnpointSatelliteViewFragment();
 
 
     // ---- Satellite ----

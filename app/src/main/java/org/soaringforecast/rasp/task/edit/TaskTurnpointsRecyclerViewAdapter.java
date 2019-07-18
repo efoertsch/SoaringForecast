@@ -5,16 +5,24 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.common.recycleradapter.GenericViewHolder;
 import org.soaringforecast.rasp.databinding.TaskTurnpointView;
+import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
+import org.soaringforecast.rasp.repository.messages.DataBaseError;
+import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.touchhelper.ItemTouchHelperAdapter;
 import org.soaringforecast.rasp.touchhelper.ItemTouchHelperViewHolder;
 
 import java.util.Collections;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class TaskTurnpointsRecyclerViewAdapter
         extends GenericRecyclerViewAdapter<TaskTurnpoint, TaskTurnpointsRecyclerViewAdapter.TaskTurnpointViewHolder>
@@ -22,14 +30,35 @@ public class TaskTurnpointsRecyclerViewAdapter
 
     private GenericListClickListener<TaskTurnpoint> itemClickListener;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
+    private TurnpointBitmapUtils turnpointBitmapUtils;
+    private AppRepository appRepository;
 
-    public TaskTurnpointsRecyclerViewAdapter(TaskAndTurnpointsViewModel taskAndTurnpointsViewModel) {
-        super(taskAndTurnpointsViewModel.getTaskTurnpoints().getValue());
-        this.taskAndTurnpointsViewModel = taskAndTurnpointsViewModel;
+
+    private TaskTurnpointsRecyclerViewAdapter(){}
+
+    public static TaskTurnpointsRecyclerViewAdapter getInstance(){
+        return new TaskTurnpointsRecyclerViewAdapter();
     }
 
-    public void setItemClickListener(GenericListClickListener<TaskTurnpoint> taskTurnpointGenericListClickListener) {
+    public TaskTurnpointsRecyclerViewAdapter setTaskAndTurnpointViewModel(TaskAndTurnpointsViewModel taskAndTurnpointsViewModel) {
+        setItems(taskAndTurnpointsViewModel.getTaskTurnpoints().getValue());
+        this.taskAndTurnpointsViewModel = taskAndTurnpointsViewModel;
+        return this;
+    }
+
+    public TaskTurnpointsRecyclerViewAdapter setItemClickListener(GenericListClickListener<TaskTurnpoint> taskTurnpointGenericListClickListener) {
         itemClickListener = taskTurnpointGenericListClickListener;
+        return this;
+    }
+
+    public TaskTurnpointsRecyclerViewAdapter setTurnpointBitmapUtils(TurnpointBitmapUtils turnpointBitmapUtils){
+        this.turnpointBitmapUtils = turnpointBitmapUtils;
+        return this;
+    }
+
+    public TaskTurnpointsRecyclerViewAdapter setAppRepository(AppRepository appRepository){
+        this.appRepository = appRepository;
+        return this;
     }
 
     @Override
@@ -42,6 +71,12 @@ public class TaskTurnpointsRecyclerViewAdapter
     @Override
     public void onBindViewHolder(TaskTurnpointViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
+    }
+
+    @Override
+    public void onViewRecycled(TaskTurnpointsRecyclerViewAdapter.TaskTurnpointViewHolder taskTurnpointViewHolder){
+        taskTurnpointViewHolder.dispose();
+
     }
 
     @Override
@@ -77,6 +112,7 @@ public class TaskTurnpointsRecyclerViewAdapter
 
         private TaskTurnpointView viewDataBinding;
         private DragOps dragOps;
+        private Disposable disposable;
 
         TaskTurnpointViewHolder(TaskTurnpointView bindingView, DragOps dragOps) {
             super(bindingView);
@@ -88,6 +124,8 @@ public class TaskTurnpointsRecyclerViewAdapter
             viewDataBinding.setTaskTurnpoint(item);
             viewDataBinding.setPosition(position);
             viewDataBinding.setClickListener(itemClickListener);
+            displayTurnpointIcon(item);
+
         }
 
         @Override
@@ -104,6 +142,25 @@ public class TaskTurnpointsRecyclerViewAdapter
         public void onItemClear() {
             itemView.setBackgroundColor(itemView.getResources().getColor(R.color.drag_drop));
             dragOps.dragCompleted();
+        }
+
+        private void displayTurnpointIcon(TaskTurnpoint taskTurnpoint) {
+            disposable = appRepository.getTurnpoint(taskTurnpoint.getTitle(), taskTurnpoint.getCode())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(turnpoint-> {
+                        viewDataBinding.taskTurnpointIcon.setImageDrawable(
+                                turnpointBitmapUtils.getDrawableTurnpointImage(viewDataBinding.getRoot().getContext(), turnpoint));
+                            },
+                            t -> {
+                                EventBus.getDefault().post(new DataBaseError(viewDataBinding.getRoot().getContext()
+                                        .getString(R.string.error_reading_turnpoint, taskTurnpoint.getTitle(),
+                                        taskTurnpoint.getCode()), t));
+                            });
+        }
+
+        public void dispose(){
+            disposable.dispose();
         }
 
     }

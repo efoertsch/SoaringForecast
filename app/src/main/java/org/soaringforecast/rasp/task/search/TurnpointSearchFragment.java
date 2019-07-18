@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,17 +24,25 @@ import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
+import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel;
 import org.soaringforecast.rasp.task.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
-public class TurnpointSearchFragment extends Fragment {
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
+
+public class TurnpointSearchFragment extends DaggerFragment {
 
     private SearchView searchView;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
     private TurnpointSearchListAdapter turnpointSearchListAdapter;
     private AlertDialog noTurnpointsDialog;
+
+    @Inject
+    TurnpointBitmapUtils turnpointBitmapUtils;
 
     private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
         TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
@@ -47,7 +54,7 @@ public class TurnpointSearchFragment extends Fragment {
     private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
         if (searchView != null) {
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(searchView .getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
         }
         EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
     };
@@ -65,9 +72,10 @@ public class TurnpointSearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.turnpoint_search_layout, null);
 
-        turnpointSearchListAdapter = new TurnpointSearchListAdapter();
-        turnpointSearchListAdapter.setOnItemClickListener(turnpointTextClickListener);
-        turnpointSearchListAdapter.setSateliteOnItemClickListener(satelliteOnItemClickListener);
+        turnpointSearchListAdapter = TurnpointSearchListAdapter.getInstance()
+                .setOnItemClickListener(turnpointTextClickListener)
+                .setSateliteOnItemClickListener(satelliteOnItemClickListener)
+                .setTurnpointBitmapUtils(turnpointBitmapUtils);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.turnpoint_search_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),

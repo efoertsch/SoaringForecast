@@ -9,6 +9,7 @@ import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.databinding.TurnpointSearchView;
 import org.soaringforecast.rasp.repository.Turnpoint;
+import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,22 +19,30 @@ public class TurnpointSearchListAdapter extends GenericRecyclerViewAdapter<Turnp
     private List<Turnpoint> turnpoints = new ArrayList<>();
     private GenericListClickListener<Turnpoint> itemClickListener;
     private GenericListClickListener<Turnpoint> satelliteImageClickListener;
-    private NewTurnpointListListener newTurnpointListListener;
+    private TurnpointBitmapUtils turnpointBitmapUtils;
 
-    public interface NewTurnpointListListener {
-        void newTurnpointOrder(List<Turnpoint> turnpoints);
-    }
 
-    public TurnpointSearchListAdapter(){
+    private TurnpointSearchListAdapter(){
         super();
     }
 
-    public void setOnItemClickListener(GenericListClickListener<Turnpoint> turnpointGenericListClickListener ) {
-        this.itemClickListener =  turnpointGenericListClickListener;
+    public static TurnpointSearchListAdapter getInstance(){
+        return new TurnpointSearchListAdapter();
     }
 
-    public void setSateliteOnItemClickListener(GenericListClickListener<Turnpoint> satelliteGenericListClickListener ) {
+    public TurnpointSearchListAdapter setOnItemClickListener(GenericListClickListener<Turnpoint> turnpointGenericListClickListener ) {
+        this.itemClickListener =  turnpointGenericListClickListener;
+        return this;
+    }
+
+    public TurnpointSearchListAdapter setSateliteOnItemClickListener(GenericListClickListener<Turnpoint> satelliteGenericListClickListener ) {
         this.satelliteImageClickListener =  satelliteGenericListClickListener;
+        return this;
+    }
+
+    public TurnpointSearchListAdapter setTurnpointBitmapUtils(TurnpointBitmapUtils turnpointBitmapUtils){
+        this.turnpointBitmapUtils = turnpointBitmapUtils;
+        return this;
     }
 
 
@@ -57,6 +66,7 @@ public class TurnpointSearchListAdapter extends GenericRecyclerViewAdapter<Turnp
         super.onBindViewHolder(holder, position);
         holder.getViewDataBinding().setClickListener(itemClickListener);
         holder.getViewDataBinding().setSatelliteClickListener(satelliteImageClickListener);
+        holder.getViewDataBinding().setTurnpointBitmapUtils(turnpointBitmapUtils);
     }
 
 }

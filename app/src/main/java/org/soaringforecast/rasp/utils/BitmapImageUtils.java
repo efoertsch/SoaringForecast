@@ -1,7 +1,6 @@
 package org.soaringforecast.rasp.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -118,10 +117,7 @@ public class BitmapImageUtils {
                 imageView.setBackgroundColor(imageView.getContext().getResources().getColor(R.color.colorPrimary));
                 return;
         }
-
     }
-
-
 
     public static Bitmap getBitmapFromVectorDrawable(Context context, @DrawableRes int drawableId) {
         Drawable drawable = getDrawableFromVectorDrawable(context, drawableId);
@@ -135,22 +131,12 @@ public class BitmapImageUtils {
         return bitmap;
     }
 
-    private static Drawable getDrawableFromVectorDrawable(Context context,@DrawableRes int drawableId) {
+    public static Drawable getDrawableFromVectorDrawable(Context context,@DrawableRes int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             drawable = (DrawableCompat.wrap(drawable)).mutate();
         }
         return drawable;
-    }
-
-    public static Bitmap getBitmapWithTextOverVectorDrawable(Context context, @DrawableRes int drawableRes, String text){
-        Drawable drawable =  getDrawableFromVectorDrawable(context, drawableRes);
-        return drawTextOnDrawable(context, drawable, text);
-    }
-
-    public static Drawable getDrawable(Context context, @DrawableRes int drawableRes){
-        Resources resources = context.getResources();
-        return resources.getDrawable(drawableRes);
     }
 
     public static Bitmap drawTextOnDrawable(Context context, Drawable drawable, String text) {
