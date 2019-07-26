@@ -1,19 +1,16 @@
 # SoaringForecast
 Display soaring forecast and weather information of interest to glider pilots.
 
-Includes :
-1. Soaring forecasts available from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Paavola. Currently NewEngland forecasts are always generated. Mifflin forecasts are also being generated but they may be dropped post Mifflin encampment in May)
-2. Tasks can be defined and overlaid on the RASP forecast based on imported SeeYou turnpoint files.
-3. Skew-t soundings from selected NE locations (soundings from soarbgsc.com/rasp/ also)
+1. Soaring forecasts displayed from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Paavola). Currently NewEngland forecasts are always generated. Mifflin forecasts are also being generated but they may be dropped post Mifflin encampment in May.
+2. Special Use Airspace (SUA) can be displayed. (The GeoJson SUA files were created based on SUA files in Tim Newport-Peace format  from the Worldwide Turnpoint Exchange and run through a converted at  https://mygeodata.cloud/converter/ to produce the GeoJson files)
+3. Turnpoints can be downloaded from Worldwide Turnpoint Exchange (http://soaringweb.org/TP/) or you can import your own (in SeeYou .cup format)
+2. Tasks can be defined using the imported turnpoints and overlaid on the RASP forecast.
+3. Skew-t soundings can be displayed from selected NE locations (soundings from soarbgsc.com/rasp/ also)
 4. METAR and TAF (from aviationweather.gov)
 5. NOAA satellite images for visibile, water vapor and infrared color/bw images. Satellite images are animated. (aviationweather.gov)
 6. GEOS East current and animated (GIF) images.
 7. Customized version of Windy with task overlay. 
 8. Options to start browsers to display either Dr. Jacks and/or SkySight
-
-Turnpoint filenames from the New England Worldwide Turnpoint Exchange(http://soaringweb.org/TP/) are hard coded in the app. (It looks like the filenames may change as updates are made and files are generated with a new name.)
-
-Worldwide Turnpoint Exchange SUA file for Sterling converted to KML format (needed for Google Map overly) via https://mygeodata.cloud/converter/.
 
 Airport information for TAF/METARS downloaded from http://ourairports.com/data/. Note that on weekends, the file may be empty (being updated?) for a period of time, but the app should check for that and schedule downloads until what appears to be a full file is available.
 
