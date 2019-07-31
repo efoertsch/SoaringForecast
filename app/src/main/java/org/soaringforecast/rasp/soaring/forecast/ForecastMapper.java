@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.data.Feature;
@@ -437,12 +436,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     }
 
     //----- Draw SUA -------------------------------
-    // TODO improve to allow display of different SUA regions
     @SuppressLint("ResourceType")
     public void setSua(JSONObject suaJSONObject) {
-        if (suaJSONObject == null) {
-            removeSuaFromMap();
-        } else {
+        removeSuaFromMap();
+        if (suaJSONObject != null) {
             this.suaJSONObject = suaJSONObject;
             addSUAGeoJsonLayerToMap();
         }
@@ -455,23 +452,19 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         if (googleMap == null || suaJSONObject == null) {
             return;
         }
-
         try {
             geoJsonLayer = new GeoJsonLayer(googleMap, suaJSONObject) {
                 @Override
                 public void setOnFeatureClickListener(final OnFeatureClickListener listener) {
                     GoogleMap map = getMap();
-                    map.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-                        @Override
-                        public void onPolygonClick(Polygon polygon) {
-                            if (getFeature(polygon) != null) {
-                                listener.onFeatureClick(getFeature(polygon));
-                            } else if (getContainerFeature(polygon) != null) {
-                                listener.onFeatureClick(getContainerFeature(polygon));
-                            } else {
-                                // listener.onFeatureClick(getFeature(multiObjectHandler(polygon))); // commented out as getFeature is private so would give syntax error
-                                // Fortunately project doesn't require this functionality
-                            }
+                    map.setOnPolygonClickListener(polygon -> {
+                        if (getFeature(polygon) != null) {
+                            listener.onFeatureClick(getFeature(polygon));
+                        } else if (getContainerFeature(polygon) != null) {
+                            listener.onFeatureClick(getContainerFeature(polygon));
+                        } else {
+                            // listener.onFeatureClick(getFeature(multiObjectHandler(polygon))); // commented out as getFeature is private so would give syntax error
+                            // Fortunately project doesn't require this functionality
                         }
                     });
 
@@ -511,9 +504,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                 }
             };
             setSuaFeatureColor(geoJsonLayer);
-            // TODO reimplement after Google fixes bugs
-            // Bug when clicking on map, may not get correct feature, also still getting click event
-            // after layer removed from map so listener not currently used.
             geoJsonLayer.setOnFeatureClickListener(geoJsonOnFeatureClickListener);
         } catch (Exception e) {
             Timber.e(e);
@@ -611,9 +601,6 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
     }
 
-
-    // Simply going geoJsonLayer.removeLayerFromMap still leaves GeoJsonOnFeatureClickListener active (some bug)
-    // so remove the features one by 1
     public void removeSuaFromMap() {
         if (geoJsonLayer != null) {
             // click listener continues to function even when layer removed from map, so set flag (for now) to

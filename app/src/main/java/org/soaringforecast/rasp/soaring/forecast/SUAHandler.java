@@ -86,7 +86,10 @@ public class SUAHandler {
                     // else download new file, delete old and emit new sua geojson object
                     Timber.d("Updated SUA file available for region: %1$s  updated file name: %2$s", region, newSuaFilename);
                     getDownloadSUACompleteable(region, newSuaFilename).blockingGet();
-                    deleteSUAFile(region, oldSuaFilename);
+                    if (oldSuaFilename != null) {
+                        deleteSUAFile(region, oldSuaFilename);
+                    }
+                    EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.downloading_new_sua)));
                     emitter.onNext(getSuaJSONObject(region, newSuaFilename));
                 }
             } else {
