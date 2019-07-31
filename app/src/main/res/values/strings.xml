@@ -321,5 +321,6 @@
     <string name="oops_try_that_again">Oops. Try that again</string>
     <string name="close">Close</string>
     <string name="error_getting_sua_file_for_region">Error getting SUA file for %1$s</string>
+    <string name="downloading_new_sua">Downloading  and displaying new SUA file.</string>
 
 </resources>

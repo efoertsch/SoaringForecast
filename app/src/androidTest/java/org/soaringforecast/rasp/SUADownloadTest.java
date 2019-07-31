@@ -31,7 +31,9 @@ import static org.junit.Assert.assertNull;
 @RunWith(AndroidJUnit4.class)
 public class SUADownloadTest {
 
-    private String gbscJsonUrl = "http://soargbsc.com/soaringforecast/";
+    // Use "localhost" ip address for testing in emulator (not on actual device)
+    private String gbscJsonUrl = "http://192.168.1.6/soaringforecast/";
+    //private String gbscJsonUrl = "http://soargbsc.com/soaringforecast/";
     private static String newEnglandRegion = "NewEngland";
 
     private Context context;
