@@ -796,9 +796,9 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     private void displaySoundingImages() {
         working.setValue(false);
-        soundingDisplay.setValue(true);
         forecastSounding = Constants.FORECAST_SOUNDING.SOUNDING;
         startImageAnimation();
+        soundingDisplay.setValue(true);
     }
 
 

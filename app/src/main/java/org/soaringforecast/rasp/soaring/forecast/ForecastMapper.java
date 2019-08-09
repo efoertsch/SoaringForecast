@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
@@ -93,6 +95,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private List<Marker> turnpointMarkers = new ArrayList<>();
     private List<Turnpoint> turnpoints;
     private Bitmap startingTurnpointBitmap;
+    private Projection mapProjection;
 
     /**
      * Use to center task route in googleMap frame
@@ -116,6 +119,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
     private AppPreferences appPreferences;
     private JSONObject suaJSONObject;
     private TurnpointBitmapUtils turnpointBitmapUtils;
+    private SupportMapFragment mapFragment;
 
     @Inject
     public ForecastMapper() {
@@ -139,12 +143,19 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     public ForecastMapper displayMap(SupportMapFragment mapFragment) {
         mapFragment.getMapAsync(this);
+        this.mapFragment = mapFragment;
         return this;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        View mapView = mapFragment.getView();
+        if (mapView.getViewTreeObserver().isAlive()) {
+            mapView.getViewTreeObserver().addOnGlobalLayoutListener(() ->
+                    mapProjection = googleMap.getProjection());
+        }
+        mapProjection = googleMap.getProjection();
         googleMap.setMapType(mapType);
         getMapLatLngBounds();
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
@@ -429,7 +440,10 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             return true;
         }
         if (marker.getTag() instanceof Sounding) {
-            EventBus.getDefault().post(new DisplaySounding((Sounding) marker.getTag()));
+            Sounding sounding = (Sounding) marker.getTag();
+            Point point = mapProjection.toScreenLocation(marker.getPosition());
+            Timber.d("Clicked sounding: %1$s   x/y point: %2$s, %3$s", sounding.getLocation(), point.x, point.y );
+            EventBus.getDefault().post(new DisplaySounding(sounding, point));
             return true;
         }
         return false;
