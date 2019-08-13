@@ -5,7 +5,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.View;
@@ -21,33 +20,27 @@ import timber.log.Timber;
  * size of the containing view. Or vica-versa.
  * Note this just animates the view. What is displayed in the view is handled elsewhere
  */
-// Used to handle the display and closing of the sounding
+//TODO Generalize the logic
 public class SoundingZoomer {
 
     private Animator currentAnimator;
-    private int shortAnimationDuration;
+    private int shortAnimationDuration = 500;
     private Point startingPoint;
     private RelativeLayout imageLayout;
     private ImageView expandedImageView;
     private View closeButton;
-    private Rect startBounds = new Rect();
     private Rect finalBounds = new Rect();
     private Point globalOffset = new Point();
     private float startScale;
     private Rect originalBounds;
 
 
-
-    public SoundingZoomer(Context context, Point startingPoint, RelativeLayout imageLayout, ImageView expandedImageView, View closeButton) {
-        //shortAnimationDuration = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
-        shortAnimationDuration =  500;
-
+    SoundingZoomer(Point startingPoint, RelativeLayout imageLayout, ImageView expandedImageView, View closeButton) {
         this.startingPoint = startingPoint;
         Timber.d("Starting point x: %1$d, y: %2$d", startingPoint.x, startingPoint.y);
         this.imageLayout = imageLayout;
         this.expandedImageView = expandedImageView;
         this.closeButton = closeButton;
-
     }
 
 
@@ -74,7 +67,7 @@ public class SoundingZoomer {
         Timber.d("globalOffsets: x: %1$d, y: %2$d", globalOffset.x, globalOffset.y);
 
         // Adjust starting point
-        startBounds = new Rect(startingPoint.x, startingPoint.y + finalBounds.top , startingPoint.x + 1,  startingPoint.y + finalBounds.top + 1);
+        Rect startBounds = new Rect(startingPoint.x, startingPoint.y + finalBounds.top, startingPoint.x + 1, startingPoint.y + finalBounds.top + 1);
 
 
         originalBounds = new Rect(finalBounds.left, finalBounds.top, finalBounds.right, finalBounds.bottom);

@@ -84,6 +84,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     private boolean displayTurnpoints;
     private Point soundingPoint;
     private SoundingZoomer soundingZoomer;
+    private boolean firstSoundingToDisplay;
 
     public void onCreate(Bundle savedInstanceState) {
         //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreate()");
@@ -119,10 +120,6 @@ public class SoaringForecastFragment extends DaggerFragment {
             }
         });
         return soaringForecastBinding.getRoot();
-    }
-
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        //Timber.d( soaringForecastBinding.soaringForecastSoundingLayout.)
     }
 
     private void setupViews() {
@@ -235,16 +232,16 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.getSoundingForecastImageSet().observe(this, soundingImageSet -> {
             soaringForecastBinding.soaringForecastImageLocalTime.setText(soundingImageSet.getLocalTime());
             soaringForecastBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
+            if (firstSoundingToDisplay && soundingPoint != null) {
+                zoomOutSoundingView(soundingPoint);
+                firstSoundingToDisplay = false;
+            }
         });
 
         soaringForecastViewModel.getSoundingDisplay().observe(this, soundingDisplay -> {
-            if (soundingPoint != null) {
-                if (soundingDisplay) {
-                    zoomOutSoundingView(soundingPoint);
-                } else {
+            if (soundingPoint != null && !soundingDisplay) {
                     zoomInSoundingView();
 
-                }
             }
         });
 
@@ -273,7 +270,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         if (soundingZoomer != null) {
             soundingZoomer.cancelZooming();
         }
-        soundingZoomer = new SoundingZoomer(getContext(), soundingPoint, soaringForecastBinding.soaringForecastSoundingLayout,
+        soundingZoomer = new SoundingZoomer(soundingPoint, soaringForecastBinding.soaringForecastSoundingLayout,
                 soaringForecastBinding.soaringForecastSoundingImage
                 , soaringForecastBinding.soaringForecastCloseSounding);
         soundingZoomer.zoomUpViewToDisplay();
@@ -286,6 +283,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             soaringForecastBinding.soaringForecastImageLocalTime.setText("");
             soundingZoomer = null;
         }
+        soundingPoint = null;
     }
 
     @Override
@@ -404,6 +402,7 @@ public class SoaringForecastFragment extends DaggerFragment {
         // The sounding location converted to  x,y coordinates later used to be starting point
         // for sounding display zoom in
         soundingPoint = displaySounding.getPoint();
+        firstSoundingToDisplay = true;
         soaringForecastViewModel.setSelectedSounding(displaySounding.getSounding());
     }
 
