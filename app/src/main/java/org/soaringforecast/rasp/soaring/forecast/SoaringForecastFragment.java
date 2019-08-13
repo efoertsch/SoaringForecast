@@ -3,6 +3,7 @@ package org.soaringforecast.rasp.soaring.forecast;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -80,8 +81,10 @@ public class SoaringForecastFragment extends DaggerFragment {
     private boolean refreshForecastOrder = false;
     private boolean displaySUA = false;
     private AlphaAnimation opacitySliderFadeOut;
-    private String lastRegionName;
     private boolean displayTurnpoints;
+    private Point soundingPoint;
+    private SoundingZoomer soundingZoomer;
+    private boolean firstSoundingToDisplay;
 
     public void onCreate(Bundle savedInstanceState) {
         //ElapsedTimeUtil.showElapsedTime(TAG, "startOnCreate()");
@@ -229,6 +232,17 @@ public class SoaringForecastFragment extends DaggerFragment {
         soaringForecastViewModel.getSoundingForecastImageSet().observe(this, soundingImageSet -> {
             soaringForecastBinding.soaringForecastImageLocalTime.setText(soundingImageSet.getLocalTime());
             soaringForecastBinding.soaringForecastSoundingImage.setImageBitmap(soundingImageSet.getBodyImage().getBitmap());
+            if (firstSoundingToDisplay && soundingPoint != null) {
+                zoomOutSoundingView(soundingPoint);
+                firstSoundingToDisplay = false;
+            }
+        });
+
+        soaringForecastViewModel.getSoundingDisplay().observe(this, soundingDisplay -> {
+            if (soundingPoint != null && !soundingDisplay) {
+                    zoomInSoundingView();
+
+            }
         });
 
         // Forecast region name for display of SUA (if any)
@@ -251,6 +265,27 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     }
 
+
+    private void zoomOutSoundingView(Point soundingPoint) {
+        if (soundingZoomer != null) {
+            soundingZoomer.cancelZooming();
+        }
+        soundingZoomer = new SoundingZoomer(soundingPoint, soaringForecastBinding.soaringForecastSoundingLayout,
+                soaringForecastBinding.soaringForecastSoundingImage
+                , soaringForecastBinding.soaringForecastCloseSounding);
+        soundingZoomer.zoomUpViewToDisplay();
+    }
+
+    private void zoomInSoundingView() {
+        if (soundingZoomer != null) {
+            soundingZoomer.cancelZooming();
+            soundingZoomer.zoomDownToHide();
+            soaringForecastBinding.soaringForecastImageLocalTime.setText("");
+            soundingZoomer = null;
+        }
+        soundingPoint = null;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -271,7 +306,6 @@ public class SoaringForecastFragment extends DaggerFragment {
         EventBus.getDefault().unregister(this);
         soaringForecastViewModel.stopImageAnimation();
     }
-
 
     // Note this occurs *after* onResume
     @Override
@@ -325,7 +359,6 @@ public class SoaringForecastFragment extends DaggerFragment {
         }
     }
 
-
     private void displayForecastOrderFragment() {
         refreshForecastOrder = true;
         SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
@@ -353,12 +386,10 @@ public class SoaringForecastFragment extends DaggerFragment {
         }
     }
 
-
     private void displayTaskClearMenuItem(boolean visible) {
         showClearTaskMenuItem = visible;
         getActivity().invalidateOptionsMenu();
     }
-
 
     private void setMapLatLngBounds(LatLngBounds latLngBounds) {
         if (latLngBounds != null) {
@@ -368,9 +399,12 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplaySounding displaySounding) {
+        // The sounding location converted to  x,y coordinates later used to be starting point
+        // for sounding display zoom in
+        soundingPoint = displaySounding.getPoint();
+        firstSoundingToDisplay = true;
         soaringForecastViewModel.setSelectedSounding(displaySounding.getSounding());
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Forecast forecast) {
