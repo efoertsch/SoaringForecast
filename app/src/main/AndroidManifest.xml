@@ -9,75 +9,84 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:name="org.soaringforecast.rasp.app.SoaringWeatherApplication"
+        android:name=".app.SoaringWeatherApplication"
         android:allowBackup="true"
         android:icon="@mipmap/glider_app_icon"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-        tools:ignore="GoogleAppIndexingWarning"
-        android:networkSecurityConfig="@xml/network_security_config">
+        tools:ignore="GoogleAppIndexingWarning">
 
         <!-- fixes bug for maps on targetSDk version  28 -->
         <!-- java.lang.NoClassDefFoundError: Failed resolution of: Lorg/apache/http/ProtocolVersion; -->
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false"/>
 
         <activity
-            android:name="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
+            android:name=".startup.StartupActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar">
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
-            android:name="org.soaringforecast.rasp.settings.SettingsActivity"
-            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
-        </activity>
-        <activity
-            android:name="org.soaringforecast.rasp.task.TaskActivity"
-            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
-        </activity>
-        <activity
-            android:name="org.soaringforecast.rasp.satellite.SatelliteActivity"
-            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
-        </activity>
-        <activity
-            android:name="org.soaringforecast.rasp.airport.AirportActivity"
-            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
-        </activity>
-        <activity
-            android:name="org.soaringforecast.rasp.about.AboutActivity"
-            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
+            android:name=".soaring.forecast.ForecastDrawerActivity">
+
         </activity>
 
         <activity
-            android:name="org.soaringforecast.rasp.windy.WindyActivity"
+            android:name=".settings.SettingsActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
+        </activity>
+        <activity
+            android:name=".task.TaskActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
+        </activity>
+        <activity
+            android:name=".satellite.SatelliteActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
+        </activity>
+        <activity
+            android:name=".airport.AirportActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
+        </activity>
+        <activity
+            android:name=".about.AboutActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
+        </activity>
+        <activity
+            android:name=".windy.WindyActivity"
             android:label="@string/windy"
-            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
+            android:parentActivityName=".soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -87,13 +96,13 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
-
-        <!-- GoogleMapsKey value in debug(or release)/res/values/api_keys and not should not be
-             loaded to github -->
+        <!--
+ GoogleMapsKey value in debug(or release)/res/values/api_keys and not should not be
+             loaded to github
+        -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GoogleMapsKey"/>
-
     </application>
 
 </manifest>

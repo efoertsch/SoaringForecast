@@ -58,7 +58,10 @@
         <item name="android:dropDownListViewStyle">@style/DividerSpinnerStyle</item>
     </style>
 
-
+    <style name="AppTheme.NoActionBar.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
 
 </resources>

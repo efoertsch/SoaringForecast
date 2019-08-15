@@ -99,8 +99,6 @@
     <string name="pref_display_turnpoint_infowindow_summary_text">On click on turnpoint on map</string>
 
 
-
-
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
     <string name="pref_units_temp">Temperature</string>
     <string name="pref_units_temp_centigrade_label">Centigrade</string>
@@ -322,5 +320,6 @@
     <string name="close">Close</string>
     <string name="error_getting_sua_file_for_region">Error getting SUA file for %1$s</string>
     <string name="downloading_new_sua">Downloading  and displaying new SUA file.</string>
+    <string name="title_activity_startup">StartupActivity</string>
 
 </resources>
