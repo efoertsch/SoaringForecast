@@ -1,6 +1,7 @@
 package org.soaringforecast.rasp.soaring.forecast;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
@@ -320,6 +321,26 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.app_frame_layout);
         getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
+    }
+
+
+    public static class Builder {
+        private Bundle bundle;
+
+        private Builder() {
+            bundle = new Bundle();
+        }
+
+        public static ForecastDrawerActivity.Builder getBuilder() {
+            ForecastDrawerActivity.Builder builder = new ForecastDrawerActivity.Builder();
+            return builder;
+        }
+
+        public Intent build(Context context) {
+            Intent intent = new Intent(context, ForecastDrawerActivity.class);
+            intent.putExtras(bundle);
+            return intent;
+        }
     }
 }
 

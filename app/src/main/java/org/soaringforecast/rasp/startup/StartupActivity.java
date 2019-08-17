@@ -3,27 +3,27 @@ package org.soaringforecast.rasp.startup;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity;
 
 import timber.log.Timber;
 
 public class StartupActivity extends AppCompatActivity {
 
-    private boolean isFirstImage = true;
-    private  View view1;
-    private View view2;
-    private Animation rotateAnimation;
+    private View view1;
+    private boolean isFirstTime = true;
     private long duration = 5000;
+    private AnimatorSet animatorSet;
+    private boolean paused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,27 +32,57 @@ public class StartupActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         view1 = findViewById(R.id.startup_activity_glider_right_silhouette);
-        view2 = findViewById(R.id.startup_activity_glider_left_silhouette);
 
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         view1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                isFirstImage = true;
                 view1.setVisibility(View.VISIBLE);
-                view2.setVisibility(View.INVISIBLE);
-                if (rotateAnimation == null) {
-                    //rotate2Images( 0, 90);
-                    Animation rotateAnimation = rotateOneImage( view1, 0, 720, 5000);
-                    final Animator translationAnimator = ObjectAnimator
-                            .ofFloat(view1, View.TRANSLATION_Y, 0f, -200f)
-                            .setDuration(duration);
+                if (isFirstTime) {
+                    Animator rotateAnimator = getRotationAnimator(view1, duration, 0, 720);
+                    // Animator translationXAnimator = getTranslationXAnimator(view1, duration,
+                    //        0f, 200f, 200f, 0, 0, -200f, -200, 0, 0f, 200f, 200f, 0, 0, -200f, -200, 0);
+                    //Animator translationYAnimator = getTranslationYAnimator(view1, duration, 0f, -400f);
+                    Animator circlingAnimator = getCirclingAnimator(view1, duration);
                     AnimatorSet animatorSet = new AnimatorSet();
-                    //animatorSet.playTogether(rotateAnimation, translationAnimator);
+                    animatorSet.playTogether(rotateAnimator, circlingAnimator);
+                    view1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!paused) {
+                                animatorSet.pause();
+
+                            } else {
+                                animatorSet.resume();
+                            }
+                            paused = !paused;
+                        }
+                    });
+                    animatorSet.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            displayForacastDrawerActivity();
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                        }
+                    });
+                    animatorSet.start();
+
+                    isFirstTime = false;
 
                 }
             }
@@ -60,49 +90,81 @@ public class StartupActivity extends AppCompatActivity {
 
     }
 
+    private Animator getRotationAnimator(View view, long duration, float... values) {
+        //return ObjectAnimator.ofFloat(view, View.ROTATION_Y, values).setDuration(duration);
+        ValueAnimator animator = ValueAnimator.ofFloat(values); // values from 0 to 1
+        animator.setDuration(duration);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+//                float adjustedAngle;
+//                float sign;
+//                float value = (float) animator.getAnimatedValue();
+//                if ((value <=.5) || (value >= 1.5 && value < 2.5) || value >= 3.5)  {
+//                    adjustedAngle = 0;
+//                    sign = 0f;
+//                } else {
+//                    adjustedAngle = -180;
+//                    sign = -1f;
+//                }
+//                float rotationValue = adjustedAngle + (90f * (float) Math.sin((Float) animator.getAnimatedValue() * Math.PI * 2f));
+//                Timber.d("Animator value: %1$f2   Rotation degrees y: %2$f2   Angle: %3$f2"
+//                        , (float) animator.getAnimatedValue(), rotationValue, ((float) Math.sin((Float) animator.getAnimatedValue() * Math.PI * 2f)));
+                //               view.setRotationY(roationValue);
+                Float sineValue = (float) Math.sin(((Float) animator.getAnimatedValue() + 90f)* Math.PI/ 180);
+                Timber.d("Animator value: %1$f2   Sine of value: %2$f2"
+                        , (float) animator.getAnimatedValue(), sineValue);
+                view.setRotationY((float) animator.getAnimatedValue());
+                ViewGroup.LayoutParams params = view.getLayoutParams();
+                float aspectRatio = ((float) params.height) / (float) params.width;
+                params.height =  params.height - ((int) ((1f - sineValue) * 50f * aspectRatio));
+                params.width = params.width - ((int) ((1f - sineValue) * 50f));
+               view.getParent().requestLayout();
 
-    // Create an animation instance
-    private Animation rotateOneImage(View view, float start, float end, long duration) {
-        final float centerX = view.getWidth() / 2.0f;
-        final float centerY = view.getHeight() / 2.0f;
-        Timber.d("Image1 centerX: %1$f2  centerY: %2$f2", centerX, centerY);
-        rotateAnimation= new Flip3dAnimation(start, end, centerX, centerY);
-        // Set the animation's parameters
-        rotateAnimation.setDuration(duration);
-        rotateAnimation.setFillAfter(true);
-        //rotateAnimation.setRepeatCount(3);                // -1 = infinite repeated
-       rotateAnimation.setInterpolator(new AccelerateDecelerateInterpolator();
-        rotateAnimation.setRepeatMode(Animation.RESTART); // reverses each repeat
-        rotateAnimation.setFillAfter(true);               // keep rotation after animation
-        return rotateAnimation;
+
+            }
+        });
+        return animator;
 
     }
 
-    private Animation rotate2Images(View view1, View view2, float start, float end, long duration) {
-// Find the center of image
-        final float centerX = view1.getWidth() / 2.0f;
-        final float centerY = view1.getHeight() / 2.0f;
-// Create a new 3D rotation with the supplied parameter
-        Timber.d("Image1 centerX: %1$f2  centerY: %2$f2", centerX, centerY);
+    private Animator getTranslationXAnimator(View view, long duration, float... values) {
+        Animator translationXAnimator = ObjectAnimator
+                .ofFloat(view, View.TRANSLATION_X, values)
+                .setDuration(duration);
+        translationXAnimator.setInterpolator(new AccelerateInterpolator());
+        return translationXAnimator;
+    }
 
-        rotateAnimation = new Flip3dAnimation(start, end, centerX, centerY);
-        rotateAnimation.setDuration( duration);
-        rotateAnimation.setFillAfter(true);
-        rotateAnimation.setInterpolator(new AccelerateInterpolator());
-        // The animation listener is used to trigger the next animation
-        rotateAnimation.setAnimationListener(new DisplayNextView(isFirstImage, this.view1, this.view2));
+    private Animator getTranslationYAnimator(View view, long duration, float... values) {
+        Animator translationYAnimator = ObjectAnimator
+                .ofFloat(view1, View.TRANSLATION_Y, values)
+                .setDuration(duration);
+        return translationYAnimator;
+    }
 
-        if (isFirstImage) {
-            this.view1.startAnimation(rotateAnimation);
-            isFirstImage = !isFirstImage;
-        } else {
+    private Animator getCirclingAnimator(View view, long duration) {
+        final float amplitude = 200f;
+        ValueAnimator animator = ValueAnimator.ofFloat(-1, 1); // values from 0 to 1
+        animator.setDuration(duration);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                float translationY, translationX;
+                translationY = -amplitude * (float) animator.getAnimatedValue();
+                translationX = amplitude * (float) Math.sin((Float) animator.getAnimatedValue() * Math.PI * 2);
+                //Timber.d("Translation x: %1$f2  y: %2$f2", translationX, translationY);
+                view.setTranslationY(translationY);
+                view.setTranslationX(translationX);
+            }
+        });
+        return animator;
+    }
 
-            this.view2.startAnimation(rotateAnimation);
-            isFirstImage = !isFirstImage;
-
-        }
-       return rotateAnimation;
-
+    private void displayForacastDrawerActivity() {
+        ForecastDrawerActivity.Builder builder = ForecastDrawerActivity.Builder.getBuilder();
+        startActivity(builder.build(this));
+        finish();
     }
 
 }
