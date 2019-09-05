@@ -14,6 +14,7 @@ import org.soaringforecast.rasp.settings.preferences.SettingsPreferenceFragment;
 import org.soaringforecast.rasp.settings.regions.RegionSelectionFragment;
 import org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity;
 import org.soaringforecast.rasp.soaring.forecast.SoaringForecastFragment;
+import org.soaringforecast.rasp.startup.StartupActivity;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
@@ -30,8 +31,14 @@ import dagger.android.ContributesAndroidInjector;
 @Module(subcomponents = {})
 public abstract class UIBuildersModule {
 
+    // ------ Application --------------------
     @ContributesAndroidInjector(modules = {})
     abstract ForecastDrawerActivity bindWeatherDrawerActivity();
+
+    // -------- Startup -----------------------
+    @ContributesAndroidInjector(modules = {AppRepositoryModule.class})
+    abstract StartupActivity bindStartupActivity();
+
 
     // ----- Forecasts ------------------------
     @ContributesAndroidInjector(modules = {SoaringForecastModule.class, SUAModule.class})

@@ -27,13 +27,11 @@
         <activity
             android:name=".startup.StartupActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar.NoActionBar">
-            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>

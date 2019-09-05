@@ -36,6 +36,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="startup_preferences_key"
+        android:title="@string/startup_references">
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="@string/pref_display_show_startup_animation_key"
+            android:title="@string/pref_display_show_startup_animation"/>
+
+    </PreferenceCategory>
+
 
     <PreferenceCategory
         android:key="other_forecasts_preferences_key"

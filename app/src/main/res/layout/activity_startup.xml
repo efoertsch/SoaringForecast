@@ -13,24 +13,47 @@
         android:layout_height="match_parent"
         android:background="@drawable/sky_background"
         >
+        <ImageView
+            android:id="@+id/startup_activity_cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/cloud"
+            android:alpha="0"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
 
         <ImageView
             android:id="@+id/startup_activity_glider_right_silhouette"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline"
+            app:layout_constraintBottom_toBottomOf="@+id/seventy_five_pct_guideline"
             app:srcCompat="@drawable/glider_silhouette_right"
 
             />
 
+
         <android.support.constraint.Guideline
-            android:id="@+id/guideline"
+            android:id="@+id/seventy_five_pct_guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent=".75"/>
+
+        <TextView
+            android:id="@+id/startup_activity_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="@dimen/text_size_super_big"
+            android:visibility="visible"
+            android:alpha="0"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     </android.support.constraint.ConstraintLayout>

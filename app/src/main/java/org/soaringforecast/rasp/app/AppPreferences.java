@@ -65,6 +65,7 @@ public class AppPreferences {
     private static String DISPLAY_TURNPOINTS_KEY;
     private static String DISPLAY_TURNPOINT_SATELLITE_VIEW;
     private static String DISPLAY_TURNPOINT_INFOWINDOW_VIEW;
+    private static String SHOW_STARTUP_ANIMATION;
 
 
     private SharedPreferences sharedPreferences;
@@ -108,6 +109,8 @@ public class AppPreferences {
         DISPLAY_FORECAST_SOUNDINGS_KEY = context.getString(R.string.pref_display_forecast_soundings_key);
         DISPLAY_TURNPOINT_SATELLITE_VIEW = context.getString(R.string.pref_display_turnpoint_satellite_view_key);
         DISPLAY_TURNPOINT_INFOWINDOW_VIEW = context.getString(R.string.pref_display_turnpoint_infowindow_view_key);
+
+        SHOW_STARTUP_ANIMATION = context.getString(R.string.pref_display_show_startup_animation_key);
 
         // these should never be needed but use these default values
         rawTafMetar = res.getBoolean(R.bool.pref_raw_taf_metar_value);
@@ -522,6 +525,10 @@ public class AppPreferences {
     // setter handled bu SettingsPreferenceFragment, default value must match value in display_preferences.xml
     public boolean getDisplayTurnpointInfoWindowView() {
         return sharedPreferences.getBoolean(DISPLAY_TURNPOINT_INFOWINDOW_VIEW, true);
+    }
+
+    public boolean getShowStartupAnimation() {
+        return sharedPreferences.getBoolean(SHOW_STARTUP_ANIMATION, false);
     }
 
 }

@@ -98,6 +98,9 @@
     <string name="pref_display_turnpoint_infowindow_view">Display Turnpoint InfoWindow</string>
     <string name="pref_display_turnpoint_infowindow_summary_text">On click on turnpoint on map</string>
 
+    <string name="pref_display_show_startup_animation_key" translatable="false">Show_startup_animation_key</string>
+    <string name="pref_display_show_startup_animation">Show Startup Animation</string>
+
 
     <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
     <string name="pref_units_temp">Temperature</string>
@@ -261,6 +264,7 @@
     <string name="error_reading_turnpoint">Oops. Turnpoint %1$s/%2$s not found."</string>
     <string name="settings">Settings</string>
     <string name="metar_taf_preferences">METAR/TAF preferences</string>
+    <string name="startup_references">Startup</string>
     <string name="other_forecast_options">Other Forecasts</string>
     <string name="rasp_forecast_options">RASP Options</string>
     <string name="activity_about">About</string>

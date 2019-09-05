@@ -1,6 +1,7 @@
 package org.soaringforecast.rasp.common;
 
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -9,7 +10,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.view.View;
+import android.view.Window;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,6 +40,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
     public void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
         rootView = findViewById(R.id.task_activity_content);
@@ -63,6 +67,14 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
             } else {
                 finish();
             }
+        }
+
+        //activity transition animation
+        // inside your activity (if you did not enable transitions in your theme)
+        // set an exit and enter transition
+        if (Build.VERSION.SDK_INT >= 21) {
+           // getWindow().setExitTransition(new Fade());
+            getWindow().setEnterTransition(new Explode());
         }
     }
 
@@ -98,7 +110,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         }
     }
 
-   public void displayFragment(Fragment fragment, boolean replace, boolean addToBackstack) {
+    public void displayFragment(Fragment fragment, boolean replace, boolean addToBackstack) {
         FragmentTransaction fragmentTransaction;
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (replace) {
@@ -147,7 +159,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     public void popCurrentFragment() {
         FragmentManager fm = getSupportFragmentManager();
         fm.popBackStack();
-        if (fm.getFragments().size() == 0){
+        if (fm.getFragments().size() == 0) {
             finish();
         }
     }

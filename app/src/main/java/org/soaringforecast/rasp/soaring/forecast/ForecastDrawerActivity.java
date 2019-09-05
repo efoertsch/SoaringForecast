@@ -1,11 +1,13 @@
 package org.soaringforecast.rasp.soaring.forecast;
 
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -17,8 +19,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -64,6 +68,7 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS); //animation
         super.onCreate(savedInstanceState);
         appNavDrawerBinding = DataBindingUtil.setContentView(this, R.layout.app_nav_drawer);
         drawerLayout = appNavDrawerBinding.appDrawerLayout;
@@ -76,6 +81,12 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         NavigationView navigationView = appNavDrawerBinding.appWeatherDrawer;
         setupDrawerContent(navigationView);
         checkForGooglePlayServices();
+
+        // set an exit and enter transition
+        if (Build.VERSION.SDK_INT >= 21) {
+           // getWindow().setExitTransition(new Fade());
+            getWindow().setEnterTransition(new Explode());
+        }
     }
 
     @Override
@@ -215,40 +226,40 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     private void displayAirportListFragment() {
         AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
         builder.displayAirportListMaintenace();
-        startActivity(builder.build(this));
+        startActivityWithTransition(builder.build(this));
     }
 
     private void displayWindy() {
         WindyActivity.Builder builder = WindyActivity.Builder.getBuilder();
-        startActivity(builder.build(this));
+        startActivityWithTransition(builder.build(this));
     }
 
     private void displayAirportMetarTaf() {
         AirportActivity.Builder builder = AirportActivity.Builder.getBuilder();
         builder.displayMetarTaf();
-        startActivity(builder.build(this));
+        startActivityWithTransition(builder.build(this));
     }
 
     private void displaySettingsActivity() {
         SettingsActivity.Builder builder = SettingsActivity.Builder.getBuilder();
-        startActivity(builder.displaySettings().build(this));
+        startActivityWithTransition(builder.displaySettings().build(this));
     }
 
     private void displayAbout() {
         Intent i = new Intent(this, AboutActivity.class);
-        startActivity(i);
+        startActivityWithTransition(i);
     }
 
     private void displayNoaaSatelliteFragment() {
         SatelliteActivity.Builder builder = SatelliteActivity.Builder.getBuilder();
         builder.displayNoaaSatellite();
-        startActivity(builder.build(this));
+        startActivityWithTransition(builder.build(this));
     }
 
     private void displayGeossSatelliteFragment() {
         SatelliteActivity.Builder builder = SatelliteActivity.Builder.getBuilder();
         builder.displayGeosSatellite();
-        startActivity(builder.build(this));
+        startActivityWithTransition(builder.build(this));
     }
 
     private void displaySoaringForecasts() {
@@ -258,23 +269,23 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     private void displayTaskList() {
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
         builder.displayTaskList().enableClickTask(false);
-        startActivity(builder.build(this));
+        startActivityWithTransition(builder.build(this));
     }
 
     private void displayTurnpointsImport() {
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
         builder.displayTurnpointImport();
-        startActivity(builder.build(this));
+        startActivityWithTransition(builder.build(this));
     }
 
     private void startDrJacksBrowser() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.drjack.info/BLIP/univiewer.html"));
-        startActivity(browserIntent);
+        startActivityWithTransition(browserIntent);
     }
 
     private void startSkySightBrowser() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://skysight.io/secure/#"));
-        startActivity(browserIntent);
+        startActivityWithTransition(browserIntent);
     }
 
     private void checkForGooglePlayServices() {
@@ -297,6 +308,14 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
+    }
+
+    private void startActivityWithTransition(Intent intent){
+        if (Build.VERSION.SDK_INT>=21){
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        }else{
+            startActivity(intent);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

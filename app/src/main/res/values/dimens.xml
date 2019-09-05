@@ -15,6 +15,7 @@
     <dimen name="text_size_regular">14sp</dimen>
     <dimen name="text_size_large">16sp</dimen>
     <dimen name="text_size_extra_large">24sp</dimen>
+    <dimen name="text_size_super_big">48sp</dimen>
 
 
     <!-- cardview rounded corner -->
