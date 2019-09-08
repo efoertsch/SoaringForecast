@@ -10,7 +10,8 @@
 
     <application
         android:name="org.soaringforecast.rasp.app.SoaringWeatherApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:icon="@mipmap/glider_app_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"

@@ -2,8 +2,10 @@ package org.soaringforecast.rasp.dagger;
 
 import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
 
+import dagger.Module;
 import okhttp3.OkHttpClient;
 
+@Module
 public class ForecastServerModule {
 
     private static ForecastServerRetrofit forecastServerRetrofit;

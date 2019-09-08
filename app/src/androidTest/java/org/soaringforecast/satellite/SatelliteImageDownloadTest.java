@@ -47,7 +47,7 @@ public class SatelliteImageDownloadTest extends BaseTest {
     @Before
     public void setup(){
         super.setup();
-        bitmapCache = BitmapCache.init(getContext());
+        bitmapCache = BitmapCache.getInstance(getContext());
         satelliteImageDownloader.bitmapImageUtils = bitmapImageUtils;
         satelliteImageDownloader.satelliteImageCache = satelliteImageCache;
     }

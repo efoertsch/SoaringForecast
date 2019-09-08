@@ -1,6 +1,9 @@
 package org.soaringforecast.rasp.dagger;
 
+import android.app.Application;
+
 import org.soaringforecast.rasp.app.SoaringWeatherApplication;
+import org.soaringforecast.rasp.soaring.AppPreferencesModule;
 
 import javax.inject.Singleton;
 
@@ -15,27 +18,28 @@ import dagger.android.support.AndroidSupportInjectionModule;
         , UIBuildersModule.class
         , AppRepositoryModule.class
         , ChannelIdModule.class
+        , BitmapImageModule.class
         , OkHttpClientModule.class
-        ,TurnpointBitmapUtilsModule.class
-        })
+        , StringsUtilsModule.class
+        , AppPreferencesModule.class
+        , ForecastServerUrlModule.class
+        , TurnpointBitmapUtilsModule.class
+})
 
-public interface DiComponent extends
+public interface ApplicationComponent extends
         AndroidInjector<SoaringWeatherApplication> {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
-        Builder application(SoaringWeatherApplication application);
+        Builder application(Application application);
 
         Builder appModule(AppModule appModule);
 
-        DiComponent build();
+        ApplicationComponent build();
     }
 
     void inject(SoaringWeatherApplication soaringWeatherApplication);
-
-
-
 
 }
 

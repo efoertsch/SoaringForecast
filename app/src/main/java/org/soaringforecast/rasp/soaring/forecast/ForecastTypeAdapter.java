@@ -57,7 +57,7 @@ public class ForecastTypeAdapter extends ArrayAdapter<Forecast> implements View.
     @NonNull
     private View getForecastView(int position, View convertView, ViewGroup parent, boolean inDropDown) {
         // Get the data item for this position
-        Forecast forecast = (Forecast) getItem(position);
+        Forecast forecast = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
 

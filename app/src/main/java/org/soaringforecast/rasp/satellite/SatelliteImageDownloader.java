@@ -47,7 +47,7 @@ public class SatelliteImageDownloader {
 
     /**
      * Create a list of times to start process of finding available Noaa satellite images
-     * At one point images produced every quarter hour, but not seem to be produced every 15 minutes starting as some random part of the hour
+     * At one point images produced every quarter hour, but now seem to be produced every 15 minutes starting at some random part of the hour
      * @param imageTime
      * @param area
      * @param type
@@ -92,7 +92,7 @@ public class SatelliteImageDownloader {
                 // This loop finds the most current satellite image. Need the time of image to then go back in 15 min increments to get older images
                 for (int i = satelliteImageInfo.getSatelliteImageNames().size() -1 ; i >= 0; --i) {
                     satelliteImage = new SatelliteImage(satelliteImageInfo.getSatelliteImageName(i));
-                    getBitmapImage(satelliteImage);
+                    getWeatherSatelliteImage(satelliteImage);
                     if (satelliteImage.getBitmap() != null) {
                         mostCurrentBitmapIndex = i;
                         Timber.d(" bitmap for %s was found", satelliteImage.getImageName());
@@ -118,7 +118,7 @@ public class SatelliteImageDownloader {
                 .flatMap((Function<String, Observable<Void>>) satelliteImageName -> {
                     SatelliteImage satelliteImage = new SatelliteImage(satelliteImageName);
                     if (satelliteImageCache.get(satelliteImageName) == null) {
-                        getBitmapImage(satelliteImage);
+                        getWeatherSatelliteImage(satelliteImage);
                         if (satelliteImage.isImageLoaded()) {
                             satelliteImageCache.put(satelliteImageName, satelliteImage);
                             Timber.d(" %s %s", satelliteImage.getImageName()
@@ -130,7 +130,7 @@ public class SatelliteImageDownloader {
                 });
     }
 
-    public void getBitmapImage(final SatelliteImage satelliteImage) {
+    public void getWeatherSatelliteImage(final SatelliteImage satelliteImage) {
         bitmapImageUtils.getBitmapImage(satelliteImage, SATELLITE_URL, satelliteImage.getImageName());
     }
 

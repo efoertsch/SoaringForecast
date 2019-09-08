@@ -4,6 +4,7 @@ package org.soaringforecast.rasp.dagger;
 
 import android.content.Context;
 
+import org.soaringforecast.rasp.soaring.AppPreferencesModule;
 import org.soaringforecast.rasp.workmanager.AirportsImportWorker;
 
 import javax.inject.Singleton;
@@ -15,7 +16,11 @@ import dagger.Component;
 @Component(modules = {OkHttpClientModule.class
         , ChannelIdModule.class
         , AppRepositoryModule.class
-        , AirportListDownloaderModule.class
+        , BitmapImageModule.class
+        , StringsUtilsModule.class
+        , AppPreferencesModule.class
+        , ForecastServerUrlModule.class
+        , AirportsDownloaderModule.class
 })
 public interface AirportsImportWorkerComponent {
 

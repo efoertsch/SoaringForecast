@@ -9,8 +9,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.BuildConfig;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.dagger.AppModule;
-import org.soaringforecast.rasp.dagger.DaggerDiComponent;
-import org.soaringforecast.rasp.dagger.DiComponent;
+import org.soaringforecast.rasp.dagger.ApplicationComponent;
+import org.soaringforecast.rasp.dagger.DaggerApplicationComponent;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.workmanager.AirportsImportWorker;
 
@@ -28,7 +28,7 @@ import timber.log.Timber;
 public class SoaringWeatherApplication extends DaggerApplication {
     private static final String TAG = SoaringWeatherApplication.class.getSimpleName();
 
-    protected DiComponent component;
+    protected ApplicationComponent component;
 
     // Ensure that defaults set prior to doing anything
     @Inject
@@ -43,7 +43,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
 
     @Override
     public void onCreate() {
-        //ElapsedTimeUtil.init();
+        //ElapsedTimeUtil.getInstance();
         super.onCreate();
         initTimber();
         configureEventBus();
@@ -60,7 +60,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
                             if (count < 2000) {
                                 createNotificationChannel();
                                 submitAirportDownloadJob();
-                                Timber.d("Complete airport check (or started downlo");
+                                Timber.d("Complete airport check (or started download)");
                             }
                         }, throwable -> {
                             //TODO
@@ -92,9 +92,8 @@ public class SoaringWeatherApplication extends DaggerApplication {
 
     @Override
     protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
-        component = DaggerDiComponent.builder().application(this).appModule(new AppModule(this)).build();
-        component.inject(this);
-        return component;
+        return DaggerApplicationComponent.builder().application(this).appModule(new AppModule(this)).build();
+
     }
 
     private void createNotificationChannel() {

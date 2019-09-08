@@ -16,7 +16,6 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.RegionSelectionBinding;
 import org.soaringforecast.rasp.repository.AppRepository;
-import org.soaringforecast.rasp.soaring.forecast.SoaringForecastDownloader;
 import org.soaringforecast.rasp.soaring.json.Region;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 
@@ -35,9 +34,6 @@ public class RegionSelectionFragment extends DaggerFragment {
     AppPreferences appPreferences;
 
     @Inject
-    SoaringForecastDownloader soaringForecastDownloader;
-
-    @Inject
     BitmapImageUtils bitmapImageUtils;
 
     private String selectedRegion;
@@ -52,8 +48,7 @@ public class RegionSelectionFragment extends DaggerFragment {
         regionSelectionViewModel = ViewModelProviders.of(this)
                 .get(RegionSelectionViewModel.class)
                 .setAppRepository(appRepository)
-                .setAppPreferences(appPreferences)
-                .setSoaringForecastDownloader(soaringForecastDownloader);
+                .setAppPreferences(appPreferences);
     }
 
     public View onCreateView(LayoutInflater inflater,

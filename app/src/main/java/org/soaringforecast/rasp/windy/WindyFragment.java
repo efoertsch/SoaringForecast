@@ -50,6 +50,9 @@ public class WindyFragment extends DaggerFragment {
     @Inject
     AppRepository appRepository;
 
+    @Inject
+    StringUtils stringUtils;
+
     private WindyViewModel windyViewModel;
     private WindyView windyView;
     private WebView webView;
@@ -236,7 +239,7 @@ public class WindyFragment extends DaggerFragment {
 
     // Ok a hack, but set the height of windy to the webview height
     private String getWindyHTML(int height) {
-        String html = StringUtils.readFromAssetsFolder(getContext(), windyFile
+        String html = stringUtils.readFromAssetsFolder(getContext(), windyFile
                 , REPLACEMENT_HEIGHT_SEARCH, pxToDp(height - 250) + "px");
         return html;
     }

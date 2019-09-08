@@ -2,19 +2,12 @@ package org.soaringforecast.rasp.dagger;
 
 import android.content.Context;
 
-import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.app.AppPreferences;
-import org.soaringforecast.rasp.app.SoaringWeatherApplication;
-import org.soaringforecast.rasp.cache.BitmapCache;
-import org.soaringforecast.rasp.retrofit.AviationWeatherApi;
-import org.soaringforecast.rasp.retrofit.AviationWeatherGovRetrofit;
-import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
-import org.soaringforecast.rasp.satellite.data.SatelliteImage;
-import org.soaringforecast.rasp.soaring.forecast.SoaringForecastImage;
-import org.soaringforecast.rasp.utils.BitmapImageUtils;
-
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
+import org.soaringforecast.rasp.retrofit.AviationWeatherApi;
+import org.soaringforecast.rasp.retrofit.AviationWeatherGovRetrofit;
+import org.soaringforecast.rasp.satellite.data.SatelliteImage;
+import org.soaringforecast.rasp.soaring.forecast.SoaringForecastImage;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,26 +16,14 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
-// TODO -  break up into separate modules - app level, activity/fragment level
+// TODO -  break up into modules by responsibility
 
 @Module
 public class AppModule {
 
-    private static final String AIRPORT_PREFS = "AIRPORT_PREFS";
-
-    private BitmapCache bitmapCache;
-
     private Context appContext;
-
-    @Provides
-    @Named(AIRPORT_PREFS)
-    public String providesAppSharedPreferencesName() {
-        return AIRPORT_PREFS;
-    }
-
 
     // For unit testing only
     public AppModule() {
@@ -54,15 +35,10 @@ public class AppModule {
 
     @Provides
     @Singleton
-    Context provideContext(SoaringWeatherApplication application) {
+    Context provideContext() {
         return appContext;
     }
 
-    @Provides
-    @Singleton
-    public AppPreferences provideAppPreferences() {
-        return new AppPreferences(appContext, AIRPORT_PREFS);
-    }
 
     @Provides
     @Singleton
@@ -70,21 +46,10 @@ public class AppModule {
         return new AviationWeatherGovRetrofit(okHttpClient).getRetrofit().create(AviationWeatherApi.class);
     }
 
-    @Provides
-    @Singleton
-    public Interceptor getInterceptor() {
-        return new LoggingInterceptor();
-    }
-
-    @Provides @Named("forecast_server_url")
-    @Singleton
-    public String getRaspUrl(){
-        return appContext.getString(R.string.forecast_server_url);
-    }
 
     @Provides
     @Singleton
-    public Cache<String, SatelliteImage> provideCache() {
+    public Cache<String, SatelliteImage> provideSatelliteImageCache() {
         return new Cache2kBuilder<String, SatelliteImage>() {
         }
                 .name("Satellite Images Cache")
@@ -94,21 +59,7 @@ public class AppModule {
                 .build();
     }
 
-    @Provides
-    @Singleton
-    public BitmapCache getBitmapCache() {
-        if (bitmapCache == null) {
-            bitmapCache = BitmapCache.init(appContext);
-        }
-        return bitmapCache;
-    }
 
-
-    @Provides
-    @Singleton
-    public BitmapImageUtils provideBitmapImageUtils(@Named("no_interceptor") OkHttpClient okHttpClient) {
-        return new BitmapImageUtils(getBitmapCache(), okHttpClient);
-    }
 
     @Provides
     @Singleton
@@ -121,5 +72,34 @@ public class AppModule {
                 .entryCapacity(20)
                 .build();
     }
+
+//    @Provides
+//    @Singleton
+//    public AppRepository getAppRepository(Context context
+//            , @Named("interceptor") OkHttpClient okHttpClient
+//            , @Named("forecast_server_url") String forecastServerUrl
+//            , BitmapImageUtils bitmapImageUtils
+//            , @Named("forecast_server_url") String raspUrl
+//            , StringUtils stringUtils
+//            , AppPreferences appPreferences) {
+//        return AppRepository.getAppRepository(context, getSoaringForecastApi( okHttpClient,forecastServerUrl), bitmapImageUtils, raspUrl, stringUtils, appPreferences);
+//    }
+
+//    @Provides
+//    public SoaringForecastApi getSoaringForecastApi(@Named("interceptor") OkHttpClient okHttpClient, String forecastServerUrl) {
+//        return getForecastServerRetrofit(okHttpClient, forecastServerUrl).getRetrofit().create(SoaringForecastApi.class);
+//    }
+//
+//    private static ForecastServerRetrofit forecastServerRetrofit;
+//
+//    protected ForecastServerRetrofit getForecastServerRetrofit(OkHttpClient okHttpClient, String forecastServerUrl) {
+//        if (forecastServerRetrofit == null){
+//            forecastServerRetrofit =  new ForecastServerRetrofit(okHttpClient, forecastServerUrl);
+//        }
+//        return forecastServerRetrofit;
+//    }
+
+
+
 
 }

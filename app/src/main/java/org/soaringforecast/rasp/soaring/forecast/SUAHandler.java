@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import io.reactivex.Completable;
@@ -214,13 +215,14 @@ public class SUAHandler {
 
     public JSONObject getSuaJSONObject(String regionName, String suaFileName) throws IOException, JSONException {
         InputStream is = new FileInputStream(getSuaFile(regionName, suaFileName));
-        BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+        BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         StringBuilder responseStrBuilder = new StringBuilder(500 * 1024);
         String inputStr;
         while ((inputStr = streamReader.readLine()) != null) {
             responseStrBuilder.append(inputStr);
         }
         streamReader.close();
+        //Timber.d("Sua json string: %1$s", responseStrBuilder.toString());
         return new JSONObject(responseStrBuilder.toString());
     }
 

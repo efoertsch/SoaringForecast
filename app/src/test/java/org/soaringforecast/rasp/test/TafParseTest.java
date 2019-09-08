@@ -16,7 +16,7 @@ import retrofit2.Call;
 public class TafParseTest {
 
     AviationWeatherApi client = new AviationWeatherGovRetrofit(new OkHttpClientModule().getOkHttpClient(new LoggingInterceptor())).getRetrofit().create(AviationWeatherApi.class);
-    String airportList = new String("KORH KBOS");
+    String airportList = "KORH KBOS";
 
     //Set up this test to help make sure POJO simplexml annotations correct
     // >>>Synchronous call<<<
