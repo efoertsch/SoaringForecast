@@ -2,7 +2,7 @@ package org.soaringforecast.rasp.app;
 
 
 import org.soaringforecast.rasp.dagger.AppModule;
-import org.soaringforecast.rasp.dagger.DaggerDiComponent;
+import org.soaringforecast.rasp.dagger.DaggerApplicationComponent;
 
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
@@ -31,7 +31,7 @@ public class SoaringWeatherApplicationTest extends SoaringWeatherApplication {
                 return new MockInterceptor();
             }
         };
-        component = DaggerDiComponent.builder().application(this).appModule(new AppModule(this)).build();
+        component = DaggerApplicationComponent.builder().application(this).appModule(new AppModule(this)).build();
 
         component.inject(this);
         return component;

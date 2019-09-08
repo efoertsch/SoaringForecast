@@ -19,7 +19,7 @@ import timber.log.Timber;
 
 public class StringUtils {
 
-    public static String readFromAssetsFolder(Context context, String assetsFileName, String searchString, String replacementString) {
+    public  String readFromAssetsFolder(Context context, String assetsFileName, String searchString, String replacementString) {
         BufferedReader in = null;
         try {
             StringBuilder buf = new StringBuilder();

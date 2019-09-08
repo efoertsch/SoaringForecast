@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
-import org.soaringforecast.rasp.soaring.forecast.SoaringForecastDownloader;
 import org.soaringforecast.rasp.soaring.json.Region;
 
 import java.util.List;
@@ -21,7 +20,6 @@ import timber.log.Timber;
 
 public class RegionSelectionViewModel extends AndroidViewModel {
 
-    private SoaringForecastDownloader soaringForecastDownloader;
     private AppRepository appRepository;
     private AppPreferences appPreferences;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -44,10 +42,6 @@ public class RegionSelectionViewModel extends AndroidViewModel {
         return this;
     }
 
-    public RegionSelectionViewModel setSoaringForecastDownloader(SoaringForecastDownloader soaringForecastDownloader) {
-        this.soaringForecastDownloader = soaringForecastDownloader;
-        return this;
-    }
 
     public MutableLiveData<List<Region>> getRegions() {
         if (regions == null) {
@@ -64,7 +58,7 @@ public class RegionSelectionViewModel extends AndroidViewModel {
 
     private void getRegionForecastDates() {
         working.setValue(true);
-        Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
+        Disposable disposable = appRepository.getRegionForecastDates()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(newRegionForecastDates -> {

@@ -3,15 +3,15 @@ package org.soaringforecast.rasp.dagger;
 import org.soaringforecast.rasp.airport.AirportListDownloader;
 import org.soaringforecast.rasp.repository.AppRepository;
 
-import javax.inject.Named;
-
 import dagger.Module;
+import dagger.Provides;
 import okhttp3.OkHttpClient;
 
 @Module
-public class AirportListDownloaderModule {
+public class AirportsDownloaderModule {
 
-    AirportListDownloader getirportListDownloader(@Named("interceptor")OkHttpClient okHttpClient, AppRepository appRepository){
+    @Provides
+    AirportListDownloader getAirportListDownloader(OkHttpClient okHttpClient, AppRepository appRepository){
         return new AirportListDownloader(okHttpClient, appRepository);
     }
 }

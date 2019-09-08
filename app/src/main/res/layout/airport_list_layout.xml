@@ -27,7 +27,6 @@
             android:layout_marginBottom="@dimen/margin_standard"
             android:clickable="true"
             android:focusable="true"
-            android:onClick="addAirportClick"
             android:scaleType="fitXY"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"

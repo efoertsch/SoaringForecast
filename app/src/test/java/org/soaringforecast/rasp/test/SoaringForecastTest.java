@@ -92,7 +92,7 @@ public class SoaringForecastTest {
         List<Sounding> soundings = region.getSoundings();
         assertNotNull(soundings);
         for (int i = 0; i < soundings.size(); ++i) {
-            assertEquals((int) soundings.get(i).getPosition(), i + 1);
+            assertEquals(soundings.get(i).getPosition(), i + 1);
             assertTrue(soundings.get(i).getLat() != 0);
             assertTrue(soundings.get(i).getLng() != 0);
 

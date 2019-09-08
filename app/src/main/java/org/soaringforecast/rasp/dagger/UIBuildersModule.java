@@ -34,17 +34,17 @@ public abstract class UIBuildersModule {
     abstract ForecastDrawerActivity bindWeatherDrawerActivity();
 
     // ----- Forecasts ------------------------
-    @ContributesAndroidInjector(modules = {SoaringForecastModule.class, SUAModule.class})
-    abstract SoaringForecastFragment bindSoaringForecastFragmentSpinner();
+    @ContributesAndroidInjector(modules = { SUAModule.class})
+    abstract SoaringForecastFragment bindSoaringForecastFragment();
 
-    @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
+    @ContributesAndroidInjector(modules = {})
     abstract RegionSelectionFragment bindsRegionSelectionFragment();
 
     // ----- Windy -------
     @ContributesAndroidInjector(modules = {})
     abstract WindyActivity bindWindyActivity();
 
-    @ContributesAndroidInjector(modules = {SoaringForecastModule.class})
+    @ContributesAndroidInjector(modules = {WindyModule.class})
     abstract WindyFragment bindWindyFragment();
 
     // --- Weather Metar/Taf -------------------

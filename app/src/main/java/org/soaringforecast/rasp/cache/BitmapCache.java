@@ -12,14 +12,18 @@ import org.cache2k.Cache2kBuilder;
 import java.io.File;
 
 
-// Disk cache from https://developer.android.com/topic/performance/graphics/cache-bitmap.html and modified accordingly
-// Memory cache from Cache2k
-// Should be accessed on background thread
+/**
+ * Cache that combines memory cache with disk cache.
+ * *Disk cache from https://developer.android.com/topic/performance/graphics/cache-bitmap.html and modified accordingly
+ * Memory cache from Cache2k
+ * Should be accessed on background thread
+ */
 public class BitmapCache {
 
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 48; // 48MB
     private static final String DISK_CACHE_SUBDIR = "cachedBitmaps";
     private static final int DISK_CACHE_VERSION = 1;
+    private static BitmapCache bitmapCache;
 
     private final Object diskCacheLock = new Object();
     private boolean diskCacheStarting = true;
@@ -33,11 +37,13 @@ public class BitmapCache {
     public BitmapCache() {
     }
 
-    public static BitmapCache init(Context context) {
-        BitmapCache bitmapCache = new BitmapCache();
-        bitmapCache.context = context;
-        bitmapCache.createMemoryCache();
-        bitmapCache.createDiskCache(context);
+    public static BitmapCache getInstance(Context context) {
+        if (bitmapCache == null) {
+            bitmapCache = new BitmapCache();
+            bitmapCache.context = context;
+            bitmapCache.createMemoryCache();
+            bitmapCache.createDiskCache(context);
+        }
         return bitmapCache;
 
     }

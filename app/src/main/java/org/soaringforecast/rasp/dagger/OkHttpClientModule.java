@@ -1,5 +1,7 @@
 package org.soaringforecast.rasp.dagger;
 
+import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
@@ -50,6 +52,12 @@ public class OkHttpClientModule {
         httpClient.readTimeout(30, TimeUnit.SECONDS);
         return httpClient.build();
 
+    }
+
+    @Provides
+    @Singleton
+    public Interceptor getInterceptor() {
+        return new LoggingInterceptor();
     }
 
 

@@ -51,8 +51,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 public class SoaringForecastViewModel extends AndroidViewModel {
-
-    private SoaringForecastDownloader soaringForecastDownloader;
+    
     private AppRepository appRepository;
     private AppPreferences appPreferences;
 
@@ -113,11 +112,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         this.appPreferences = appPreferences;
         return this;
     }
-
-    public SoaringForecastViewModel setSoaringForecastDownloader(SoaringForecastDownloader soaringForecastDownloader) {
-        this.soaringForecastDownloader = soaringForecastDownloader;
-        return this;
-    }
+    
 
     public SoaringForecastViewModel setStringUtils(StringUtils stringUtils) {
         this.stringUtils = stringUtils;
@@ -212,7 +207,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * Note this does not include list of forecast models (that comes next)
      */
     private void getRegionForecastDates() {
-        Disposable disposable = soaringForecastDownloader.getRegionForecastDates()
+        Disposable disposable = appRepository.getRegionForecastDates()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(regionList -> {
@@ -263,7 +258,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         Disposable disposable = Observable.fromIterable(region.getDates())
                 .flatMap((Function<String, Observable<ForecastModels>>)
                         (String regionForecastDate) -> {
-                            return soaringForecastDownloader.getForecastModels(region.getName(), regionForecastDate).toObservable()
+                            return appRepository.getForecastModels(region.getName(), regionForecastDate).toObservable()
                                     .doOnNext(region::addForecastModels);
                         })
                 .subscribeOn(Schedulers.io())
@@ -579,7 +574,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         displayForecastImageSet(null);
         imageMap.clear();
         working.setValue(true);
-        DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringForecastForTypeAndDay(
+        DisposableObserver disposableObserver = appRepository.getSoaringForecastForTypeAndDay(
                 selectedModelForecastDate.getRegionName()
                 , selectedModelForecastDate.getDate()
                 , selectedModelForecastDate.getModel().getName()
@@ -762,7 +757,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private void loadForecastSoundings(Sounding sounding) {
         stopImageAnimation();
         working.setValue(true);
-        DisposableObserver disposableObserver = soaringForecastDownloader.getSoaringSoundingForTypeAndDay(
+        DisposableObserver disposableObserver = appRepository.getSoaringSoundingForTypeAndDay(
                 selectedModelForecastDate.getRegionName()
                 , selectedModelForecastDate.getDate()
                 , selectedModelForecastDate.getModel().getName()
@@ -974,7 +969,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             }
 
             if (latLngForecastParms != null) {
-                soaringForecastDownloader.getLatLngForecast(selectedRegion.getName()
+                appRepository.getLatLngForecast(selectedRegion.getName()
                         , selectedModelForecastDate.getDate()
                         , selectedModelName.toLowerCase()
                         , selectedSoaringForecastImageSet.getValue().getLocalTime()

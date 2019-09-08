@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -54,7 +55,7 @@ public class MockInterceptor implements Interceptor {
             String strLine;
             try {
                 in = urL.openStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                 while ((strLine = reader.readLine()) != null) {
                     sb.append(strLine);
                 }

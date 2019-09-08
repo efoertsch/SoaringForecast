@@ -11,7 +11,7 @@ public class ChannelIdModule {
     @Provides
     @Named("CHANNEL_ID")
     String provideChannelId() {
-        return "Soaring Weather";
+        return "SoaringForecast";
     }
 
 }

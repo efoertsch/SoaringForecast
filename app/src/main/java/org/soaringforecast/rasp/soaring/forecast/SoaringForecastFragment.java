@@ -59,9 +59,6 @@ public class SoaringForecastFragment extends DaggerFragment {
     ForecastMapper forecastMapper;
 
     @Inject
-    SoaringForecastDownloader soaringForecastDownloader;
-
-    @Inject
     StringUtils stringUtils;
 
     @Inject
@@ -94,7 +91,6 @@ public class SoaringForecastFragment extends DaggerFragment {
                 .get(SoaringForecastViewModel.class)
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
-                .setSoaringForecastDownloader(soaringForecastDownloader)
                 .setStringUtils(stringUtils)
                 .setSuaHandler(suaHandler);
     }

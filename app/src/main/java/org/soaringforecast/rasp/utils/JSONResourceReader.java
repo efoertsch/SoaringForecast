@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import timber.log.Timber;
 
@@ -38,7 +39,7 @@ public class JSONResourceReader {
         InputStream resourceReader = resources.openRawResource(id);
         Writer writer = new StringWriter();
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(resourceReader, "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(resourceReader, StandardCharsets.UTF_8));
             String line = reader.readLine();
             while (line != null) {
                 writer.write(line);
