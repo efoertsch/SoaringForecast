@@ -10,10 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.soaringforecast.rasp.dagger.OkHttpClientModule;
+import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
-import org.soaringforecast.rasp.soaring.forecast.SUAHandler;
 import org.soaringforecast.rasp.soaring.json.SUARegion;
 import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
 
@@ -39,28 +39,30 @@ public class SUADownloadTest {
     private Context context;
     private Retrofit retrofit;
     private JSONServerApi jsonServerApi;
-    private SUAHandler suaHandler;
     SUARegionFiles suaRegionFiles;
     private OkHttpClient okHttpClient = new OkHttpClient();
+    private AppRepository appRepository;
 
     @Before
     public void setup() {
         context = InstrumentationRegistry.getTargetContext();
         retrofit = new ForecastServerRetrofit(new OkHttpClientModule().getOkHttpClient(new LoggingInterceptor()), gbscJsonUrl).getRetrofit();
+
         jsonServerApi = retrofit.create(JSONServerApi.class);
-        suaHandler = SUAHandler.getInstance(context, jsonServerApi);
+        appRepository = AppRepository.getAppRepository(context, null, jsonServerApi, null, null, null,null);
+
     }
 
 
     @Test
     public void thereShouldBeNoStoredSuaFileTest() {
-        String suaRegionFile = suaHandler.seeIfRegionSUAFileExists(newEnglandRegion);
+        String suaRegionFile = appRepository.seeIfRegionSUAFileExists(newEnglandRegion);
         assertNull(suaRegionFile);
     }
 
     @Test
     public void thereShouldBeStoredSuaFileTest() {
-        String suaRegionFile = suaHandler.seeIfRegionSUAFileExists(newEnglandRegion);
+        String suaRegionFile = appRepository.seeIfRegionSUAFileExists(newEnglandRegion);
         assertNotNull("There should be a SUA file stored for:" + newEnglandRegion, suaRegionFile);
     }
 
@@ -78,7 +80,7 @@ public class SUADownloadTest {
         List<SUARegion> suaRegionList = suaRegionFiles.getSuaRegionList();
         for (SUARegion suaRegion : suaRegionList) {
             if (suaRegion.getRegion().equalsIgnoreCase(newEnglandRegion)) {
-                Completable completable = suaHandler.getDownloadSUACompleteable(suaRegion.getRegion(), suaRegion.getSuaFileName());
+                Completable completable = appRepository.getDownloadSUACompleteable(suaRegion.getRegion(), suaRegion.getSuaFileName());
                 completable.blockingGet();
                 thereShouldBeStoredSuaFileTest();
                 return;
@@ -90,7 +92,7 @@ public class SUADownloadTest {
 
     @Test
     public void shouldReturnSuaGeoJsonTest(){
-       Observable<JSONObject> suaGeoJsonObservable =  suaHandler.displaySuaForRegion(newEnglandRegion);
+       Observable<JSONObject> suaGeoJsonObservable = appRepository.displaySuaForRegion(newEnglandRegion);
        suaGeoJsonObservable.blockingForEach(jsonObject -> {
            assertNotNull(jsonObject);
        });
