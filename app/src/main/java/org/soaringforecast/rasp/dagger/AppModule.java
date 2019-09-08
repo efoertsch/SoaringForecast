@@ -39,7 +39,6 @@ public class AppModule {
         return appContext;
     }
 
-
     @Provides
     @Singleton
     public AviationWeatherApi providesAviationWeatherApi(@Named("interceptor") OkHttpClient okHttpClient) {
@@ -72,33 +71,6 @@ public class AppModule {
                 .entryCapacity(20)
                 .build();
     }
-
-//    @Provides
-//    @Singleton
-//    public AppRepository getAppRepository(Context context
-//            , @Named("interceptor") OkHttpClient okHttpClient
-//            , @Named("forecast_server_url") String forecastServerUrl
-//            , BitmapImageUtils bitmapImageUtils
-//            , @Named("forecast_server_url") String raspUrl
-//            , StringUtils stringUtils
-//            , AppPreferences appPreferences) {
-//        return AppRepository.getAppRepository(context, getSoaringForecastApi( okHttpClient,forecastServerUrl), bitmapImageUtils, raspUrl, stringUtils, appPreferences);
-//    }
-
-//    @Provides
-//    public SoaringForecastApi getSoaringForecastApi(@Named("interceptor") OkHttpClient okHttpClient, String forecastServerUrl) {
-//        return getForecastServerRetrofit(okHttpClient, forecastServerUrl).getRetrofit().create(SoaringForecastApi.class);
-//    }
-//
-//    private static ForecastServerRetrofit forecastServerRetrofit;
-//
-//    protected ForecastServerRetrofit getForecastServerRetrofit(OkHttpClient okHttpClient, String forecastServerUrl) {
-//        if (forecastServerRetrofit == null){
-//            forecastServerRetrofit =  new ForecastServerRetrofit(okHttpClient, forecastServerUrl);
-//        }
-//        return forecastServerRetrofit;
-//    }
-
 
 
 

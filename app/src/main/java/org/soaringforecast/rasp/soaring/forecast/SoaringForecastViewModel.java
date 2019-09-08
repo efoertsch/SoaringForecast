@@ -96,7 +96,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     private boolean loadRasp;
     private StringUtils stringUtils;
     private HashMap<String, String> pointForecastConversion;
-    private SUAHandler suaHandler;
     private boolean displaySUA;
 
     public SoaringForecastViewModel(@NonNull Application application) {
@@ -116,11 +115,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public SoaringForecastViewModel setStringUtils(StringUtils stringUtils) {
         this.stringUtils = stringUtils;
-        return this;
-    }
-
-    public SoaringForecastViewModel setSuaHandler(SUAHandler suaHandler) {
-        this.suaHandler = suaHandler;
         return this;
     }
 
@@ -863,7 +857,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     public void checkToDisplaySuaForRegion(String regionName){
         if (shouldDisplaySUA()) {
-            Observable<JSONObject> suaJSONObjectObservable = suaHandler.displaySuaForRegion(regionName);
+            Observable<JSONObject> suaJSONObjectObservable = appRepository.displaySuaForRegion(regionName);
             Disposable disposable = suaJSONObjectObservable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(suaJSONObject -> {

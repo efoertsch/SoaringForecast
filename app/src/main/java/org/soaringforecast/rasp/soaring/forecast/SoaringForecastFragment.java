@@ -62,9 +62,6 @@ public class SoaringForecastFragment extends DaggerFragment {
     StringUtils stringUtils;
 
     @Inject
-    SUAHandler suaHandler;
-
-    @Inject
     TurnpointBitmapUtils turnpointBitmapUtils;
 
     private SoaringForecastViewModel soaringForecastViewModel;
@@ -91,8 +88,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                 .get(SoaringForecastViewModel.class)
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
-                .setStringUtils(stringUtils)
-                .setSuaHandler(suaHandler);
+                .setStringUtils(stringUtils);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,

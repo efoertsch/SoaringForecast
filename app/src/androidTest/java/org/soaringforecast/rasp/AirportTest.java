@@ -34,7 +34,7 @@ public class AirportTest {
         appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
-        appRepository = AppRepository.getAppRepository(context, null, null, null, null, null);
+        appRepository = AppRepository.getAppRepository(context, null, null, null, null, null,null);
 
     }
 
