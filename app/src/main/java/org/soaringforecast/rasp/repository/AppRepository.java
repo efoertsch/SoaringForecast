@@ -156,7 +156,7 @@ public class AppRepository implements CacheTimeListener {
         return airportDao.listAllAirports();
     }
 
-    public Maybe<List<Airport>> selectIcaoIdAirports(List<String> icaoAirports) {
+    private Maybe<List<Airport>> selectIcaoIdAirports(List<String> icaoAirports) {
         return airportDao.selectIcaoIdAirports(icaoAirports);
     }
 
@@ -267,8 +267,8 @@ public class AppRepository implements CacheTimeListener {
      *                          for soaring forecast or
      * @param forecastSounding  - gfs/nam/rap
      */
-    public Single<SoaringForecastImage> getSoaringForecastImageObservable(String region, String yyyymmddDate, String forecastType,
-                                                                          String forecastParameter, String forecastTime, String bitmapType, FORECAST_SOUNDING forecastSounding) {
+    private Single<SoaringForecastImage> getSoaringForecastImageObservable(String region, String yyyymmddDate, String forecastType,
+                                                                           String forecastParameter, String forecastTime, String bitmapType, FORECAST_SOUNDING forecastSounding) {
         return Single.create(emitter -> {
             try {
                 final String parmUrl;
@@ -299,9 +299,9 @@ public class AppRepository implements CacheTimeListener {
 
 
     @NonNull
-    public SoaringForecastImage getSoaringForcastImage(String region, String
+    private SoaringForecastImage getSoaringForcastImage(String region, String
             yyyymmddDate, String forecastType, String forecastParameter, String forecastTime, String
-                                                               bitmapType, String parmUrl) {
+                                                                bitmapType, String parmUrl) {
         SoaringForecastImage soaringForecastImage = new SoaringForecastImage(parmUrl);
         soaringForecastImage.setRegion(region)
                 .setForecastTime(forecastTime)
@@ -324,7 +324,7 @@ public class AppRepository implements CacheTimeListener {
      * @return something like NewEngland/2018-03-31/gfs/wstar_bsratio.1500local.d2.body.png
      */
     //TODO cleanup how url created - use @PATH parms? (But what about creating cache name?)
-    public String getSoaringForecastUrlParm(String region, String yyyymmddDate, String
+    private String getSoaringForecastUrlParm(String region, String yyyymmddDate, String
             forecastType, String forecastParameter, String forecastTime, String bitmapType) {
         return String.format("/rasp/%s/%s/%s/%s.%slocal.d2.%s.png", region, yyyymmddDate
                 , forecastType.toLowerCase(), forecastParameter, forecastTime, bitmapType);
@@ -340,7 +340,7 @@ public class AppRepository implements CacheTimeListener {
      * @return something like NewEngland/2018-08-31/nam/sounding3.1200local.d2.png
      */
     //TODO cleanup how url created - use @PATH parms? (But what about creating cache name?)
-    public String getSoaringForecastSoundingUrlParm(String region, String yyyymmddDate, String
+    private String getSoaringForecastSoundingUrlParm(String region, String yyyymmddDate, String
             forecastType, String soundingIndex, String forecastTime, String bitmapType) {
         return String.format("/rasp/%s/%s/%s/sounding%s.%slocal.d2.png", region, yyyymmddDate
                 , forecastType.toLowerCase(), soundingIndex, forecastTime, bitmapType);
@@ -352,7 +352,7 @@ public class AppRepository implements CacheTimeListener {
      *
      * @return
      */
-    public Completable checkCacheTimeCompletable() {
+    private Completable checkCacheTimeCompletable() {
         return Completable.fromAction(() -> {
             try {
                 long currentMillis = new Date().getTime();
@@ -409,7 +409,7 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
-    public class ImageFileFilter implements FileFilter {
+    class ImageFileFilter implements FileFilter {
         private final String[] cupFileExtensions = new String[]{"cup"};
 
         public boolean accept(File file) {
@@ -480,7 +480,7 @@ public class AppRepository implements CacheTimeListener {
         return taskDao.getTask(taskId);
     }
 
-    public Completable updateTask(Task task) {
+    private Completable updateTask(Task task) {
         return Completable.fromAction(() -> {
             try {
                 taskDao.update(task);
@@ -519,7 +519,7 @@ public class AppRepository implements CacheTimeListener {
         return taskTurnpointDao.getTaskTurnpoints(taskId);
     }
 
-    public Completable updateTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
+    private Completable updateTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
         return Completable.fromAction(() -> {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
@@ -536,7 +536,7 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
-    public Completable deleteTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
+    private Completable deleteTaskTurnpoints(List<TaskTurnpoint> taskTurnpoints) {
         return Completable.fromAction(() -> {
             try {
                 for (TaskTurnpoint taskTurnpoint : taskTurnpoints) {
@@ -635,7 +635,7 @@ public class AppRepository implements CacheTimeListener {
     // ---------- Windy arrays ------------------------
     public List<WindyModel> getWindyModels() {
         if (windyModels == null) {
-            windyModels = new ArrayList<WindyModel>();
+            windyModels = new ArrayList<>();
             Resources res = context.getResources();
             try {
                 String[] imageTypes = res.getStringArray(R.array.windy_models);
@@ -652,7 +652,7 @@ public class AppRepository implements CacheTimeListener {
 
     public List<WindyLayer> getWindyLayers() {
         if (windyLayers == null) {
-            windyLayers = new ArrayList<WindyLayer>();
+            windyLayers = new ArrayList<>();
             Resources res = context.getResources();
             try {
                 String[] imageTypes = res.getStringArray(R.array.windy_layers);
@@ -669,7 +669,7 @@ public class AppRepository implements CacheTimeListener {
 
     public List<WindyAltitude> getWindyAltitudes() {
         if (windyAltitudes == null) {
-            windyAltitudes = new ArrayList<WindyAltitude>();
+            windyAltitudes = new ArrayList<>();
             Resources res = context.getResources();
             try {
                 String[] imageTypes = res.getStringArray(R.array.windy_altitude);
@@ -684,8 +684,8 @@ public class AppRepository implements CacheTimeListener {
         return windyAltitudes;
     }
 
-
     // --------- SUA --------------------------------
+
     /**
      * The process to retrieve/display an SUA for the region is
      * 1. See if SUA file already downloaded for region
@@ -823,7 +823,7 @@ public class AppRepository implements CacheTimeListener {
      * @param suaFileName - sua geojson file on server
      */
     private void writeSUAFileToDevice(String regionName, String suaFileName, ResponseBody responseBody) {
-        if (responseBody == null){
+        if (responseBody == null) {
             EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.error_getting_sua_file_for_region, regionName), Snackbar.LENGTH_SHORT));
         }
         try {
@@ -843,12 +843,11 @@ public class AppRepository implements CacheTimeListener {
 
     @NonNull
     private String getCompleteSuaFilename(String regionName, String suaFileName) {
-        StringBuilder sb = new StringBuilder();
-        return sb.append(regionName).append('_').append(suaFileName).toString();
+        return regionName + '_' + suaFileName;
     }
 
 
-    public JSONObject getSuaJSONObject(String regionName, String suaFileName) throws IOException, JSONException {
+    private JSONObject getSuaJSONObject(String regionName, String suaFileName) throws IOException, JSONException {
         InputStream is = new FileInputStream(getSuaFile(regionName, suaFileName));
         BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         StringBuilder responseStrBuilder = new StringBuilder(500 * 1024);

@@ -16,7 +16,7 @@ import retrofit2.Retrofit;
 
 public class TestMockResponse {
 
-    String airportList = "KORH KBOS";
+    private String airportList = "KORH KBOS";
 
     @Test
     public void testMockRetrofitResponse() throws IOException {

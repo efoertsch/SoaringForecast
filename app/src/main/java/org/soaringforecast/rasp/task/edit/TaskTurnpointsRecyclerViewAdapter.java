@@ -159,7 +159,7 @@ public class TaskTurnpointsRecyclerViewAdapter
                             });
         }
 
-        public void dispose(){
+        void dispose(){
             disposable.dispose();
         }
 

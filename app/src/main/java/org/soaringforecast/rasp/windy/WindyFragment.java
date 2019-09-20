@@ -172,7 +172,7 @@ public class WindyFragment extends DaggerFragment {
         getActivity().invalidateOptionsMenu();
     }
 
-    public void setObservers() {
+    private void setObservers() {
         windyViewModel.getStartUpComplete().observe(this, isComplete -> {
             if (isComplete) {
                 //webView.loadUrl(windyFile);
@@ -235,19 +235,17 @@ public class WindyFragment extends DaggerFragment {
 
     }
 
-    static final String REPLACEMENT_HEIGHT_SEARCH = "XXXHEIGHTXXX";
+    private static final String REPLACEMENT_HEIGHT_SEARCH = "XXXHEIGHTXXX";
 
     // Ok a hack, but set the height of windy to the webview height
     private String getWindyHTML(int height) {
-        String html = stringUtils.readFromAssetsFolder(getContext(), windyFile
+        return stringUtils.readFromAssetsFolder(getContext(), windyFile
                 , REPLACEMENT_HEIGHT_SEARCH, pxToDp(height - 250) + "px");
-        return html;
     }
 
     //TODO put in utility class
     private int pxToDp(int px) {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return dp;
+        return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

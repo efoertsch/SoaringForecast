@@ -27,7 +27,7 @@ public class ConversionUtilsTests {
     public void checkComputeDifferenceInDatesTest() throws Exception {
         String gmtDateString = "2017-03-07T11:35:00Z";
         Date date = ConversionUtils.getGmtDate(gmtDateString);
-        Long dateMillis = date.getTime();
+        long dateMillis = date.getTime();
         // Subtract 1 day, 1 hour, 1 min
         dateMillis = dateMillis - (24 * 60 * 60 * 1000) - (60 * 60 * 1000) - (60 * 1000);
         Date newDate = new Date(dateMillis);

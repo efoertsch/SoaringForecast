@@ -41,10 +41,10 @@ public class AirportSearchFragment extends DaggerFragment implements AirportList
     @Inject
     AppPreferences appPreferences;
 
-    SearchView searchView;
+    private SearchView searchView;
     //TODO figure out injection for view model and then also inject adapter
-    AirportSearchViewModel airportSearchViewModel;
-    AirportListAdapter airportListAdapter;
+    private AirportSearchViewModel airportSearchViewModel;
+    private AirportListAdapter airportListAdapter;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,11 +80,6 @@ public class AirportSearchFragment extends DaggerFragment implements AirportList
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.airport_search_menu_item, menu);
@@ -110,7 +105,7 @@ public class AirportSearchFragment extends DaggerFragment implements AirportList
     }
 
     @NonNull
-    public SearchView.OnQueryTextListener getListener() {
+    private SearchView.OnQueryTextListener getListener() {
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String txt) {

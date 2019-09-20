@@ -18,7 +18,7 @@ public class AviationWeatherResponse {
     private Request request;
 
     @Element(required = true)
-    protected Errors errors;
+    private Errors errors;
 
     @Element(name = "warnings", required = false)
     private Warnings warnings;

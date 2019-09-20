@@ -67,7 +67,7 @@ public class TurnpointFile {
     }
 
     public String getRelativeUrl(){
-        return new StringBuilder().append(getLocation()).append("/").append(getFilename()).toString();
+        return getLocation() + "/" + getFilename();
     }
 
 }

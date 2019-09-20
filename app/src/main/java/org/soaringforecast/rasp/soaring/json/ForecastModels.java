@@ -40,9 +40,7 @@ public class ForecastModels {
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append("models: ").append(Arrays.toString(models.toArray()))
-                .toString();
+        return "models: " + Arrays.toString(models.toArray());
     }
 
 }

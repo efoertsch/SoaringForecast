@@ -25,7 +25,7 @@ public class AirportActivity extends MasterActivity {
     private static final String AIRPORT_SEARCH = "AIRPORT_SEARCH";
     private static final String AIRPORT_LIST_MAINTENANCE = "AIRPORT_LIST_MAINTENANCE";
 
-    public String airportFragmentOption;
+    private String airportFragmentOption;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,15 +89,14 @@ public class AirportActivity extends MasterActivity {
 
     public static class Builder {
 
-        private Bundle bundle;
+        private final Bundle bundle;
 
         private Builder() {
             bundle = new Bundle();
         }
 
         public static AirportActivity.Builder getBuilder() {
-            AirportActivity.Builder builder = new AirportActivity.Builder();
-            return builder;
+             return new AirportActivity.Builder();
         }
 
         public AirportActivity.Builder displayMetarTaf() {

@@ -121,11 +121,11 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
 
     public static class BindingHolder extends RecyclerView.ViewHolder implements
             ItemTouchHelperViewHolder {
-        protected static final int LAYOUT_RESOURCE = R.layout.airport_detail;
+        static final int LAYOUT_RESOURCE = R.layout.airport_detail;
 
-        private AirportDetailBinding binding;
+        private final AirportDetailBinding binding;
 
-        public BindingHolder(AirportDetailBinding bindingView) {
+        BindingHolder(AirportDetailBinding bindingView) {
             super(bindingView.getRoot());
             binding = bindingView;
         }

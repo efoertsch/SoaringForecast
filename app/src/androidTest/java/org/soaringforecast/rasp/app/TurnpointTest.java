@@ -31,11 +31,11 @@ public class TurnpointTest {
     private AppDatabase appDatabase;
     private Turnpoint turnpoint;
 
-    String sterling = "\"Sterling\",\"3B3\",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,\"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL\"";
-    String sterlingUpdate = "\"Sterling\",\"3B3\",UK,4225.501N,07147.471W,460ft,5,160,3000ft,122.800,\"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.8, Fuel: 100LL\"";
-    String beverly = "\"Beverly Muni\",\"BVY\",US,4235.050N,07054.983W,108ft,5,157,5001ft,125.200,\"Turn Point, BVY, 09/27 50A, RW width: 100, ATIS: 119.2, Tower: 125.2, UNICOM: 122.95, Fuel: 100LL\"";
-    String candelight = "\"Candlelight\",\"11N\",US,4134.000N,07327.967W,676ft,2,167,2900ft,122.900,\"Turn Point, 11N, 16/34 29T, RW width: 50, CTAF: 122.9\"";
-    String claremont = " \"Claremont\",\"CNH\",US,4322.233N,07222.067W,545ft,5,109,3098ft,122.700,\"Turn Point, CNH, 05/23 20A, RW width: 100, UNICOM: 122.7, Fuel: 100LL\"";
+    private String sterling = "\"Sterling\",\"3B3\",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,\"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL\"";
+    private String sterlingUpdate = "\"Sterling\",\"3B3\",UK,4225.501N,07147.471W,460ft,5,160,3000ft,122.800,\"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.8, Fuel: 100LL\"";
+    private String beverly = "\"Beverly Muni\",\"BVY\",US,4235.050N,07054.983W,108ft,5,157,5001ft,125.200,\"Turn Point, BVY, 09/27 50A, RW width: 100, ATIS: 119.2, Tower: 125.2, UNICOM: 122.95, Fuel: 100LL\"";
+    private String candelight = "\"Candlelight\",\"11N\",US,4134.000N,07327.967W,676ft,2,167,2900ft,122.900,\"Turn Point, 11N, 16/34 29T, RW width: 50, CTAF: 122.9\"";
+    private String claremont = " \"Claremont\",\"CNH\",US,4322.233N,07222.067W,545ft,5,109,3098ft,122.700,\"Turn Point, CNH, 05/23 20A, RW width: 100, UNICOM: 122.7, Fuel: 100LL\"";
 
 
     @Rule
@@ -48,7 +48,7 @@ public class TurnpointTest {
         appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
-        appRepository = AppRepository.getAppRepository(context);
+        appRepository = AppRepository.getAppRepository(context,null, null, null, null, null, null);
         //appRepository.deleteAllTurnpoints();
     }
 

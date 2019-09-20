@@ -8,9 +8,10 @@ import java.util.List;
 
 /**
  * Base DAO
+ *
  * @param <T>
  */
-public interface BaseDao<T> {
+interface BaseDao<T> {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(T obj);

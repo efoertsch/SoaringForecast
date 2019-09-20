@@ -30,9 +30,9 @@ import javax.inject.Inject;
 
 public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTafAdapter.BindingHolder> {
 
-    private List<AirportMetarTaf> airportMetarTafList = Collections.synchronizedList(new ObservableArrayList<AirportMetarTaf>());
+    private final  List<AirportMetarTaf> airportMetarTafList = Collections.synchronizedList(new ObservableArrayList<>());
 
-    public WeatherMetarTafPreferences weatherMetarTafPreferences;
+    private WeatherMetarTafPreferences weatherMetarTafPreferences;
 
     @Inject
     public AppPreferences appPreferences;
@@ -215,12 +215,12 @@ public class AirportMetarTafAdapter extends RecyclerView.Adapter<AirportMetarTaf
         return airportMetarTafList.size();
     }
 
-    public static class BindingHolder extends RecyclerView.ViewHolder {
-        protected static final int LAYOUT_RESOURCE = R.layout.airport_weather;
+    static class BindingHolder extends RecyclerView.ViewHolder {
+        static final int LAYOUT_RESOURCE = R.layout.airport_weather;
 
-        private AirportWeatherBinding binding;
+        private final AirportWeatherBinding binding;
 
-        public BindingHolder(AirportWeatherBinding bindingView) {
+        BindingHolder(AirportWeatherBinding bindingView) {
             super(bindingView.getRoot());
             binding = bindingView;
         }

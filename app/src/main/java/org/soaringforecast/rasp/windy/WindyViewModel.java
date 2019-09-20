@@ -8,14 +8,15 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.webkit.JavascriptInterface;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
+
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.soaring.json.Model;
 import org.soaringforecast.rasp.soaring.json.ModelForecastDate;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +32,9 @@ public class WindyViewModel extends AndroidViewModel {
     private static final String JAVASCRIPT_START = "javascript:";
     private static final String JAVASCRIPT_END = ")";
 
-    Context context;
-    MutableLiveData<String> command;
+    private Context context;
+
+    private MutableLiveData<String> command;
 
     // List of windyModels currently only GFS
     private MutableLiveData<List<WindyModel>> windyModels = new MutableLiveData<>();
@@ -104,12 +106,11 @@ public class WindyViewModel extends AndroidViewModel {
 
     private void setWindyModel(WindyModel selectedModelName) {
         working.setValue(true);
-        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setModel(")
-                .append("'")
-                .append(selectedModelName.getCode())
-                .append("'")
-                .append(JAVASCRIPT_END)
-                .toString());
+        setCommand(JAVASCRIPT_START + "setModel(" +
+                "'" +
+                selectedModelName.getCode() +
+                "'" +
+                JAVASCRIPT_END);
     }
 
     // ---- ModelLayers --------
@@ -135,13 +136,12 @@ public class WindyViewModel extends AndroidViewModel {
 
     private void setModelLayer(WindyLayer selectedModelLayer) {
         working.setValue(true);
-        setCommand( new StringBuilder().append(JAVASCRIPT_START)
-                .append("setLayer(")
-                .append("'")
-                .append(selectedModelLayer.getCode())
-                .append("'")
-                .append(JAVASCRIPT_END)
-                .toString());
+        setCommand(JAVASCRIPT_START +
+                "setLayer(" +
+                "'" +
+                selectedModelLayer.getCode() +
+                "'" +
+                JAVASCRIPT_END);
     }
 
     // ---- Altitude ----------
@@ -168,13 +168,12 @@ public class WindyViewModel extends AndroidViewModel {
         // Note that webview may not be set up yet but which will cause a
         //"Uncaught ReferenceError: setAltitude is not defined" in chrome log
         working.setValue(true);
-        setCommand( new StringBuilder().append(JAVASCRIPT_START)
-                .append("setAltitude(")
-                .append("'")
-                .append(selectedAltitude.getWindyCode())
-                .append( "'")
-                .append(JAVASCRIPT_END)
-                .toString());
+        setCommand(JAVASCRIPT_START +
+                "setAltitude(" +
+                "'" +
+                selectedAltitude.getWindyCode() +
+                "'" +
+                JAVASCRIPT_END);
     }
 
     public MutableLiveData<Boolean> getAltitudeVisible(){
@@ -222,7 +221,7 @@ public class WindyViewModel extends AndroidViewModel {
 
     public void removeTaskTurnpoints() {
         taskTurnpoints.clear();
-        setCommand( new StringBuilder().append(JAVASCRIPT_START).append("removeTaskFromMap()").toString());
+        setCommand(JAVASCRIPT_START + "removeTaskFromMap()");
         setTaskId(-1);
         taskSelected.setValue(false);
     }
@@ -234,7 +233,7 @@ public class WindyViewModel extends AndroidViewModel {
         return command;
     }
 
-    public void  setCommand(String stringCommand) {
+    private void  setCommand(String stringCommand) {
         // Using postValue as it seems Android doesn't like to have
         // javascript call Android app and app logic then send javascript to webview
         // So postValue allows webview call to end first, the command gets sent a bit later
@@ -287,7 +286,7 @@ public class WindyViewModel extends AndroidViewModel {
     }
 
 
-    public void getTask(){
+    private void getTask(){
         long taskId = appPreferences.getSelectedTaskId();
         if (taskId != -1) {
             getTask(taskId);
@@ -296,7 +295,7 @@ public class WindyViewModel extends AndroidViewModel {
         }
     }
 
-    public void getTask(long taskId) {
+    private void getTask(long taskId) {
         Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -322,13 +321,13 @@ public class WindyViewModel extends AndroidViewModel {
     private void plotTask(List<TaskTurnpoint> taskTurnpoints) {
         Gson gson = new Gson();
         String taskJson = gson.toJson(taskTurnpoints);
-        String command = new StringBuilder().append(JAVASCRIPT_START).append("drawTask(")
-                .append(taskJson).append(JAVASCRIPT_END).toString();
+        String command = JAVASCRIPT_START + "drawTask(" +
+                taskJson + JAVASCRIPT_END;
         setCommand(command);
     }
 
 
-    public void getSelectedModelForecastDate() {
+    private void getSelectedModelForecastDate() {
         selectedModelForecastDate = appPreferences.getSelectedModelForecastDate();
         if (selectedModelForecastDate != null ) {
             Model model = selectedModelForecastDate.getModel();
@@ -349,10 +348,10 @@ public class WindyViewModel extends AndroidViewModel {
     public boolean displayTopoMap(boolean checked) {
         if (checked){
             //TODO return to base windy map
-            setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setBaseLayerToDefault()").toString());
+            setCommand(JAVASCRIPT_START + "setBaseLayerToDefault()");
             return false;
         } else {
-            setCommand( new StringBuilder().append(JAVASCRIPT_START).append("setBaseLayerToArcGisMap()").toString());
+            setCommand(JAVASCRIPT_START + "setBaseLayerToArcGisMap()");
             return true;
         }
     }

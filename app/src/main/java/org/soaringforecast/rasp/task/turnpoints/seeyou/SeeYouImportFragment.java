@@ -47,8 +47,8 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
     }
 
     public static SeeYouImportFragment newInstance() {
-        SeeYouImportFragment seeYouImportFragment = new SeeYouImportFragment();
-        return seeYouImportFragment;
+        return new SeeYouImportFragment();
+
     }
 
     public void onCreate(Bundle savedInstanceState) {

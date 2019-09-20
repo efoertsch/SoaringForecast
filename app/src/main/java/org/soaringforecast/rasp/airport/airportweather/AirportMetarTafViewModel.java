@@ -38,9 +38,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     private AppPreferences appPreferences;
     private AppRepository appRepository;
 
-    public AviationWeatherApi aviationWeatherApi;
-    private Call<MetarResponse> metarCall;
-    private Call<TafResponse> tafCall;
+    private AviationWeatherApi aviationWeatherApi;
 
     private MutableLiveData<List<AirportMetarTaf>> airportMetarTafs;
     private MutableLiveData<List<TAF>> tafList;
@@ -55,7 +53,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     private String windSpeedUnits;
     private String distanceUnits;
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportMetarTafViewModel(@NonNull Application application) {
         super(application);
@@ -189,7 +187,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     }
 
     private void callForMetar(String airportList) {
-        metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
+        Call<MetarResponse> metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
         metarCall.enqueue(new Callback<MetarResponse>() {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
@@ -208,7 +206,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     }
 
     private void callForTaf(String airportList) {
-        tafCall = aviationWeatherApi.mostRecentTafForEachAirport(airportList, AviationWeatherApi.TAF_HOURS_BEFORE_NOW);
+        Call<TafResponse> tafCall = aviationWeatherApi.mostRecentTafForEachAirport(airportList, AviationWeatherApi.TAF_HOURS_BEFORE_NOW);
         tafCall.enqueue(new Callback<TafResponse>() {
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {

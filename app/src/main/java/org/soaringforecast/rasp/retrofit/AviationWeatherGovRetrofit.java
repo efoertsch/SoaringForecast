@@ -8,7 +8,7 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class AviationWeatherGovRetrofit {
 
-    public static final String AVIATION_WEATHER_URL = "https://aviationweather.gov/adds/dataserver_current/";
+    private static final String AVIATION_WEATHER_URL = "https://aviationweather.gov/adds/dataserver_current/";
 
     private Retrofit retrofit;
 

@@ -25,8 +25,8 @@ import dagger.android.support.DaggerAppCompatActivity;
 
 public abstract class MasterActivity extends DaggerAppCompatActivity {
 
-    protected ActionBar actionBar;
-    protected Toolbar toolbar;
+    private ActionBar actionBar;
+    private Toolbar toolbar;
     private View rootView;
 
     protected abstract Fragment createFragment();

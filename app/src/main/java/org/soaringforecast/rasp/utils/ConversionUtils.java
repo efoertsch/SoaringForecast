@@ -1,6 +1,7 @@
 package org.soaringforecast.rasp.utils;
 
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import java.text.ParseException;
@@ -18,13 +19,16 @@ import java.util.concurrent.TimeUnit;
 
 public class ConversionUtils {
 
-    public static final SimpleDateFormat GMT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    private static final SimpleDateFormat GMT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 
-    public static final SimpleDateFormat LOCAL_DATE_FORMAT = new SimpleDateFormat("MMM dd, h:mm a");
+    @SuppressLint("SimpleDateFormat")
+    private static final SimpleDateFormat LOCAL_DATE_FORMAT = new SimpleDateFormat("MMM dd, h:mm a");
 
-    public static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("MM/dd h:mm a");
+    @SuppressLint("SimpleDateFormat")
+    private static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("MM/dd h:mm a");
 
-    public static final SimpleDateFormat SHORT_TIME_FORMAT = new SimpleDateFormat("h:mm a");
+    @SuppressLint("SimpleDateFormat")
+    private static final SimpleDateFormat SHORT_TIME_FORMAT = new SimpleDateFormat("h:mm a");
 
 
     public static float convertCentigradeToFahrenheit(Float tempC) {
@@ -107,7 +111,7 @@ public class ConversionUtils {
         try {
             Date gmtDate = getGmtDate(gmtTime);
             Map<TimeUnit, Long> timeDifference = computeDifferenceInDates(gmtDate, new Date());
-            return String.format("%1$d Days %2$d Hours %3$d Minutes Old", timeDifference.get(TimeUnit.DAYS)
+            return String.format(Locale.getDefault(),"%1$d Days %2$d Hours %3$d Minutes Old", timeDifference.get(TimeUnit.DAYS)
                     , timeDifference.get(TimeUnit.HOURS), timeDifference.get(TimeUnit.MINUTES));
         } catch (ParseException e) {
             e.printStackTrace();
@@ -118,9 +122,9 @@ public class ConversionUtils {
     // http://stackoverflow.com/questions/625433/how-to-convert-milliseconds-to-x-mins-x-seconds-in-java/35082080#35082080
     public static Map<TimeUnit, Long> computeDifferenceInDates(Date date1, Date date2) {
         long diffInMillies = date2.getTime() - date1.getTime();
-        List<TimeUnit> units = new ArrayList<TimeUnit>(EnumSet.allOf(TimeUnit.class));
+        List<TimeUnit> units = new ArrayList<>(EnumSet.allOf(TimeUnit.class));
         Collections.reverse(units);
-        Map<TimeUnit, Long> result = new LinkedHashMap<TimeUnit, Long>();
+        Map<TimeUnit, Long> result = new LinkedHashMap<>();
         long milliesRest = diffInMillies;
         for (TimeUnit unit : units) {
             long diff = unit.convert(milliesRest, TimeUnit.MILLISECONDS);

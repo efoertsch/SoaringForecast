@@ -75,12 +75,12 @@ public class SoaringForecastImage extends BitmapImage {
 
     public String getForecastSpecs() {
         if (specs.isEmpty()) {
-            specs = new StringBuilder().append(region).append(separator)
-                    .append(forecastType).append(separator)
-                    .append(yyyymmdd).append(separator)
-                    .append(forecastTime).append(separator)
-                    .append(forecastParameter).append(separator)
-                    .append(bitmapType).toString();
+            specs = region + separator +
+                    forecastType + separator +
+                    yyyymmdd + separator +
+                    forecastTime + separator +
+                    forecastParameter + separator +
+                    bitmapType;
         }
         return specs;
 

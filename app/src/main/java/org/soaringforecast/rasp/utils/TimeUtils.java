@@ -5,15 +5,16 @@ import android.annotation.SuppressLint;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class TimeUtils {
 
     // Satellite image date format  20180326/16/20180326_1600
-    public static final SimpleDateFormat satelliteImageDateFormat = new SimpleDateFormat("yyyyMMdd/HH/yyyyMMdd_HHmm");
-    public static final TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+    private static final SimpleDateFormat satelliteImageDateFormat = new SimpleDateFormat("yyyyMMdd/HH/yyyyMMdd_HHmm", Locale.US);
+    private static final TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
-    public static final SimpleDateFormat geosCacheSimpleDateFormat = new SimpleDateFormat("yyMMddHHmm");
+    private static final SimpleDateFormat geosCacheSimpleDateFormat = new SimpleDateFormat("yyMMddHHmm", Locale.US);
 
     /**
      * Round down calendar to quarter hour
@@ -34,7 +35,7 @@ public class TimeUtils {
         return calendar;
     }
 
-    public static Calendar roundDownCalenderToXMinInterval(Calendar calendar, int interval) {
+    private static Calendar roundDownCalenderToXMinInterval(Calendar calendar, int interval) {
         int minutesPastHour = calendar.get(Calendar.MINUTE);
         int i = 0;
         while (i <= 59 ) {

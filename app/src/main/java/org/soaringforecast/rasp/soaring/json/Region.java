@@ -114,8 +114,8 @@ public class Region {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("printDates:")
-                .append(Arrays.toString(printDates.toArray()))
-                .append(" name:").append(name).append(" dates:").append(dates).toString();
+        return "printDates:" +
+                Arrays.toString(printDates.toArray()) +
+                " name:" + name + " dates:" + dates;
     }
 }

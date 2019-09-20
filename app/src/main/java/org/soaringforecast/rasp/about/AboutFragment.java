@@ -21,7 +21,6 @@ public class AboutFragment extends DaggerFragment {
     public AppRepository appRepository;
 
     private AboutViewModel aboutViewModel;
-    private AboutView aboutView;
 
 
     @Override
@@ -35,7 +34,7 @@ public class AboutFragment extends DaggerFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        aboutView = DataBindingUtil.inflate(inflater, R.layout.about_soaring_weather_fragment, container, false);
+        AboutView aboutView = DataBindingUtil.inflate(inflater, R.layout.about_soaring_weather_fragment, container, false);
         aboutView.setLifecycleOwner(this);
         aboutView.setViewModel(aboutViewModel);
         return aboutView.getRoot();

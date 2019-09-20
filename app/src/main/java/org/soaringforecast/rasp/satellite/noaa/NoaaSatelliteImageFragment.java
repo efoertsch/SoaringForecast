@@ -42,9 +42,7 @@ public class NoaaSatelliteImageFragment extends DaggerFragment {
 
 
     public static NoaaSatelliteImageFragment newInstance() {
-        NoaaSatelliteImageFragment noaaSatelliteImageFragment = new NoaaSatelliteImageFragment();
-
-        return noaaSatelliteImageFragment;
+        return new NoaaSatelliteImageFragment();
     }
 
     @Override

@@ -30,8 +30,7 @@ public class WindyActivity extends MasterActivity {
         }
 
         public static WindyActivity.Builder getBuilder() {
-            WindyActivity.Builder builder = new WindyActivity.Builder();
-            return builder;
+            return new WindyActivity.Builder();
         }
 
         public Intent build(Context context) {

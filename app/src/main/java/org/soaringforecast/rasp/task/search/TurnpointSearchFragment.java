@@ -122,7 +122,7 @@ public class TurnpointSearchFragment extends DaggerFragment {
     }
 
     @NonNull
-    public SearchView.OnQueryTextListener getListener() {
+    private SearchView.OnQueryTextListener getListener() {
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String txt) {

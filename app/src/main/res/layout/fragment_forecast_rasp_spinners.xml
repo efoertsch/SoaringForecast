@@ -240,7 +240,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="6"
                     android:max="100"
-                    android:min="0"
                     />
 
                 <TextView

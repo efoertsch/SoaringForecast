@@ -33,7 +33,6 @@
             android:layout_marginBottom="@dimen/margin_standard"
             android:focusable="true"
             android:clickable="true"
-            android:onClick="addTaskClick"
             android:scaleType="fitXY"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"

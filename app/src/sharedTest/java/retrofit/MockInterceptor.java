@@ -25,7 +25,7 @@ public class MockInterceptor implements Interceptor {
         final URI uri = chain.request().url().uri();
         final String query = uri.getQuery();
         String responseString = getMockXml(query);
-        Response response = new Response.Builder()
+       return new Response.Builder()
                 .code(200)
                 .message(responseString)
                 .request(chain.request())
@@ -33,8 +33,6 @@ public class MockInterceptor implements Interceptor {
                 .body(ResponseBody.create(MediaType.parse("application/xml"), responseString.getBytes()))
                 .addHeader("content-type", "application/xml")
                 .build();
-
-        return response;
     }
 
     private String getMockXml(String api) {

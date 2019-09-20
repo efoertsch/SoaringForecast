@@ -8,7 +8,7 @@ public class BitmapImage {
     private boolean errorOnLoad = false;
     private Bitmap bitmap = null;
 
-    public BitmapImage(String imageName) {
+    protected BitmapImage(String imageName) {
         this.imageName = imageName;
     }
 

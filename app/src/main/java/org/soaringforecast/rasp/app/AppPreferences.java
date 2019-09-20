@@ -80,12 +80,10 @@ public class AppPreferences {
     private String soaringForecastDefaultRegion;
 
 
-    private List<CacheTimeListener> cacheTimeListeners = Collections.synchronizedList(new ArrayList());
+    private final List<CacheTimeListener> cacheTimeListeners = Collections.synchronizedList(new ArrayList());
 
     @Inject
     public AppPreferences(Context context, String airportPrefs) {
-
-        String airportPrefs1 = airportPrefs;
 
         Resources res = context.getResources();
 
@@ -122,7 +120,7 @@ public class AppPreferences {
 
         // Setting defaults not working (bug in setDefaultValues that doesn't take into account using non default shared preferences)
         // PreferenceManager.setDefaultValues(application, AIRPORT_PREFS,  MODE_PRIVATE, R.xml.display_preferences, false);
-        sharedPreferences = context.getSharedPreferences(airportPrefs1, MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(airportPrefs, MODE_PRIVATE);
         if (!sharedPreferences.getBoolean(DEFAULT_PREFS_SET, false)) {
             setDisplayRawTafMetar(rawTafMetar);
             setDecodeTafMetar(decodeTafMetar);
@@ -296,7 +294,7 @@ public class AppPreferences {
     /**
      * @param icaoCodes space delimited list of icao codes eg "KORH KBOS ..."
      */
-    public void setSelectedAirportCodes(@NonNull String icaoCodes) {
+    private void setSelectedAirportCodes(@NonNull String icaoCodes) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(AIRPORT_CODES_FOR_METAR, icaoCodes);
         editor.apply();
@@ -305,7 +303,7 @@ public class AppPreferences {
     /**
      * @return space delimited list of icao codes eg "KORH KBOS ..."
      */
-    public String getSelectedAirportCodes() {
+    private String getSelectedAirportCodes() {
         return sharedPreferences.getString(AIRPORT_CODES_FOR_METAR, "");
     }
 
@@ -335,7 +333,7 @@ public class AppPreferences {
     }
 
     public void storeNewAirportOrder(List<Airport> airports) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (airports != null) {
             for (Airport airport : airports) {
                 sb.append(airport.getIdent());
@@ -483,7 +481,7 @@ public class AppPreferences {
 
     // ---- listeners for changes to shared preferences
 
-    SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener = (sharedPreferences, key) -> {
+    private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener = (sharedPreferences, key) -> {
         if (key.equals(CLEAR_CACHE_TIME_MINUTES)) {
             int minutes = getClearCacheTime();
             synchronized (cacheTimeListeners) {

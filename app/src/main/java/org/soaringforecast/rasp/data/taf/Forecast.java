@@ -478,7 +478,7 @@ public class Forecast {
      */
     public List<SkyCondition> getSkyCondition() {
         if (skyCondition == null) {
-            skyCondition = new ArrayList<SkyCondition>();
+            skyCondition = new ArrayList<>();
         }
         return this.skyCondition;
     }
@@ -507,7 +507,7 @@ public class Forecast {
      */
     public List<TurbulenceCondition> getTurbulenceCondition() {
         if (turbulenceCondition == null) {
-            turbulenceCondition = new ArrayList<TurbulenceCondition>();
+            turbulenceCondition = new ArrayList<>();
         }
         return this.turbulenceCondition;
     }
@@ -536,7 +536,7 @@ public class Forecast {
      */
     public List<IcingCondition> getIcingCondition() {
         if (icingCondition == null) {
-            icingCondition = new ArrayList<IcingCondition>();
+            icingCondition = new ArrayList<>();
         }
         return this.icingCondition;
     }
@@ -565,7 +565,7 @@ public class Forecast {
      */
     public List<Temperature> getTemperature() {
         if (temperature == null) {
-            temperature = new ArrayList<Temperature>();
+            temperature = new ArrayList<>();
         }
         return this.temperature;
     }

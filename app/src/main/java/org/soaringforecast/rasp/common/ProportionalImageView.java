@@ -33,7 +33,7 @@ public class ProportionalImageView extends AppCompatImageView {
         getAdjustDimension(context, attrs);
     }
 
-    public void getAdjustDimension(Context context, AttributeSet attrs) {
+    private void getAdjustDimension(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs, R.styleable.ProportionalImageView, 0, 0);
         try {

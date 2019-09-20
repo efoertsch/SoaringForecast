@@ -69,7 +69,7 @@ public class RegionSelectionFragment extends DaggerFragment {
         });
     }
 
-    private void listRegions(List<Region> regionList) {
+    private void listRegions(final List<Region> regionList) {
         RadioButton radioButton;
         RadioGroup regionGroup = regionSelectionBinding.soaringRegionsButtonGroup;
         regionGroup.setOnCheckedChangeListener(getRegionButtonGroupListener());

@@ -78,7 +78,7 @@ public class SatelliteImageDownloader {
 
     // In format of  ..._sat_irbw_alb.jpg
     public static String getImageNameSuffix(String area, String type) {
-        return new StringBuilder().append("_sat_").append(type).append("_").append(area).append(".jpg").toString();
+        return "_sat_" + type + "_" + area + ".jpg";
     }
 
     public Single<SatelliteImageInfo> getSatelliteImageInfoSingle(final String area, final String type) {

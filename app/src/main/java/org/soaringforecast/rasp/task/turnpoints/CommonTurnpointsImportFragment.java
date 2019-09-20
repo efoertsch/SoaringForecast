@@ -35,7 +35,7 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
     @Inject
     AppPreferences appPreferences;
 
-    protected TurnpointsImportView turnpointsImportView;
+    private TurnpointsImportView turnpointsImportView;
     protected TurnpointsImporterViewModel turnpointsImporterViewModel;
     protected GenericRecyclerViewAdapter<T, VH > recyclerViewAdapter;
     protected CompositeDisposable compositeDisposable = new CompositeDisposable();

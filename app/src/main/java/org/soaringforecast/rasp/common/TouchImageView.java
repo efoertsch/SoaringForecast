@@ -12,29 +12,29 @@ import android.view.View;
 
 // From http://www.c-sharpcorner.com/UploadFile/88b6e5/multi-touch-panning-pinch-zoom-image-view-in-android-using/
 public class TouchImageView extends AppCompatImageView {
-    Matrix matrix;
+    private Matrix matrix;
     // We can be in one of these 3 states
-    static final int NONE = 0;
-    static final int DRAG = 1;
-    static final int ZOOM = 2;
-    static final int CLICK = 3;
+    private static final int NONE = 0;
+    private static final int DRAG = 1;
+    private static final int ZOOM = 2;
+    private static final int CLICK = 3;
 
-    int mode = NONE;
+    private int mode = NONE;
 
     // Remember some things for zooming
-    PointF last = new PointF();
-    PointF start = new PointF();
-    float minScale = 1f;
-    float maxScale = 3f;
-    float[] m;
-    int viewWidth, viewHeight;
-    float saveScale = 1f;
-    protected float origWidth, origHeight;
-    int oldMeasuredWidth, oldMeasuredHeight;
+    private PointF last = new PointF();
+    private PointF start = new PointF();
+    private float minScale = 1f;
+    private float maxScale = 3f;
+    private float[] m;
+    private int viewWidth, viewHeight;
+    private float saveScale = 1f;
+    private  float origWidth, origHeight;
+    private int oldMeasuredWidth, oldMeasuredHeight;
 
-    ScaleGestureDetector mScaleDetector;
+    private ScaleGestureDetector mScaleDetector;
 
-    Context context;
+    private Context context;
 
     public TouchImageView(Context context) {
         super(context);
@@ -133,7 +133,7 @@ public class TouchImageView extends AppCompatImageView {
 
     }
 
-    void fixTrans() {
+    private void fixTrans() {
         matrix.getValues(m);
         float transX = m[Matrix.MTRANS_X];
         float transY = m[Matrix.MTRANS_Y];
@@ -143,7 +143,7 @@ public class TouchImageView extends AppCompatImageView {
             matrix.postTranslate(fixTransX, fixTransY);
     }
 
-    float getFixTrans(float trans, float viewSize, float contentSize) {
+    private float getFixTrans(float trans, float viewSize, float contentSize) {
         float minTrans, maxTrans;
         if (contentSize <= viewSize) {
             minTrans = 0;
@@ -160,7 +160,7 @@ public class TouchImageView extends AppCompatImageView {
         return 0;
     }
 
-    float getFixDragTrans(float delta, float viewSize, float contentSize) {
+    private float getFixDragTrans(float delta, float viewSize, float contentSize) {
         if (contentSize <= viewSize) {
             return 0;
         }

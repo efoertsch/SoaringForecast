@@ -51,7 +51,6 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     private long taskId;
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
     private TaskTurnpointsRecyclerViewAdapter recyclerViewAdapter;
-    private FloatingActionButton saveFab;
     private ItemTouchHelper itemTouchHelper;
     private EditTaskView editTaskView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -154,7 +153,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
         editTaskView.editTaskAddTurnpoints.setOnClickListener(v -> goToAddTaskTurnpoints());
 
-        saveFab = editTaskView.editTaskSaveTask;
+        FloatingActionButton saveFab = editTaskView.editTaskSaveTask;
         saveFab.setOnClickListener(v -> {
                     taskAndTurnpointsViewModel.saveTask();
                     getActivity().invalidateOptionsMenu();

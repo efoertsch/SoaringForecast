@@ -27,7 +27,7 @@ public class AirportSearchViewModel extends ViewModel {
     private MutableLiveData<List<Airport>> searchAirports;
     private Disposable searchDisposable;
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportSearchViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
