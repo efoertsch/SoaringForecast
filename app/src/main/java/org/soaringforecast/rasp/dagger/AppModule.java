@@ -4,19 +4,15 @@ import android.content.Context;
 
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
-import org.soaringforecast.rasp.retrofit.AviationWeatherApi;
-import org.soaringforecast.rasp.retrofit.AviationWeatherGovRetrofit;
 import org.soaringforecast.rasp.satellite.data.SatelliteImage;
 import org.soaringforecast.rasp.soaring.forecast.SoaringForecastImage;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
 
 // TODO -  break up into modules by responsibility
 
@@ -37,12 +33,6 @@ public class AppModule {
     @Singleton
     Context provideContext() {
         return appContext;
-    }
-
-    @Provides
-    @Singleton
-    public AviationWeatherApi providesAviationWeatherApi(@Named("interceptor") OkHttpClient okHttpClient) {
-        return new AviationWeatherGovRetrofit(okHttpClient).getRetrofit().create(AviationWeatherApi.class);
     }
 
 

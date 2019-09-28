@@ -21,6 +21,7 @@ import dagger.Component;
         , AppPreferencesModule.class
         , ForecastServerUrlModule.class
         , AirportsDownloaderModule.class
+        , AviationWeatherGovModule.class
 })
 public interface AirportsImportWorkerComponent {
 

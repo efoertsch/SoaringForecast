@@ -19,6 +19,9 @@ import org.soaringforecast.rasp.app.CacheTimeListener;
 import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.common.Constants.FORECAST_SOUNDING;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
+import org.soaringforecast.rasp.data.metars.MetarResponse;
+import org.soaringforecast.rasp.data.taf.TafResponse;
+import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageType;
@@ -61,6 +64,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Response;
 import timber.log.Timber;
 
@@ -97,6 +101,7 @@ public class AppRepository implements CacheTimeListener {
     private long cacheClearTime = 0;
     private BitmapImageUtils bitmapImageUtils;
     private JSONServerApi jsonServerApi;
+    private AviationWeatherGovApi aviationWeatherGovApi;
 
 
     private AppRepository(Context context) {
@@ -112,25 +117,26 @@ public class AppRepository implements CacheTimeListener {
     public static AppRepository getAppRepository(Context context
             , SoaringForecastApi soaringForecastApi
             , JSONServerApi jsonServerApi
+            , AviationWeatherGovApi aviationWeatherGovApi
             , BitmapImageUtils bitmapImageUtils
             , String raspUrl
             , StringUtils stringUtils
             , AppPreferences appPreferences) {
-        if (appRepository == null) {
-            synchronized (AppRepository.class) {
-                if (appRepository == null) {
-                    appRepository = new AppRepository(context);
-                    appRepository.soaringForecastApi = soaringForecastApi;
-                    appRepository.jsonServerApi = jsonServerApi;
-                    appRepository.bitmapImageUtils = bitmapImageUtils;
-                    appRepository.raspUrl = raspUrl;
-                    appRepository.stringUtils = stringUtils;
-                    appRepository.appPreferences = appPreferences;
-                    // Since downloader should exist for lifetime of app, not unregistering anywhere
-                    appRepository.appPreferences.registerCacheTimeChangeListener(appRepository);
-                    appRepository.cacheTimeLimit(appPreferences.getClearCacheTime());
-                }
+        synchronized (AppRepository.class) {
+            if (appRepository == null) {
+                appRepository = new AppRepository(context);
+                appRepository.soaringForecastApi = soaringForecastApi;
+                appRepository.jsonServerApi = jsonServerApi;
+                appRepository.aviationWeatherGovApi = aviationWeatherGovApi;
+                appRepository.bitmapImageUtils = bitmapImageUtils;
+                appRepository.raspUrl = raspUrl;
+                appRepository.stringUtils = stringUtils;
+                appRepository.appPreferences = appPreferences;
+                // Since downloader should exist for lifetime of app, not unregistering anywhere
+                appRepository.appPreferences.registerCacheTimeChangeListener(appRepository);
+                appRepository.cacheTimeLimit(appPreferences.getClearCacheTime());
             }
+
         }
         return appRepository;
     }
@@ -181,6 +187,10 @@ public class AppRepository implements CacheTimeListener {
     }
 
     // --------- Forecasts -----------------
+
+    /**
+     * List of soaring forecasts available on RASP site (but list held locally) -----------------
+     */
     public Single<Forecasts> getForecasts() {
         return Single.create(emitter -> {
             try {
@@ -224,7 +234,6 @@ public class AppRepository implements CacheTimeListener {
      * @param times
      * @return
      */
-
     public Observable<SoaringForecastImage> getSoaringForecastForTypeAndDay(String region, String yyyymmddDate, String soaringForecastType,
                                                                             String forecastParameter, List<String> times) {
         return checkCacheTimeCompletable().andThen(Observable.fromIterable(times)
@@ -383,14 +392,24 @@ public class AppRepository implements CacheTimeListener {
         cacheClearTime = minutes * 60 * 1000;
     }
 
-
+    /**
+     * Get point forecast for specific lat/long
+     *
+     * @param region       - e.g. NewEngland
+     * @param date
+     * @param model        - e.g. GFS
+     * @param time
+     * @param lat
+     * @param lon
+     * @param forecastType - a space separated list of forecast types
+     * @return
+     */
     public Single<Response<ResponseBody>> getLatLngForecast(String region, String date, String model
             , String time, String lat, String lon, String forecastType) {
         return soaringForecastApi.getLatLongPointForecast(region, date, model, time, lat, lon, forecastType);
     }
 
     // ----------- Turnpoints in Download directory -------------------
-
     public Maybe<List<File>> getDownloadedCupFileList() {
         return Maybe.create(emitter -> {
             try {
@@ -421,7 +440,6 @@ public class AppRepository implements CacheTimeListener {
             }
             return false;
         }
-
     }
 
     // --------- Turnpoints -----------------
@@ -859,5 +877,16 @@ public class AppRepository implements CacheTimeListener {
         //Timber.d("Sua json string: %1$s", responseStrBuilder.toString());
         return new JSONObject(responseStrBuilder.toString());
     }
+
+
+    //----------- aviationweather.gov calls --------------------------
+    public Call<MetarResponse> getMostRecentMetarForEachAirport(String icaoIdentifiers, int hoursBeforeNow) {
+        return aviationWeatherGovApi.getMostRecentMetarForEachAirport(icaoIdentifiers, hoursBeforeNow);
+    }
+
+    public Call<TafResponse> getMostRecentTafForEachAirport(String icaoIdentifiers,  int hoursBeforeNow){
+            return aviationWeatherGovApi.getMostRecentTafForEachAirport(icaoIdentifiers, hoursBeforeNow);
+    }
+
 
 }

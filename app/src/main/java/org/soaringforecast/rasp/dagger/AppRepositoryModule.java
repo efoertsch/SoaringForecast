@@ -5,6 +5,8 @@ import android.content.Context;
 
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
+import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
+import org.soaringforecast.rasp.retrofit.AviationWeatherGovRetrofit;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
@@ -25,6 +27,7 @@ public class AppRepositoryModule extends ForecastServerModule {
     public AppRepository providesAppRepository(Context context
             , SoaringForecastApi soaringForecastApi
             , JSONServerApi jsonServerApi
+            , AviationWeatherGovApi aviationWeatherGovApi
             , BitmapImageUtils bitmapImageUtils
             , @Named("forecast_server_url") String raspUrl
             , StringUtils stringUtils
@@ -32,6 +35,7 @@ public class AppRepositoryModule extends ForecastServerModule {
         return AppRepository.getAppRepository(context
                 , soaringForecastApi
                 , jsonServerApi
+                , aviationWeatherGovApi
                 , bitmapImageUtils
                 , raspUrl
                 , stringUtils
@@ -50,4 +54,9 @@ public class AppRepositoryModule extends ForecastServerModule {
         return getForecastServerRetrofit(okHttpClient, forecastServerUrl).getRetrofit().create(JSONServerApi.class);
     }
 
+    @Provides
+    @Singleton
+    public AviationWeatherGovApi providesAviationWeatherGovApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("aviation_weather_gov_url") String aviationWeatherUrl) {
+        return new AviationWeatherGovRetrofit(okHttpClient, aviationWeatherUrl).getRetrofit().create(AviationWeatherGovApi.class);
+    }
 }
