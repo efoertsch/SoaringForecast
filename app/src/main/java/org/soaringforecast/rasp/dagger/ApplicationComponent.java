@@ -24,6 +24,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
         , AppPreferencesModule.class
         , ForecastServerUrlModule.class
         , TurnpointBitmapUtilsModule.class
+        , AviationWeatherGovModule.class
 })
 
 public interface ApplicationComponent extends

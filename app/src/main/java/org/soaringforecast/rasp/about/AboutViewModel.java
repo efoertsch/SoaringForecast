@@ -23,8 +23,8 @@ import java.io.InputStreamReader;
 
 public class AboutViewModel extends AndroidViewModel {
 
-    AppRepository appRepository;
-    MutableLiveData<Spanned> aboutSoaringWeather;
+    private AppRepository appRepository;
+    private MutableLiveData<Spanned> aboutSoaringWeather;
 
     public AboutViewModel(@NonNull Application application) {
         super(application);

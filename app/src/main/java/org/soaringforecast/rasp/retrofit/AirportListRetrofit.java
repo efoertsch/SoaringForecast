@@ -6,9 +6,9 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public class AirportListRetrofit {
 
-    public static final String AIRPORT_LIST_URL = "http://ourairports.com/data/";
+    private static final String AIRPORT_LIST_URL = "http://ourairports.com/data/";
 
-    private Retrofit retrofit;
+    private final Retrofit retrofit;
 
     public AirportListRetrofit(OkHttpClient okHttpClient ){
         Retrofit.Builder builder = new Retrofit.Builder()

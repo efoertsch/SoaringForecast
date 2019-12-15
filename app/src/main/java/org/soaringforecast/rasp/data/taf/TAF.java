@@ -265,7 +265,7 @@ public class TAF {
      */
     public List<Forecast> getForecast() {
         if (forecast == null) {
-            forecast = new ArrayList<Forecast>();
+            forecast = new ArrayList<>();
         }
         return this.forecast;
     }

@@ -17,7 +17,7 @@ public class Data {
 
     public List<TAF> getTAFs() {
         if (taf == null) {
-            taf = new ArrayList<TAF>();
+            taf = new ArrayList<>();
         }
         return this.taf;
     }

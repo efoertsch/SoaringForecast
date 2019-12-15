@@ -26,8 +26,7 @@ public class GeosSatelliteFragment extends Fragment {
     private Button loopButton;
 
     public static GeosSatelliteFragment newInstance() {
-        GeosSatelliteFragment geosSatelliteFragment = new GeosSatelliteFragment();
-        return geosSatelliteFragment;
+        return new GeosSatelliteFragment();
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -46,11 +45,6 @@ public class GeosSatelliteFragment extends Fragment {
         super.onResume();
         //set title
         getActivity().setTitle(R.string.geos_northeast);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     private void toggleGeosDisplay() {

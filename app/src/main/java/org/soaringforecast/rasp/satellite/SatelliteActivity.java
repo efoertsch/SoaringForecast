@@ -108,8 +108,7 @@ public class SatelliteActivity extends MasterActivity {
         }
 
         public static SatelliteActivity.Builder getBuilder() {
-            SatelliteActivity.Builder builder = new SatelliteActivity.Builder();
-            return builder;
+            return new SatelliteActivity.Builder();
         }
 
         public SatelliteActivity.Builder displayNoaaSatellite() {

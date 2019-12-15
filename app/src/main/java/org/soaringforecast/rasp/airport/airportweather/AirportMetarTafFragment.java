@@ -23,7 +23,7 @@ import org.soaringforecast.rasp.airport.messages.DisplayAirportList;
 import org.soaringforecast.rasp.settings.messages.DisplaySettings;
 import org.soaringforecast.rasp.retrofit.messages.ResponseError;
 import org.soaringforecast.rasp.repository.AppRepository;
-import org.soaringforecast.rasp.retrofit.AviationWeatherApi;
+import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,7 +41,7 @@ public class AirportMetarTafFragment extends DaggerFragment {
     @Inject
     AppPreferences appPreferences;
     @Inject
-    public AviationWeatherApi aviationWeatherApi;
+    public AviationWeatherGovApi aviationWeatherGovApi;
 
     private AirportMetarTafViewModel airportMetarTafViewModel;
     private AirportMetarTafView airportMetarTafView;
@@ -53,7 +53,6 @@ public class AirportMetarTafFragment extends DaggerFragment {
         setHasOptionsMenu(true);
         airportMetarTafViewModel = ViewModelProviders.of(this).get(AirportMetarTafViewModel.class)
                 .setAppPreferences(appPreferences)
-                .setAviationWeaterApi(aviationWeatherApi)
                 .setAppRepository(appRepository);
     }
 
@@ -101,11 +100,6 @@ public class AirportMetarTafFragment extends DaggerFragment {
         }
         firstTime = false;
         checkForSomeAirports();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override

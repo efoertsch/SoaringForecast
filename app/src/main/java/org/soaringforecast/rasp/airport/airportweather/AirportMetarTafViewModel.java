@@ -5,22 +5,20 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.ObservableViewModel;
+import org.soaringforecast.rasp.common.messages.CallFailure;
 import org.soaringforecast.rasp.data.AirportMetarTaf;
 import org.soaringforecast.rasp.data.common.AviationWeatherResponse;
 import org.soaringforecast.rasp.data.metars.Metar;
 import org.soaringforecast.rasp.data.metars.MetarResponse;
 import org.soaringforecast.rasp.data.taf.TAF;
 import org.soaringforecast.rasp.data.taf.TafResponse;
-import org.soaringforecast.rasp.common.messages.CallFailure;
-import org.soaringforecast.rasp.retrofit.messages.ResponseError;
 import org.soaringforecast.rasp.repository.Airport;
 import org.soaringforecast.rasp.repository.AppRepository;
-import org.soaringforecast.rasp.retrofit.AviationWeatherApi;
-
-import org.greenrobot.eventbus.EventBus;
+import org.soaringforecast.rasp.retrofit.messages.ResponseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +36,6 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     private AppPreferences appPreferences;
     private AppRepository appRepository;
 
-    public AviationWeatherApi aviationWeatherApi;
-    private Call<MetarResponse> metarCall;
-    private Call<TafResponse> tafCall;
-
     private MutableLiveData<List<AirportMetarTaf>> airportMetarTafs;
     private MutableLiveData<List<TAF>> tafList;
     private MutableLiveData<List<Metar>> metarList;
@@ -55,7 +49,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     private String windSpeedUnits;
     private String distanceUnits;
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportMetarTafViewModel(@NonNull Application application) {
         super(application);
@@ -68,11 +62,6 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
 
     public AirportMetarTafViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
-        return this;
-    }
-
-    public AirportMetarTafViewModel setAviationWeaterApi(AviationWeatherApi aviationWeatherApi) {
-        this.aviationWeatherApi = aviationWeatherApi;
         return this;
     }
 
@@ -189,7 +178,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     }
 
     private void callForMetar(String airportList) {
-        metarCall = aviationWeatherApi.mostRecentMetarForEachAirport(airportList, AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
+        Call<MetarResponse> metarCall = appRepository.getMostRecentMetarForEachAirport(airportList, 2);
         metarCall.enqueue(new Callback<MetarResponse>() {
             @Override
             public void onResponse(Call<MetarResponse> call, Response<MetarResponse> response) {
@@ -208,7 +197,7 @@ public class AirportMetarTafViewModel extends ObservableViewModel implements Wea
     }
 
     private void callForTaf(String airportList) {
-        tafCall = aviationWeatherApi.mostRecentTafForEachAirport(airportList, AviationWeatherApi.TAF_HOURS_BEFORE_NOW);
+        Call<TafResponse> tafCall = appRepository.getMostRecentTafForEachAirport(airportList, 12);
         tafCall.enqueue(new Callback<TafResponse>() {
             @Override
             public void onResponse(Call<TafResponse> call, Response<TafResponse> response) {

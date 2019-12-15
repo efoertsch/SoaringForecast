@@ -327,7 +327,7 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
     }
 
     public void smoothScrollToPosition(int position) {
-        smoothScroller =  smoothScroller = getSmoothScroller(recyclerView);
+        smoothScroller = getSmoothScroller(recyclerView);
         smoothScroller.setTargetPosition(position);
         recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
     }

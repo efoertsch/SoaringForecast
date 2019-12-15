@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 
@@ -22,10 +23,10 @@ public class SatelliteImageInfo {
     private List<Calendar> satelliteImageCalendars = new ArrayList<>();
 
     public SatelliteImageInfo() {
-        utcFormat = new SimpleDateFormat(imageTimeFormat);
+        utcFormat = new SimpleDateFormat(imageTimeFormat, Locale.US);
         utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        localFormat = new SimpleDateFormat(imageTimeFormat);
+        localFormat = new SimpleDateFormat(imageTimeFormat, Locale.US);
         localFormat.setTimeZone(TimeZone.getDefault());
     }
 

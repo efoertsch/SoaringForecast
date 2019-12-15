@@ -39,7 +39,7 @@ public class SUADownloadTest {
     private Context context;
     private Retrofit retrofit;
     private JSONServerApi jsonServerApi;
-    SUARegionFiles suaRegionFiles;
+    private SUARegionFiles suaRegionFiles;
     private OkHttpClient okHttpClient = new OkHttpClient();
     private AppRepository appRepository;
 

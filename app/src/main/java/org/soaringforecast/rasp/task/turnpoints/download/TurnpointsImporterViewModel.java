@@ -127,15 +127,14 @@ public class TurnpointsImporterViewModel extends ViewModel {
      * @return success if import went OK
      * @throws IOException
      */
-    public int importTurnpointsFromDownloadDirectory(final String fileName) throws IOException {
+    private int importTurnpointsFromDownloadDirectory(final String fileName) throws IOException {
         BufferedReader reader = null;
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         String cupFilePath = path.getAbsoluteFile() + "/" + fileName;
         try {
             Timber.d("Turnpoint file: %1$s", fileName);
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(cupFilePath)));
-            int numberTurnpoints = saveTurnpoints(reader);
-            return numberTurnpoints;
+            return saveTurnpoints(reader);
         } finally {
             if (reader != null) try {
                 reader.close();
@@ -149,7 +148,7 @@ public class TurnpointsImporterViewModel extends ViewModel {
                 .flatMap(responseBody -> saveTurnpointsFromUrl(responseBody));
     }
 
-    public Single<ResponseBody> getDownloadTurnpointsObservable(OkHttpClient okHttpClient, String url) {
+   private Single<ResponseBody> getDownloadTurnpointsObservable(OkHttpClient okHttpClient, String url) {
         Retrofit retrofit = new TurnpointFileRetrofit(okHttpClient).getRetrofit();
         TurnpointFileApi downloadService = retrofit.create(TurnpointFileApi.class);
         return downloadService.getCupFile(url);
@@ -160,7 +159,7 @@ public class TurnpointsImporterViewModel extends ViewModel {
      * @return
      * @throws IOException
      */
-    public Single<Integer> saveTurnpointsFromUrl(ResponseBody responseBody) {
+    private Single<Integer> saveTurnpointsFromUrl(ResponseBody responseBody) {
         return new Single<Integer>() {
             @Override
             protected void subscribeActual(SingleObserver s) {

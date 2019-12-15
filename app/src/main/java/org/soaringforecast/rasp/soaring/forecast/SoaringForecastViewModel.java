@@ -51,7 +51,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 public class SoaringForecastViewModel extends AndroidViewModel {
-    
+
     private AppRepository appRepository;
     private AppPreferences appPreferences;
 
@@ -111,14 +111,14 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         this.appPreferences = appPreferences;
         return this;
     }
-    
 
-    public SoaringForecastViewModel setStringUtils(StringUtils stringUtils) {
+
+    SoaringForecastViewModel setStringUtils(StringUtils stringUtils) {
         this.stringUtils = stringUtils;
         return this;
     }
 
-    public void checkForChanges() {
+    void checkForChanges() {
         // if region changed then
         // get list of models/dates for that region
         // refresh display
@@ -157,7 +157,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return modelNames;
     }
 
-    public void setModelNames(Region region) {
+    private void setModelNames(Region region) {
         int position;
         List<String> modelNameList = new ArrayList<>();
         List<ForecastModels> forecastModelsList = region.getForecastModels();
@@ -274,7 +274,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                         // Now have modelNames for each date at least one model forecast has been generated
                         //Create arrays needed for display
                         createDatesAndModels(appPreferences.getForecastModel());
-
                     }
                 });
         compositeDisposable.add(disposable);
@@ -323,7 +322,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return modelForecastDatePosition;
     }
 
-    public void setModelForecastDatePosition(int position) {
+    void setModelForecastDatePosition(int position) {
         modelForecastDatePosition.setValue(position);
         setSelectedModelForecastDate(modelForecastDates.getValue().get(position));
     }
@@ -337,7 +336,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      * @param newModelForecastDate
      */
-    public void setSelectedModelForecastDate(ModelForecastDate newModelForecastDate) {
+    private void setSelectedModelForecastDate(ModelForecastDate newModelForecastDate) {
         if (!newModelForecastDate.equals(getSelectedModelForecastDate())) {
             selectedModelForecastDate = newModelForecastDate;
             setRegionLatLngBounds(selectedModelForecastDate);
@@ -347,15 +346,15 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
-    public ModelForecastDate getSelectedModelForecastDate() {
+    private ModelForecastDate getSelectedModelForecastDate() {
         return selectedModelForecastDate;
     }
 
-    public MutableLiveData<LatLngBounds> getRegionLatLngBounds() {
+    MutableLiveData<LatLngBounds> getRegionLatLngBounds() {
         return regionLatLngBounds;
     }
 
-    public void setRegionLatLngBounds(ModelForecastDate modelForecastDate) {
+    private void setRegionLatLngBounds(ModelForecastDate modelForecastDate) {
         if (modelForecastDate != null) {
             regionLatLngBounds.setValue(new LatLngBounds(modelForecastDate.getModel().getSouthWestLatLng()
                     , modelForecastDate.getModel().getNorthEastLatLng()));
@@ -388,7 +387,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         loadForecasts();
     }
 
-    public int getLastForecastPosition() {
+    private int getLastForecastPosition() {
         return ((forecastPosition == null || forecastPosition.getValue() == null) ?
                 -1 : forecastPosition.getValue());
 
@@ -399,6 +398,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * First try to get forecast list from appPreferences, and if nothing, get default list from appRepository
      */
     private void loadForecasts() {
+        //TODO email stack trace
         Disposable disposable = appPreferences.getOrderedForecastList()
                 .flatMap((Function<Forecasts, Observable<Forecasts>>) orderedForecasts -> {
                     if (orderedForecasts != null && orderedForecasts.getForecasts() != null && orderedForecasts.getForecasts().size() > 0) {
@@ -412,10 +412,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                             forecasts.setValue(orderedForecasts.getForecasts());
                             setDefaultSoaringForecast();
                         },
-                        t -> {
-                            //TODO email stack trace
-                            Timber.e(t);
-                        });
+                        Timber::e);
 
         compositeDisposable.add(disposable);
     }
@@ -423,7 +420,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     /**
      *
      */
-    public void setDefaultSoaringForecast() {
+    private void setDefaultSoaringForecast() {
         getSelectedForecast();
         if (forecasts.getValue() != null && forecasts.getValue().size() > 0) {
             selectedForecast.setValue(forecasts.getValue().get(0));
@@ -449,7 +446,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      * @param forecast
      */
-    public void setSelected(Forecast forecast) {
+    private void setSelected(Forecast forecast) {
         selectedForecast.setValue(forecast);
         loadRaspImages();
     }
@@ -458,7 +455,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         return forecastPosition;
     }
 
-    public void setForecastPosition(int newForecastPosition) {
+    void setForecastPosition(int newForecastPosition) {
         forecastPosition.setValue(newForecastPosition);
         setSelected(forecasts.getValue().get(newForecastPosition));
     }
@@ -468,7 +465,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      * @return
      */
-    public MutableLiveData<List<Sounding>> getSoundings() {
+    MutableLiveData<List<Sounding>> getSoundings() {
         if (soundings == null) {
             soundings = new MutableLiveData<>();
         }
@@ -673,7 +670,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         Timber.e("soaringForecastImageAnimation is null so no animation to stop");
     }
 
-    public void selectForecastImage(int index) {
+    private void selectForecastImage(int index) {
         SoaringForecastImageSet imageSet;
         if (imageMap != null
                 && forecastTimes != null
@@ -706,11 +703,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
-    public MutableLiveData<SoaringForecastImageSet> getSelectedSoaringForecastImageSet() {
+    MutableLiveData<SoaringForecastImageSet> getSelectedSoaringForecastImageSet() {
         return selectedSoaringForecastImageSet;
     }
 
-    public void displaySoundingImageSet(SoaringForecastImageSet imageSet) {
+    private void displaySoundingImageSet(SoaringForecastImageSet imageSet) {
         if (imageSet != null) {
             if (imageSet.getBodyImage() != null) {
                 selectedSoundingForecastImageSet.setValue(imageSet);
@@ -718,7 +715,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         }
     }
 
-    public MutableLiveData<SoaringForecastImageSet> getSoundingForecastImageSet() {
+    MutableLiveData<SoaringForecastImageSet> getSoundingForecastImageSet() {
         return selectedSoundingForecastImageSet;
     }
 
@@ -791,18 +788,15 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
 
-    public Sounding getSelectedSounding() {
-        return selectedSounding;
-    }
 
-    public void setSelectedSounding(Sounding selectedSounding) {
+    void setSelectedSounding(Sounding selectedSounding) {
         this.selectedSounding = selectedSounding;
         loadForecastSoundings(selectedSounding);
     }
 
     // ------- Task display ---------------------
 
-    public void checkIfToDisplayTask() {
+    void checkIfToDisplayTask() {
         long currentTaskId = appPreferences.getSelectedTaskId();
         if (currentTaskId != -1) {
             getTask(currentTaskId);
@@ -838,24 +832,24 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     //------- Opacity of forecast overly -----------------
-    public void setForecastOverlayOpacity(int opacity) {
+    void setForecastOverlayOpacity(int opacity) {
         appPreferences.setForecastOverlayOpacity(opacity);
     }
 
-    public int getForecastOverlyOpacity() {
+    int getForecastOverlyOpacity() {
         return appPreferences.getForecastOverlayOpacity();
     }
 
     // ------------------ SUA (Special Use Airspace of course!) -----------------------
-    public MutableLiveData<JSONObject> getSuaJSONObject() {
+    MutableLiveData<JSONObject> getSuaJSONObject() {
         return suaJSONObject;
     }
 
-    public void setSuaJSONObject(JSONObject suaJSONObject) {
+    private void setSuaJSONObject(JSONObject suaJSONObject) {
         this.suaJSONObject.setValue(suaJSONObject);
     }
 
-    public void checkToDisplaySuaForRegion(String regionName){
+    private void checkToDisplaySuaForRegion(String regionName) {
         if (shouldDisplaySUA()) {
             Observable<JSONObject> suaJSONObjectObservable = appRepository.displaySuaForRegion(regionName);
             Disposable disposable = suaJSONObjectObservable.subscribeOn(Schedulers.io())
@@ -868,20 +862,20 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     }
 
-    public boolean shouldDisplaySUA() {
+    private boolean shouldDisplaySUA() {
         return appPreferences.getDisplaySua();
     }
 
-    public void displaySua(boolean displaySUA) {
+    void displaySua(boolean displaySUA) {
         appPreferences.setDisplaySua(displaySUA);
-        if (displaySUA){
+        if (displaySUA) {
             checkToDisplaySuaForRegion(selectedRegion.getName());
         }
         setSuaJSONObject(null);
     }
 
     // ---- Region turnpoints ---------------
-    public void displayTurnpoints(boolean checked) {
+    void displayTurnpoints(boolean checked) {
         if (checked) {
             findTurnpointsInSelectedRegion();
         } else {
@@ -890,12 +884,12 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     }
 
-    public MutableLiveData<List<Turnpoint>> getRegionTurnpoints() {
+    MutableLiveData<List<Turnpoint>> getRegionTurnpoints() {
         regionTurnpoints.setValue(new ArrayList<>());
         return regionTurnpoints;
     }
 
-    public void findTurnpointsInSelectedRegion() {
+    private void findTurnpointsInSelectedRegion() {
         if (regionLatLngBounds != null && regionLatLngBounds.getValue() != null) {
             Disposable disposable = appRepository.getTurnpointsInRegion(regionLatLngBounds.getValue().southwest, regionLatLngBounds.getValue().northeast)
                     .subscribeOn(Schedulers.io())
@@ -917,11 +911,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     // --------------- Messages for the upper management ----------------------
 
-    public void postCallFailureMessage(Throwable t) {
+    private void postCallFailureMessage(Throwable t) {
         EventBus.getDefault().post(new CallFailure(t.toString()));
     }
 
-    public void postMessage(String msg) {
+    private void postMessage(String msg) {
         EventBus.getDefault().post(new SnackbarMessage(msg));
     }
 
@@ -933,7 +927,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
 
-    public MutableLiveData<LatLngForecast> getPointForecast() {
+    MutableLiveData<LatLngForecast> getPointForecast() {
         if (pointForecastText == null) {
             pointForecastText = new MutableLiveData<>();
         }
@@ -944,7 +938,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      * @param latLng Get point forecast based on current forecast type at latlng
      */
 
-    public void displayLatLngForecast(final LatLng latLng) {
+    void displayLatLngForecast(final LatLng latLng) {
         String latLngForecastParms;
         stopImageAnimation();
 //        if (latLngForecastParms == null) {
@@ -962,44 +956,39 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     latLngForecastParms = getApplication().getString(R.string.location_forecast_standard_parms);
             }
 
-            if (latLngForecastParms != null) {
-                appRepository.getLatLngForecast(selectedRegion.getName()
-                        , selectedModelForecastDate.getDate()
-                        , selectedModelName.toLowerCase()
-                        , selectedSoaringForecastImageSet.getValue().getLocalTime()
-                        , String.valueOf(latLng.latitude)
-                        , String.valueOf(latLng.longitude)
-                        , latLngForecastParms)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new SingleObserver<Response<ResponseBody>>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                compositeDisposable.add(d);
-                            }
+            appRepository.getLatLngForecast(selectedRegion.getName()
+                    , selectedModelForecastDate.getDate()
+                    , selectedModelName.toLowerCase()
+                    , selectedSoaringForecastImageSet.getValue().getLocalTime()
+                    , String.valueOf(latLng.latitude)
+                    , String.valueOf(latLng.longitude)
+                    , latLngForecastParms)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<Response<ResponseBody>>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            compositeDisposable.add(d);
+                        }
 
-                            @Override
-                            public void onSuccess(Response<ResponseBody> responseBodyResponse) {
-                                if (responseBodyResponse.isSuccessful()) {
-                                    try {
-                                        pointForecastText.setValue(new LatLngForecast(latLng,
-                                                responseBodyResponse.body().string()));
-                                    } catch (IOException ioe) {
-                                        // TODO report error
-                                    }
+                        @Override
+                        public void onSuccess(Response<ResponseBody> responseBodyResponse) {
+                            if (responseBodyResponse.isSuccessful()) {
+                                try {
+                                    pointForecastText.setValue(new LatLngForecast(latLng,
+                                            responseBodyResponse.body().string()));
+                                } catch (IOException ioe) {
+                                    // TODO report error
                                 }
                             }
+                        }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                // TODO report error
-                            }
+                        @Override
+                        public void onError(Throwable e) {
+                            // TODO report error
+                        }
 
-                        });
-            } else {
-                pointForecastText.setValue(new LatLngForecast(latLng
-                        , getApplication().getString(R.string.no_location_forecast_available, selectedForecast.getValue().getForecastNameDisplay())));
-            }
+                    });
         }
 
     }

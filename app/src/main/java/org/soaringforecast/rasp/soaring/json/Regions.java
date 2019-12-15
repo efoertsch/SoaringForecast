@@ -39,7 +39,7 @@ public class Regions {
         }
         @Override
         public String toString() {
-            return new StringBuilder().append("regions").append(Arrays.toString(regions.toArray())).toString();
+            return "regions" + Arrays.toString(regions.toArray());
         }
 
     }

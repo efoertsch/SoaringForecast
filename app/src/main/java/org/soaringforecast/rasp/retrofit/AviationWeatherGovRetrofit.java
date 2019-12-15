@@ -1,22 +1,16 @@
 package org.soaringforecast.rasp.retrofit;
 
-import javax.inject.Inject;
-
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class AviationWeatherGovRetrofit {
 
-    public static final String AVIATION_WEATHER_URL = "https://aviationweather.gov/adds/dataserver_current/";
-
     private Retrofit retrofit;
 
-    @Inject
-    public AviationWeatherGovRetrofit(OkHttpClient okHttpClient ){
-
+    public AviationWeatherGovRetrofit(OkHttpClient okHttpClient, String aviationWeatherUrl ){
         retrofit = new Retrofit.Builder()
-                .baseUrl(AVIATION_WEATHER_URL)
+                .baseUrl(aviationWeatherUrl)
                 .client(okHttpClient)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build();

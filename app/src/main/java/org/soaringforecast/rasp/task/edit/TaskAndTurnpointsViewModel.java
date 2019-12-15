@@ -91,7 +91,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
 
 
     @SuppressLint("CheckResult")
-    public Task getTask() {
+    private Task getTask() {
         //Do just once
         if (!retrievedTask) {
             retrievedTask = true;
@@ -126,7 +126,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     }
 
     @SuppressLint("CheckResult")
-    public void loadTaskTurnpoints() {
+    private void loadTaskTurnpoints() {
         Disposable disposable = appRepository.getTaskTurnpionts(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -83,12 +83,10 @@ public class Model {
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append("center:").append(Arrays.toString(center.toArray()))
-                .append(" times:").append(Arrays.toString(times.toArray()))
-                .append(" name:").append(name)
-                .append(" corners:").append(Arrays.toString(corners.toArray()))
-                .toString();
+        return "center:" + Arrays.toString(center.toArray()) +
+                " times:" + Arrays.toString(times.toArray()) +
+                " name:" + name +
+                " corners:" + Arrays.toString(corners.toArray());
     }
 
 }

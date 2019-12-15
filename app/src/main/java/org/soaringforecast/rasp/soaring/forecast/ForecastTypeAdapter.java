@@ -33,8 +33,7 @@ public class ForecastTypeAdapter extends ArrayAdapter<Forecast> implements View.
     @Override
     public void onClick(View v) {
         int position = (Integer) v.getTag();
-        Object object = getItem(position);
-        Forecast forecast = (Forecast) object;
+        Forecast forecast = getItem(position);
         switch (v.getId()) {
             case R.id.soaring_forecast_info:
                 EventBus.getDefault().post(forecast);
@@ -49,9 +48,7 @@ public class ForecastTypeAdapter extends ArrayAdapter<Forecast> implements View.
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        View view = getForecastView(position, convertView, parent, true);
-        //view.setLayoutParams(linearLayoutParams);
-        return view;
+         return getForecastView(position, convertView, parent, true);
     }
 
     @NonNull

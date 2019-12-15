@@ -23,7 +23,7 @@ public class AirportListViewModel extends ViewModel {
     private MutableLiveData<List<Airport>> airports;
     private AppRepository appRepository;
     private AppPreferences appPreferences;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public AirportListViewModel setRepositoryAndPreferences(AppRepository appRepository, AppPreferences appPreferences) {
         this.appRepository = appRepository;
@@ -44,7 +44,7 @@ public class AirportListViewModel extends ViewModel {
     }
 
     @SuppressLint("CheckResult")
-    public void listSelectedAirports( List<String> icaoIds) {
+    private void listSelectedAirports( List<String> icaoIds) {
         Disposable disposable = appRepository.getAirportsByIcaoIdAirports(icaoIds)
                 .subscribe(airportList -> {
                             airports.setValue(sortAirports(icaoIds, airportList));
@@ -62,7 +62,7 @@ public class AirportListViewModel extends ViewModel {
         for (int i = 0; i < icaoIds.size(); ++i) {
             for (int j = 0; j < airports.size(); ++j) {
                 if (icaoIds.get(i).equalsIgnoreCase(airports.get(j).getIdent())
-                        && i != j && i < j) {
+                        && i < j) {
                     Collections.swap(airports, i, j);
                 }
             }

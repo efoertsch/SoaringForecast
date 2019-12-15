@@ -44,7 +44,7 @@ public class StringUtils {
             in.close();
             return buf.toString();
         } catch (IOException e) {
-            Timber.e("Error opening asset " + assetsFileName);
+            Timber.e("Error opening asset %1$s", assetsFileName);
         } 
         return null;
 

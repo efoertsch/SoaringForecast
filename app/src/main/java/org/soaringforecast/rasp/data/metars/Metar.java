@@ -361,9 +361,9 @@ public class Metar {
         StringBuilder sb = new StringBuilder();
         if (skyConditions != null) {
             for (SkyCondition skyCondition : skyConditions) {
-                sb.append((skyCondition.getCloudBaseFtAgl() != null ? skyCondition.getCloudBaseFtAgl() + " " : "")
-                        + (skyCondition.getSkyCover() != null ? skyCondition.getSkyCover() : "")
-                        + "\n");
+                sb.append(skyCondition.getCloudBaseFtAgl() != null ? skyCondition.getCloudBaseFtAgl() + " " : "")
+                        .append(skyCondition.getSkyCover() != null ? skyCondition.getSkyCover() : "")
+                        .append("\n");
             }
         }
         if (sb.length() > 1) {

@@ -69,8 +69,7 @@ public class SettingsActivity extends MasterActivity {
         }
 
         public static SettingsActivity.Builder getBuilder() {
-            SettingsActivity.Builder builder = new SettingsActivity.Builder();
-            return builder;
+            return new SettingsActivity.Builder();
         }
 
         public SettingsActivity.Builder displaySettings() {

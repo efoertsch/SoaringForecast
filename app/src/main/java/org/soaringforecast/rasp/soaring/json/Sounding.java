@@ -52,7 +52,7 @@ public class Sounding {
         this.lat = convertToDouble(lat);
     }
 
-    public void setLatLng() {
+    void setLatLng() {
         lat = convertToDouble(latitude);
         lng = convertToDouble(longitude);
     }
@@ -73,7 +73,7 @@ public class Sounding {
         return lng;
     }
 
-    public static double convertToDouble(String textNumber) {
+    private static double convertToDouble(String textNumber) {
         try {
             return Double.parseDouble(textNumber);
         } catch (NumberFormatException nfe) {

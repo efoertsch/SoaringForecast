@@ -2,7 +2,7 @@ package org.soaringforecast.rasp.test;
 
 
 import org.soaringforecast.rasp.data.metars.MetarResponse;
-import org.soaringforecast.rasp.retrofit.AviationWeatherApi;
+import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovRetrofit;
 
 import org.junit.Test;
@@ -23,12 +23,12 @@ public class MetarParseTest {
      */
     @Test
     public void shouldGetMetar() throws IOException {
-        Retrofit retrofit = new AviationWeatherGovRetrofit(new OkHttpClient()).getRetrofit();
-        AviationWeatherApi client = retrofit.create(AviationWeatherApi.class);
+        Retrofit retrofit = new AviationWeatherGovRetrofit(new OkHttpClient(), "https://aviationweather.gov/adds/dataserver_current").getRetrofit();
+        AviationWeatherGovApi client = retrofit.create(AviationWeatherGovApi.class);
 
         final Call<MetarResponse>  call;
 
-        call = client.mostRecentMetarForEachAirport("KORH", AviationWeatherApi.METAR_HOURS_BEFORE_NOW);
+        call = client.getMostRecentMetarForEachAirport("KORH", 3);
         MetarResponse response = call.execute().body();
 
         checkMetarResponse(response);

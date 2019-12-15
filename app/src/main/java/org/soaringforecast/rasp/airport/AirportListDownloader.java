@@ -27,8 +27,8 @@ import timber.log.Timber;
  */
 public class AirportListDownloader {
 
-    private OkHttpClient okHttpClient;
-    private AppRepository appRepository;
+    private final OkHttpClient okHttpClient;
+    private final AppRepository appRepository;
 
     @Inject
     public AirportListDownloader(OkHttpClient okHttpClient, AppRepository appRepository) {
@@ -37,12 +37,12 @@ public class AirportListDownloader {
     }
 
 
-    public Single<Integer> downloadAirportsToDB() {
+    public Single<Integer>  downloadAirportsToDB() {
         return Completable.fromSingle(appRepository.deleteAllAirports()).andThen(getDownloadAirportListObservable(okHttpClient).flatMapCompletable(responseBody ->
                 saveAirportListToDB(responseBody)).andThen(appRepository.getCountOfAirports()));
     }
 
-    public Single<ResponseBody> getDownloadAirportListObservable(OkHttpClient okHttpClient) {
+    private Single<ResponseBody> getDownloadAirportListObservable(OkHttpClient okHttpClient) {
         Retrofit retrofit = new AirportListRetrofit(okHttpClient).getRetrofit();
         AirportListDownloadApi downloadService = retrofit.create(AirportListDownloadApi.class);
         return downloadService.downloadAirportList();

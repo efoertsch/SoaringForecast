@@ -129,8 +129,7 @@ public class TaskActivity extends MasterActivity {
         }
 
         public static Builder getBuilder() {
-            Builder builder = new Builder();
-            return builder;
+           return new Builder();
         }
 
         public Builder displayTaskList() {

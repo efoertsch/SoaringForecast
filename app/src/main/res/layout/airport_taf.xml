@@ -82,7 +82,7 @@
                         style="@style/forecastData"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/margin_half"
+                        android:layout_marginStart="@dimen/margin_half"
                         android:text="@{ConversionUtils.formatToShortTime(taf.issueTime)}"
                         tools:text="2117 UTC 05 Mar 2017"/>
 
@@ -103,7 +103,7 @@
                         style="@style/forecastData"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/margin_half"
+                        android:layout_marginStart="@dimen/margin_half"
                         android:text="@{ConversionUtils.formatToShortDateTime(taf.validTimeFrom)}"
                         tools:text="03/07 11:15 PM"/>
 
@@ -117,7 +117,7 @@
                         style="@style/forecastData"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/margin_half"
+                        android:layout_marginStart="@dimen/margin_half"
                         android:text="@{ConversionUtils.formatToShortDateTime(taf.validTimeTo)}"
                         tools:text="03/08 2:15 APM"/>
                 </LinearLayout>

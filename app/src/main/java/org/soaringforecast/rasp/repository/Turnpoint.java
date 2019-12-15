@@ -205,12 +205,10 @@ public class Turnpoint {
             throw new Exception();
         }
 
-        float latitude = (Float.parseFloat(latitudeString.substring(0, 2))
+        return (Float.parseFloat(latitudeString.substring(0, 2))
                 + (Float.parseFloat(latitudeString.substring(2, 4)) / 60)
                 + (Float.parseFloat(latitudeString.substring(4, 8)) / 60))
                 * (latitudeString.substring(8).equals("N") ? 1f : -1f);
-        return latitude;
-
     }
 
     /**
@@ -229,11 +227,10 @@ public class Turnpoint {
                 || !(longitudeString.endsWith("E") || longitudeString.endsWith("W"))) {
             throw new Exception();
         }
-        float longitude = (Float.parseFloat(longitudeString.substring(0, 3))
+        return (Float.parseFloat(longitudeString.substring(0, 3))
                 + (Float.parseFloat(longitudeString.substring(3, 5)) / 60)
                 + (Float.parseFloat(longitudeString.substring(5, 9)) / 60))
                 * (longitudeString.endsWith("E") ? 1f : -1f);
-        return longitude;
 
     }
 
