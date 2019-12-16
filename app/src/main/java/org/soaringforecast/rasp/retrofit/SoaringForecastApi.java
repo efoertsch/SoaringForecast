@@ -54,7 +54,7 @@ public interface SoaringForecastApi {
      * @param forecastType - e.g. "wstar bsratio zsfclcldif zsfclcl zblcldif zblcl ... "
      * @return - response body that contains text forecast(s)
      */
-    @POST("cgi/get_rasp_blipspot.cgi")
+    @POST("/rasp/cgi/get_rasp_blipspot.cgi")
     @FormUrlEncoded
     Single<Response<ResponseBody>> getLatLongPointForecast(
             @Field(value = "region", encoded = true) String region,
