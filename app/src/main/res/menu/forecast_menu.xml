@@ -18,27 +18,6 @@
         app:showAsAction="never"
         />
 
-    <!-- replaced by above
-    <item
-        android:id="@+id/forecast_menu_toggle_sounding_points"
-        android:title="@string/forecast_menu_toggle_sounds"
-        android:checkable="true"
-        app:showAsAction="never"
-        />
-
-    <item
-        android:id="@+id/forecast_menu_display_sua"
-        android:title="@string/display_sua"
-        android:checkable="true"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/forecast_menu_display_turnpoints"
-        android:title="@string/display_turnpoints"
-        android:checkable="true"
-        app:showAsAction="never"/>
-    -->
-
     <item android:id="@+id/forecast_menu_map_background"
           android:title="@string/map_background" >
 
