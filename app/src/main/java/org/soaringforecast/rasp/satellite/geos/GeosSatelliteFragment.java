@@ -18,6 +18,7 @@ import org.soaringforecast.rasp.utils.TimeUtils;
 
 public class GeosSatelliteFragment extends Fragment {
 
+    // TODO move to URL file
     private static final String geosGif = "https://cdn.star.nesdis.noaa.gov/GOES16/ABI/GIFS/GOES16-NE-GEOCOLOR-600x600.gif";
     private static final String currentGeos = "https://cdn.star.nesdis.noaa.gov/GOES16/ABI/SECTOR/ne/GEOCOLOR/600x600.jpg";
 

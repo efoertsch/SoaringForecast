@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import org.soaringforecast.rasp.utils.CSVUtils;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,6 +20,8 @@ public class Turnpoint {
 
     private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
     private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s ";
+    private static final DecimalFormat latitudeFormat = new DecimalFormat("####.###");
+    private static final DecimalFormat longitudeFormat = new DecimalFormat("#####.###");
 
     @NonNull
     @PrimaryKey(autoGenerate = true)
@@ -217,7 +220,7 @@ public class Turnpoint {
      *                        4-5 characters are minutes,
      *                        6 decimal point
      *                        7-9 characters are decimal minutes
-     *                        10th character is either N or S.
+     *                        10th character is either E or W.
      *                        eg 07147.470W
      * @return longitude converted to decimal degrees
      * @throws Exception
@@ -315,4 +318,11 @@ public class Turnpoint {
         return style.equals("5");
     }
 
+    public String getLatitudeAsString() {
+        return  latitudeFormat.format(Math.abs(latitudeDeg)) + (latitudeDeg >= 0 ? 'N' : 'S');
+    }
+
+    public String getLongitudeAsString() {
+        return  longitudeFormat.format(Math.abs(longitudeDeg)) + (longitudeDeg >= 0 ? 'E' : 'W');
+    }
 }

@@ -322,5 +322,20 @@
     <string name="close">Close</string>
     <string name="error_getting_sua_file_for_region">Error getting SUA file for %1$s</string>
     <string name="downloading_new_sua">Downloading  and displaying new SUA file.</string>
+    <string name="waypoint_name">Waypoint Name</string>
+    <string name="waypoint_code">Waypoint Code</string>
+    <string name="waypoint_country">Country code</string>
+    <string name="waypoint_latitude">Latitude  DDMM.mmmN(/S)</string>
+    <string name="waypoint_longitude">Longitude DDDMM.mmmW(/E) </string>
+    <string name="waypoint_elevation">Elevation number with m or ft</string>
+    <string name="waypoint_style">Waypoint Style</string>
+    <string name="waypoint_runway_direction">Runway Direction</string>
+    <string name="waypoint_runway_length">Runway length</string>
+    <string name="waypoint_airport_frequency">Airport Frequency</string>
+    <string name="waypoint_description">Description</string>
+    <string name="turnpoint_title_error_msg">The turnpoint title can not be blank.</string>
+    <string name="turnpoint_code_error_msg">Code can not be blank.</string>
+    <string name="turnpoint_latitude_error">Latitude must be of form DDMM.SSSN(S)</string>
+    <string name="turnpoint_longitude_error">Longitude must be of form DDDMM.SSSW(E)</string>
 
 </resources>

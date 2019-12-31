@@ -34,6 +34,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name="org.soaringforecast.rasp.settings.SettingsActivity"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
@@ -42,6 +43,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
+
         <activity
             android:name="org.soaringforecast.rasp.task.TaskActivity"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
@@ -50,6 +52,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
+
+        <activity
+            android:name="org.soaringforecast.rasp.turnpoint.TurnpointActivity"
+            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
+        </activity>
+
         <activity
             android:name="org.soaringforecast.rasp.satellite.SatelliteActivity"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
@@ -58,6 +70,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
+
         <activity
             android:name="org.soaringforecast.rasp.airport.AirportActivity"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
@@ -66,6 +79,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>
         </activity>
+
         <activity
             android:name="org.soaringforecast.rasp.about.AboutActivity"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
