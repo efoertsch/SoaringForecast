@@ -17,9 +17,11 @@ import org.soaringforecast.rasp.soaring.forecast.SoaringForecastFragment;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
-import org.soaringforecast.rasp.task.search.TurnpointSearchFragment;
+import org.soaringforecast.rasp.task.search.TurnpointSearchForEditFragment;
+import org.soaringforecast.rasp.task.search.TurnpointSearchForTaskFragment;
 import org.soaringforecast.rasp.task.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.task.turnpoints.seeyou.SeeYouImportFragment;
+import org.soaringforecast.rasp.turnpoint.TurnpointEditFragment;
 import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.windy.WindyActivity;
 import org.soaringforecast.rasp.windy.WindyFragment;
@@ -72,7 +74,13 @@ public abstract class UIBuildersModule {
     abstract TaskListFragment bindTaskListFragment();
 
     @ContributesAndroidInjector(modules = {})
-    abstract TurnpointSearchFragment bindTurnpointSearchFragment();
+    abstract TurnpointSearchForTaskFragment bindTurnpointSearchForTask();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointSearchForEditFragment bindTurnpointSearchForEditFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointEditFragment bindTurnpointEditFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract SeeYouImportFragment bindSeeYouImportFragment();
@@ -108,9 +116,6 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract AboutFragment bindAboutFragment();
-
-
-
 
 
 

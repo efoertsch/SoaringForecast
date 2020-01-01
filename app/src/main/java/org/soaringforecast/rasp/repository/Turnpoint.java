@@ -20,8 +20,8 @@ public class Turnpoint {
 
     private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
     private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s ";
-    private static final DecimalFormat latitudeFormat = new DecimalFormat("####.###");
-    private static final DecimalFormat longitudeFormat = new DecimalFormat("#####.###");
+    private static final DecimalFormat latitudeFormat = new DecimalFormat("0000.###");
+    private static final DecimalFormat longitudeFormat = new DecimalFormat("00000.###");
 
     @NonNull
     @PrimaryKey(autoGenerate = true)
@@ -318,11 +318,25 @@ public class Turnpoint {
         return style.equals("5");
     }
 
-    public String getLatitudeAsString() {
-        return  latitudeFormat.format(Math.abs(latitudeDeg)) + (latitudeDeg >= 0 ? 'N' : 'S');
+    public String getLatitudeInCupFormat() {
+        return getLatitudeInCupFormat(latitudeDeg);
     }
 
-    public String getLongitudeAsString() {
-        return  longitudeFormat.format(Math.abs(longitudeDeg)) + (longitudeDeg >= 0 ? 'E' : 'W');
+    public static String getLatitudeInCupFormat(float lat) {
+        int degrees =  (int) lat ;
+        float minutes =  (lat - degrees) * 60 ;
+        return  latitudeFormat.format(Math.abs(degrees * 100  + minutes))+ (degrees >= 0 ? 'N' : 'S');
+    }
+
+
+    public String getLongitudeInCupFormat() {
+        return getLongitudeInCupFormat(longitudeDeg);
+    }
+
+    public static String getLongitudeInCupFormat(float lng) {
+        int degrees =  (int) lng;
+        float minutes =  (lng - degrees) * 60 ;
+        return  longitudeFormat.format(Math.abs(degrees * 100  + minutes))+ (degrees >= 0 ? 'E' : 'W');
+
     }
 }

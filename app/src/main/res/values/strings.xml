@@ -192,6 +192,7 @@
     <string name="turnpoint_files">Available Turnpoint Files</string>
     <string name="title_activity_turnpoints_import">TurnpointsImportActivity</string>
     <string name="import_turnpoints">Import Turnpoints</string>
+    <string name="turnpoints">Turnpoints</string>
     <string name="no_turnpoint_files_found">No turnpoint files found. Would you like to download turnpoint files?</string>
     <string name="need_to_download_cup_files">A browser will be started pointing to the Worldwide Soaring Turnpoint Exchange.\nDrill down to the needed SeeYou(.cup) turnpoint file and download.\n NOTE: Select the SeeYou file(s) that are *NOT* SeeYou® [control point number placed before the name].\nReturn to the Soaring app when downloads completed.</string>
     <string name="no_cup_files_found">Missing Turnpoints</string>
@@ -226,7 +227,7 @@
     <string name="task_name">Task Name</string>
     <string name="distance">Distance:</string>
     <string name="task">Task:</string>
-    <string name="turnpoints">Turnpoints:</string>
+    <string name="turnpoints_with_colon">Turnpoints:</string>
     <string name="turnpoints_no_hyphen">Turnpoints</string>
     <string name="start">Start</string>
     <string name="display_km_from_prior_turnpoint">From prior point: %.1fkm</string>
@@ -337,5 +338,7 @@
     <string name="turnpoint_code_error_msg">Code can not be blank.</string>
     <string name="turnpoint_latitude_error">Latitude must be of form DDMM.SSSN(S)</string>
     <string name="turnpoint_longitude_error">Longitude must be of form DDDMM.SSSW(E)</string>
+    <string name="edit_turnpoints">Edit Turnpoints</string>
+    <string name="elevation_error">Elevation must be number followed by m or ft.</string>
 
 </resources>

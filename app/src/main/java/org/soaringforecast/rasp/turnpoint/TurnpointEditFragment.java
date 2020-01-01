@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,9 @@ import org.soaringforecast.rasp.repository.AppRepository;
 
 import javax.inject.Inject;
 
-public class TurnpointEditFragment  extends Fragment {
+import dagger.android.support.DaggerFragment;
+
+public class TurnpointEditFragment  extends DaggerFragment {
 
     @Inject
     AppRepository appRepository;
@@ -53,9 +54,6 @@ public class TurnpointEditFragment  extends Fragment {
         turnpointEditView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
         turnpointEditView.setViewModel(turnpointEditViewModel);
         return  turnpointEditView.getRoot();
-
-
-
 
 
     }

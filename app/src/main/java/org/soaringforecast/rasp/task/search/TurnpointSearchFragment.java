@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,13 +19,11 @@ import android.view.inputmethod.InputMethodManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
-import org.soaringforecast.rasp.repository.TaskTurnpoint;
+import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
-import org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel;
 import org.soaringforecast.rasp.task.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
@@ -36,20 +33,17 @@ import dagger.android.support.DaggerFragment;
 
 public class TurnpointSearchFragment extends DaggerFragment {
 
-    private SearchView searchView;
-    private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
-    private TurnpointSearchListAdapter turnpointSearchListAdapter;
+    @Inject
+    AppRepository appRepository;
+
+    protected SearchView searchView;
+    protected TurnpointSearchListAdapter turnpointSearchListAdapter;
+    protected TurnpointSearchViewModel turnpointSearchViewModel;
+
     private AlertDialog noTurnpointsDialog;
 
     @Inject
     TurnpointBitmapUtils turnpointBitmapUtils;
-
-    private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
-        TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
-        taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
-        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle()), Snackbar.LENGTH_SHORT));
-        searchView.setQuery("", true);
-    };
 
     private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
         if (searchView != null) {
@@ -61,9 +55,8 @@ public class TurnpointSearchFragment extends DaggerFragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Shared with EditTaskFragment and
-        // should already be 'initialized' with AppRepository, taskId, ... before getting here
-        taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
+        turnpointSearchViewModel = ViewModelProviders.of(getActivity()).get(TurnpointSearchViewModel.class);
+        turnpointSearchViewModel.setAppRepository(appRepository);
         setHasOptionsMenu(true);
     }
 
@@ -73,7 +66,6 @@ public class TurnpointSearchFragment extends DaggerFragment {
         View rootView = inflater.inflate(R.layout.turnpoint_search_layout, null);
 
         turnpointSearchListAdapter = TurnpointSearchListAdapter.getInstance()
-                .setOnItemClickListener(turnpointTextClickListener)
                 .setSateliteOnItemClickListener(satelliteOnItemClickListener)
                 .setTurnpointBitmapUtils(turnpointBitmapUtils);
 
@@ -88,12 +80,6 @@ public class TurnpointSearchFragment extends DaggerFragment {
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().setTitle(R.string.add_turnpoints);
-        checkForAtLeastOneTurnpoint();
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -150,11 +136,11 @@ public class TurnpointSearchFragment extends DaggerFragment {
     }
 
     private void runSearch(String search) {
-        taskAndTurnpointsViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
+        turnpointSearchViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointSearchListAdapter.setTurnpointList(turnpoints));
     }
 
-    private void checkForAtLeastOneTurnpoint() {
-        taskAndTurnpointsViewModel.getNumberOfSearchableTurnpoints().observe(this, count -> {
+    protected void checkForAtLeastOneTurnpoint() {
+        turnpointSearchViewModel.getNumberOfSearchableTurnpoints().observe(this, count -> {
             if (count == 0) {
                 displayImportTurnpointsDialog();
             } else {

@@ -37,8 +37,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     // Handy site for regex development/testing https://www.debuggex.com/
     public static final String latitudeCupRegex = "(9000\\.000|[0-8][0-9][0-5][0-9]\\.[0-9]{3})[NS]";
     public static final String longitudeCupRegex = "(18000\\.000|(([0-1][0-7])|([0][0-9]))[0-9][0-5][0-9]\\.[0-9]{3})[EW]";
+    public static final String elevationRegex = "([0-9]{1,5}(\\.[0-9])?|(\\.[0-9]))[m|ft]";
     public static final Pattern longitudeCupPattern = Pattern.compile(longitudeCupRegex);
     public static final Pattern latitudeCupPattern = Pattern.compile(latitudeCupRegex);
+    public static final Pattern elevationPattern = Pattern.compile(elevationRegex);
 
 
 
@@ -136,7 +138,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public String getLatitude() {
         if (turnpoint != null) {
-            return turnpoint.getLatitudeAsString();
+            return turnpoint.getLatitudeInCupFormat();
         } else {
             return "0000.000N";
         }
@@ -161,7 +163,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public String getLongitude() {
         if (turnpoint != null) {
-            return turnpoint.getLongitudeAsString();
+            return turnpoint.getLongitudeInCupFormat();
         } else {
             return "00000.000W";
         }
@@ -196,7 +198,13 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setElevation(String value) {
         if (turnpoint != null) {
-            turnpoint.setElevation(value);
+            if (elevationPattern.matcher(value).matches()) {
+                elevationErrorText = null;
+                turnpoint.setElevation(value);
+            }
+            else {
+                elevationErrorText = getApplication().getString(R.string.elevation_error);
+            }
         }
     }
 

@@ -60,6 +60,9 @@
                 <item
                     android:id="@+id/nav_menu_import_turnpoints"
                     android:title="@string/import_turnpoints"/>
+                <item
+                    android:id="@+id/nav_menu_edit_turnpoint"
+                    android:title="@string/edit_turnpoints"/>
             </menu>
 
         </item>

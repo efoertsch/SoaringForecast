@@ -184,6 +184,9 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_import_turnpoints:
                 displayTurnpointsImport();
                 break;
+            case R.id.nav_menu_edit_turnpoint:
+                displayTurnpointEditSearch();
+                break;
             case R.id.nav_menu_settings:
                 displaySettingsActivity();
                 break;
@@ -263,6 +266,12 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     private void displayTurnpointsImport() {
         TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
         builder.displayTurnpointImport();
+        startActivity(builder.build(this));
+    }
+
+    private void displayTurnpointEditSearch(){
+        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
+        builder.displayTurnpointEditSearch();
         startActivity(builder.build(this));
     }
 

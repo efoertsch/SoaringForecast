@@ -47,7 +47,8 @@
         <activity
             android:name="org.soaringforecast.rasp.task.TaskActivity"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"/>

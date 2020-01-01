@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_standard"
             android:layout_marginTop="@dimen/margin_standard"
-            android:text="@string/turnpoints"
+            android:text="@string/turnpoints_with_colon"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintStart_toEndOf="@+id/edit_task_distance_label"
             app:layout_constraintStart_toStartOf="parent"

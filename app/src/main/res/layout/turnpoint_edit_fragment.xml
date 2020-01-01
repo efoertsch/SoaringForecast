@@ -15,14 +15,30 @@
             type="org.soaringforecast.rasp.repository.Turnpoint" />
     </data>
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
         <android.support.constraint.ConstraintLayout
             android:id="@+id/turnpoint_edit_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:clickable="true"
+            android:background="@color/colorScreenBackground">
+
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_standard"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="vertical"
+                >
+
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/turnpoint_edit_title_layout"
@@ -153,7 +169,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/waypoint_runway_direction"
-                    android:inputType="number"
                     android:text="@={viewModel.direction}"/>
 
             </android.support.design.widget.TextInputLayout>
@@ -191,7 +206,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/waypoint_airport_frequency"
-                    android:inputType="number"
                     android:text="@={viewModel.frequency}"/>
 
             </android.support.design.widget.TextInputLayout>
@@ -214,9 +228,11 @@
 
             </android.support.design.widget.TextInputLayout>
 
+             </LinearLayout>
+            </ScrollView>
 
         </android.support.constraint.ConstraintLayout>
-    </ScrollView>
+
 
 </layout>
 
