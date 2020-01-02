@@ -144,21 +144,35 @@
 
                 </android.support.design.widget.TextInputLayout>
 
-                <android.support.v7.widget.AppCompatSpinner
-                    android:id="@+id/turnpoint_edit_style_spinner"
-                    android:layout_width="fill_parent"
+                <LinearLayout
+                    android:id="@+id/turnpoint_edit_style_spinner_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_standard"
-                    android:layout_marginTop="@dimen/margin_half"
-                    android:layout_marginEnd="@dimen/margin_standard"
-                    android:prompt="@string/waypoint_style"
-                    android:selectedItemPosition="@={viewModel.cupStylePosition}"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@android:color/black"
-                    android:theme="@style/DividerSpinnerTheme"
-                    app:adapter="@{spinAdapterCupStyle}"
+                    android:orientation="vertical"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_elevation_layout" />
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_elevation_layout">
+
+                    <TextView
+                        style="TextView.ForSpinnerLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/turnpoint_cup_style_type" />
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/turnpoint_edit_style_spinner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_half"
+                        android:layout_marginEnd="@dimen/margin_standard"
+                        android:prompt="@string/turnpoint_type"
+                        android:selectedItemPosition="@={viewModel.cupStylePosition}"
+                        android:spinnerMode="dialog"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@android:color/black"
+                        android:theme="@style/DividerSpinnerTheme"
+                        app:adapter="@{spinAdapterCupStyle}" />
+                </LinearLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/turnpoint_edit_runway_direction_layout"

@@ -8,13 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.turnpoint.cup.CupStyle;
 
 import java.util.ArrayList;
 
-public class CupStyleAdapter extends ArrayAdapter<CupStyle> implements View.OnClickListener {
+public class CupStyleAdapter extends ArrayAdapter<CupStyle>  {
 
     // View lookup cache
     private static class ViewHolder {
@@ -26,12 +25,12 @@ public class CupStyleAdapter extends ArrayAdapter<CupStyle> implements View.OnCl
         super(context, R.layout.cup_style_row, cupStyles);
     }
 
-    @Override
-    public void onClick(View v) {
-        int position = (Integer) v.getTag();
-        CupStyle cupStyle = getItem(position);
-                EventBus.getDefault().post(cupStyle);
-    }
+//    @Override
+//    public void onClick(View v) {
+//        int position = (Integer) v.getTag();
+//        CupStyle cupStyle = getItem(position);
+//                EventBus.getDefault().post(cupStyle);
+//    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -51,15 +50,14 @@ public class CupStyleAdapter extends ArrayAdapter<CupStyle> implements View.OnCl
         CupStyleAdapter.ViewHolder viewHolder; // view lookup cache stored in tag
 
         if (convertView == null) {
-            viewHolder = new CupStyleAdapter.ViewHolder();
+            viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.cup_style_row, parent, false);
             viewHolder.txtCupStyleDescription = convertView.findViewById(R.id.cup_style_description);
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (CupStyleAdapter.ViewHolder) convertView.getTag();
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-
 
         viewHolder.txtCupStyleDescription.setText(cupStyle.getDescription());
 
