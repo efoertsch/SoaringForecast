@@ -20,8 +20,8 @@ public class Turnpoint {
 
     private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
     private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s ";
-    private static final DecimalFormat latitudeFormat = new DecimalFormat("0000.###");
-    private static final DecimalFormat longitudeFormat = new DecimalFormat("00000.###");
+    private static final DecimalFormat latitudeFormat = new DecimalFormat("0000.000");
+    private static final DecimalFormat longitudeFormat = new DecimalFormat("00000.000");
 
     @NonNull
     @PrimaryKey(autoGenerate = true)

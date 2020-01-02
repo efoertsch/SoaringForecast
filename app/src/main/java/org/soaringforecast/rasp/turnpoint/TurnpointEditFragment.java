@@ -73,7 +73,7 @@ public class TurnpointEditFragment  extends DaggerFragment {
         turnpointEditViewModel.getCupStylePosition().observe(this, newCupStylePosition -> {
             if (newCupStylePosition != null){
                 if (lastCupStylePosition != -1 && lastCupStylePosition != newCupStylePosition){
-                    turnpointEditViewModel.setCupStylePosition(newCupStylePosition);
+                    turnpointEditViewModel.setInitialCupStylePosition(newCupStylePosition);
                 }
             }
             lastCupStylePosition = newCupStylePosition;

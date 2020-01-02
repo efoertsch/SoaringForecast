@@ -53,7 +53,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/waypoint_name"
-                        android:text="@={viewModel.title}" />
+                        android:text="@={viewModel.title}"
+                        android:inputType="textNoSuggestions"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -70,7 +71,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/waypoint_code"
-                        android:text="@={viewModel.code}" />
+                        android:text="@={viewModel.code}"
+                        android:inputType="textNoSuggestions"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -139,7 +141,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/waypoint_elevation"
-                        android:inputType="number"
                         android:text="@={viewModel.elevation}" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -206,7 +207,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/waypoint_runway_length"
-                        android:inputType="number"
                         android:text="@={viewModel.length}" />
 
                 </android.support.design.widget.TextInputLayout>
