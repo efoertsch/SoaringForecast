@@ -2,236 +2,241 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="TurnpointEditView" >
+    <data class="TurnpointEditView">
 
-    <import type="android.view.View"/>
-
-    <variable
-        name="viewModel"
-        type="org.soaringforecast.rasp.turnpoint.TurnpointEditViewModel"/>
+        <import type="android.view.View" />
 
         <variable
-            name="turnpoint"
-            type="org.soaringforecast.rasp.repository.Turnpoint" />
+            name="viewModel"
+            type="org.soaringforecast.rasp.turnpoint.TurnpointEditViewModel" />
+
+        <variable
+            name="spinAdapterCupStyle"
+            type="org.soaringforecast.rasp.turnpoint.CupStyleAdapter" />
     </data>
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/turnpoint_edit_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="true"
-            android:clickable="true"
-            android:background="@color/colorScreenBackground">
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/turnpoint_edit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="@color/colorScreenBackground"
+        android:clickable="true">
 
-            <ScrollView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_standard"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                >
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_standard"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 android:orientation="vertical"
-                >
-
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_title_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.titleErrorText}"
-                >
+                app:layout_constraintTop_toTopOf="parent">
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_title"
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_title_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_name"
-                    android:text="@={viewModel.title}"
-                    />
-            </android.support.design.widget.TextInputLayout>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.titleErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_code_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_title_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.codeErrorText}">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_name"
+                        android:text="@={viewModel.title}" />
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_code"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_code_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_code"
-                    android:text="@={viewModel.code}"/>
-            </android.support.design.widget.TextInputLayout>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.codeErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_title_layout">
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_country_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_code_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.countryErrorText}">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_code"
+                        android:text="@={viewModel.code}" />
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_country"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_country_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_country"
-                    android:text="@={viewModel.country}"/>
-            </android.support.design.widget.TextInputLayout>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.countryErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_code_layout">
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_latitude_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_country_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.latitudeErrorText}">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_country"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_country"
+                        android:text="@={viewModel.country}" />
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_latitude"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_latitude_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_latitude"
-                    android:text="@={viewModel.latitude}"/>
-            </android.support.design.widget.TextInputLayout>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.latitudeErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_country_layout">
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_longitude_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_latitude_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.longitudeErrorText}">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_latitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_latitude"
+                        android:text="@={viewModel.latitude}" />
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_longitude"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_longitude_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_longitude"
-                    android:text="@={viewModel.longitude}"/>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.longitudeErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_latitude_layout">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_longitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_longitude"
+                        android:text="@={viewModel.longitude}" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_elevation_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_longitude_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.elevationErrorText}">
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_elevation"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_elevation_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_elevation"
-                    android:inputType="number"
-                    android:text="@={viewModel.elevation}"/>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.elevationErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_longitude_layout">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_elevation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_elevation"
+                        android:inputType="number"
+                        android:text="@={viewModel.elevation}" />
 
-            <Spinner
-                android:id="@+id/turnpoint_edit_style_spinner"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:prompt="@string/waypoint_style"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_elevation_layout" />
+                </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_runway_direction_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_style_spinner"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.directionErrorText}">
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/turnpoint_edit_style_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_standard"
+                    android:layout_marginTop="@dimen/margin_half"
+                    android:layout_marginEnd="@dimen/margin_standard"
+                    android:prompt="@string/waypoint_style"
+                    android:selectedItemPosition="@={viewModel.cupStylePosition}"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black"
+                    android:theme="@style/DividerSpinnerTheme"
+                    app:adapter="@{spinAdapterCupStyle}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_elevation_layout" />
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_runway_direction"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_runway_direction_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_runway_direction"
-                    android:text="@={viewModel.direction}"/>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.directionErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_style_spinner">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_runway_direction"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_runway_direction"
+                        android:text="@={viewModel.direction}" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_runway_length_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_direction_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.lengthErrorText}">
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_runway_length"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_runway_length_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_runway_length"
-                    android:inputType="number"
-                    android:text="@={viewModel.length}"/>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.lengthErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_direction_layout">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_runway_length"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_runway_length"
+                        android:inputType="number"
+                        android:text="@={viewModel.length}" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_airport_frequency_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_length_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.frequencyErrorText}">
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_airport_frequency"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_airport_frequency_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_airport_frequency"
-                    android:text="@={viewModel.frequency}"/>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.frequencyErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_length_layout">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_airport_frequency"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_airport_frequency"
+                        android:text="@={viewModel.frequency}" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/turnpoint_edit_description_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_airport_frequency_layout"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.directionErrorText}">
+                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/turnpoint_edit_description"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/turnpoint_edit_description_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/waypoint_description"
-                    android:text="@={viewModel.description}"/>
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.directionErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_airport_frequency_layout">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/turnpoint_edit_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_description"
+                        android:text="@={viewModel.description}" />
 
-             </LinearLayout>
-            </ScrollView>
+                </android.support.design.widget.TextInputLayout>
 
-        </android.support.constraint.ConstraintLayout>
+            </LinearLayout>
+        </ScrollView>
+
+    </android.support.constraint.ConstraintLayout>
 
 
 </layout>

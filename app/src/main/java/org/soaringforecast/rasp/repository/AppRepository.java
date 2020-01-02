@@ -32,6 +32,7 @@ import org.soaringforecast.rasp.soaring.json.Forecasts;
 import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.soaring.json.SUARegion;
 import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
+import org.soaringforecast.rasp.turnpoint.cup.CupStyles;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.JSONResourceReader;
 import org.soaringforecast.rasp.utils.StringUtils;
@@ -889,6 +890,20 @@ public class AppRepository implements CacheTimeListener {
 
     public Call<TafResponse> getMostRecentTafForEachAirport(String icaoIdentifiers,  int hoursBeforeNow){
             return aviationWeatherGovApi.getMostRecentTafForEachAirport(icaoIdentifiers, hoursBeforeNow);
+    }
+
+
+    // -------------------- Cup Turnpoint Styles ------------------------
+
+    public Single<CupStyles> getCupStyles() {
+        return Single.create(emitter -> {
+            try {
+                CupStyles cupStyles = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_style_json)).constructUsingGson(CupStyles.class);
+                emitter.onSuccess(cupStyles);
+            } catch (JsonSyntaxException jse) {
+                emitter.onError(jse);
+            }
+        });
     }
 
 

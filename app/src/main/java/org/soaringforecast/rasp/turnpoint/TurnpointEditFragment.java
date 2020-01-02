@@ -1,5 +1,6 @@
 package org.soaringforecast.rasp.turnpoint;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -11,6 +12,10 @@ import android.view.ViewGroup;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.databinding.TurnpointEditView;
 import org.soaringforecast.rasp.repository.AppRepository;
+import org.soaringforecast.rasp.turnpoint.cup.CupStyle;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -24,6 +29,9 @@ public class TurnpointEditFragment  extends DaggerFragment {
     private long turnpointId;
     private TurnpointEditView turnpointEditView ;
     private TurnpointEditViewModel turnpointEditViewModel;
+    private CupStyleAdapter cupStyleAdapter;
+    private MutableLiveData<List<CupStyle>> cupStyles = new MutableLiveData<>();
+    private int lastCupStylePosition = -1;
 
     public static TurnpointEditFragment  newInstance(long turnpointId) {
         TurnpointEditFragment turnpointEditFragment = new TurnpointEditFragment();
@@ -53,6 +61,24 @@ public class TurnpointEditFragment  extends DaggerFragment {
         turnpointEditView = DataBindingUtil.inflate(inflater, R.layout.turnpoint_edit_fragment, container, false);
         turnpointEditView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
         turnpointEditView.setViewModel(turnpointEditViewModel);
+        cupStyleAdapter = new CupStyleAdapter(new ArrayList<>(), getContext());
+        turnpointEditView.setSpinAdapterCupStyle(cupStyleAdapter);
+
+        // Forecasts
+        turnpointEditViewModel.getCupStyles().observe(this, forecasts -> {
+            cupStyleAdapter.clear();
+            cupStyleAdapter.addAll(forecasts);
+        });
+
+        turnpointEditViewModel.getCupStylePosition().observe(this, newCupStylePosition -> {
+            if (newCupStylePosition != null){
+                if (lastCupStylePosition != -1 && lastCupStylePosition != newCupStylePosition){
+                    turnpointEditViewModel.setCupStylePosition(newCupStylePosition);
+                }
+            }
+            lastCupStylePosition = newCupStylePosition;
+        });
+
         return  turnpointEditView.getRoot();
 
 

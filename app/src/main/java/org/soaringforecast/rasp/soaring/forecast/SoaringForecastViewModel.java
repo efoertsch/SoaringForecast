@@ -446,7 +446,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
      *
      * @param forecast
      */
-    private void setSelected(Forecast forecast) {
+    private void setSelectedForecast(Forecast forecast) {
         selectedForecast.setValue(forecast);
         loadRaspImages();
     }
@@ -457,7 +457,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     void setForecastPosition(int newForecastPosition) {
         forecastPosition.setValue(newForecastPosition);
-        setSelected(forecasts.getValue().get(newForecastPosition));
+        setSelectedForecast(forecasts.getValue().get(newForecastPosition));
     }
 
     /**

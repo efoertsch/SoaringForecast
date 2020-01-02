@@ -340,5 +340,8 @@
     <string name="turnpoint_longitude_error">Longitude must be of form DDDMM.SSSW(E)</string>
     <string name="edit_turnpoints">Edit Turnpoints</string>
     <string name="elevation_error">Elevation must be number followed by m or ft.</string>
+    <string name="direction_error">3 digit direction from  000 - 360.</string>
+    <string name="runway_length_error">Format nnnn.n(ft|m)</string>
+    <string name="frequency_format_errror">Must be in format of nnn.nnn (last digit 0 or 5)</string>
 
 </resources>
