@@ -20,8 +20,8 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
-import org.soaringforecast.rasp.turnpointview.IAmDone;
-import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
+import org.soaringforecast.rasp.turnpoints.turnpointview.IAmDone;
+import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 
 import dagger.android.support.DaggerAppCompatActivity;
 

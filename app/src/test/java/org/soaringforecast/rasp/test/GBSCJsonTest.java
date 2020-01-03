@@ -7,7 +7,7 @@ import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.LoggingInterceptor;
 import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
 import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
-import org.soaringforecast.rasp.task.json.TurnpointRegions;
+import org.soaringforecast.rasp.turnpoints.json.TurnpointRegions;
 
 import io.reactivex.Single;
 import retrofit2.Retrofit;

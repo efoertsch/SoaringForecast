@@ -18,11 +18,11 @@ import org.soaringforecast.rasp.task.messages.EditTurnpoint;
 import org.soaringforecast.rasp.task.messages.GoToDownloadImport;
 import org.soaringforecast.rasp.task.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
-import org.soaringforecast.rasp.task.search.TurnpointSearchForEditFragment;
-import org.soaringforecast.rasp.task.search.TurnpointSearchForTaskFragment;
-import org.soaringforecast.rasp.task.turnpoints.download.TurnpointsDownloadFragment;
-import org.soaringforecast.rasp.task.turnpoints.seeyou.SeeYouImportFragment;
-import org.soaringforecast.rasp.turnpoint.TurnpointEditFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
+import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
+import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
+import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 
 import java.util.List;
 

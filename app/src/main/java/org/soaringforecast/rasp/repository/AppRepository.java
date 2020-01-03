@@ -32,7 +32,7 @@ import org.soaringforecast.rasp.soaring.json.Forecasts;
 import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.soaring.json.SUARegion;
 import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
-import org.soaringforecast.rasp.turnpoint.cup.CupStyles;
+import org.soaringforecast.rasp.turnpoints.cup.CupStyles;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.JSONResourceReader;
 import org.soaringforecast.rasp.utils.StringUtils;

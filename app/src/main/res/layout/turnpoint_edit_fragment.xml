@@ -8,11 +8,11 @@
 
         <variable
             name="viewModel"
-            type="org.soaringforecast.rasp.turnpoint.TurnpointEditViewModel" />
+            type="org.soaringforecast.rasp.turnpoints.edit.TurnpointEditViewModel" />
 
         <variable
             name="spinAdapterCupStyle"
-            type="org.soaringforecast.rasp.turnpoint.CupStyleAdapter" />
+            type="org.soaringforecast.rasp.turnpoints.edit.CupStyleAdapter" />
     </data>
 
     <android.support.constraint.ConstraintLayout

@@ -37,8 +37,8 @@ import org.soaringforecast.rasp.satellite.SatelliteActivity;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.task.TaskActivity;
-import org.soaringforecast.rasp.turnpointview.IAmDone;
-import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
+import org.soaringforecast.rasp.turnpoints.turnpointview.IAmDone;
+import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 import org.soaringforecast.rasp.windy.WindyActivity;
 

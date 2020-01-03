@@ -1,6 +1,6 @@
 package org.soaringforecast.rasp.task.messages;
 
-import org.soaringforecast.rasp.task.json.TurnpointFile;
+import org.soaringforecast.rasp.turnpoints.json.TurnpointFile;
 
 public class ImportSeeYouFile {
 

@@ -55,7 +55,7 @@
         </activity>
 
         <activity
-            android:name="org.soaringforecast.rasp.turnpoint.TurnpointActivity"
+            android:name=".turnpoints.edit.TurnpointActivity"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data

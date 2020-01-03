@@ -1,7 +1,7 @@
 package org.soaringforecast.rasp.retrofit;
 
 import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
-import org.soaringforecast.rasp.task.json.TurnpointRegions;
+import org.soaringforecast.rasp.turnpoints.json.TurnpointRegions;
 
 import io.reactivex.Single;
 import okhttp3.ResponseBody;

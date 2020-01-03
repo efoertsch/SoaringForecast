@@ -17,12 +17,12 @@ import org.soaringforecast.rasp.soaring.forecast.SoaringForecastFragment;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
-import org.soaringforecast.rasp.task.search.TurnpointSearchForEditFragment;
-import org.soaringforecast.rasp.task.search.TurnpointSearchForTaskFragment;
-import org.soaringforecast.rasp.task.turnpoints.download.TurnpointsDownloadFragment;
-import org.soaringforecast.rasp.task.turnpoints.seeyou.SeeYouImportFragment;
-import org.soaringforecast.rasp.turnpoint.TurnpointEditFragment;
-import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
+import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
+import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
+import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
+import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.windy.WindyActivity;
 import org.soaringforecast.rasp.windy.WindyFragment;
 
