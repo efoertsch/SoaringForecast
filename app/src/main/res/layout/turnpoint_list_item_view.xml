@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="TurnpointSearchView">
+    <data class="TurnpointListView">
 
         <variable
             name="position"
@@ -30,7 +30,7 @@
     </data>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/turnpoint_search_layout"
+        android:id="@+id/turnpoint_list_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
@@ -38,7 +38,7 @@
 
         <ImageView
             android:contentDescription="@string/action_satellite_images"
-            android:id="@+id/turnpoint_search_satellite_image"
+            android:id="@+id/turnpoint_list_satellite_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -51,19 +51,19 @@
             android:src="@{turnpointBitmapUtils.getDrawableTurnpointImage(context, turnpoint)}"/>
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/turnpoint_search_text_layout"
+            android:id="@+id/turnpoint_list_text_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
             android:onClick="@{()->clickListener.onItemClick(turnpoint, position)}"
-            app:layout_constraintLeft_toRightOf="@id/turnpoint_search_satellite_image"
+            app:layout_constraintLeft_toRightOf="@id/turnpoint_list_satellite_image"
             app:layout_constraintTop_toTopOf="parent"
             >
 
             <TextView
-                android:id="@+id/turnpoint_search_code"
+                android:id="@+id/turnpoint_list_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_half"
@@ -76,7 +76,7 @@
                 tools:text="3B3"/>
 
             <TextView
-                android:id="@+id/turnpoint_search_title"
+                android:id="@+id/turnpoint_list_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_half"
@@ -84,7 +84,7 @@
                 android:padding="@dimen/margin_half"
                 android:text="@{turnpoint.getTitle}"
                 android:textAllCaps="true"
-                app:layout_constraintStart_toEndOf="@+id/turnpoint_search_code"
+                app:layout_constraintStart_toEndOf="@+id/turnpoint_list_code"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Sterling"/>
 
@@ -96,11 +96,9 @@
                 android:layout_marginBottom="@dimen/margin_standard"
                 android:text="@{turnpoint.getStyleName()}"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/turnpoint_search_code"
+                app:layout_constraintTop_toBottomOf="@+id/turnpoint_list_code"
                 tools:text="small airport"/>
         </android.support.constraint.ConstraintLayout>
-
-
 
     </android.support.constraint.ConstraintLayout>
 

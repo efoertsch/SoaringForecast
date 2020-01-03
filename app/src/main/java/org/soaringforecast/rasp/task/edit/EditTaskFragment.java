@@ -27,7 +27,7 @@ import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
-import org.soaringforecast.rasp.task.messages.AddTurnpointsToTask;
+import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.touchhelper.OnStartDragListener;
 import org.soaringforecast.rasp.touchhelper.SimpleItemTouchHelperCallback;
 import org.soaringforecast.rasp.utils.ViewUtilities;

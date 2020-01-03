@@ -8,10 +8,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import org.greenrobot.eventbus.EventBus;
-import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.repository.Turnpoint;
-import org.soaringforecast.rasp.task.messages.EditTurnpoint;
+import org.soaringforecast.rasp.turnpoints.messages.EditTurnpoint;
 
 public class TurnpointSearchForEditFragment extends TurnpointSearchFragment {
 
@@ -28,7 +27,6 @@ public class TurnpointSearchForEditFragment extends TurnpointSearchFragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -36,15 +34,9 @@ public class TurnpointSearchForEditFragment extends TurnpointSearchFragment {
                              Bundle savedInstanceState) {
 
         View view = super.onCreateView(inflater,container, savedInstanceState);
-        turnpointSearchListAdapter.setOnItemClickListener(turnpointTextClickListener);
+        turnpointListAdapter.setOnItemClickListener(turnpointTextClickListener);
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().setTitle(R.string.add_turnpoints);
-        checkForAtLeastOneTurnpoint();
-    }
 
 }

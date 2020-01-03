@@ -37,6 +37,7 @@ import org.soaringforecast.rasp.satellite.SatelliteActivity;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.task.TaskActivity;
+import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
 import org.soaringforecast.rasp.turnpoints.turnpointview.IAmDone;
 import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.utils.ViewUtilities;
@@ -178,15 +179,13 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_airport_list:
                 displayAirportListFragment();
                 break;
-            case R.id.nav_menu_task_list:
+            case R.id.nav_menu_tasks:
                 displayTaskList();
                 break;
-            case R.id.nav_menu_import_turnpoints:
-                displayTurnpointsImport();
+            case R.id.nav_menu_turnpoints:
+                displayTurnpoints();
                 break;
-            case R.id.nav_menu_edit_turnpoint:
-                displayTurnpointEditSearch();
-                break;
+
             case R.id.nav_menu_settings:
                 displaySettingsActivity();
                 break;
@@ -263,14 +262,14 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         startActivity(builder.build(this));
     }
 
-    private void displayTurnpointsImport() {
-        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
-        builder.displayTurnpointImport();
+    private void displayTurnpoints() {
+        TurnpointActivity.Builder builder = TurnpointActivity.Builder.getBuilder();
+        builder.displayTurnpoints();
         startActivity(builder.build(this));
     }
 
     private void displayTurnpointEditSearch(){
-        TaskActivity.Builder builder = TaskActivity.Builder.getBuilder();
+        TurnpointActivity.Builder builder = TurnpointActivity.Builder.getBuilder();
         builder.displayTurnpointEditSearch();
         startActivity(builder.build(this));
     }

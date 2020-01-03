@@ -19,7 +19,6 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
 
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
 
-
     private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
         TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
         taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
@@ -32,7 +31,6 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
         // Shared with EditTaskFragment and
         // should already be 'initialized' with AppRepository, taskId, ... before getting here
         taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -41,7 +39,7 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
 
         View view = super.onCreateView(inflater,container, savedInstanceState);
 
-        turnpointSearchListAdapter.setOnItemClickListener(turnpointTextClickListener);
+        turnpointListAdapter.setOnItemClickListener(turnpointTextClickListener);
         return view;
     }
 
@@ -49,7 +47,6 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.add_turnpoints);
-        checkForAtLeastOneTurnpoint();
     }
 
 }

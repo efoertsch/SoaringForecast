@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.turnpoints.search;
+package org.soaringforecast.rasp.turnpoints.list;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -21,18 +21,18 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class TurnpointSearchViewModel extends ObservableViewModel {
+public class TurnpointListViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
     private MutableLiveData<List<Turnpoint>> turnpoints = new MutableLiveData<>();
-    private MutableLiveData<Integer> numberSearchableTurnpoints = new MutableLiveData<>();
+    private MutableLiveData<Integer> numberTurnpoints = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public TurnpointSearchViewModel (@NonNull Application application) {
+    public TurnpointListViewModel(@NonNull Application application) {
         super(application);
     }
 
-    public TurnpointSearchViewModel  setAppRepository(AppRepository appRepository) {
+    public TurnpointListViewModel setAppRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
         return this;
     }
@@ -52,19 +52,19 @@ public class TurnpointSearchViewModel extends ObservableViewModel {
         return turnpoints;
     }
 
-    public MutableLiveData<Integer> getNumberOfSearchableTurnpoints() {
-        if (numberSearchableTurnpoints.getValue() == null || numberSearchableTurnpoints.getValue() == 0) {
-            getTotalSearchableTurnpoints();
+    public MutableLiveData<Integer> getNumberOfTurnpoints() {
+        if (numberTurnpoints.getValue() == null || numberTurnpoints.getValue() == 0) {
+            getTotalNumberOfTurnpoints();
         }
-        return numberSearchableTurnpoints;
+        return numberTurnpoints;
 
     }
 
     @SuppressLint("CheckResult")
-    private void getTotalSearchableTurnpoints() {
+    private void getTotalNumberOfTurnpoints() {
         Disposable disposable = appRepository.getCountOfTurnpoints()
                 .subscribe(count -> {
-                            numberSearchableTurnpoints.setValue(count);
+                            numberTurnpoints.setValue(count);
                         }
                         , throwable -> {
                             //TODO

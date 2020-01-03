@@ -12,17 +12,10 @@ import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
-import org.soaringforecast.rasp.task.messages.AddTurnpointsToTask;
+import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.task.messages.EditTask;
-import org.soaringforecast.rasp.task.messages.EditTurnpoint;
-import org.soaringforecast.rasp.task.messages.GoToDownloadImport;
-import org.soaringforecast.rasp.task.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
-import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
-import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
-import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
-import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 
 import java.util.List;
 
@@ -52,10 +45,6 @@ public class TaskActivity extends MasterActivity {
             switch (turnpointOp) {
                 case LIST_TASKS:
                     return getTaskListFragment();
-                case TURNPOINT_IMPORT:
-                    return getSeeYouImportFragment();
-                case TURNPOINT_EDIT_SEARCH:
-                    return getTurnpointSearchForEditFragment();
                 default:
                     return getTaskListFragment();
             }
@@ -77,25 +66,9 @@ public class TaskActivity extends MasterActivity {
         super.onBackPressed();
     }
 
-    private Fragment getSeeYouImportFragment() {
-        return SeeYouImportFragment.newInstance();
-    }
-
-    private Fragment getTurnpointSearchForEditFragment(){
-        return TurnpointSearchForEditFragment.newInstance();
-    }
-
-    private Fragment getTurnpointsDownloadFragment() {
-        return new TurnpointsDownloadFragment();
-    }
-
     private Fragment getTaskListFragment() {
         enableClickTask =  getIntent().getExtras().getBoolean(ENABLE_CLICK_TASK);
         return  new TaskListFragment();
-    }
-
-    private Fragment getTurnpointEditFragment(long turnpointId) {
-        return  TurnpointEditFragment.newInstance(turnpointId);
     }
 
     // Bus messages
@@ -109,22 +82,6 @@ public class TaskActivity extends MasterActivity {
     public void onMessageEvent(AddTurnpointsToTask event) {
         displayFragment(new TurnpointSearchForTaskFragment(), true,true);
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoToTurnpointImport event) {
-        displayFragment(getSeeYouImportFragment(),true,true);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoToDownloadImport event) {
-        displayFragment(getTurnpointsDownloadFragment(), true,true);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(EditTurnpoint event){
-        displayFragment(getTurnpointEditFragment(event.getTurnpointId()), false, true);
-    }
-
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -160,17 +117,6 @@ public class TaskActivity extends MasterActivity {
             bundle.putBoolean(ENABLE_CLICK_TASK, enableClickTask);
             return this;
         }
-
-        public Builder displayTurnpointEditSearch() {
-            bundle.putString(TURNPOINT_OP, TURNPOINT_EDIT_SEARCH);
-            return this;
-        }
-
-        public Builder displayTurnpointImport() {
-            bundle.putString(TURNPOINT_OP, TURNPOINT_IMPORT);
-            return this;
-        }
-
 
         public Intent build(Context context) {
             Intent intent = new Intent(context, TaskActivity.class);

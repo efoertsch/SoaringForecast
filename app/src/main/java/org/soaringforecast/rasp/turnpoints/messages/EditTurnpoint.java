@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.task.messages;
+package org.soaringforecast.rasp.turnpoints.messages;
 
 public class EditTurnpoint {
     final long turnpointId;

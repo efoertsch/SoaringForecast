@@ -1,14 +1,14 @@
-package org.soaringforecast.rasp.turnpoints.search;
+package org.soaringforecast.rasp.turnpoints.list;
 
 import org.soaringforecast.rasp.common.recycleradapter.GenericViewHolder;
-import org.soaringforecast.rasp.databinding.TurnpointSearchView;
+import org.soaringforecast.rasp.databinding.TurnpointListView;
 import org.soaringforecast.rasp.repository.Turnpoint;
 
-public class TurnpointSearchViewHolder extends GenericViewHolder<Turnpoint, TurnpointSearchView> {
+public class TurnpointListViewHolder extends GenericViewHolder<Turnpoint, TurnpointListView> {
 
-    private TurnpointSearchView viewDataBinding;
+    private TurnpointListView viewDataBinding;
 
-    TurnpointSearchViewHolder(TurnpointSearchView bindingView) {
+    TurnpointListViewHolder(TurnpointListView bindingView) {
         super(bindingView);
         viewDataBinding = bindingView;
     }
@@ -19,7 +19,7 @@ public class TurnpointSearchViewHolder extends GenericViewHolder<Turnpoint, Turn
     }
 
     @Override
-    public TurnpointSearchView getViewDataBinding() {
+    public TurnpointListView getViewDataBinding() {
         return viewDataBinding;
     }
 

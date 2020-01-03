@@ -345,5 +345,6 @@
     <string name="frequency_format_errror">Must be in format of nnn.nnn (last digit 0 or 5)</string>
     <string name="turnpoint_cup_style_type">Turnpoint Type</string>
     <string name="turnpoint_type">Turnpoint type</string>
+    <string name="search_turnpoints">Search Turnpoints</string>
 
 </resources>
