@@ -32,6 +32,7 @@ import org.soaringforecast.rasp.soaring.json.Forecasts;
 import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.soaring.json.SUARegion;
 import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
+import org.soaringforecast.rasp.turnpoints.cup.CupStyles;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.JSONResourceReader;
 import org.soaringforecast.rasp.utils.StringUtils;
@@ -443,7 +444,19 @@ public class AppRepository implements CacheTimeListener {
     }
 
     // --------- Turnpoints -----------------
-    public long insertTurnpoint(Turnpoint turnpoint) {
+    public Single<Long> insertTurnpoint(Turnpoint turnpoint) {
+        return Single.create(emitter -> {
+            try {
+                Long id = turnpointDao.insert(turnpoint);
+                emitter.onSuccess(id);
+            } catch (Exception e) {
+                emitter.onError(e);
+                Timber.e(e);
+            }
+        });
+    }
+
+    public long insertTurnpointViaViaBackground(Turnpoint turnpoint) {
         return turnpointDao.insert(turnpoint);
     }
 
@@ -463,6 +476,22 @@ public class AppRepository implements CacheTimeListener {
         return turnpointDao.getTurnpoint(title, code);
     }
 
+    public Maybe<Turnpoint> getTurnpoint(long turnpointId) {
+        return turnpointDao.getTurnpoint(turnpointId);
+    }
+    public Single<Integer> deleteTurnpoint(long turnpointId) {
+        return Single.create((SingleOnSubscribe<Integer>) emitter -> {
+            try {int numberDeleted = turnpointDao.deleteTurnpoint(turnpointId);
+                emitter.onSuccess(numberDeleted);
+            } catch (Throwable t) {
+                emitter.onError(t);
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+
     public Single<Integer> deleteAllTurnpoints() {
         return Single.create((SingleOnSubscribe<Integer>) emitter -> {
             try {
@@ -475,6 +504,8 @@ public class AppRepository implements CacheTimeListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }
+
+
 
     public Single<Integer> getCountOfTurnpoints() {
         return turnpointDao.getTurnpointCount().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -886,6 +917,20 @@ public class AppRepository implements CacheTimeListener {
 
     public Call<TafResponse> getMostRecentTafForEachAirport(String icaoIdentifiers,  int hoursBeforeNow){
             return aviationWeatherGovApi.getMostRecentTafForEachAirport(icaoIdentifiers, hoursBeforeNow);
+    }
+
+
+    // -------------------- Cup Turnpoint Styles ------------------------
+
+    public Single<CupStyles> getCupStyles() {
+        return Single.create(emitter -> {
+            try {
+                CupStyles cupStyles = (new JSONResourceReader(context.getResources(), R.raw.turnpoint_style_json)).constructUsingGson(CupStyles.class);
+                emitter.onSuccess(cupStyles);
+            } catch (JsonSyntaxException jse) {
+                emitter.onError(jse);
+            }
+        });
     }
 
 

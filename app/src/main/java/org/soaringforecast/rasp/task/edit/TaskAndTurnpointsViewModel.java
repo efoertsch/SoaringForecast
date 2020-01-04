@@ -8,15 +8,13 @@ import android.databinding.Bindable;
 import android.location.Location;
 import android.support.annotation.NonNull;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.ObservableViewModel;
-import org.soaringforecast.rasp.repository.messages.DataBaseError;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Task;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
-import org.soaringforecast.rasp.repository.Turnpoint;
-
-import org.greenrobot.eventbus.EventBus;
+import org.soaringforecast.rasp.repository.messages.DataBaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class TaskAndTurnpointsViewModel extends ObservableViewModel {
 
@@ -34,8 +31,6 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
     private Task task = null;
     private List<TaskTurnpoint> deletedTaskTurnpoints = new ArrayList<>();
     private MutableLiveData<List<TaskTurnpoint>> taskTurnpoints = new MutableLiveData<>();
-    private MutableLiveData<List<Turnpoint>> turnpoints = new MutableLiveData<>();
-    private MutableLiveData<Integer> numberSearchableTurnpoints = new MutableLiveData<>();
     private MutableLiveData<Boolean> needToSaveUpdates = new MutableLiveData<>();
     private MutableLiveData<Float> taskDistance = new MutableLiveData<>();
     private boolean retrievedTask = false;
@@ -227,20 +222,7 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         needToSaveUpdates.setValue(true);
     }
 
-    @SuppressLint("CheckResult")
-    public LiveData<List<Turnpoint>> searchTurnpoints(String search) {
-        Disposable disposable = appRepository.findTurnpoints("%" + search + "%")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(turnpointList -> {
-                            turnpoints.setValue(turnpointList);
-                        },
-                        t -> {
-                            EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_searching_turnpoints), t));
-                        });
-        compositeDisposable.add(disposable);
-        return turnpoints;
-    }
+
 
     public void addTaskTurnpoint(TaskTurnpoint taskTurnpoint) {
         taskTurnpoints.getValue().add(taskTurnpoint);
@@ -295,28 +277,6 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         }
     }
 
-    public MutableLiveData<Integer> getNumberOfSearchableTurnpoints() {
-        if (numberSearchableTurnpoints.getValue() == null || numberSearchableTurnpoints.getValue() == 0) {
-            getTotalSearchableTurnpoints();
-        }
-        return numberSearchableTurnpoints;
-
-    }
-
-    @SuppressLint("CheckResult")
-    private void getTotalSearchableTurnpoints() {
-        Disposable disposable = appRepository.getCountOfTurnpoints()
-                .subscribe(count -> {
-                            numberSearchableTurnpoints.setValue(count);
-                        }
-                        , throwable -> {
-                            //TODO
-                            Timber.e(throwable);
-                            EventBus.getDefault().post(new DataBaseError(getApplication().getString(R.string.error_getting_number_of_turnpoints), throwable));
-                        });
-        compositeDisposable.add(disposable);
-
-    }
 
     public MutableLiveData<Boolean> getNeedToSaveUpdates() {
         return needToSaveUpdates;

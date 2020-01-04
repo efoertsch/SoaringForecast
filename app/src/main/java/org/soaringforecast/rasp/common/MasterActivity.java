@@ -1,5 +1,6 @@
 package org.soaringforecast.rasp.common;
 
+import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -18,8 +20,8 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
-import org.soaringforecast.rasp.turnpointview.IAmDone;
-import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
+import org.soaringforecast.rasp.turnpoints.turnpointview.IAmDone;
+import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
@@ -121,6 +123,8 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
     public void showSnackBarMessage(String message, int duration) {
+        InputMethodManager imm = (InputMethodManager) getBaseContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
         Snackbar.make(rootView, message, duration).show();
     }
 

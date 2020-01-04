@@ -22,6 +22,8 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -94,6 +96,8 @@ dependencies {
     final ARCH_LIFE_CYCLE_VERSION = '1.1.1'
     final work_version = "1.0.0-alpha10"
     final EASYPERMISSIONS = "2.0.1"
+    final GOOGLE_PLACES = "2.1.0"
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Android compat/support libraries
@@ -105,6 +109,8 @@ dependencies {
     implementation "com.android.support:preference-v7:$SUPPORT_LIBRARY_VERSION"
     implementation "com.android.support.constraint:constraint-layout:$CONSTRAINT_LIBRARY_VERSION"
     implementation "com.google.android.gms:play-services-maps:$GOOGLE_MAPS_VERSION"
+
+    implementation 'com.android.support:multidex:1.0.3'
 
     // Bus
     implementation "org.greenrobot:eventbus:$EVENT_BUS"
@@ -168,6 +174,9 @@ dependencies {
 
     //Check/request/get permission for access to Downloads directory for custom turnpoint import
     implementation "pub.devrel:easypermissions:$EASYPERMISSIONS"
+
+    // Need for getting current location for new turnpoint but need convert to androidx.
+    //implementation "com.google.android.libraries.places:places:$GOOGLE_PLACES"
 
     // Lifecycle components
     implementation "android.arch.lifecycle:extensions:$ARCH_LIFE_CYCLE_VERSION"

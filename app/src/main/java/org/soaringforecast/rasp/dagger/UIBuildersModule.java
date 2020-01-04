@@ -17,10 +17,14 @@ import org.soaringforecast.rasp.soaring.forecast.SoaringForecastFragment;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
-import org.soaringforecast.rasp.task.search.TurnpointSearchFragment;
-import org.soaringforecast.rasp.task.turnpoints.download.TurnpointsDownloadFragment;
-import org.soaringforecast.rasp.task.turnpoints.seeyou.SeeYouImportFragment;
-import org.soaringforecast.rasp.turnpointview.TurnpointSatelliteViewFragment;
+import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
+import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
+import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
+import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
+import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
+import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.windy.WindyActivity;
 import org.soaringforecast.rasp.windy.WindyFragment;
 
@@ -61,7 +65,7 @@ public abstract class UIBuildersModule {
     abstract AirportSearchFragment bindAirportSearchFragment();
 
 
-    // ---- Task/Turnpoints ----
+    // ---- Task ----
     @ContributesAndroidInjector(modules = {})
     abstract TaskActivity bindTaskActivity();
 
@@ -71,8 +75,21 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract TaskListFragment bindTaskListFragment();
 
+    // ---- Turnpoints ----
     @ContributesAndroidInjector(modules = {})
-    abstract TurnpointSearchFragment bindTurnpointSearchFragment();
+    abstract TurnpointActivity bindTurnpointActivity();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointListFragment bindTurnpointListFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointSearchForTaskFragment bindTurnpointSearchForTaskFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointSearchForEditFragment bindTurnpointSearchForEditFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointEditFragment bindTurnpointEditFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract SeeYouImportFragment bindSeeYouImportFragment();
@@ -108,9 +125,6 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract AboutFragment bindAboutFragment();
-
-
-
 
 
 

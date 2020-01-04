@@ -6,7 +6,7 @@
 
         <variable
             name="turnpointsImporterViewModel"
-            type="org.soaringforecast.rasp.task.turnpoints.download.TurnpointsImporterViewModel"/>
+            type="org.soaringforecast.rasp.turnpoints.download.TurnpointsImporterViewModel"/>
 
     </data>
 

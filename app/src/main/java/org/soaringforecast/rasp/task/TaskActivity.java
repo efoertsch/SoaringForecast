@@ -5,22 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.common.MasterActivity;
-import org.soaringforecast.rasp.task.messages.AddTurnpointsToTask;
-import org.soaringforecast.rasp.task.messages.EditTask;
-import org.soaringforecast.rasp.task.messages.GoToDownloadImport;
-import org.soaringforecast.rasp.task.messages.GoToTurnpointImport;
-import org.soaringforecast.rasp.task.messages.SelectedTask;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
-import org.soaringforecast.rasp.task.search.TurnpointSearchFragment;
-import org.soaringforecast.rasp.task.turnpoints.download.TurnpointsDownloadFragment;
-import org.soaringforecast.rasp.task.turnpoints.seeyou.SeeYouImportFragment;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
+import org.soaringforecast.rasp.task.messages.EditTask;
+import org.soaringforecast.rasp.task.messages.SelectedTask;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
 
 import java.util.List;
 
@@ -33,9 +28,8 @@ public class TaskActivity extends MasterActivity {
     private static final String TURNPOINT_OP = "TURNPOINT_OP";
     private static final String TURNPOINT_SEARCH = "TURNPOINT_SEARCH";
     private static final String LIST_TASKS = "LIST_TASKS";
-    private static final String TASK_NAME = "TASK_NAME";
-    private static final String TASK_ID = "TASK_ID";
     private static final String ENABLE_CLICK_TASK = "ENABLE_CLICK_TASK";
+    private static final String TURNPOINT_EDIT_SEARCH = "TURNPOINT_EDIT_SEARCH";
 
     private boolean enableClickTask = false;
 
@@ -51,8 +45,6 @@ public class TaskActivity extends MasterActivity {
             switch (turnpointOp) {
                 case LIST_TASKS:
                     return getTaskListFragment();
-                case TURNPOINT_IMPORT:
-                    return getSeeYouImportFragment();
                 default:
                     return getTaskListFragment();
             }
@@ -74,14 +66,6 @@ public class TaskActivity extends MasterActivity {
         super.onBackPressed();
     }
 
-    private Fragment getSeeYouImportFragment() {
-        return SeeYouImportFragment.newInstance();
-    }
-
-    private Fragment getTurnpointsDownloadFragment() {
-        return new TurnpointsDownloadFragment();
-    }
-
     private Fragment getTaskListFragment() {
         enableClickTask =  getIntent().getExtras().getBoolean(ENABLE_CLICK_TASK);
         return  new TaskListFragment();
@@ -96,18 +80,9 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        displayFragment(new TurnpointSearchFragment(), true,true);
+        displayFragment(TurnpointSearchForTaskFragment.newInstance(), true,true);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoToTurnpointImport event) {
-        displayFragment(getSeeYouImportFragment(),true,true);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoToDownloadImport event) {
-        displayFragment(getTurnpointsDownloadFragment(), true,true);
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SelectedTask selectedTask){
@@ -122,6 +97,7 @@ public class TaskActivity extends MasterActivity {
     }
 
     public static class Builder {
+
         private Bundle bundle;
 
         private Builder() {
@@ -139,31 +115,6 @@ public class TaskActivity extends MasterActivity {
 
         public Builder enableClickTask(boolean enableClickTask){
             bundle.putBoolean(ENABLE_CLICK_TASK, enableClickTask);
-            return this;
-        }
-
-        public Builder displayTurnpointSearch() {
-            bundle.putString(TURNPOINT_OP, TURNPOINT_SEARCH);
-            return this;
-        }
-
-        public Builder displayTurnpointImport() {
-            bundle.putString(TURNPOINT_OP, TURNPOINT_IMPORT);
-            return this;
-        }
-
-        public Builder displayCreateTask() {
-            bundle.putString(TURNPOINT_OP, CREATE_TASK);
-            return this;
-        }
-
-        public Builder displayEditTask() {
-            bundle.putString(TURNPOINT_OP, EDIT_TASK);
-            return this;
-        }
-
-        public Builder editTask(String taskName) {
-            bundle.putString(TASK_NAME, taskName);
             return this;
         }
 
