@@ -359,5 +359,7 @@
     <string name="turnpoint_delete_really_sure_times_two">You really sure? Somewhen went through a lot of trouble to create this point!</string>
     <string name="turnpoint_deleted">Turnpoint Deleted</string>
     <string name="turnpoint_delete_error">Oh-oh! Error occurred trying to delete turnpoint.</string>
+    <string name="rational_find_current_location">Permission is needed to find you current location to fill in turnpoint lat/long</string>
+    <string name="no_permission_to_use_gps_to_get_current_location">Permission to use GPS was denied. Can not find current location.</string>
 
 </resources>
