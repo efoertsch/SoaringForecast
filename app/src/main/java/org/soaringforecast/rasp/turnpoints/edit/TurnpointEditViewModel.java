@@ -18,6 +18,7 @@ import org.soaringforecast.rasp.turnpoints.cup.CupStyle;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -55,13 +56,13 @@ public class TurnpointEditViewModel extends ObservableViewModel {
 
     private MutableLiveData<List<CupStyle>> cupStyles = new MutableLiveData<>();
     private MutableLiveData<Integer> cupStylePosition = new MutableLiveData<>();
-    private MutableLiveData<Boolean> needToSave = new MutableLiveData<>();
+    private MutableLiveData<Boolean> okToSave = new MutableLiveData<>();
 
     // Handy site for regex development/testing https://www.debuggex.com/
     private static final String latitudeCupRegex = "(9000\\.000|[0-8][0-9][0-5][0-9]\\.[0-9]{3})[NS]";
     private static final String longitudeCupRegex = "(18000\\.000|(([0-1][0-7])|([0][0-9]))[0-9][0-5][0-9]\\.[0-9]{3})[EW]";
     private static final String elevationRegex = "([0-9]{1,4}(\\.[0-9])?|(\\.[0-9]))(m|ft)";
-    private static final String directionRegex = "(?:360|(3[0-5][0-9])|([12][0-9][0-9])|(0[0-9][0-9]))";
+    private static final String directionRegex = "(360|(3[0-5][0-9])|([12][0-9][0-9])|(0[0-9][0-9]))";
     private static final String lengthRegex = "([0-9]{1,5}(\\.[0-9])?|(\\.[0-9]))(m|ft)";
     private static final String frequencyRegex = "1[1-3][0-9]\\.[0-9][0-9](0|5)";
     private static final Pattern longitudeCupPattern = Pattern.compile(longitudeCupRegex);
@@ -131,10 +132,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempTitle = value;
         if (value == null || value.isEmpty()) {
             titleErrorText = getApplication().getString(R.string.turnpoint_title_error_msg);
-            setSaveIndicator(false);
+            setSaveIndicator();
         } else {
             titleErrorText = null;
-            setSaveIndicator(true);
+            setSaveIndicator();
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.titleErrorText);
     }
@@ -150,10 +151,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempCode = value;
         if (value == null || value.isEmpty()) {
             codeErrorText = getApplication().getString(R.string.turnpoint_code_error_msg);
-            setSaveIndicator(false);
+            setSaveIndicator();
         } else {
             codeErrorText = null;
-            setSaveIndicator(true);
+            setSaveIndicator();
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.codeErrorText);
     }
@@ -166,7 +167,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setCountry(String value) {
         tempCountry = value;
-        setSaveIndicator(true);
+        setSaveIndicator();
     }
 
     @Bindable
@@ -180,16 +181,16 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         try {
             if (latitudeCupPattern.matcher(value).matches()) {
                 latitudeErrorText = null;
-                setSaveIndicator(true);
+                setSaveIndicator();
             } else {
                 latitudeErrorText = getApplication().getString(R.string.turnpoint_latitude_error);
-                setSaveIndicator(false);
+                setSaveIndicator();
             }
         } catch (Exception e) {
             latitudeErrorText = getApplication().getString(R.string.turnpoint_latitude_error);
-            setSaveIndicator(false);
+            setSaveIndicator();
         }
-       notifyPropertyChanged(org.soaringforecast.rasp.BR.latitudeErrorText);
+        notifyPropertyChanged(org.soaringforecast.rasp.BR.latitudeErrorText);
     }
 
     @Bindable
@@ -203,14 +204,14 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         try {
             if (longitudeCupPattern.matcher(value).matches()) {
                 longitudeErrorText = null;
-                setSaveIndicator(true);
+                setSaveIndicator();
             } else {
                 longitudeErrorText = getApplication().getString(R.string.turnpoint_longitude_error);
-                setSaveIndicator(false);
+                setSaveIndicator();
             }
         } catch (Exception e) {
             longitudeErrorText = getApplication().getString(R.string.turnpoint_longitude_error);
-            setSaveIndicator(false);
+            setSaveIndicator();
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.longitudeErrorText);
 
@@ -226,10 +227,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempElevation = value;
         if (elevationPattern.matcher(value).matches()) {
             elevationErrorText = null;
-            setSaveIndicator(true);
+            setSaveIndicator();
         } else {
             elevationErrorText = getApplication().getString(R.string.elevation_error);
-            setSaveIndicator(false);
+            setSaveIndicator();
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.elevationErrorText);
     }
@@ -252,12 +253,13 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setDirection(String value) {
         tempDirection = value;
-        if (directionPattern.matcher(value).matches()) {
+        if ((value.isEmpty() && !isLandable()) ||
+                (value.length() == 3 && isLandable() && directionPattern.matcher(value).matches())) {
             directionErrorText = null;
-            setSaveIndicator(true);
+            setSaveIndicator();
         } else {
             directionErrorText = getApplication().getString(R.string.direction_error);
-            setSaveIndicator(false);
+            setSaveIndicator();
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.directionErrorText);
     }
@@ -271,12 +273,14 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setLength(String value) {
         tempLength = value;
-        if (lengthPattern.matcher(value).matches()) {
+        if ((value.isEmpty() && !isLandable())
+                || (isLandable() && lengthPattern.matcher(value).matches()
+                && (value.endsWith("ft") || value.equals("m")))) {
             lengthErrorText = null;
-            setSaveIndicator(true);
+            setSaveIndicator();
         } else {
             lengthErrorText = getApplication().getString(R.string.runway_length_error);
-            setSaveIndicator(false);
+            setSaveIndicator();
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.lengthErrorText);
     }
@@ -289,12 +293,13 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setFrequency(String value) {
         tempFrequency = value;
-        if (frequencyPatten.matcher(value).matches()) {
+        if (value.isEmpty() ||
+                (value.length() == 7 && frequencyPatten.matcher(value).matches())) {
             frequencyErrorText = null;
-            setSaveIndicator(true);
+            setSaveIndicator();
         } else {
             frequencyErrorText = getApplication().getString(R.string.frequency_format_errror);
-            setSaveIndicator(false);
+            setSaveIndicator();
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.frequencyErrorText);
     }
@@ -307,7 +312,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setDescription(String value) {
         tempDescription = value;
-        setSaveIndicator(true);
+        setSaveIndicator();
     }
 
     @Bindable
@@ -401,6 +406,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
 
     }
 
+    private boolean isLandable() {
+        return (tempStyle.matches("[2345]"));
+    }
+
     public void saveTurnpoint() {
         try {
             turnpoint.setTitle(tempTitle);
@@ -414,25 +423,49 @@ public class TurnpointEditViewModel extends ObservableViewModel {
             turnpoint.setFrequency(tempFrequency);
             turnpoint.setStyle(tempStyle);
             turnpoint.setDescription(tempDescription);
-            appRepository.insertTurnpoint(turnpoint);
 
-        } catch (Exception e){
-            // TODO do better error reporting
-            EventBus.getDefault().post(new SnackbarMessage("Oh-oh! Error saving turnpoint."));
+            Disposable disposable = appRepository.insertTurnpoint(turnpoint)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(id -> {
+                                // we are good
+                            },
+                            t -> {
+                                Timber.e(t);
+                                EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.error_in_turnpoint_validation)));
+                            });
+
+            compositeDisposable.add(disposable);
+        } catch (Exception e) {
+            EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.error_saving_turnpoint)));
         }
     }
 
-    public void resetTurnpoint() {
+    void resetTurnpoint() {
         loadTempEditFields();
-        setSaveIndicator(false);
+        setSaveIndicator();
         notifyChange();
     }
 
-    private void setSaveIndicator(boolean save){
-        needToSave.setValue(save);
+    private void setSaveIndicator() {
+        boolean editError = (titleErrorText != null
+                || codeErrorText != null
+                || countryErrorText != null
+                || longitudeErrorText != null
+                || elevationErrorText != null
+                || directionErrorText != null
+                || lengthErrorText != null
+                || frequencyErrorText != null);
+
+        okToSave.setValue(editError);
     }
 
-    public MutableLiveData<Boolean> getNeedToSave() {
-        return needToSave;
+    MutableLiveData<Boolean> getOKToSaveFlag() {
+        return okToSave;
+    }
+
+    public Single<Integer> deleteTurnpoint() {
+      return  appRepository.deleteTurnpoint(turnpoint.getId());
+
     }
 }

@@ -194,7 +194,7 @@ public class TurnpointsImporterViewModel extends ViewModel {
             if (linesRead > 1) {
                 turnpoint = Turnpoint.createTurnpointFromCSVDetail(turnpointLine);
                 if (turnpoint != null) {
-                    appRepository.insertTurnpoint(turnpoint);
+                    appRepository.insertTurnpointViaViaBackground(turnpoint);
                 }
                 numberTurnpoints++;
             }

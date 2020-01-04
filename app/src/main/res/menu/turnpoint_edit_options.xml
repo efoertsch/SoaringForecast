@@ -7,6 +7,9 @@
     <item android:id="@+id/turnpoint_edit_menu_reset"
         android:title="@string/turnpoint_edit_reset"
         app:showAsAction="ifRoom"/>
+    <item android:id="@+id/turnpoint_edit_menu_delete"
+        android:title="@string/turnpoint_edit_delete"
+        app:showAsAction="ifRoom"/>
 
 
 </menu>

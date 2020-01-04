@@ -444,7 +444,19 @@ public class AppRepository implements CacheTimeListener {
     }
 
     // --------- Turnpoints -----------------
-    public long insertTurnpoint(Turnpoint turnpoint) {
+    public Single<Long> insertTurnpoint(Turnpoint turnpoint) {
+        return Single.create(emitter -> {
+            try {
+                Long id = turnpointDao.insert(turnpoint);
+                emitter.onSuccess(id);
+            } catch (Exception e) {
+                emitter.onError(e);
+                Timber.e(e);
+            }
+        });
+    }
+
+    public long insertTurnpointViaViaBackground(Turnpoint turnpoint) {
         return turnpointDao.insert(turnpoint);
     }
 
@@ -467,6 +479,19 @@ public class AppRepository implements CacheTimeListener {
     public Maybe<Turnpoint> getTurnpoint(long turnpointId) {
         return turnpointDao.getTurnpoint(turnpointId);
     }
+    public Single<Integer> deleteTurnpoint(long turnpointId) {
+        return Single.create((SingleOnSubscribe<Integer>) emitter -> {
+            try {int numberDeleted = turnpointDao.deleteTurnpoint(turnpointId);
+                emitter.onSuccess(numberDeleted);
+            } catch (Throwable t) {
+                emitter.onError(t);
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+
     public Single<Integer> deleteAllTurnpoints() {
         return Single.create((SingleOnSubscribe<Integer>) emitter -> {
             try {
@@ -479,6 +504,8 @@ public class AppRepository implements CacheTimeListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }
+
+
 
     public Single<Integer> getCountOfTurnpoints() {
         return turnpointDao.getTurnpointCount().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());

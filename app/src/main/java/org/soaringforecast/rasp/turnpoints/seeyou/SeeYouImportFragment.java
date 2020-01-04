@@ -105,7 +105,7 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
     private void showClearTurnpointsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.turnpoints_no_hyphen)
-                .setMessage(R.string.clearing_turnpoints_information)
+                .setMessage(R.string.turnpoint_delete_all_really_sure)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     clearTurnpointDatabase();
                 })

@@ -17,6 +17,9 @@ public interface TurnpointDao extends BaseDao<Turnpoint> {
     @Query("Delete from turnpoint")
     int deleteAllTurnpoints();
 
+    @Query("Delete from turnpoint where id = :id")
+    int deleteTurnpoint(long id);
+
     @Query("Select * from turnpoint where title like :searchTerm or code like :searchTerm  order by title, code collate nocase")
     Maybe<List<Turnpoint>> findTurnpoints(String searchTerm);
 

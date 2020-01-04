@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,7 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.TurnpointEditView;
 import org.soaringforecast.rasp.repository.AppRepository;
 
@@ -20,6 +24,8 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public class TurnpointEditFragment  extends DaggerFragment {
 
@@ -32,7 +38,8 @@ public class TurnpointEditFragment  extends DaggerFragment {
     private CupStyleAdapter cupStyleAdapter;
 
     private int lastCupStylePosition = -1;
-    private Boolean saveIndicator = false;
+    private Boolean okToSave = false;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public static TurnpointEditFragment  newInstance(long turnpointId) {
         TurnpointEditFragment turnpointEditFragment = new TurnpointEditFragment();
@@ -79,16 +86,12 @@ public class TurnpointEditFragment  extends DaggerFragment {
             lastCupStylePosition = newCupStylePosition;
         });
 
-        turnpointEditViewModel.getNeedToSave().observe(this, saveIndicator -> {
-            updateSaveMenuOption(saveIndicator);
+        turnpointEditViewModel.getOKToSaveFlag().observe(this, okToSave -> {
+            this.okToSave = okToSave;
+            getActivity().invalidateOptionsMenu();
         });
 
         return  turnpointEditView.getRoot();
-    }
-
-    private void updateSaveMenuOption(Boolean saveIndicator) {
-        this.saveIndicator = saveIndicator;
-        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -98,14 +101,20 @@ public class TurnpointEditFragment  extends DaggerFragment {
     }
 
     @Override
+    public void onDestroy(){
+        super.onDestroy();
+        compositeDisposable.dispose();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.turnpoint_edit_options, menu);
         MenuItem saveMenuItem = menu.findItem(R.id.turnpoint_edit_menu_save);
         MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_edit_menu_reset);
-        saveMenuItem.setVisible(saveIndicator);
+        saveMenuItem.setVisible(okToSave);
 
-        if (saveIndicator) {
+        if (okToSave) {
             resetMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         } else {
             resetMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -123,10 +132,56 @@ public class TurnpointEditFragment  extends DaggerFragment {
             case R.id.turnpoint_edit_menu_reset:
                 turnpointEditViewModel.resetTurnpoint();
                 return true;
+            case R.id.turnpoint_edit_menu_delete:
+                checkIfOkToDeleteTurnpoint();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void checkIfOkToDeleteTurnpoint() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.turnpoint_delete)
+                .setMessage(R.string.turnpoint_delete_really_sure)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    okToDeleteOneMoreTime();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+
+    }
+
+    private void okToDeleteOneMoreTime() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.turnpoint_delete)
+                .setMessage(R.string.turnpoint_delete_really_sure_times_two)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    turnpointEditViewModel.deleteTurnpoint();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                        /// Whew! Saved by the bell.
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+    }
+
+    private void  deleteTurnpoint() {
+        Disposable disposable = turnpointEditViewModel.deleteTurnpoint()
+                .subscribe(numberDeleted -> {
+                    if (numberDeleted == 1) {
+                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.turnpoint_deleted)));
+                        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    }
+                    else {
+                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.turnpoint_delete_error)));
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
 
 }
