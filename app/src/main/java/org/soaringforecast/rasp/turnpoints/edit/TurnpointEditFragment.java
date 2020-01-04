@@ -1,21 +1,21 @@
 package org.soaringforecast.rasp.turnpoints.edit;
 
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.databinding.TurnpointEditView;
 import org.soaringforecast.rasp.repository.AppRepository;
-import org.soaringforecast.rasp.turnpoints.cup.CupStyle;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,8 +30,9 @@ public class TurnpointEditFragment  extends DaggerFragment {
     private TurnpointEditView turnpointEditView ;
     private TurnpointEditViewModel turnpointEditViewModel;
     private CupStyleAdapter cupStyleAdapter;
-    private MutableLiveData<List<CupStyle>> cupStyles = new MutableLiveData<>();
+
     private int lastCupStylePosition = -1;
+    private Boolean saveIndicator = false;
 
     public static TurnpointEditFragment  newInstance(long turnpointId) {
         TurnpointEditFragment turnpointEditFragment = new TurnpointEditFragment();
@@ -51,7 +52,6 @@ public class TurnpointEditFragment  extends DaggerFragment {
                 .get(TurnpointEditViewModel.class)
                 .setAppRepository(appRepository)
                 .setTurnpointId(turnpointId);
-
         setHasOptionsMenu(true);
     }
 
@@ -79,8 +79,54 @@ public class TurnpointEditFragment  extends DaggerFragment {
             lastCupStylePosition = newCupStylePosition;
         });
 
-        return  turnpointEditView.getRoot();
+        turnpointEditViewModel.getNeedToSave().observe(this, saveIndicator -> {
+            updateSaveMenuOption(saveIndicator);
+        });
 
+        return  turnpointEditView.getRoot();
+    }
+
+    private void updateSaveMenuOption(Boolean saveIndicator) {
+        this.saveIndicator = saveIndicator;
+        getActivity().invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        getActivity().setTitle(turnpointId <=0 ? R.string.add_new_turnpoint : R.string.edit_turnpoint);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.turnpoint_edit_options, menu);
+        MenuItem saveMenuItem = menu.findItem(R.id.turnpoint_edit_menu_save);
+        MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_edit_menu_reset);
+        saveMenuItem.setVisible(saveIndicator);
+
+        if (saveIndicator) {
+            resetMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        } else {
+            resetMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.turnpoint_edit_menu_save:
+                turnpointEditViewModel.saveTurnpoint();
+                return true;
+            case R.id.turnpoint_edit_menu_reset:
+                turnpointEditViewModel.resetTurnpoint();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 }

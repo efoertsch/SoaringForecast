@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.ObservableViewModel;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
@@ -54,6 +55,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
 
     private MutableLiveData<List<CupStyle>> cupStyles = new MutableLiveData<>();
     private MutableLiveData<Integer> cupStylePosition = new MutableLiveData<>();
+    private MutableLiveData<Boolean> needToSave = new MutableLiveData<>();
 
     // Handy site for regex development/testing https://www.debuggex.com/
     private static final String latitudeCupRegex = "(9000\\.000|[0-8][0-9][0-5][0-9]\\.[0-9]{3})[NS]";
@@ -129,8 +131,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempTitle = value;
         if (value == null || value.isEmpty()) {
             titleErrorText = getApplication().getString(R.string.turnpoint_title_error_msg);
+            setSaveIndicator(false);
         } else {
             titleErrorText = null;
+            setSaveIndicator(true);
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.titleErrorText);
     }
@@ -146,8 +150,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempCode = value;
         if (value == null || value.isEmpty()) {
             codeErrorText = getApplication().getString(R.string.turnpoint_code_error_msg);
+            setSaveIndicator(false);
         } else {
             codeErrorText = null;
+            setSaveIndicator(true);
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.codeErrorText);
     }
@@ -160,6 +166,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setCountry(String value) {
         tempCountry = value;
+        setSaveIndicator(true);
     }
 
     @Bindable
@@ -173,11 +180,14 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         try {
             if (latitudeCupPattern.matcher(value).matches()) {
                 latitudeErrorText = null;
+                setSaveIndicator(true);
             } else {
                 latitudeErrorText = getApplication().getString(R.string.turnpoint_latitude_error);
+                setSaveIndicator(false);
             }
         } catch (Exception e) {
             latitudeErrorText = getApplication().getString(R.string.turnpoint_latitude_error);
+            setSaveIndicator(false);
         }
        notifyPropertyChanged(org.soaringforecast.rasp.BR.latitudeErrorText);
     }
@@ -193,11 +203,14 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         try {
             if (longitudeCupPattern.matcher(value).matches()) {
                 longitudeErrorText = null;
+                setSaveIndicator(true);
             } else {
                 longitudeErrorText = getApplication().getString(R.string.turnpoint_longitude_error);
+                setSaveIndicator(false);
             }
         } catch (Exception e) {
             longitudeErrorText = getApplication().getString(R.string.turnpoint_longitude_error);
+            setSaveIndicator(false);
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.longitudeErrorText);
 
@@ -213,8 +226,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempElevation = value;
         if (elevationPattern.matcher(value).matches()) {
             elevationErrorText = null;
+            setSaveIndicator(true);
         } else {
             elevationErrorText = getApplication().getString(R.string.elevation_error);
+            setSaveIndicator(false);
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.elevationErrorText);
     }
@@ -239,8 +254,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempDirection = value;
         if (directionPattern.matcher(value).matches()) {
             directionErrorText = null;
+            setSaveIndicator(true);
         } else {
             directionErrorText = getApplication().getString(R.string.direction_error);
+            setSaveIndicator(false);
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.directionErrorText);
     }
@@ -256,8 +273,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempLength = value;
         if (lengthPattern.matcher(value).matches()) {
             lengthErrorText = null;
+            setSaveIndicator(true);
         } else {
             lengthErrorText = getApplication().getString(R.string.runway_length_error);
+            setSaveIndicator(false);
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.lengthErrorText);
     }
@@ -272,8 +291,10 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         tempFrequency = value;
         if (frequencyPatten.matcher(value).matches()) {
             frequencyErrorText = null;
+            setSaveIndicator(true);
         } else {
             frequencyErrorText = getApplication().getString(R.string.frequency_format_errror);
+            setSaveIndicator(false);
         }
         notifyPropertyChanged(org.soaringforecast.rasp.BR.frequencyErrorText);
     }
@@ -286,6 +307,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     @Bindable
     public void setDescription(String value) {
         tempDescription = value;
+        setSaveIndicator(true);
     }
 
     @Bindable
@@ -377,5 +399,40 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         cupStylePosition.setValue(newCupStylePosition);
         tempStyle = newCupStylePosition + "";
 
+    }
+
+    public void saveTurnpoint() {
+        try {
+            turnpoint.setTitle(tempTitle);
+            turnpoint.setCode(tempCode);
+            turnpoint.setCountry(tempCountry);
+            turnpoint.setLatitudeDeg(Turnpoint.convertToLat(tempLatitude));
+            turnpoint.setLongitudeDeg(Turnpoint.convertToLong(tempLongitude));
+            turnpoint.setElevation(tempElevation);
+            turnpoint.setDirection(tempDirection);
+            turnpoint.setLength(tempLength);
+            turnpoint.setFrequency(tempFrequency);
+            turnpoint.setStyle(tempStyle);
+            turnpoint.setDescription(tempDescription);
+            appRepository.insertTurnpoint(turnpoint);
+
+        } catch (Exception e){
+            // TODO do better error reporting
+            EventBus.getDefault().post(new SnackbarMessage("Oh-oh! Error saving turnpoint."));
+        }
+    }
+
+    public void resetTurnpoint() {
+        loadTempEditFields();
+        setSaveIndicator(false);
+        notifyChange();
+    }
+
+    private void setSaveIndicator(boolean save){
+        needToSave.setValue(save);
+    }
+
+    public MutableLiveData<Boolean> getNeedToSave() {
+        return needToSave;
     }
 }

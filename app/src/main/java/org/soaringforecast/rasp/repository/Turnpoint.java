@@ -41,7 +41,7 @@ public class Turnpoint {
 
     private String elevation;
 
-    private String style;
+    private String style = "0";
 
     private String direction;
 

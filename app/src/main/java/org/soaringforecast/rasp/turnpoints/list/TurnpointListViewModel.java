@@ -37,6 +37,7 @@ public class TurnpointListViewModel extends ObservableViewModel {
         return this;
     }
 
+
     @SuppressLint("CheckResult")
     public LiveData<List<Turnpoint>> searchTurnpoints(String search) {
         Disposable disposable = appRepository.findTurnpoints("%" + search + "%")

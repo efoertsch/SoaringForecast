@@ -76,16 +76,17 @@ public class TurnpointActivity extends MasterActivity {
     }
 
     private Fragment getTurnpointListFragment(){
-        return TurnpointListFragment.newInstance().displayMenuOptions(true);
+        return TurnpointListFragment.newInstance();
+    }
+
+    private Fragment getTurnpointSearchForEditFragment() {
+        return TurnpointSearchForEditFragment.newInstance();
     }
 
     private Fragment getSeeYouImportFragment() {
         return SeeYouImportFragment.newInstance();
     }
 
-    private Fragment getTurnpointSearchForEditFragment() {
-        return TurnpointSearchForEditFragment.newInstance();
-    }
 
     private Fragment getTurnpointsDownloadFragment() {
         return new TurnpointsDownloadFragment();

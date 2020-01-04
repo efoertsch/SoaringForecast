@@ -346,5 +346,10 @@
     <string name="turnpoint_cup_style_type">Turnpoint Type</string>
     <string name="turnpoint_type">Turnpoint type</string>
     <string name="search_turnpoints">Search Turnpoints</string>
+    <string name="turnpoint_list">Turnpoints</string>
+    <string name="turnpoint_edit_save">Save</string>
+    <string name="turnpoint_edit_reset">Reset</string>
+    <string name="add_new_turnpoint">Add Turnpoint</string>
+    <string name="edit_turnpoint">Edit Turnpoint</string>
 
 </resources>

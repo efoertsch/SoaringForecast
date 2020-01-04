@@ -268,12 +268,6 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         startActivity(builder.build(this));
     }
 
-    private void displayTurnpointEditSearch(){
-        TurnpointActivity.Builder builder = TurnpointActivity.Builder.getBuilder();
-        builder.displayTurnpointEditSearch();
-        startActivity(builder.build(this));
-    }
-
     private void startDrJacksBrowser() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.drjack.info/BLIP/univiewer.html"));
         startActivity(browserIntent);

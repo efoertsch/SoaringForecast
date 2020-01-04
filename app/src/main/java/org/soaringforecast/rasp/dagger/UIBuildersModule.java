@@ -21,6 +21,8 @@ import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
 import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
+import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
 import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
 import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.windy.WindyActivity;
@@ -80,11 +82,11 @@ public abstract class UIBuildersModule {
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointListFragment bindTurnpointListFragment();
 
-//    @ContributesAndroidInjector(modules = {})
-//    abstract TurnpointSearchForTaskFragment bindTurnpointSearchForTask();
-//
-//    @ContributesAndroidInjector(modules = {})
-//    abstract TurnpointSearchForEditFragment bindTurnpointSearchForEditFragment();
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointSearchForTaskFragment bindTurnpointSearchForTaskFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract TurnpointSearchForEditFragment bindTurnpointSearchForEditFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointEditFragment bindTurnpointEditFragment();

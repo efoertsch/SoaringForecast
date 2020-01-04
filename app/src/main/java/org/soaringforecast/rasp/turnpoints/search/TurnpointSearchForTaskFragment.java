@@ -26,6 +26,10 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
         searchView.setQuery("", true);
     };
 
+    public static TurnpointSearchForTaskFragment newInstance() {
+        return new TurnpointSearchForTaskFragment();
+    }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Shared with EditTaskFragment and
@@ -39,6 +43,7 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
 
         View view = super.onCreateView(inflater,container, savedInstanceState);
 
+        // replace default click listener
         turnpointListAdapter.setOnItemClickListener(turnpointTextClickListener);
         return view;
     }

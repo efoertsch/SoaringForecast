@@ -80,7 +80,7 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        displayFragment(new TurnpointSearchForTaskFragment(), true,true);
+        displayFragment(TurnpointSearchForTaskFragment.newInstance(), true,true);
     }
 
 

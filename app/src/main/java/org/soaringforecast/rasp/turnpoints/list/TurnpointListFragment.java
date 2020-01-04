@@ -22,6 +22,7 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.turnpoints.messages.EditTurnpoint;
 import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.messages.TurnpointSearchForEdit;
 import org.soaringforecast.rasp.utils.ViewUtilities;
@@ -32,7 +33,6 @@ import dagger.android.support.DaggerFragment;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-// TODO use viewmodel?
 public class TurnpointListFragment extends DaggerFragment {
 
     @Inject
@@ -45,28 +45,30 @@ public class TurnpointListFragment extends DaggerFragment {
     protected TurnpointListViewModel turnpointListViewModel;
 
     private AlertDialog noTurnpointsDialog;
-    private boolean displayMenu = false;
     private View rootView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private boolean showSearchIcon = true;
+
+
+    private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
+        EventBus.getDefault().post(new EditTurnpoint(turnpoint.getId()));
+    };
 
     private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
         EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
     };
 
+
     public static TurnpointListFragment newInstance() {
         return new TurnpointListFragment();
     }
 
-    public TurnpointListFragment displayMenuOptions(boolean displayMenu){
-        this.displayMenu = displayMenu;
-        return this;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         turnpointListViewModel = ViewModelProviders.of(getActivity()).get(TurnpointListViewModel.class);
         turnpointListViewModel.setAppRepository(appRepository);
-        setHasOptionsMenu(displayMenu);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -78,6 +80,8 @@ public class TurnpointListFragment extends DaggerFragment {
                 .setSateliteOnItemClickListener(satelliteOnItemClickListener)
                 .setTurnpointBitmapUtils(turnpointBitmapUtils);
 
+        turnpointListAdapter.setOnItemClickListener(turnpointTextClickListener);
+
         RecyclerView recyclerView = rootView.findViewById(R.id.turnpoint_list_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
@@ -86,20 +90,29 @@ public class TurnpointListFragment extends DaggerFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         ViewUtilities.addRecyclerViewDivider(getContext(), linearLayoutManager.getOrientation(), recyclerView);
         recyclerView.setAdapter(turnpointListAdapter);
+
+        checkForAtLeastOneTurnpoint();
         return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        checkForAtLeastOneTurnpoint();
+        getActivity().setTitle(R.string.turnpoint_list);
+        // subclass my want altered menu items
+        getActivity().invalidateOptionsMenu();
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.turnpoint_options_menu, menu);
+        //super.onCreateOptionsMenu(menu, inflater);
+        MenuItem searchIconMenuItem = menu.findItem(R.id.turnpoint_search);
+        if (searchIconMenuItem != null) {
+            searchIconMenuItem.setVisible(showSearchIcon);
+        } else {
+            inflater.inflate(R.menu.turnpoint_options_menu, menu);
+        }
     }
 
     @Override
@@ -108,6 +121,9 @@ public class TurnpointListFragment extends DaggerFragment {
         switch (item.getItemId()) {
             case R.id.turnpoint_search:
                 displaySearch();
+                return true;
+            case R.id.turnpoint_menu_add_new_turnpoint:
+                addNewTurnpoint();
                 return true;
             case R.id.turnpoint_menu_import:
                 addTurnpoints();
@@ -120,8 +136,12 @@ public class TurnpointListFragment extends DaggerFragment {
         }
     }
 
+    private void addNewTurnpoint() {
+        EventBus.getDefault().post((new EditTurnpoint(-1l) ));
+    }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         compositeDisposable.dispose();
     }
@@ -139,8 +159,14 @@ public class TurnpointListFragment extends DaggerFragment {
                     noTurnpointsDialog.dismiss();
                     noTurnpointsDialog = null;
                 }
+                loadTurnpoints();
             }
         });
+    }
+
+    private void loadTurnpoints() {
+        turnpointListViewModel.searchTurnpoints("").
+                observe(this, turnpoints -> turnpointListAdapter.setTurnpointList(turnpoints));
     }
 
     private void displayImportTurnpointsDialog() {
@@ -185,6 +211,7 @@ public class TurnpointListFragment extends DaggerFragment {
                 .subscribe(numberDeleted -> {
                     postNumberDeleted(numberDeleted);
                     showProgressBar(false);
+                    loadTurnpoints();
                 });
         compositeDisposable.add(disposable);
 
@@ -202,18 +229,22 @@ public class TurnpointListFragment extends DaggerFragment {
         alertDialog.show();
     }
 
-    protected void showProgressBar(boolean setVisible){
+    protected void showProgressBar(boolean setVisible) {
         rootView.findViewById(R.id.turnpoint_list_recycler_view);
-        rootView.findViewById(R.id.turnpoint_list_progress_bar).setVisibility(setVisible ? View.VISIBLE: View.GONE) ;
+        rootView.findViewById(R.id.turnpoint_list_progress_bar).setVisibility(setVisible ? View.VISIBLE : View.GONE);
     }
 
     private void returnToPreviousScreen() {
-        getActivity().finish();
-            EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+        //getActivity().finish();
+        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
     }
 
     private void addTurnpoints() {
         EventBus.getDefault().post(new GoToTurnpointImport());
+    }
+
+    public void showSearchIconInMenu(boolean showSearchIcon){
+        this.showSearchIcon = showSearchIcon;
     }
 
 }
