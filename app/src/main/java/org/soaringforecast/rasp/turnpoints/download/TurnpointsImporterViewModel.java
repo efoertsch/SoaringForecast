@@ -1,9 +1,9 @@
 package org.soaringforecast.rasp.turnpoints.download;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import android.os.Environment;
 
 import org.soaringforecast.rasp.app.AppPreferences;

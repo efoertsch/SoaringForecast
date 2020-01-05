@@ -3,20 +3,20 @@ package org.soaringforecast.rasp.airport;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-
-import org.soaringforecast.rasp.airport.airportweather.AirportMetarTafFragment;
-import org.soaringforecast.rasp.airport.list.AirportListFragment;
-import org.soaringforecast.rasp.airport.search.AirportSearchFragment;
-import org.soaringforecast.rasp.common.MasterActivity;
-import org.soaringforecast.rasp.airport.messages.AddAirportEvent;
-import org.soaringforecast.rasp.airport.messages.DisplayAirportList;
-import org.soaringforecast.rasp.settings.messages.DisplaySettings;
-import org.soaringforecast.rasp.settings.SettingsActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.soaringforecast.rasp.airport.airportweather.AirportMetarTafFragment;
+import org.soaringforecast.rasp.airport.list.AirportListFragment;
+import org.soaringforecast.rasp.airport.messages.AddAirportEvent;
+import org.soaringforecast.rasp.airport.messages.DisplayAirportList;
+import org.soaringforecast.rasp.airport.search.AirportSearchFragment;
+import org.soaringforecast.rasp.common.MasterActivity;
+import org.soaringforecast.rasp.settings.SettingsActivity;
+import org.soaringforecast.rasp.settings.messages.DisplaySettings;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public class AirportActivity extends MasterActivity {
 

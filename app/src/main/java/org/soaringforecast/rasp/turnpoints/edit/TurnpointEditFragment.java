@@ -1,10 +1,6 @@
 package org.soaringforecast.rasp.turnpoints.edit;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +19,10 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -160,7 +160,7 @@ public class TurnpointEditFragment  extends DaggerFragment {
         builder.setTitle(R.string.turnpoint_delete)
                 .setMessage(R.string.turnpoint_delete_really_sure_times_two)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    turnpointEditViewModel.deleteTurnpoint();
+                    deleteTurnpoint();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
                         /// Whew! Saved by the bell.

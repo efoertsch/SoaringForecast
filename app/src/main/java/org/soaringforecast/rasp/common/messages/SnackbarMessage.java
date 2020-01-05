@@ -1,6 +1,6 @@
 package org.soaringforecast.rasp.common.messages;
 
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 
 public final class SnackbarMessage {
 

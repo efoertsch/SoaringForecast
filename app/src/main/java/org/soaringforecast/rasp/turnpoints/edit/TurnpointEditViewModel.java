@@ -1,10 +1,6 @@
 package org.soaringforecast.rasp.turnpoints.edit;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.databinding.Bindable;
-import android.support.annotation.NonNull;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
@@ -18,6 +14,10 @@ import org.soaringforecast.rasp.turnpoints.cup.CupStyle;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.Bindable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -389,10 +389,18 @@ public class TurnpointEditViewModel extends ObservableViewModel {
                     break;
                 } catch (NumberFormatException nfe) {
                     cupStylePosition.setValue(0);
+                    setSaveIndicator();
                 }
 
             }
         }
+    }
+
+    void setInitialCupStylePosition(int newCupStylePosition) {
+        cupStylePosition.setValue(newCupStylePosition);
+        tempStyle = newCupStylePosition + "";
+        setSaveIndicator();
+
     }
 
     public MutableLiveData<Integer> getCupStylePosition() {
@@ -400,11 +408,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
 
     }
 
-    void setInitialCupStylePosition(int newCupStylePosition) {
-        cupStylePosition.setValue(newCupStylePosition);
-        tempStyle = newCupStylePosition + "";
 
-    }
 
     private boolean isLandable() {
         return (tempStyle.matches("[2345]"));
@@ -428,7 +432,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(id -> {
-                                // we are good
+                                Timber.d("Saved turnpoint with id: %1$d", id);
                             },
                             t -> {
                                 Timber.e(t);
@@ -448,16 +452,16 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     }
 
     private void setSaveIndicator() {
-        boolean editError = (titleErrorText != null
-                || codeErrorText != null
-                || countryErrorText != null
-                || longitudeErrorText != null
-                || elevationErrorText != null
-                || directionErrorText != null
-                || lengthErrorText != null
-                || frequencyErrorText != null);
+        boolean cleanEdits = (titleErrorText == null
+                && codeErrorText == null
+                && countryErrorText == null
+                && longitudeErrorText == null
+                && elevationErrorText == null
+                && directionErrorText == null
+                && lengthErrorText == null
+                && frequencyErrorText == null);
 
-        okToSave.setValue(editError);
+        okToSave.setValue(cleanEdits);
     }
 
     MutableLiveData<Boolean> getOKToSaveFlag() {

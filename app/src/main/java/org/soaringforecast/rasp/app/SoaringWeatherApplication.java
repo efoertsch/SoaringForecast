@@ -73,7 +73,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
         OneTimeWorkRequest downloadWork =
                 new OneTimeWorkRequest.Builder(AirportsImportWorker.class)
                         .build();
-        WorkManager.getInstance().enqueue(downloadWork);
+        WorkManager.getInstance(getApplicationContext()).enqueue(downloadWork);
 
     }
 

@@ -1,20 +1,14 @@
 package org.soaringforecast.rasp.task.edit;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
@@ -27,13 +21,20 @@ import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
-import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.touchhelper.OnStartDragListener;
 import org.soaringforecast.rasp.touchhelper.SimpleItemTouchHelperCallback;
+import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

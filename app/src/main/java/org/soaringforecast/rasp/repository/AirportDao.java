@@ -1,7 +1,7 @@
 package org.soaringforecast.rasp.repository;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Query;
+import androidx.room.Dao;
+import androidx.room.Query;
 
 import java.util.List;
 

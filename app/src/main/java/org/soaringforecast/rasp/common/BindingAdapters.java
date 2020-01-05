@@ -1,7 +1,7 @@
 package org.soaringforecast.rasp.common;
 
-import android.databinding.BindingAdapter;
-import android.support.design.widget.TextInputLayout;
+import androidx.databinding.BindingAdapter;
+import com.google.android.material.textfield.TextInputLayout;
 
 
 // Currently used to set error msg in TextInputLayout

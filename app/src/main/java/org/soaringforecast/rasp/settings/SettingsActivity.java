@@ -3,13 +3,14 @@ package org.soaringforecast.rasp.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.settings.forecastorder.ForecastOrderFragment;
 import org.soaringforecast.rasp.settings.preferences.SettingsPreferenceFragment;
 import org.soaringforecast.rasp.settings.regions.RegionSelectionFragment;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 
 // Cribbed various code

@@ -5,13 +5,13 @@
         tools:context="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
     >
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/app_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
 
-        <android.support.v4.widget.DrawerLayout
+        <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/app_drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -32,7 +32,7 @@
 
             </LinearLayout>
             <!-- The navigation drawer -->
-            <android.support.design.widget.NavigationView
+            <com.google.android.material.navigation.NavigationView
                 android:id="@+id/app_weather_drawer"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -41,7 +41,7 @@
                 app:headerLayout="@layout/app_nav_drawer_header"
                 app:menu="@menu/weather_drawer_menu"/>
 
-        </android.support.v4.widget.DrawerLayout>
+        </androidx.drawerlayout.widget.DrawerLayout>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

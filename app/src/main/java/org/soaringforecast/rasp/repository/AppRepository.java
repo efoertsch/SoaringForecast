@@ -4,10 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonSyntaxException;
 
 import org.greenrobot.eventbus.EventBus;
@@ -55,6 +54,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -479,9 +479,11 @@ public class AppRepository implements CacheTimeListener {
     public Maybe<Turnpoint> getTurnpoint(long turnpointId) {
         return turnpointDao.getTurnpoint(turnpointId);
     }
+
     public Single<Integer> deleteTurnpoint(long turnpointId) {
         return Single.create((SingleOnSubscribe<Integer>) emitter -> {
-            try {int numberDeleted = turnpointDao.deleteTurnpoint(turnpointId);
+            try {
+                int numberDeleted = turnpointDao.deleteTurnpoint(turnpointId);
                 emitter.onSuccess(numberDeleted);
             } catch (Throwable t) {
                 emitter.onError(t);
@@ -915,10 +917,9 @@ public class AppRepository implements CacheTimeListener {
         return aviationWeatherGovApi.getMostRecentMetarForEachAirport(icaoIdentifiers, hoursBeforeNow);
     }
 
-    public Call<TafResponse> getMostRecentTafForEachAirport(String icaoIdentifiers,  int hoursBeforeNow){
-            return aviationWeatherGovApi.getMostRecentTafForEachAirport(icaoIdentifiers, hoursBeforeNow);
+    public Call<TafResponse> getMostRecentTafForEachAirport(String icaoIdentifiers, int hoursBeforeNow) {
+        return aviationWeatherGovApi.getMostRecentTafForEachAirport(icaoIdentifiers, hoursBeforeNow);
     }
-
 
     // -------------------- Cup Turnpoint Styles ------------------------
 
@@ -932,6 +933,5 @@ public class AppRepository implements CacheTimeListener {
             }
         });
     }
-
 
 }

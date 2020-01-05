@@ -1,7 +1,7 @@
 package org.soaringforecast.satellite;
 
 import android.graphics.Bitmap;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
