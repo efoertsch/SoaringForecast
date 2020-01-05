@@ -13,7 +13,7 @@
 
     <!--  !!! In taskOrder to get swipe to work needed to put views inside RelativeLayout rather than
      just having them in ConstraintLayout -->
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
@@ -90,5 +90,5 @@
                 />
         </RelativeLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

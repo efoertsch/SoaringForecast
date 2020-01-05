@@ -2,9 +2,6 @@ package org.soaringforecast.rasp.workmanager;
 
 import android.app.Notification;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.airport.AirportListDownloader;
@@ -14,6 +11,9 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -58,7 +58,7 @@ public class AirportsImportWorker extends Worker {
         boolean success = displayCompletionNotification(count);
 
         // Indicate success or failure with your return value:
-        return success ? Result.SUCCESS : Result.RETRY;
+        return success ? Result.success() : Result.retry();
     }
 
     private void displayStartNotification() {

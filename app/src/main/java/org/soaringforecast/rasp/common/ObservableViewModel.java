@@ -1,10 +1,10 @@
 package org.soaringforecast.rasp.common;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.databinding.Observable;
-import android.databinding.PropertyChangeRegistry;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.databinding.Observable;
+import androidx.databinding.PropertyChangeRegistry;
+import androidx.annotation.NonNull;
 
 /**
  * A ViewModel that is also an Observable,

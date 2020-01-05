@@ -3,7 +3,6 @@ package org.soaringforecast.rasp.turnpoints;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -22,6 +21,8 @@ import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment
 import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
 
 import java.util.List;
+
+import androidx.fragment.app.Fragment;
 
 public class TurnpointActivity extends MasterActivity {
 

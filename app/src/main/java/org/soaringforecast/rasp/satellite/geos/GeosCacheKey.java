@@ -1,6 +1,6 @@
 package org.soaringforecast.rasp.satellite.geos;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.bumptech.glide.load.Key;
 

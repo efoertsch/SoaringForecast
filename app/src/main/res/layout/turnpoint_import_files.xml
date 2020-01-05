@@ -11,7 +11,7 @@
     </data>
 
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
 
         android:id="@+id/turnpoint_import_files_layout"
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/turnpoint_imports_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,5 +52,5 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

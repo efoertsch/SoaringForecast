@@ -1,7 +1,5 @@
 package org.soaringforecast.rasp.about;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +11,8 @@ import org.soaringforecast.rasp.repository.AppRepository;
 
 import javax.inject.Inject;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerFragment;
 
 public class AboutFragment extends DaggerFragment {

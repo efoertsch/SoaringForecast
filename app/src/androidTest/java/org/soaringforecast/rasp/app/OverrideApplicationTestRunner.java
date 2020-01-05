@@ -3,8 +3,8 @@ package org.soaringforecast.rasp.app;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.test.runner.AndroidJUnitRunner;
+import androidx.annotation.NonNull;
+import androidx.test.runner.AndroidJUnitRunner;
 
 
 /**

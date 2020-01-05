@@ -3,7 +3,6 @@ package org.soaringforecast.rasp.task;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -12,12 +11,14 @@ import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.task.edit.EditTaskFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
-import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.task.messages.EditTask;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
+import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
 
 import java.util.List;
+
+import androidx.fragment.app.Fragment;
 
 
 public class TaskActivity extends MasterActivity {

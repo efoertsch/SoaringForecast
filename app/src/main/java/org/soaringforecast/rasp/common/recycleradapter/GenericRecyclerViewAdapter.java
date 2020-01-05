@@ -1,11 +1,11 @@
 package org.soaringforecast.rasp.common.recycleradapter;
 
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,7 +135,7 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
     /**
      * Sets items to the adapter and notifies that data set has been changed.
      * Typically this method should be use with `notifyChanges = false` in case you are using DiffUtil
-     * {@link android.support.v7.util.DiffUtil} in order to delegate it do all the updating job.
+     * {@link androidx.recyclerview.widget.DiffUtil} in order to delegate it do all the updating job.
      *
      * @param items         items to set to the adapter
      * @param notifyChanges pass in <code>true</code> to call notifiDatasetChanged {@link RecyclerView.Adapter#notifyDataSetChanged()} or <code>false</code> otherwise
@@ -157,7 +157,7 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
 
     /**
      * Updates items list.
-     * Typically to be used for the implementation of DiffUtil {@link android.support.v7.util.DiffUtil}
+     * Typically to be used for the implementation of DiffUtil {@link androidx.recyclerview.widget.DiffUtil}
      *
      * @param newItems new items
      */

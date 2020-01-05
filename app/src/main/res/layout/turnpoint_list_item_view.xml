@@ -29,7 +29,7 @@
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/turnpoint_list_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             android:onClick="@{()->satelliteClickListener.onItemClick(turnpoint, position)}"
             android:src="@{turnpointBitmapUtils.getDrawableTurnpointImage(context, turnpoint)}"/>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/turnpoint_list_text_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,9 +98,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/turnpoint_list_code"
                 tools:text="small airport"/>
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>

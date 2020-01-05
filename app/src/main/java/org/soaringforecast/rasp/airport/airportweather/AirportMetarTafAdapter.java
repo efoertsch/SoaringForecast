@@ -1,11 +1,11 @@
 package org.soaringforecast.rasp.airport.airportweather;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableArrayList;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableArrayList;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;

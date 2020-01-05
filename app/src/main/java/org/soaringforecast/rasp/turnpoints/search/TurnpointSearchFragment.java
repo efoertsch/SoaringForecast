@@ -1,14 +1,15 @@
 package org.soaringforecast.rasp.turnpoints.search;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 
 public class TurnpointSearchFragment extends TurnpointListFragment {
 

@@ -23,7 +23,7 @@
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/task_turnpoint_detail_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/task_turnpoint_text_layout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -55,7 +55,7 @@
             app:layout_constraintStart_toEndOf="@+id/task_turnpoint_icon"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline_70pct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -116,9 +116,9 @@
                 app:layout_constraintTop_toBottomOf="@+id/task_turnpoint_distance_from_prior_turnpoint"
                 tools:text="From start: 100.1km"/>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>

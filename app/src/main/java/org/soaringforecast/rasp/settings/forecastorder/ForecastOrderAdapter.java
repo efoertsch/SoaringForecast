@@ -1,7 +1,7 @@
 package org.soaringforecast.rasp.settings.forecastorder;
 
 import android.annotation.SuppressLint;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 

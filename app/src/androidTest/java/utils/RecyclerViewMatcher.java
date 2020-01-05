@@ -1,12 +1,13 @@
 package utils;
 
 import android.content.res.Resources;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * From https://gist.github.com/baconpat/8405a88d04bd1942eb5e430d33e4faa2

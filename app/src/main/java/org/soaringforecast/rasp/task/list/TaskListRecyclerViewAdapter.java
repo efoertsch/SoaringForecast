@@ -1,6 +1,6 @@
 package org.soaringforecast.rasp.task.list;
 
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
