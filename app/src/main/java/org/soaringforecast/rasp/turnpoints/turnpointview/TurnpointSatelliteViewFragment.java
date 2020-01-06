@@ -104,7 +104,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
         turnpointView.setMovementMethod(new ScrollingMovementMethod());
 
         if (findGPSLocation) {
-            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity();
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
             checkForGPSLocationPermission();
         }
         return view;
