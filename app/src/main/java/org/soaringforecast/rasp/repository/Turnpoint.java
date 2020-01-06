@@ -1,15 +1,15 @@
 package org.soaringforecast.rasp.repository;
 
-import androidx.room.Entity;
-import androidx.room.Index;
-import androidx.room.PrimaryKey;
-import androidx.annotation.NonNull;
-
 import org.soaringforecast.rasp.utils.CSVUtils;
 
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 //SeeYou cup file format
 //Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description
@@ -123,6 +123,10 @@ public class Turnpoint {
         this.latitudeDeg = latitudeDeg;
     }
 
+    public void setLatitudeDeg(double latitudeDeg) {
+        this.latitudeDeg = (float) latitudeDeg;
+    }
+
     public float getLongitudeDeg() {
         return longitudeDeg;
     }
@@ -130,6 +134,12 @@ public class Turnpoint {
     public void setLongitudeDeg(float longitudeDeg) {
         this.longitudeDeg = longitudeDeg;
     }
+
+    public void setLongitudeDeg(double longitudeDeg) {
+        this.longitudeDeg = (float) longitudeDeg;
+    }
+
+
 
     public String getElevation() {
         return elevation;

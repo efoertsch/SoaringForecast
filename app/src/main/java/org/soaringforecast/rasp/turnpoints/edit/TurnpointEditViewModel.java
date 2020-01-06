@@ -235,16 +235,6 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         notifyPropertyChanged(org.soaringforecast.rasp.BR.elevationErrorText);
     }
 
-//    @Bindable
-//    public String getStyle() {
-//        return tempStyle;
-//    }
-//
-//    @Bindable
-//    public void setStyle(String value) {
-//        tempStyle = value;
-//    }
-
     @Bindable
     public String getDirection() {
         return tempDirection;
@@ -391,7 +381,6 @@ public class TurnpointEditViewModel extends ObservableViewModel {
                     cupStylePosition.setValue(0);
                     setSaveIndicator();
                 }
-
             }
         }
     }
@@ -405,16 +394,14 @@ public class TurnpointEditViewModel extends ObservableViewModel {
 
     public MutableLiveData<Integer> getCupStylePosition() {
         return cupStylePosition;
-
     }
-
-
 
     private boolean isLandable() {
         return (tempStyle.matches("[2345]"));
     }
 
     public void saveTurnpoint() {
+        //TODO if this is new turnpoint see if title and/or code already exists in db first
         try {
             turnpoint.setTitle(tempTitle);
             turnpoint.setCode(tempCode);

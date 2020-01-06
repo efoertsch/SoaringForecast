@@ -128,12 +128,18 @@ public class TurnpointListFragment extends DaggerFragment {
             case R.id.turnpoint_menu_import:
                 addTurnpoints();
                 return true;
+            case R.id.turnpoint_menu_add_export_turnpoints:
+                exportTurnpoints();
             case R.id.turnpoint_menu_clear_turnpoints:
                 showClearTurnpointsDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //TODO export turnpoints to Downloads directory (name include date/time)
+    private void exportTurnpoints() {
     }
 
     private void addNewTurnpoint() {

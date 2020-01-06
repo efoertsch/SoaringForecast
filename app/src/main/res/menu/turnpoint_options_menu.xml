@@ -11,6 +11,10 @@
     <item android:id="@+id/turnpoint_menu_add_new_turnpoint"
         android:title="@string/add_new_turnpoint"
         app:showAsAction="never"/>
+    app:showAsAction="never"/>
+    <item android:id="@+id/turnpoint_menu_add_export_turnpoints"
+        android:title="@string/add_export_turnpoints"
+        app:showAsAction="never"/>
     <item android:id="@+id/turnpoint_menu_clear_turnpoints"
         android:title="@string/turnpoint_menu_clear_turnpoint_database"
         app:showAsAction="never"/>
