@@ -10,10 +10,13 @@ import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.app.AppPreferences;
+import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.TurnpointEditView;
 import org.soaringforecast.rasp.repository.AppRepository;
+import org.soaringforecast.rasp.repository.Turnpoint;
 
 import java.util.ArrayList;
 
@@ -27,38 +30,49 @@ import dagger.android.support.DaggerFragment;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class TurnpointEditFragment  extends DaggerFragment {
+public class TurnpointEditFragment extends DaggerFragment implements CheckBeforeGoingBack {
 
     @Inject
     AppRepository appRepository;
 
-    private long turnpointId;
-    private TurnpointEditView turnpointEditView ;
+    @Inject
+    AppPreferences appPreferences;
+
+
+    private static final String TURNPOINT = "TURNPOINT";
+
+    private Turnpoint turnpoint;
     private TurnpointEditViewModel turnpointEditViewModel;
     private CupStyleAdapter cupStyleAdapter;
 
     private int lastCupStylePosition = -1;
-    private Boolean okToSave = false;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public static TurnpointEditFragment  newInstance(long turnpointId) {
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private boolean okToSave = false;
+    private boolean inEditMode = false;
+    private boolean needToSave;
+    private TurnpointEditView turnpointEditView;
+
+    public static TurnpointEditFragment newInstance(Turnpoint turnpoint) {
         TurnpointEditFragment turnpointEditFragment = new TurnpointEditFragment();
-        turnpointEditFragment.setTurnpointId(turnpointId);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(TURNPOINT, turnpoint);
+        turnpointEditFragment.setArguments(bundle);
         return turnpointEditFragment;
     }
 
-    private void setTurnpointId(long turnpointId) {
-        this.turnpointId = turnpointId;
-    }
-
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Note viewmodel is shared by activity
+        turnpoint = getArguments().getParcelable(TURNPOINT);
+        // Note viewmodel is shared by activity so this viewmodel will be shared by
+        // TurnpointSatelliteViewFragment (if called)
         turnpointEditViewModel = ViewModelProviders.of(getActivity())
                 .get(TurnpointEditViewModel.class)
                 .setAppRepository(appRepository)
-                .setTurnpointId(turnpointId);
+                .setAppPreferences(appPreferences)
+                .reset()
+                .setTurnpoint(getArguments().getParcelable(TURNPOINT));
+
         setHasOptionsMenu(true);
     }
 
@@ -78,9 +92,9 @@ public class TurnpointEditFragment  extends DaggerFragment {
         });
 
         turnpointEditViewModel.getCupStylePosition().observe(this, newCupStylePosition -> {
-            if (newCupStylePosition != null){
-                if (lastCupStylePosition != -1 && lastCupStylePosition != newCupStylePosition){
-                    turnpointEditViewModel.setInitialCupStylePosition(newCupStylePosition);
+            if (newCupStylePosition != null) {
+                if (lastCupStylePosition != -1 && lastCupStylePosition != newCupStylePosition) {
+                    turnpointEditViewModel.setCupStylePosition(newCupStylePosition);
                 }
             }
             lastCupStylePosition = newCupStylePosition;
@@ -91,17 +105,31 @@ public class TurnpointEditFragment  extends DaggerFragment {
             getActivity().invalidateOptionsMenu();
         });
 
-        return  turnpointEditView.getRoot();
+        turnpointEditViewModel.getNeedToSaveUpdates().observe(this, needToSave -> {
+            this.needToSave = needToSave;
+        });
+
+        turnpointEditViewModel.getEditMode().observe(this, inEditMode -> {
+            this.inEditMode = inEditMode;
+            enableTurnpointEditting();
+
+        });
+
+        // If adding new turnpoint go into edit mode automatically
+        turnpointEditViewModel.setInEditMode(turnpoint.getId() < 0);
+
+        return turnpointEditView.getRoot();
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        getActivity().setTitle(turnpointId <=0 ? R.string.add_new_turnpoint : R.string.edit_turnpoint);
+        getActivity().setTitle(turnpoint.getId() <= 0 ? R.string.add_new_turnpoint :
+                inEditMode ? R.string.edit_turnpoint : R.string.turnpoint);
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         compositeDisposable.dispose();
     }
@@ -110,14 +138,17 @@ public class TurnpointEditFragment  extends DaggerFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.turnpoint_edit_options, menu);
+        MenuItem editMenuItem = menu.findItem(R.id.turnpoint_edit_menu_edit);
         MenuItem saveMenuItem = menu.findItem(R.id.turnpoint_edit_menu_save);
         MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_edit_menu_reset);
-        saveMenuItem.setVisible(okToSave);
-
-        if (okToSave) {
-            resetMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        if (inEditMode) {
+            editMenuItem.setVisible(false);
+            saveMenuItem.setVisible(okToSave);
+            resetMenuItem.setVisible(true);
         } else {
-            resetMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            editMenuItem.setVisible(true);
+            saveMenuItem.setVisible(false);
+            resetMenuItem.setVisible(false);
         }
 
     }
@@ -126,17 +157,38 @@ public class TurnpointEditFragment  extends DaggerFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.turnpoint_edit_menu_edit:
+                turnpointEditViewModel.setInEditMode(true);
+                return true;
             case R.id.turnpoint_edit_menu_save:
-                turnpointEditViewModel.saveTurnpoint();
+                confirmSave();
                 return true;
             case R.id.turnpoint_edit_menu_reset:
                 turnpointEditViewModel.resetTurnpoint();
                 return true;
             case R.id.turnpoint_edit_menu_delete:
                 checkIfOkToDeleteTurnpoint();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void enableTurnpointEditting() {
+        turnpointEditView.turnpointEditTitle.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditCode.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditCountry.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditLatitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditLongitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditElevation.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditStyleSpinner.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditRunwayDirection.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditRunwayLength.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditAirportFrequency.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditDescription.setEnabled(inEditMode);
+        getActivity().invalidateOptionsMenu();
+
+
     }
 
     private void checkIfOkToDeleteTurnpoint() {
@@ -163,25 +215,71 @@ public class TurnpointEditFragment  extends DaggerFragment {
                     deleteTurnpoint();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
-                        /// Whew! Saved by the bell.
+                    /// Whew! Saved by the bell.
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
     }
 
-    private void  deleteTurnpoint() {
+    private void deleteTurnpoint() {
         Disposable disposable = turnpointEditViewModel.deleteTurnpoint()
                 .subscribe(numberDeleted -> {
                     if (numberDeleted == 1) {
                         EventBus.getDefault().post(new SnackbarMessage(getString(R.string.turnpoint_deleted)));
                         EventBus.getDefault().post(new PopThisFragmentFromBackStack());
-                    }
-                    else {
+                    } else {
                         EventBus.getDefault().post(new SnackbarMessage(getString(R.string.turnpoint_delete_error)));
                     }
                 });
         compositeDisposable.add(disposable);
     }
 
+    @Override
+    public boolean okToGoBack() {
+        if (needToSave == false) {
+            return true;
+        } else {
+            displaySaveFirstDialog();
+            return false;
+        }
+    }
+
+    // Run when save menuitem pressed
+    private void confirmSave() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.save_turnpoint)
+                .setMessage(R.string.save_turnpoint_changes)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    turnpointEditViewModel.saveTurnpoint();
+                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                    // No action
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+    }
+
+    // Run when user made changes but then hit back without saving changes
+    private void displaySaveFirstDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.save_turnpoint)
+                .setMessage(R.string.save_turnpoint_before_exit)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    turnpointEditViewModel.saveTurnpoint();
+                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                    turnpointEditViewModel.resetTurnpoint();
+                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+
+    }
+
 }
+

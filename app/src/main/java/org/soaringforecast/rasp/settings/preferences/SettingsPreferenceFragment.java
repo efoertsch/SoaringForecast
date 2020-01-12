@@ -1,47 +1,27 @@
 package org.soaringforecast.rasp.settings.preferences;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.common.SettingsFragment;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.AndroidSupportInjection;
-import dagger.android.support.HasSupportFragmentInjector;
 
 // http://stackoverflow.com/questions/531427/how-do-i-display-the-current-value-of-an-android-preference-in-the-preference-su
 // and modified somewhat
 // Using PreferenceFragmentCompat so that dagger injection can be used in onAttach
 // This required calling onCreatePreferences() but setting shared preferences there caused updated to be ignored
 // So call is made just for form, no program logic done there.
-public class SettingsPreferenceFragment extends PreferenceFragmentCompat implements
-        SharedPreferences.OnSharedPreferenceChangeListener, HasSupportFragmentInjector {
-
-    @Inject
-    DispatchingAndroidInjector<Fragment> childFragmentInjector;
-
-    @Override
-    public void onAttach(Context context) {
-        AndroidSupportInjection.inject(this);
-        super.onAttach(context);
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return childFragmentInjector;
-    }
+public class SettingsPreferenceFragment extends SettingsFragment implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
     @Named("AIRPORT_PREFS")

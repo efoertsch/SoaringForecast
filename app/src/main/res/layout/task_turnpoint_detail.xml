@@ -29,8 +29,6 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:descendantFocusability="afterDescendants"
-        android:clickable="true"
-        android:focusable="true"
         >
 
         <ImageView
@@ -43,6 +41,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,5 +1,8 @@
 package org.soaringforecast.rasp.repository;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.soaringforecast.rasp.utils.CSVUtils;
 
 import java.text.DecimalFormat;
@@ -16,7 +19,7 @@ import androidx.room.PrimaryKey;
 //"Sterling","3B3",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL"
 
 @Entity(indices = {@Index(value = {"title", "code"}, unique = true), @Index("code")})
-public class Turnpoint {
+public class Turnpoint implements Cloneable, Parcelable {
 
     private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
     private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s ";
@@ -33,25 +36,42 @@ public class Turnpoint {
     @NonNull
     private String code = "";
 
-    private String country;
+    private String country = "";
 
-    private float latitudeDeg;
+    private float latitudeDeg = 0;
 
-    private float longitudeDeg;
+    private float longitudeDeg = 0;
 
-    private String elevation;
+    private String elevation = "";
 
     private String style = "0";
 
-    private String direction;
+    private String direction = "";
 
-    private String length;
+    private String length = "";
 
-    private String frequency;
+    private String frequency = "";
 
-    private String description;
+    private String description = "";
 
     public Turnpoint() {
+    }
+
+    public static Turnpoint newInstance(Turnpoint turnpoint) {
+        Turnpoint newTurnpoint = new Turnpoint();
+        newTurnpoint.id = turnpoint.id;
+        newTurnpoint.title = turnpoint.title;
+        newTurnpoint.code =  turnpoint.code;
+        newTurnpoint.country = turnpoint.country;
+        newTurnpoint.latitudeDeg = turnpoint.latitudeDeg;
+        newTurnpoint.longitudeDeg = turnpoint.longitudeDeg;
+        newTurnpoint.elevation = turnpoint.elevation;
+        newTurnpoint.style = turnpoint.style;
+        newTurnpoint.direction = turnpoint.direction;
+        newTurnpoint.length = turnpoint.length;
+        newTurnpoint.frequency = turnpoint.frequency;
+        newTurnpoint.description = turnpoint.description;
+        return newTurnpoint;
     }
 
     public static Turnpoint createTurnpointFromCSVDetail(String turnpointDetail) {
@@ -320,11 +340,11 @@ public class Turnpoint {
         return turnpointDetails;
     }
 
-    public boolean isGrassOrGliderAirport(){
+    public boolean isGrassOrGliderAirport() {
         return (style.equals("2") || style.equals("4"));
     }
 
-    public boolean isHardSurfaceAirport(){
+    public boolean isHardSurfaceAirport() {
         return style.equals("5");
     }
 
@@ -333,9 +353,9 @@ public class Turnpoint {
     }
 
     public static String getLatitudeInCupFormat(float lat) {
-        int degrees =  (int) lat ;
-        float minutes =  (lat - degrees) * 60 ;
-        return  latitudeFormat.format(Math.abs(degrees * 100  + minutes))+ (degrees >= 0 ? 'N' : 'S');
+        int degrees = (int) lat;
+        float minutes = (lat - degrees) * 60;
+        return latitudeFormat.format(Math.abs(degrees * 100 + minutes)) + (degrees >= 0 ? 'N' : 'S');
     }
 
 
@@ -344,9 +364,58 @@ public class Turnpoint {
     }
 
     public static String getLongitudeInCupFormat(float lng) {
-        int degrees =  (int) lng;
-        float minutes =  (lng - degrees) * 60 ;
-        return  longitudeFormat.format(Math.abs(degrees * 100  + minutes))+ (degrees >= 0 ? 'E' : 'W');
+        int degrees = (int) lng;
+        float minutes = (lng - degrees) * 60;
+        return longitudeFormat.format(Math.abs(degrees * 100 + minutes)) + (degrees >= 0 ? 'E' : 'W');
 
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.title);
+        dest.writeString(this.code);
+        dest.writeString(this.country);
+        dest.writeFloat(this.latitudeDeg);
+        dest.writeFloat(this.longitudeDeg);
+        dest.writeString(this.elevation);
+        dest.writeString(this.style);
+        dest.writeString(this.direction);
+        dest.writeString(this.length);
+        dest.writeString(this.frequency);
+        dest.writeString(this.description);
+    }
+
+    protected Turnpoint(Parcel in) {
+        this.id = in.readLong();
+        this.title = in.readString();
+        this.code = in.readString();
+        this.country = in.readString();
+        this.latitudeDeg = in.readFloat();
+        this.longitudeDeg = in.readFloat();
+        this.elevation = in.readString();
+        this.style = in.readString();
+        this.direction = in.readString();
+        this.length = in.readString();
+        this.frequency = in.readString();
+        this.description = in.readString();
+    }
+
+    public static final Parcelable.Creator<Turnpoint> CREATOR = new Parcelable.Creator<Turnpoint>() {
+        @Override
+        public Turnpoint createFromParcel(Parcel source) {
+            return new Turnpoint(source);
+        }
+
+        @Override
+        public Turnpoint[] newArray(int size) {
+            return new Turnpoint[size];
+        }
+    };
 }

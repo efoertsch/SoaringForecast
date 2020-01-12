@@ -362,5 +362,16 @@
     <string name="rational_find_current_location">Permission is needed to find you current location to fill in turnpoint lat/long</string>
     <string name="no_permission_to_use_gps_to_get_current_location">Permission to use GPS was denied. Can not find current location.</string>
     <string name="add_export_turnpoints">Export Turnpoints</string>
+    <string name="turnpoint_edit_gps_imageview_description">Set/update lat/long coordinates using gps.</string>
+    <string name="error_with_creating_turnpoint_for_satellite_display">Oops! Can\'t display satellite view. How do turnpoint values look?</string>
+    <string name="save_location">Save Location</string>
+    <string name="can_not_determine_location">Oh-oh. Can not find your location via GPS!</string>
+    <string name="error_finding_elevation">Oh-oh. An error occurred finding elevation. Setting to 0.</string>
+    <string name="save_turnpoint">Save Turnpoint</string>
+    <string name="save_turnpoint_before_exit">Save changes before exit?</string>
+    <string name="save_turnpoint_changes">save_turnpoint_changes</string>
+    <string name="view_turnpoint">View Turnpoint</string>
+    <string name="turnpoint">Turnpoint</string>
+    <string name="turnpoint_view_reset_marker">Reset Marker</string>
 
 </resources>

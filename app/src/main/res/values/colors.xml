@@ -17,5 +17,8 @@
     <color name="drag_color">#FFCCCCCC</color>
     <color name="drag_drop">#00000000</color>
 
+    <!-- may be used for turnpoint edit. Just want to keep values easily readable if fields are disabled -->
+    <color name="text_input_edit_text_disabled">#DE000000</color>
+    <color name="text_input_edit_text_enabled">#DE000000</color>
 
 </resources>

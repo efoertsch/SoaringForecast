@@ -86,7 +86,7 @@ dependencies {
     final GSON_CONVERTER = '2.3.0'
     final GLIDE = '4.8.0'
     final OKHTTP = '3.8.0'
-    final DAGGER = '2.16'
+    final DAGGER = '2.25.4'
     final TIMBER = '4.7.0'
     final ESPRESSO = '2.2.2'
     final HAMCREST = '1.3'

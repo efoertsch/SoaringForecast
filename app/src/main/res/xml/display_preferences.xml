@@ -6,28 +6,28 @@
     <PreferenceCategory
         android:key="rasp_forecast_options_preferences_key"
         android:title="@string/rasp_forecast_options">
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_display_forecast_sua_key"
             android:title="@string/pref_display_forecast_sua"/>
 
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_display_forecast_soundings_key"
             android:title="@string/pref_display_forecast_soundings"/>
 
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/pref_display_turnpoints_key"
             android:title="@string/pref_display_turnpoints"/>
 
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_display_turnpoint_satellite_view_key"
             android:title="@string/pref_display_turnpoint_satellite_view"
             app:summary="On click on turnpoint on map"/>
 
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_display_turnpoint_infowindow_view_key"
             android:title="@string/pref_display_turnpoint_infowindow_view"
@@ -41,17 +41,17 @@
         android:key="other_forecasts_preferences_key"
         android:title="@string/other_forecast_options">
 
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/pref_add_windy_to_menu_key"
             android:title="@string/pref_add_windy_to_menu"/>
 
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/pref_add_skysight_to_menu_key"
             android:title="@string/pref_add_skysight_to_menu"/>
 
-        <android.support.v7.preference.SwitchPreferenceCompat
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/pref_add_dr_jacks_to_menu_key"
             android:title="@string/pref_add_dr_jacks_to_menu"/>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- <string name="forecast_server_url">http://thepaavolas.net/</string> -->
+    <string name="forecast_server_url">http://www.soargbsc.com</string>
+    <string name="aviation_weather_gov_url">https://aviationweather.gov/adds/dataserver_current/</string>
+    <string name="usgs_server_url">https://nationalmap.gov/</string>
+</resources>

@@ -29,7 +29,6 @@ import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
-import org.soaringforecast.rasp.turnpoints.turnpointview.IAmDone;
 import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 import org.soaringforecast.rasp.windy.WindyActivity;
@@ -313,16 +312,11 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
-        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
+        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment =
+                TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
         displayFragment(turnpointSatelliteViewFragment, false, true);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIAmDoneMessageEvent(IAmDone iAmDone) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.app_frame_layout);
-        getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
-    }
 }
 
 

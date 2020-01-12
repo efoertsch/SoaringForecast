@@ -8,10 +8,10 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -21,20 +21,28 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
+import org.soaringforecast.rasp.databinding.TurnpointSatelliteView;
+import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
+import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditViewModel;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerFragment;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
@@ -42,72 +50,108 @@ import timber.log.Timber;
 /**
  * Display existing turnpoint location or
  * fire up GPS to find current location to assign to turnpoint
+ * No viewmodel as initially rather simple fragment but need to reconsider if continue to adding
+ * functionality
  */
 public class TurnpointSatelliteViewFragment extends DaggerFragment implements OnMapReadyCallback
         , EasyPermissions.PermissionCallbacks {
 
-    private Turnpoint turnpoint;
+    @Inject
+    public TurnpointBitmapUtils turnpointBitmapUtils;
+
+    @Inject
+    AppRepository appRepository;
+
+    @Inject
+    AppPreferences appPreferences;
+
+
+    private static final String TURNPOINT = "TURNPOINT";
     private ProgressBar progressBar;
-    private boolean findGPSLocation = false;
     private static final int FINE_LOCATION_ACCESS = 2020;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location lastKnownLocation;
     private LatLng defaultLatLng = new LatLng(42.4259167, -71.7928611);
-    private LatLng currentLocationLatLng = defaultLatLng;
-    private static final int DEFAULT_ZOOM = 8;
+    private int currentZoom = 14;
+    private TurnpointEditViewModel turnpointEditViewModel;
 
-
-    @Inject
-    public TurnpointBitmapUtils turnpointBitmapUtils;
     private GoogleMap googleMap;
+    private String elevationPreference;
+    TurnpointSatelliteView turnpointSatelliteView;
+    private boolean inEditMode;
+    private Marker turnpointMarker;
+    private Bitmap turnpointMarkerBitmap;
 
 
     public static TurnpointSatelliteViewFragment newInstance(Turnpoint turnpoint) {
         TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = new TurnpointSatelliteViewFragment();
-        turnpointSatelliteViewFragment.setTurnpoint(turnpoint);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(TURNPOINT, turnpoint);
+        turnpointSatelliteViewFragment.setArguments(bundle);
         return turnpointSatelliteViewFragment;
     }
 
-    private void setTurnpoint(Turnpoint turnpoint) {
-        this.turnpoint = turnpoint;
-    }
-
-    // Set a flag to fire up GPS to get current location
-    public TurnpointSatelliteViewFragment useGPSToFindCurrentLocation() {
-        findGPSLocation = true;
-        return this;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Viewmodel may already be defined if coming from TurnpointEditFragment
+        // but data 'should' be the same
+        turnpointEditViewModel = ViewModelProviders.of(getActivity())
+                .get(TurnpointEditViewModel.class)
+                .setAppRepository(appRepository)
+                .setAppPreferences(appPreferences)
+                .setTurnpoint(getArguments().getParcelable(TURNPOINT));
         setHasOptionsMenu(true);
-
+        elevationPreference = appPreferences.getAltitudeDisplay();
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.turnpoint_view, container, false);
-        progressBar = view.findViewById(R.id.turnpoint_map_progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
+        turnpointSatelliteView = DataBindingUtil.inflate(inflater, R.layout.turnpoint_satellite_view, container, false);
+        turnpointSatelliteView.setLifecycleOwner(getViewLifecycleOwner());
+        turnpointSatelliteView.setViewModel(turnpointEditViewModel);
+
+        turnpointSatelliteView.turnpointMapProgressBar.setVisibility(View.VISIBLE);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.turnpoint_map);
         mapFragment.getMapAsync(this);
-        view.findViewById(R.id.turnpoint_map_close_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeFragment();
+
+        turnpointSatelliteView.turnpointMapDetails.setMovementMethod(new ScrollingMovementMethod());
+
+        turnpointEditViewModel.getEditMode().observe(this, inEditMode -> {
+            this.inEditMode = inEditMode;
+            getActivity().invalidateOptionsMenu();
+            if (inEditMode || (turnpointEditViewModel.getLatitudeDeg() == 0 && turnpointEditViewModel.getLongitudeDeg() == 0)) {
+                getActivity().setTitle(R.string.edit_turnpoint);
+                turnpointSatelliteView.turnpointMapCloseButton.setVisibility(View.GONE);
+                turnpointSatelliteView.turnpointMapSaveButton.setVisibility(View.VISIBLE);
+                turnpointSatelliteView.turnpointMapSaveButton.setOnClickListener(v -> {
+                    // Save lat, long and elevation to turnpoint
+                    turnpointEditViewModel.updateTurnpointLatLngAndElevation(lastKnownLocation);
+                });
+
+                turnpointSatelliteView.turnpointMapCancelButton.setVisibility(View.VISIBLE);
+                turnpointSatelliteView.turnpointMapCancelButton.setOnClickListener(v -> {
+                    // close fragment
+                    turnpointEditViewModel.resetTurnpointPosition();
+                    removeFragment();
+
+                });
+                if ((turnpointEditViewModel.getLatitudeDeg() == 0 && turnpointEditViewModel.getLongitudeDeg() == 0)) {
+                    mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+                    checkForGPSLocationPermission();
+                }
+                if (turnpointMarker != null) {
+                    turnpointMarker.setDraggable(true);
+                }
+            } else {
+                getActivity().setTitle(R.string.view_turnpoint);
+                turnpointSatelliteView.turnpointMapCloseButton.setOnClickListener(v -> removeFragment());
             }
         });
-        TextView turnpointView = view.findViewById(R.id.turnpoint_map_details);
-        turnpointView.setText(turnpoint.getFormattedTurnpointDetails());
-        turnpointView.setMovementMethod(new ScrollingMovementMethod());
-
-        if (findGPSLocation) {
-            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-            checkForGPSLocationPermission();
-        }
-        return view;
+        return turnpointSatelliteView.getRoot();
     }
 
 
@@ -115,10 +159,30 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
+        inflater.inflate(R.menu.turnpoint_view_options, menu);
+        MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_view_reset_marker);
+        if (inEditMode) {
+           resetMenuItem.setVisible(true);
+        } else {
+            resetMenuItem.setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.turnpoint_view_reset_marker:
+                turnpointEditViewModel.resetTurnpointPosition();
+                moveCameraToLatLng(new LatLng(turnpointEditViewModel.getLatitudeDeg(), turnpointEditViewModel.getLongitudeDeg()));
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void removeFragment() {
-        EventBus.getDefault().post(new IAmDone());
+        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
     }
 
 
@@ -126,15 +190,59 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        LatLng turnppointLatLng = new LatLng(turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(turnppointLatLng));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(turnppointLatLng, 14f));
-        googleMap.setOnCameraIdleListener(() ->
-                Timber.d("Zoom level: %1$d", (int) googleMap.getCameraPosition().zoom));
-        progressBar.setVisibility(View.GONE);
-        if (findGPSLocation) {
-            // Prompt the user for permission.
-            checkForGPSLocationPermission();
+        if (turnpointEditViewModel.getLatitudeDeg() != 0 || turnpointEditViewModel.getLongitudeDeg() != 0) {
+            LatLng turnpointLatLng = new LatLng(turnpointEditViewModel.getLatitudeDeg(), turnpointEditViewModel.getLongitudeDeg());
+            moveCameraToLatLng(turnpointLatLng);
+        }
+        if (inEditMode) {
+            addMarkerDragListener();
+        }
+    }
+
+    private void moveCameraToLatLng(LatLng latLng) {
+        if (googleMap != null) {
+            if (turnpointMarkerBitmap == null ) {
+                // really should just have to pass in turnpoint style but
+                turnpointMarkerBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpointEditViewModel.getTurnpoint(), currentZoom);
+            }
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
+            googleMap.setOnCameraIdleListener(() -> {
+                    Timber.d("Zoom level: %1$d", (int) googleMap.getCameraPosition().zoom);
+                    });
+            turnpointSatelliteView.turnpointMapProgressBar.setVisibility(View.GONE);
+            if (turnpointMarker == null) {
+                turnpointMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromBitmap(turnpointMarkerBitmap)));
+            }
+            turnpointMarker.setDraggable(inEditMode);
+
+        }
+    }
+
+
+    private void addMarkerDragListener() {
+        if (googleMap != null) {
+            googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragStart(Marker arg0) {
+                }
+
+                @Override
+                public void onMarkerDragEnd(Marker marker) {
+                    // Note that new location doesn't provide new elevation.
+                    LatLng  latLng = marker.getPosition();
+                    turnpointEditViewModel.setLatitudeDeg(latLng.latitude);
+                    turnpointEditViewModel.setLongitudeDeg(latLng.longitude);
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                    turnpointEditViewModel.getElevationAtLatLng(latLng);
+                }
+
+                @Override
+                public void onMarkerDrag(Marker arg0) {
+                }
+            });
         }
     }
 
@@ -149,30 +257,18 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 // Set the map's camera position to the current location of the device.
                 lastKnownLocation = task.getResult();
                 if (lastKnownLocation != null) {
-                    currentLocationLatLng =  new LatLng(lastKnownLocation.getLatitude(),
+                    LatLng currentLocationLatLng = new LatLng(lastKnownLocation.getLatitude(),
                             lastKnownLocation.getLongitude());
                     moveCameraToLatLng(currentLocationLatLng);
-                    turnpoint.setLatitudeDeg(currentLocationLatLng.latitude);
-                    turnpoint.setLongitudeDeg(currentLocationLatLng.longitude);
                 }
             } else {
+                EventBus.getDefault().post(new SnackbarMessage(getString(R.string.can_not_determine_location)));
                 Timber.d("Current location is null. Using defaults.");
                 Timber.e(task.getException(), " Exception");
                 moveCameraToLatLng(defaultLatLng);
                 googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             }
         });
-    }
-
-    private void moveCameraToLatLng(LatLng latLng) {
-        if (googleMap != null) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    latLng, DEFAULT_ZOOM));
-        }
-        Bitmap turnpointBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpoint, DEFAULT_ZOOM);
-        googleMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .icon(BitmapDescriptorFactory.fromBitmap(turnpointBitmap)));
     }
 
 

@@ -39,6 +39,8 @@ public class TurnpointBitmapUtils {
         }
     }
 
+    // TODO remove need to pass in turnpoint, just us turnpoint style (add create static methods to find type of
+    // turnpoint (grass/glider, hardsurface, etc)
     public Bitmap getSizedTurnpointBitmap(Context context, Turnpoint turnpoint, int zoomLevel) {
         Bitmap startingTurnpointBitmap;
         int sizingRatio = 1;

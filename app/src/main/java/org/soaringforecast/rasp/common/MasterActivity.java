@@ -15,7 +15,6 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
-import org.soaringforecast.rasp.turnpoints.turnpointview.IAmDone;
 import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 
 import androidx.annotation.StringRes;
@@ -138,15 +137,6 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
         TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
         displayFragment(turnpointSatelliteViewFragment, false, true);
-    }
-
-
-    // TODO consolidate IAamDone and popCurrentFragment
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIAmDoneMessageEvent(IAmDone iAmDone) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
     }
 
     public void popCurrentFragment() {

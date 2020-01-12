@@ -8,6 +8,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.MasterActivity;
+import org.soaringforecast.rasp.repository.Turnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
@@ -19,6 +21,7 @@ import org.soaringforecast.rasp.turnpoints.messages.TurnpointSearchForEdit;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
 import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
+import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 
 import java.util.List;
 
@@ -32,9 +35,7 @@ public class TurnpointActivity extends MasterActivity {
     private static final String TURNPOINT_EDIT_SEARCH = "TURNPOINT_EDIT_SEARCH";
     private static final String TURNPOINT_IMPORT = "TURNPOINT_IMPORT";
     private static final String ENABLE_CLICK_TASK = "ENABLE_CLICK_TASK";
-    private static final String TURNPOINT_ID = "TURNPOINT_ID";
-
-    private boolean enableClickTask = false;
+    private static final String TURNPOINT = "TURNPOINT";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class TurnpointActivity extends MasterActivity {
         super.onBackPressed();
     }
 
-    private Fragment getTurnpointListFragment(){
+    private Fragment getTurnpointListFragment() {
         return TurnpointListFragment.newInstance();
     }
 
@@ -94,12 +95,12 @@ public class TurnpointActivity extends MasterActivity {
     }
 
     private Fragment getTurnpointEditFragment() {
-        long turnpointID = getIntent().getExtras().getLong(TURNPOINT_ID);
-        return TurnpointEditFragment.newInstance(turnpointID);
+        Turnpoint turnpoint = getIntent().getExtras().getParcelable(TURNPOINT);
+        return TurnpointEditFragment.newInstance(turnpoint);
     }
 
-    private Fragment getTurnpointEditFragment(long turnpointId) {
-        return TurnpointEditFragment.newInstance(turnpointId);
+    private Fragment getTurnpointEditFragment(Turnpoint turnpoint) {
+        return TurnpointEditFragment.newInstance(turnpoint);
     }
 
     // Bus messages
@@ -126,7 +127,14 @@ public class TurnpointActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTurnpoint event) {
-        displayFragment(getTurnpointEditFragment(event.getTurnpointId()), false, true);
+        displayFragment(getTurnpointEditFragment(event.getTurnpoint()), false, true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
+        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment =
+                TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
+        displayFragment(turnpointSatelliteViewFragment, false, true);
     }
 
 
@@ -142,32 +150,10 @@ public class TurnpointActivity extends MasterActivity {
             return new TurnpointActivity.Builder();
         }
 
-        public TurnpointActivity.Builder displayTurnpoints(){
+        public TurnpointActivity.Builder displayTurnpoints() {
             bundle.putString(TURNPOINT_OP, DISPLAY_TURNPOINTS);
             return this;
         }
-
-
-        public TurnpointActivity.Builder enableClickTask(boolean enableClickTask) {
-            bundle.putBoolean(ENABLE_CLICK_TASK, enableClickTask);
-            return this;
-        }
-
-        public TurnpointActivity.Builder editTurnpoint(long turnpointId) {
-            bundle.putLong(TURNPOINT_ID, turnpointId);
-            return this;
-        }
-
-        public TurnpointActivity.Builder displayTurnpointEditSearch() {
-            bundle.putString(TURNPOINT_OP, TURNPOINT_EDIT_SEARCH);
-            return this;
-        }
-
-        public TurnpointActivity.Builder displayTurnpointImport() {
-            bundle.putString(TURNPOINT_OP, TURNPOINT_IMPORT);
-            return this;
-        }
-
 
         public Intent build(Context context) {
             Intent intent = new Intent(context, TurnpointActivity.class);

@@ -1,13 +1,15 @@
 package org.soaringforecast.rasp.turnpoints.messages;
 
-public class EditTurnpoint {
-    final long turnpointId;
+import org.soaringforecast.rasp.repository.Turnpoint;
 
-    public EditTurnpoint(long turnpointId){
-        this.turnpointId = turnpointId;
+public class EditTurnpoint {
+    final Turnpoint turnpoint;
+
+    public EditTurnpoint(Turnpoint turnpoint){
+        this.turnpoint = turnpoint;
     }
 
-    public long getTurnpointId() {
-        return turnpointId;
+    public Turnpoint getTurnpoint() {
+        return turnpoint;
     }
 }

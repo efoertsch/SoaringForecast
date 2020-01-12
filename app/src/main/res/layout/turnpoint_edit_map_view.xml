@@ -1,56 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/turnpoint_view_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorScreenBackground"
-    >
+    android:background="@color/offwhite">
+
 
 
     <FrameLayout
         android:id="@+id/turnpoint_map_frame_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/margin_standard"
-        app:layout_constraintBottom_toTopOf="@+id/turnpoint_map_close_button"
+        app:layout_constraintBottom_toTopOf="@+id/turnpoint_map_save_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/turnpoint_map_details"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/turnpoint_map_details">
 
         <fragment
             android:id="@+id/turnpoint_map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </FrameLayout>
 
+    <!-- Putting this after the map layout so the map doesn't hide the text box) -->
     <TextView
         android:id="@+id/turnpoint_map_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/offwhite"
         android:lines="5"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:padding="@dimen/margin_standard"
-        tools:text="Sterling \n3B3"
-        android:background="@color/colorScreenBackground"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Sterling \n3B3" />
 
     <Button
-        android:id="@+id/turnpoint_map_close_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/close"
+        android:id="@+id/turnpoint_map_save_button"
         style="@style/ButtonPrimaryWhite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/save_location"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@+id/turnpoint_map_cancel_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/turnpoint_map_cancel_button"
+        style="@style/ButtonPrimaryWhite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/turnpoint_map_save_button" />
 
 
     <ProgressBar
@@ -62,7 +74,6 @@
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

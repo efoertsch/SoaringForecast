@@ -51,7 +51,7 @@ public class TurnpointListFragment extends DaggerFragment {
 
 
     private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
-        EventBus.getDefault().post(new EditTurnpoint(turnpoint.getId()));
+        EventBus.getDefault().post(new EditTurnpoint(turnpoint));
     };
 
     private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
@@ -143,7 +143,7 @@ public class TurnpointListFragment extends DaggerFragment {
     }
 
     private void addNewTurnpoint() {
-        EventBus.getDefault().post((new EditTurnpoint(-1l) ));
+        EventBus.getDefault().post((new EditTurnpoint(new Turnpoint()) ));
     }
 
     @Override

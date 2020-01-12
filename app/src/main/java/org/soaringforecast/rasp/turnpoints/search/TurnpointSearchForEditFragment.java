@@ -22,7 +22,7 @@ public class TurnpointSearchForEditFragment extends TurnpointSearchFragment {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
         searchView.setQuery("", true);
-        EventBus.getDefault().post(new EditTurnpoint(turnpoint.getId()));
+        EventBus.getDefault().post(new EditTurnpoint(turnpoint));
     };
 
     public void onCreate(Bundle savedInstanceState) {

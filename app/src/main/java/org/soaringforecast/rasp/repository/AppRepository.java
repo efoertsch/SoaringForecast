@@ -23,6 +23,7 @@ import org.soaringforecast.rasp.data.taf.TafResponse;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
+import org.soaringforecast.rasp.retrofit.UsgsApi;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageType;
 import org.soaringforecast.rasp.satellite.data.SatelliteRegion;
 import org.soaringforecast.rasp.soaring.forecast.SoaringForecastImage;
@@ -32,6 +33,7 @@ import org.soaringforecast.rasp.soaring.json.Regions;
 import org.soaringforecast.rasp.soaring.json.SUARegion;
 import org.soaringforecast.rasp.soaring.json.SUARegionFiles;
 import org.soaringforecast.rasp.turnpoints.cup.CupStyles;
+import org.soaringforecast.rasp.turnpoints.json.NationalMap;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.JSONResourceReader;
 import org.soaringforecast.rasp.utils.StringUtils;
@@ -103,6 +105,7 @@ public class AppRepository implements CacheTimeListener {
     private BitmapImageUtils bitmapImageUtils;
     private JSONServerApi jsonServerApi;
     private AviationWeatherGovApi aviationWeatherGovApi;
+    private UsgsApi usgsApi;
 
 
     private AppRepository(Context context) {
@@ -122,7 +125,8 @@ public class AppRepository implements CacheTimeListener {
             , BitmapImageUtils bitmapImageUtils
             , String raspUrl
             , StringUtils stringUtils
-            , AppPreferences appPreferences) {
+            , AppPreferences appPreferences
+    , UsgsApi usgsApi) {
         synchronized (AppRepository.class) {
             if (appRepository == null) {
                 appRepository = new AppRepository(context);
@@ -133,6 +137,7 @@ public class AppRepository implements CacheTimeListener {
                 appRepository.raspUrl = raspUrl;
                 appRepository.stringUtils = stringUtils;
                 appRepository.appPreferences = appPreferences;
+                appRepository.usgsApi = usgsApi;
                 // Since downloader should exist for lifetime of app, not unregistering anywhere
                 appRepository.appPreferences.registerCacheTimeChangeListener(appRepository);
                 appRepository.cacheTimeLimit(appPreferences.getClearCacheTime());
@@ -919,6 +924,11 @@ public class AppRepository implements CacheTimeListener {
 
     public Call<TafResponse> getMostRecentTafForEachAirport(String icaoIdentifiers, int hoursBeforeNow) {
         return aviationWeatherGovApi.getMostRecentTafForEachAirport(icaoIdentifiers, hoursBeforeNow);
+    }
+
+    // ---- USGS calls --------------------------------------------------
+    public Single<NationalMap> getElevationAtLatLong(double latitude, double longitude, String units){
+        return usgsApi.getElevation(String.format("%.6f", latitude), String.format("%.6f", longitude), units);
     }
 
     // -------------------- Cup Turnpoint Styles ------------------------
