@@ -91,7 +91,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     }
 
     public TurnpointEditViewModel setTurnpoint(Turnpoint turnpoint) {
-        if (turnpoint == null) {
+        if (this.turnpoint == null) {
             this.turnpoint = turnpoint;
             originalTurnpoint = Turnpoint.newInstance(turnpoint);
             okToSave.setValue(false);

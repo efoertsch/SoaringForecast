@@ -19,7 +19,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -72,7 +71,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location lastKnownLocation;
     private LatLng defaultLatLng = new LatLng(42.4259167, -71.7928611);
-    private int currentZoom = 14;
+    private float currentZoom = 14f;
     private TurnpointEditViewModel turnpointEditViewModel;
 
     private GoogleMap googleMap;
@@ -162,7 +161,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
         inflater.inflate(R.menu.turnpoint_view_options, menu);
         MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_view_reset_marker);
         if (inEditMode) {
-           resetMenuItem.setVisible(true);
+            resetMenuItem.setVisible(true);
         } else {
             resetMenuItem.setVisible(false);
         }
@@ -201,21 +200,23 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
 
     private void moveCameraToLatLng(LatLng latLng) {
         if (googleMap != null) {
-            if (turnpointMarkerBitmap == null ) {
+            if (turnpointMarkerBitmap == null) {
                 // really should just have to pass in turnpoint style but
-                turnpointMarkerBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpointEditViewModel.getTurnpoint(), currentZoom);
+                turnpointMarkerBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpointEditViewModel.getTurnpoint(), (int) currentZoom);
             }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
             googleMap.setOnCameraIdleListener(() -> {
-                    Timber.d("Zoom level: %1$d", (int) googleMap.getCameraPosition().zoom);
-                    });
+                currentZoom = googleMap.getCameraPosition().zoom;
+                Timber.d("Zoom level: %.4f", currentZoom);
+            });
             turnpointSatelliteView.turnpointMapProgressBar.setVisibility(View.GONE);
             if (turnpointMarker == null) {
                 turnpointMarker = googleMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .icon(BitmapDescriptorFactory.fromBitmap(turnpointMarkerBitmap)));
+                        .position(latLng));
+                //.icon(BitmapDescriptorFactory.fromBitmap(turnpointMarkerBitmap)));
             }
+            turnpointMarker.setPosition(latLng);
             turnpointMarker.setDraggable(inEditMode);
 
         }
@@ -232,7 +233,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 @Override
                 public void onMarkerDragEnd(Marker marker) {
                     // Note that new location doesn't provide new elevation.
-                    LatLng  latLng = marker.getPosition();
+                    LatLng latLng = marker.getPosition();
                     turnpointEditViewModel.setLatitudeDeg(latLng.latitude);
                     turnpointEditViewModel.setLongitudeDeg(latLng.longitude);
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));

@@ -34,7 +34,6 @@ public class TurnpointActivity extends MasterActivity {
     private static final String TURNPOINT_EDIT = "TURNPOINT_EDIT";
     private static final String TURNPOINT_EDIT_SEARCH = "TURNPOINT_EDIT_SEARCH";
     private static final String TURNPOINT_IMPORT = "TURNPOINT_IMPORT";
-    private static final String ENABLE_CLICK_TASK = "ENABLE_CLICK_TASK";
     private static final String TURNPOINT = "TURNPOINT";
 
     @Override
