@@ -80,6 +80,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     private boolean inEditMode;
     private Marker turnpointMarker;
     private Bitmap turnpointMarkerBitmap;
+    private boolean inDragMode = false;
 
 
     public static TurnpointSatelliteViewFragment newInstance(Turnpoint turnpoint) {
@@ -160,9 +161,12 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
         menu.clear();
         inflater.inflate(R.menu.turnpoint_view_options, menu);
         MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_view_reset_marker);
+        MenuItem dragMenuItem = menu.findItem(R.id.turnpoint_view_drag_marker);
         if (inEditMode) {
+            dragMenuItem.setVisible(true);
             resetMenuItem.setVisible(true);
         } else {
+            dragMenuItem.setVisible(false);
             resetMenuItem.setVisible(false);
         }
     }
@@ -174,6 +178,10 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
             case R.id.turnpoint_view_reset_marker:
                 turnpointEditViewModel.resetTurnpointPosition();
                 moveCameraToLatLng(new LatLng(turnpointEditViewModel.getLatitudeDeg(), turnpointEditViewModel.getLongitudeDeg()));
+                return true;
+            case R.id.turnpoint_view_drag_marker:
+                inDragMode = true;
+                addMarkerDragListener();
                 return true;
             default:
                 return false;
@@ -193,17 +201,14 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
             LatLng turnpointLatLng = new LatLng(turnpointEditViewModel.getLatitudeDeg(), turnpointEditViewModel.getLongitudeDeg());
             moveCameraToLatLng(turnpointLatLng);
         }
-        if (inEditMode) {
-            addMarkerDragListener();
-        }
     }
 
     private void moveCameraToLatLng(LatLng latLng) {
         if (googleMap != null) {
-            if (turnpointMarkerBitmap == null) {
-                // really should just have to pass in turnpoint style but
-                turnpointMarkerBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpointEditViewModel.getTurnpoint(), (int) currentZoom);
-            }
+//            if (turnpointMarkerBitmap == null) {
+//                // really should just have to pass in turnpoint style but
+//                turnpointMarkerBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpointEditViewModel.getTurnpoint(), (int) currentZoom);
+//            }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
             googleMap.setOnCameraIdleListener(() -> {

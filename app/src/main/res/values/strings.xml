@@ -305,7 +305,9 @@
     <string name="display_turnpoints">Display Turnpoints</string>
     <string name="no_turnpoints_to_display_none_loaded">No turnpoints to display. None loaded?</string>
     <string name="rational_read_downloads_dir">Permission is needed to look for *.cup files in the Downloads directory.</string>
+    <string name="rational_write_downloads_dir">Permission is needed to export turnpoints to the Downloads directory.</string>
     <string name="no_permission_to_read_downloads_dir">Permission to read Downloads directory was denied. Can not check for/import custom turnpoint files.</string>
+    <string name="no_permission_to_write_downloads_dir">Permission to write to Downloads directory was denied. Can not export turnpoints to Downloads directory.</string>
     <string name="permission_denied">PERMISSION DENIED</string>
     <string name="unknow_error_in_render">Unkown\nError in rendering info</string>
     <string name="map_background">Map Background</string>
@@ -373,5 +375,9 @@
     <string name="view_turnpoint">View Turnpoint</string>
     <string name="turnpoint">Turnpoint</string>
     <string name="turnpoint_view_reset_marker">Reset Marker</string>
+    <string name="turnpoint_view_drag_marker">Drag Marker</string>
+    <string name="turnpoints_exported_to_download_directory">Turnpoints exported to Downloads directory</string>
+    <string name="turnpoint_edit_export">Export</string>
+    <string name="turnpoint_edit_email">Email</string>
 
 </resources>

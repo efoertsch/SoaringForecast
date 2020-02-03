@@ -3,6 +3,8 @@ package org.soaringforecast.rasp.repository;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.soaringforecast.rasp.utils.CSVUtils;
 
 import java.text.DecimalFormat;
@@ -25,7 +27,8 @@ public class Turnpoint implements Cloneable, Parcelable {
     private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$f Long:%5$f\nElev: %6$s \n%7$s ";
     private static final DecimalFormat latitudeFormat = new DecimalFormat("0000.000");
     private static final DecimalFormat longitudeFormat = new DecimalFormat("00000.000");
-
+    private static final String QUOTE = "\"";
+    private static final String COMMA = ",";
     @NonNull
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -61,7 +64,7 @@ public class Turnpoint implements Cloneable, Parcelable {
         Turnpoint newTurnpoint = new Turnpoint();
         newTurnpoint.id = turnpoint.id;
         newTurnpoint.title = turnpoint.title;
-        newTurnpoint.code =  turnpoint.code;
+        newTurnpoint.code = turnpoint.code;
         newTurnpoint.country = turnpoint.country;
         newTurnpoint.latitudeDeg = turnpoint.latitudeDeg;
         newTurnpoint.longitudeDeg = turnpoint.longitudeDeg;
@@ -158,8 +161,6 @@ public class Turnpoint implements Cloneable, Parcelable {
     public void setLongitudeDeg(double longitudeDeg) {
         this.longitudeDeg = (float) longitudeDeg;
     }
-
-
 
     public String getElevation() {
         return elevation;
@@ -314,6 +315,11 @@ public class Turnpoint implements Cloneable, Parcelable {
         }
     }
 
+    public boolean isLandable() {
+        return style != null && style.matches("[2345]");
+
+    }
+
     public String getFormattedTurnpointDetails() {
         String turnpointDetails;
         switch (style) {
@@ -370,6 +376,27 @@ public class Turnpoint implements Cloneable, Parcelable {
 
     }
 
+    public LatLng getLatLng() {
+        return new LatLng(latitudeDeg, longitudeDeg);
+    }
+
+    public String getCupFormattedRecord() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(QUOTE).append(title).append(QUOTE).append(COMMA);
+        sb.append(QUOTE).append(code).append(QUOTE).append(COMMA);
+        sb.append(country).append(COMMA);
+        sb.append(getLatitudeInCupFormat()).append(COMMA);
+        sb.append(getLongitudeInCupFormat()).append(COMMA);
+        sb.append(elevation).append(COMMA);
+        sb.append(style).append(COMMA);
+        sb.append(direction).append(COMMA);
+        sb.append(length).append(COMMA);
+        sb.append(frequency).append(COMMA);
+        sb.append(description);
+
+        return sb.toString();
+    }
+
 
     @Override
     public int describeContents() {
@@ -418,4 +445,5 @@ public class Turnpoint implements Cloneable, Parcelable {
             return new Turnpoint[size];
         }
     };
+
 }

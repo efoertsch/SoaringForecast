@@ -5,4 +5,8 @@
         android:title="@string/turnpoint_view_reset_marker"
         app:showAsAction="always"
         android:visible="false"/>
+    <item android:id="@+id/turnpoint_view_drag_marker"
+        android:title="@string/turnpoint_view_drag_marker"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
 </menu>

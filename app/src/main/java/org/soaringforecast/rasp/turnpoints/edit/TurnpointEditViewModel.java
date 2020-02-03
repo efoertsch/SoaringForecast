@@ -158,12 +158,12 @@ public class TurnpointEditViewModel extends ObservableViewModel {
 
     @Bindable
     public String getCountry() {
-        return turnpoint.getCountry();
+        return turnpoint.getCountry().toUpperCase();
     }
 
     @Bindable
     public void setCountry(String value) {
-        value = value.trim();
+        value = value.trim().toUpperCase();
         turnpoint.setCountry(value);
         needToSaveUpdates.setValue(true);
         setSaveIndicator();
@@ -406,7 +406,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     }
 
     private boolean isLandable() {
-        return (turnpoint.getStyle().matches("[2345]"));
+        return turnpoint.isLandable();
     }
 
     public void saveTurnpoint() {
