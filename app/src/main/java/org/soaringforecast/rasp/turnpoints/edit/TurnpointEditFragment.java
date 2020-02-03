@@ -38,15 +38,12 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
     @Inject
     AppPreferences appPreferences;
 
-
     private static final String TURNPOINT = "TURNPOINT";
 
     private Turnpoint turnpoint;
     private TurnpointEditViewModel turnpointEditViewModel;
     private CupStyleAdapter cupStyleAdapter;
-
     private int lastCupStylePosition = -1;
-
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private boolean okToSave = false;
     private boolean inEditMode = false;
@@ -160,8 +157,11 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
             case R.id.turnpoint_edit_menu_edit:
                 turnpointEditViewModel.setInEditMode(true);
                 return true;
-            case R.id.turnpoint_edit_menu_save:
-                confirmSave();
+            case R.id.turnpoint_edit_menu_export:
+                export();
+                return true;
+            case R.id.turnpoint_edit_menu_email:
+                email();
                 return true;
             case R.id.turnpoint_edit_menu_reset:
                 turnpointEditViewModel.resetTurnpoint();
@@ -173,6 +173,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     private void enableTurnpointEditting() {
         turnpointEditView.turnpointEditTitle.setEnabled(inEditMode);
@@ -280,6 +281,13 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         dialog.setCanceledOnTouchOutside(false);
 
     }
+
+    private void email() {
+    }
+
+    private void export() {
+    }
+
 
 }
 

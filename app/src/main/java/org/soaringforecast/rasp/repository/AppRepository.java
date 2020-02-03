@@ -45,11 +45,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -126,7 +129,7 @@ public class AppRepository implements CacheTimeListener {
             , String raspUrl
             , StringUtils stringUtils
             , AppPreferences appPreferences
-    , UsgsApi usgsApi) {
+            , UsgsApi usgsApi) {
         synchronized (AppRepository.class) {
             if (appRepository == null) {
                 appRepository = new AppRepository(context);
@@ -434,6 +437,32 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
+    // Write turnpoints to download directory
+    public Completable writeTurnpointsToCupFile(final List<Turnpoint> turnpoints) {
+        return Completable.fromAction(() -> {
+            String newLine = System.getProperty("line.separator");
+            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File exportFile = new File(path, getExportCupFilename());
+            exportFile.setReadable(true);
+            FileOutputStream stream = new FileOutputStream(exportFile, false);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(stream);
+            for (Turnpoint turnpoint : turnpoints) {
+                outputStreamWriter.write(turnpoint.getCupFormattedRecord() + newLine);
+            }
+            outputStreamWriter.close();
+        });
+    }
+
+
+    private String getExportCupFilename() {
+        String pattern = "yyyy_MM_dd_H_m_s";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String currentDate = simpleDateFormat.format(new Date());
+        return "TurnpointExports_" + currentDate + ".cup";
+
+    }
+
+
     class ImageFileFilter implements FileFilter {
         private final String[] cupFileExtensions = new String[]{"cup"};
 
@@ -446,6 +475,7 @@ public class AppRepository implements CacheTimeListener {
             }
             return false;
         }
+
     }
 
     // --------- Turnpoints -----------------
@@ -469,7 +499,7 @@ public class AppRepository implements CacheTimeListener {
         turnpointDao.update(turnpoint);
     }
 
-    public Maybe<List<Turnpoint>> findTurnpoints(String searchTerm) {
+    public Single<List<Turnpoint>> findTurnpoints(String searchTerm) {
         return turnpointDao.findTurnpoints(searchTerm);
     }
 
@@ -781,7 +811,7 @@ public class AppRepository implements CacheTimeListener {
                     if (oldSuaFilename != null) {
                         deleteSUAFile(region, oldSuaFilename);
                     }
-                    EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.downloading_new_sua)));
+                    post(new SnackbarMessage(context.getString(R.string.downloading_new_sua)));
                     emitter.onNext(getSuaJSONObject(region, newSuaFilename));
                 }
             } else {
@@ -880,7 +910,7 @@ public class AppRepository implements CacheTimeListener {
      */
     private void writeSUAFileToDevice(String regionName, String suaFileName, ResponseBody responseBody) {
         if (responseBody == null) {
-            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.error_getting_sua_file_for_region, regionName), Snackbar.LENGTH_SHORT));
+            post(new SnackbarMessage(context.getString(R.string.error_getting_sua_file_for_region, regionName), Snackbar.LENGTH_SHORT));
         }
         try {
             byte[] buffer = new byte[4096];
@@ -893,7 +923,7 @@ public class AppRepository implements CacheTimeListener {
             }
         } catch (Exception e) {
             Timber.e(e, "Error reading/writing sua geojson file");
-            EventBus.getDefault().post(new SnackbarMessage(context.getString(R.string.error_getting_sua_file_for_region, regionName), Snackbar.LENGTH_SHORT));
+            post(new SnackbarMessage(context.getString(R.string.error_getting_sua_file_for_region, regionName), Snackbar.LENGTH_SHORT));
         }
     }
 
@@ -927,7 +957,7 @@ public class AppRepository implements CacheTimeListener {
     }
 
     // ---- USGS calls --------------------------------------------------
-    public Single<NationalMap> getElevationAtLatLong(double latitude, double longitude, String units){
+    public Single<NationalMap> getElevationAtLatLong(double latitude, double longitude, String units) {
         return usgsApi.getElevation(String.format("%.6f", latitude), String.format("%.6f", longitude), units);
     }
 
@@ -942,6 +972,13 @@ public class AppRepository implements CacheTimeListener {
                 emitter.onError(jse);
             }
         });
+    }
+
+
+    // ---------------- Miscellaneous -----------------------------------------------
+    private void post(Object post) {
+        EventBus.getDefault().post(post);
+
     }
 
 }

@@ -1,10 +1,9 @@
 package org.soaringforecast.rasp.repository;
 
-import androidx.room.Dao;
-import androidx.room.Query;
-
 import java.util.List;
 
+import androidx.room.Dao;
+import androidx.room.Query;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 
@@ -21,7 +20,7 @@ public interface TurnpointDao extends BaseDao<Turnpoint> {
     int deleteTurnpoint(long id);
 
     @Query("Select * from turnpoint where title like :searchTerm or code like :searchTerm  order by title, code collate nocase")
-    Maybe<List<Turnpoint>> findTurnpoints(String searchTerm);
+    Single<List<Turnpoint>> findTurnpoints(String searchTerm);
 
     @Query("Select * from turnpoint where title = :title and code = :code collate nocase")
     Maybe<Turnpoint> getTurnpoint(String title, String code);

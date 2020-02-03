@@ -76,7 +76,7 @@ public class TurnpointSearchFragment extends TurnpointListFragment {
     }
 
     private void runSearch(String search) {
-        turnpointListViewModel.searchTurnpoints(search).observe(this, turnpoints -> turnpointListAdapter.setTurnpointList(turnpoints));
+        turnpointListViewModel.searchTurnpoints(search);
     }
 
 //    private void returnToPreviousScreen() {

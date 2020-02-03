@@ -1,6 +1,6 @@
 package org.soaringforecast.rasp.turnpoints.list;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
+import org.soaringforecast.rasp.databinding.TurnpointListBinding;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
@@ -22,24 +23,30 @@ import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.messages.TurnpointSearchForEdit;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
+import pub.devrel.easypermissions.EasyPermissions;
+import timber.log.Timber;
 
-public class TurnpointListFragment extends DaggerFragment {
+public class TurnpointListFragment extends DaggerFragment implements EasyPermissions.PermissionCallbacks {
 
     @Inject
     AppRepository appRepository;
 
     @Inject
     TurnpointBitmapUtils turnpointBitmapUtils;
+
+    private static final int WRITE_DOWNLOADS_ACCESS = 54321;
 
     protected TurnpointListAdapter turnpointListAdapter;
     protected TurnpointListViewModel turnpointListViewModel;
@@ -48,14 +55,15 @@ public class TurnpointListFragment extends DaggerFragment {
     private View rootView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private boolean showSearchIcon = true;
+    private boolean refreshOnResume = false;
 
 
     private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
-        EventBus.getDefault().post(new EditTurnpoint(turnpoint));
+       post(new EditTurnpoint(turnpoint));
     };
 
     private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
-        EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
+        post(new DisplayTurnpoint(turnpoint));
     };
 
 
@@ -74,7 +82,11 @@ public class TurnpointListFragment extends DaggerFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.turnpoint_list_layout, null);
+
+        TurnpointListBinding turnpointListBinding = DataBindingUtil.inflate(inflater
+                , R.layout.turnpoint_list_layout, container, false);
+        turnpointListBinding.setLifecycleOwner(getActivity());
+        turnpointListBinding.setViewModel(turnpointListViewModel);
 
         turnpointListAdapter = TurnpointListAdapter.getInstance()
                 .setSateliteOnItemClickListener(satelliteOnItemClickListener)
@@ -82,7 +94,7 @@ public class TurnpointListFragment extends DaggerFragment {
 
         turnpointListAdapter.setOnItemClickListener(turnpointTextClickListener);
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.turnpoint_list_recycler_view);
+        RecyclerView recyclerView = turnpointListBinding.turnpointListRecyclerView;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -90,9 +102,8 @@ public class TurnpointListFragment extends DaggerFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         ViewUtilities.addRecyclerViewDivider(getContext(), linearLayoutManager.getOrientation(), recyclerView);
         recyclerView.setAdapter(turnpointListAdapter);
-
         checkForAtLeastOneTurnpoint();
-        return rootView;
+        return turnpointListBinding.getRoot();
     }
 
     @Override
@@ -101,6 +112,10 @@ public class TurnpointListFragment extends DaggerFragment {
         getActivity().setTitle(R.string.turnpoint_list);
         // subclass my want altered menu items
         getActivity().invalidateOptionsMenu();
+        if (refreshOnResume){
+            turnpointListViewModel.searchTurnpoints("");
+            refreshOnResume = false;
+        }
     }
 
 
@@ -130,6 +145,7 @@ public class TurnpointListFragment extends DaggerFragment {
                 return true;
             case R.id.turnpoint_menu_add_export_turnpoints:
                 exportTurnpoints();
+                return true;
             case R.id.turnpoint_menu_clear_turnpoints:
                 showClearTurnpointsDialog();
                 return true;
@@ -138,12 +154,8 @@ public class TurnpointListFragment extends DaggerFragment {
         }
     }
 
-    //TODO export turnpoints to Downloads directory (name include date/time)
-    private void exportTurnpoints() {
-    }
-
     private void addNewTurnpoint() {
-        EventBus.getDefault().post((new EditTurnpoint(new Turnpoint()) ));
+       post(new EditTurnpoint(new Turnpoint()));
     }
 
     @Override
@@ -153,7 +165,7 @@ public class TurnpointListFragment extends DaggerFragment {
     }
 
     private void displaySearch() {
-        EventBus.getDefault().post(new TurnpointSearchForEdit());
+        post(new TurnpointSearchForEdit());
     }
 
     protected void checkForAtLeastOneTurnpoint() {
@@ -165,15 +177,19 @@ public class TurnpointListFragment extends DaggerFragment {
                     noTurnpointsDialog.dismiss();
                     noTurnpointsDialog = null;
                 }
-                loadTurnpoints();
+                setUpObservables();
             }
         });
     }
 
-    private void loadTurnpoints() {
-        turnpointListViewModel.searchTurnpoints("").
-                observe(this, turnpoints -> turnpointListAdapter.setTurnpointList(turnpoints));
+    protected void setUpObservables() {
+
+        turnpointListViewModel.getTurnpoints().observe(this, turnpoints ->{
+            turnpointListAdapter.setTurnpointList(turnpoints);
+        });
+
     }
+
 
     private void displayImportTurnpointsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -200,7 +216,7 @@ public class TurnpointListFragment extends DaggerFragment {
         builder.setTitle(R.string.turnpoints_no_hyphen)
                 .setMessage(R.string.turnpoint_delete_all_really_sure)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    clearTurnpointDatabase();
+                    turnpointListViewModel.clearTurnpointDatabase();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
 
@@ -210,47 +226,67 @@ public class TurnpointListFragment extends DaggerFragment {
         alertDialog.show();
     }
 
-    @SuppressLint("CheckResult")
-    private void clearTurnpointDatabase() {
-        showProgressBar(true);
-        Disposable disposable = appRepository.deleteAllTurnpoints()
-                .subscribe(numberDeleted -> {
-                    postNumberDeleted(numberDeleted);
-                    showProgressBar(false);
-                    loadTurnpoints();
-                });
-        compositeDisposable.add(disposable);
-
-    }
-
-    private void postNumberDeleted(Integer numberDeleted) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.turnpoints_no_hyphen)
-                .setMessage(R.string.turnpoints_have_been_cleared)
-                .setPositiveButton(R.string.ok, (dialog, id) -> {
-                    // continue
-                });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
-    }
-
-    protected void showProgressBar(boolean setVisible) {
-        rootView.findViewById(R.id.turnpoint_list_recycler_view);
-        rootView.findViewById(R.id.turnpoint_list_progress_bar).setVisibility(setVisible ? View.VISIBLE : View.GONE);
-    }
 
     private void returnToPreviousScreen() {
         //getActivity().finish();
-        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+        post(new PopThisFragmentFromBackStack());
     }
 
     private void addTurnpoints() {
-        EventBus.getDefault().post(new GoToTurnpointImport());
+        post(new GoToTurnpointImport());
+        refreshOnResume = true;
     }
 
     public void showSearchIconInMenu(boolean showSearchIcon){
         this.showSearchIcon = showSearchIcon;
+    }
+
+
+    //TODO export turnpoints to Downloads directory (name include date/time)
+    private void exportTurnpoints() {
+        if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            turnpointListViewModel.writeTurnpointsToDownloadsFile();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.rational_write_downloads_dir), WRITE_DOWNLOADS_ACCESS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        Timber.d("Permission has been granted");
+        if (requestCode == WRITE_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            turnpointListViewModel.writeTurnpointsToDownloadsFile();
+        }
+    }
+
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        if (requestCode == WRITE_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Timber.d("Permission has been denied");
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.no_permission_to_write_downloads_dir)
+                    .setTitle(R.string.permission_denied)
+                    .setPositiveButton(R.string.ok, (dialog, id) -> {
+                        post(new PopThisFragmentFromBackStack());
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+
+        }
+    }
+
+    //TODO subclass DaggerFragment and move to there - then update other fragments...
+    private void post(Object  post){
+        EventBus.getDefault().post(post);
     }
 
 }
