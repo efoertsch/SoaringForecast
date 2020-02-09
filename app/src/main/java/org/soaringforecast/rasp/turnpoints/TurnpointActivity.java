@@ -17,6 +17,7 @@ import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.turnpoints.messages.EditTurnpoint;
 import org.soaringforecast.rasp.turnpoints.messages.GoToDownloadImport;
 import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
+import org.soaringforecast.rasp.turnpoints.messages.SendEmail;
 import org.soaringforecast.rasp.turnpoints.messages.TurnpointSearchForEdit;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
@@ -26,6 +27,7 @@ import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewF
 import java.util.List;
 
 import androidx.fragment.app.Fragment;
+import timber.log.Timber;
 
 public class TurnpointActivity extends MasterActivity {
 
@@ -106,7 +108,7 @@ public class TurnpointActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        displayFragment(new TurnpointSearchForTaskFragment(), true, true);
+        displayFragment(new TurnpointSearchForTaskFragment().newInstance(), true, true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -134,6 +136,15 @@ public class TurnpointActivity extends MasterActivity {
         TurnpointSatelliteViewFragment turnpointSatelliteViewFragment =
                 TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
         displayFragment(turnpointSatelliteViewFragment, false, true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTurnpointEmailIntent(SendEmail sendEmail) {
+        try {
+            startActivity(sendEmail.getIntent());
+        }catch (Exception e){
+            Timber.e(e);
+        }
     }
 
 

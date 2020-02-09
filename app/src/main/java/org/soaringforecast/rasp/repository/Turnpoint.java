@@ -262,8 +262,8 @@ public class Turnpoint implements Cloneable, Parcelable {
             throw new Exception();
         }
         return (Float.parseFloat(longitudeString.substring(0, 3))
-                + (Float.parseFloat(longitudeString.substring(3, 5)) / 60)
-                + (Float.parseFloat(longitudeString.substring(5, 9)) / 60))
+                + (Float.parseFloat(longitudeString.substring(3, 5)) / 60.0f)
+                + (Float.parseFloat(longitudeString.substring(5, 9)) / 60.0f))
                 * (longitudeString.endsWith("E") ? 1f : -1f);
 
     }
@@ -359,9 +359,12 @@ public class Turnpoint implements Cloneable, Parcelable {
     }
 
     public static String getLatitudeInCupFormat(float lat) {
-        int degrees = (int) lat;
-        float minutes = (lat - degrees) * 60;
-        return latitudeFormat.format(Math.abs(degrees * 100 + minutes)) + (degrees >= 0 ? 'N' : 'S');
+        float latitude = Math.abs(lat);
+        int degrees = (int) latitude;
+        // This convoluted expression is needed for a couple cases where conversion of
+        // cup string -> float -> cup string format was off by .001
+        float minutes = Float.valueOf(longitudeFormat.format((latitude - degrees) * 60f));
+        return latitudeFormat.format(Math.abs(degrees * 100 + minutes)) + (lat >= 0 ? 'N' : 'S');
     }
 
 
@@ -369,11 +372,14 @@ public class Turnpoint implements Cloneable, Parcelable {
         return getLongitudeInCupFormat(longitudeDeg);
     }
 
-    public static String getLongitudeInCupFormat(float lng) {
-        int degrees = (int) lng;
-        float minutes = (lng - degrees) * 60;
-        return longitudeFormat.format(Math.abs(degrees * 100 + minutes)) + (degrees >= 0 ? 'E' : 'W');
 
+    public static String getLongitudeInCupFormat(float lng) {
+        float longitude = Math.abs(lng);
+        int degrees = (int) longitude;
+        // This convoluted expression is needed for a couple cases where conversion of
+        // cup string -> float -> cup string format was off by .001
+        float minutes = Float.valueOf(longitudeFormat.format((longitude - degrees) * 60f));
+        return longitudeFormat.format((degrees * 100f) + minutes) + (lng >= 0 ? 'E' : 'W');
     }
 
     public LatLng getLatLng() {
@@ -392,8 +398,9 @@ public class Turnpoint implements Cloneable, Parcelable {
         sb.append(direction).append(COMMA);
         sb.append(length).append(COMMA);
         sb.append(frequency).append(COMMA);
-        sb.append(description);
-
+        if (!description.isEmpty()) {
+            sb.append(QUOTE).append(description).append(QUOTE);
+        }
         return sb.toString();
     }
 

@@ -6,10 +6,10 @@
         app:showAsAction="always" />
     <item android:id="@+id/turnpoint_edit_menu_export"
         android:title="@string/turnpoint_edit_export"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
     <item android:id="@+id/turnpoint_edit_menu_email"
         android:title="@string/turnpoint_edit_email"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
     <item android:id="@+id/turnpoint_edit_menu_save"
         android:title="@string/turnpoint_edit_save"
         app:showAsAction="ifRoom"

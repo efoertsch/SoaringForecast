@@ -90,6 +90,7 @@ public class AppRepository implements CacheTimeListener {
     private static ArrayList<WindyModel> windyModels;
     private static ArrayList<WindyLayer> windyLayers;
     private static ArrayList<WindyAltitude> windyAltitudes;
+    private static final String NEW_LINE = System.getProperty("line.separator");
 
     private Context context;
     private AirportDao airportDao;
@@ -437,31 +438,60 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
-    // Write turnpoints to download directory
-    public Completable writeTurnpointsToCupFile(final List<Turnpoint> turnpoints) {
-        return Completable.fromAction(() -> {
-            String newLine = System.getProperty("line.separator");
+    /** Write all turnpoints to download directory
+     *
+     * @param turnpoints
+     * @return
+     */
+    public Single<String> writeTurnpointsToCupFile(final List<Turnpoint> turnpoints) {
+        return Single.create(emitter -> {
             File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            File exportFile = new File(path, getExportCupFilename());
-            exportFile.setReadable(true);
+            File exportFile = new File(path, getExportTurnpointsCupFilename());
             FileOutputStream stream = new FileOutputStream(exportFile, false);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(stream);
+            writeFirstLineOfCuptFile(outputStreamWriter);
             for (Turnpoint turnpoint : turnpoints) {
-                outputStreamWriter.write(turnpoint.getCupFormattedRecord() + newLine);
+                outputStreamWriter.write(turnpoint.getCupFormattedRecord() + NEW_LINE);
             }
             outputStreamWriter.close();
+            emitter.onSuccess(exportFile.getAbsolutePath());
         });
     }
 
-
-    private String getExportCupFilename() {
-        String pattern = "yyyy_MM_dd_H_m_s";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String currentDate = simpleDateFormat.format(new Date());
-        return "TurnpointExports_" + currentDate + ".cup";
-
+    /** Write one turnpoint to download directory
+     *
+     * @param turnpoint
+     * @return
+     */
+    public Single<String> writeTurnpointToCupFile(final Turnpoint turnpoint, String cupFilename) {
+        return Single.create(emitter -> {
+            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File exportFile = new File(path,cupFilename );
+            FileOutputStream stream = new FileOutputStream(exportFile, false);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(stream);
+            writeFirstLineOfCuptFile(outputStreamWriter);
+            outputStreamWriter.write(turnpoint.getCupFormattedRecord() + NEW_LINE);
+            outputStreamWriter.close();
+            emitter.onSuccess(exportFile.getAbsolutePath());
+        });
     }
 
+    private void writeFirstLineOfCuptFile(OutputStreamWriter outputStreamWriter) throws IOException {
+        outputStreamWriter.write("Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description"
+                + NEW_LINE);
+    }
+
+    private String getExportTurnpointsCupFilename() {
+        String currentDate = getCupFileDateString();
+        return "TurnpointExports_" + currentDate + ".cup";
+    }
+
+
+    private String getCupFileDateString() {
+        String pattern = "yyyy_MM_dd_H_m_s";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(new Date());
+    }
 
     class ImageFileFilter implements FileFilter {
         private final String[] cupFileExtensions = new String[]{"cup"};
@@ -502,6 +532,11 @@ public class AppRepository implements CacheTimeListener {
     public Single<List<Turnpoint>> findTurnpoints(String searchTerm) {
         return turnpointDao.findTurnpoints(searchTerm);
     }
+
+    public Single<List<Turnpoint>> selectAllTurnpointsForDownload() {
+        return turnpointDao.selectAllTurnpointsForDownload();
+    }
+
 
     public Maybe<List<Turnpoint>> listAllTurnpoints() {
         return turnpointDao.listAllTurnpoints();
@@ -601,7 +636,7 @@ public class AppRepository implements CacheTimeListener {
     }
 
     // -----------Task Turnpoints -----------
-    public Maybe<List<TaskTurnpoint>> getTaskTurnpionts(long taskId) {
+    public Maybe<List<TaskTurnpoint>> getTaskTurnpoints(long taskId) {
         return taskTurnpointDao.getTaskTurnpoints(taskId);
     }
 

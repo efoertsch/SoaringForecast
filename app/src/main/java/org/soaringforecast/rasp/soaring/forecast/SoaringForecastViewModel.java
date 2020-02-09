@@ -3,10 +3,6 @@ package org.soaringforecast.rasp.soaring.forecast;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -38,6 +34,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Observable;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -804,7 +804,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
     }
 
     private void getTask(long taskId) {
-        Disposable disposable = appRepository.getTaskTurnpionts(taskId)
+        Disposable disposable = appRepository.getTaskTurnpoints(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(taskTurnpointList -> {

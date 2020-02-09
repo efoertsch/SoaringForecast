@@ -2,7 +2,9 @@ package org.soaringforecast.rasp.turnpoints.edit;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -13,11 +15,15 @@ import org.soaringforecast.rasp.common.ObservableViewModel;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
+import org.soaringforecast.rasp.repository.messages.DataBaseError;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.turnpoints.cup.CupStyle;
 import org.soaringforecast.rasp.turnpoints.json.ElevationQuery;
 import org.soaringforecast.rasp.turnpoints.json.NationalMap;
+import org.soaringforecast.rasp.turnpoints.messages.SendEmail;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -73,6 +79,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     private static final Pattern lengthPattern = Pattern.compile(lengthRegex);
     private static final Pattern frequencyPatten = Pattern.compile(frequencyRegex);
     private AppPreferences appPreferences;
+    private boolean emailCupFile = false;
 
 
     public TurnpointEditViewModel(@NonNull Application application) {
@@ -106,7 +113,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
      * turnpoint list, make sure to reset the viewmodel whenever you go to display a turnpoint
      * in  TurnpointEditFragment
      */
-    public TurnpointEditViewModel reset(){
+    public TurnpointEditViewModel reset() {
         resetErrorText();
         okToSave.setValue(false);
         needToSaveUpdates.setValue(false);
@@ -142,10 +149,13 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         return turnpoint.getCode();
     }
 
+    // Note additional restrictions in layout xml
     @Bindable
     public void setCode(String value) {
         value = value.trim();
-        if (value == null || value.isEmpty()) {
+        if (value == null
+                || value.isEmpty()
+                || value.contains(" ")) {
             codeErrorText = getApplication().getString(R.string.turnpoint_code_error_msg);
         } else {
             turnpoint.setCode(value);
@@ -412,7 +422,6 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     public void saveTurnpoint() {
         //TODO if this is new turnpoint see if title and/or code already exists in db first
         try {
-
             Disposable disposable = appRepository.insertTurnpoint(turnpoint)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -421,14 +430,15 @@ public class TurnpointEditViewModel extends ObservableViewModel {
                             },
                             t -> {
                                 Timber.e(t);
-                                EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.error_in_turnpoint_validation)));
+                                post(new SnackbarMessage(getApplication().getString(R.string.error_in_turnpoint_validation)));
                             });
 
             compositeDisposable.add(disposable);
         } catch (Exception e) {
-            EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.error_saving_turnpoint)));
+            post(new SnackbarMessage(getApplication().getString(R.string.error_saving_turnpoint)));
         }
     }
+
 
     void resetTurnpoint() {
         turnpoint = originalTurnpoint.newInstance(originalTurnpoint);
@@ -473,7 +483,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     }
 
     public void onClickGpsIcon() {
-        EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
+        post(new DisplayTurnpoint(turnpoint));
     }
 
     @SuppressLint("DefaultLocale")
@@ -525,7 +535,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
                 setElevation(String.format("%.1f", elevationQuery.getElevation())
                         + (elevationQuery.getUnits().equalsIgnoreCase("Feet") ? "ft" : "m"));
             } else {
-                EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.error_finding_elevation)));
+                post(new SnackbarMessage(getApplication().getString(R.string.error_finding_elevation)));
             }
         }
 
@@ -592,4 +602,69 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         setSaveIndicator();
         notifyPropertyChanged(org.soaringforecast.rasp.BR.formattedTurnpointDetails);
     }
+
+
+    public void writeTurnpointToDownloadsFile() {
+        Disposable disposable =
+                appRepository.writeTurnpointToCupFile(turnpoint, getExportTurnpointCupFilename(turnpoint.getCode()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(exportFileName -> {
+                                    post(new SnackbarMessage(getApplication().getString(R.string.turnpoint_exported_to_download_directory)));
+                                    if (emailCupFile) {
+                                        emailCupFile = false;
+                                        sendTurnpointViaEmail(exportFileName);
+
+                                    }
+                                }
+                                , error -> {
+                                    emailCupFile = false;
+                                    post(new DataBaseError(getApplication().getString(R.string.error_reading_turnpoints), error));
+                                }
+                        );
+        compositeDisposable.add(disposable);
+    }
+
+    public void setEmailTurnpoint() {
+        emailCupFile = true;
+    }
+
+    public void sendTurnpointViaEmail(String exportFileName) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Turnpoint: " + turnpoint.getCode());
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + exportFileName));
+            intent.setData(Uri.parse("mailto:"));
+            intent.putExtra(Intent.EXTRA_TEXT, getApplication().getString(R.string.updated_or_new_turnpoint));
+            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            post(new SendEmail(intent));
+        } catch (Exception e) {
+            post(new SnackbarMessage(getApplication().getString(R.string.error_in_emailing_turnpoint)));
+        }
+    }
+
+
+    private String getExportTurnpointCupFilename(String turnpointCode) {
+        String currentDate = getCupFileDateString();
+        StringBuffer sb = new StringBuffer();
+        sb.append("Turnpoint_")
+                .append(turnpointCode)
+                .append("_")
+                .append(currentDate)
+                .append(".cup");
+        return sb.toString();
+
+    }
+
+    private String getCupFileDateString() {
+        String pattern = "yyyy_MM_dd_H_m_s";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(new Date());
+    }
+
+    private void post(Object post) {
+        EventBus.getDefault().post(post);
+    }
+
 }

@@ -22,6 +22,10 @@ public interface TurnpointDao extends BaseDao<Turnpoint> {
     @Query("Select * from turnpoint where title like :searchTerm or code like :searchTerm  order by title, code collate nocase")
     Single<List<Turnpoint>> findTurnpoints(String searchTerm);
 
+
+    @Query("Select * from turnpoint  order by id")
+    Single<List<Turnpoint>> selectAllTurnpointsForDownload();
+
     @Query("Select * from turnpoint where title = :title and code = :code collate nocase")
     Maybe<Turnpoint> getTurnpoint(String title, String code);
 
