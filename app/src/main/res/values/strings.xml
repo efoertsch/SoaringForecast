@@ -328,8 +328,10 @@
     <string name="waypoint_name">Waypoint Name</string>
     <string name="waypoint_code">Waypoint Code</string>
     <string name="waypoint_country">Country code</string>
-    <string name="waypoint_latitude">Latitude  DDMM.mmm(N|S)</string>
-    <string name="waypoint_longitude">Longitude DDDMM.mmm(W|E) </string>
+    <string name="waypoint_cup_latitude">Latitude  DDMM.mmm(N|S)</string>
+    <string name="waypoint_google_latitude">Latitude  (-)dd.mmmmm</string>
+    <string name="waypoint_cup_longitude">Longitude DDDMM.mmm(W|E) </string>
+    <string name="waypoint_google_longitude">Longitude  (-)ddd.mmmmm</string>
     <string name="waypoint_elevation">Elevation number in m or ft</string>
     <string name="waypoint_style">Waypoint Style</string>
     <string name="waypoint_runway_direction">Runway Direction - 3 digit number</string>
@@ -337,9 +339,13 @@
     <string name="waypoint_airport_frequency">Airport Frequency nnn.nn(0|5)</string>
     <string name="waypoint_description">Description</string>
     <string name="turnpoint_title_error_msg">The turnpoint title can not be blank.</string>
-    <string name="turnpoint_code_error_msg">Code can not be blank.</string>
-    <string name="turnpoint_latitude_error">Latitude must be of form DDMM.mmm(N|S)</string>
-    <string name="turnpoint_longitude_error">Longitude must be of form DDDMM.mmm(W|E)</string>
+    <string name="turnpoint_code_error_msg">Code can not be blank, contain spaces or special characters.</string>
+    <string name="turnpoint_cup_latitude_error">Latitude must be of form DDMM.mmm(N|S)</string>
+    <string name="turnpoint_google_latitude_error">Latitude must be of form (-)dd.mmmmm</string>
+    <string name="turnpoint_google_latitude_range_error">Latitude must be between -90 and 90</string>
+    <string name="turnpoint_cup_longitude_error">Longitude must be of form DDDMM.mmm(W|E)</string>
+    <string name="turnpoint_google_longitude_error">Longitude must be of form (-)ddd.mmmmm</string>
+    <string name="turnpoint_google_longitude_range_error">Longitude must be between -180 and 180</string>
     <string name="edit_turnpoints">Edit Turnpoints</string>
     <string name="elevation_error">Elevation must be number followed by m or ft.</string>
     <string name="direction_error">Empty or 3 digit direction from 000 - 360.</string>
@@ -371,13 +377,20 @@
     <string name="error_finding_elevation">Oh-oh. An error occurred finding elevation. Setting to 0.</string>
     <string name="save_turnpoint">Save Turnpoint</string>
     <string name="save_turnpoint_before_exit">Save changes before exit?</string>
-    <string name="save_turnpoint_changes">save_turnpoint_changes</string>
+    <string name="save_turnpoint_changes">Save turnpoint changes?</string>
     <string name="view_turnpoint">View Turnpoint</string>
     <string name="turnpoint">Turnpoint</string>
     <string name="turnpoint_view_reset_marker">Reset Marker</string>
     <string name="turnpoint_view_drag_marker">Drag Marker</string>
     <string name="turnpoints_exported_to_download_directory">Turnpoints exported to Downloads directory</string>
+    <string name="turnpoint_exported_to_download_directory">Turnpoint exported to Downloads directory</string>
     <string name="turnpoint_edit_export">Export</string>
     <string name="turnpoint_edit_email">Email</string>
+    <string name="error_reading_turnpoints">Oops! An error occurred getting the turnpoints.</string>
+    <string name="only_alpha_numeric_chars">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
+    <string name="error_in_emailing_turnpoint">Oops! An error occurred emailling your turnpoint(s).</string>
+    <string name="updated_or_new_turnpoint">New or updated turnpoint information</string>
+    <string name="add_email_turnpoints">Email Turnpoints</string>
+    <string name="turnpoint_edit_toggle_latlng_format">Toggle Lat/Long Format</string>
 
 </resources>

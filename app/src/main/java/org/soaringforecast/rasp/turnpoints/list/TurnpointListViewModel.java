@@ -2,6 +2,8 @@ package org.soaringforecast.rasp.turnpoints.list;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Intent;
+import android.net.Uri;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
@@ -10,6 +12,7 @@ import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
+import org.soaringforecast.rasp.turnpoints.messages.SendEmail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,7 @@ public class TurnpointListViewModel extends ObservableViewModel {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private MutableLiveData<Boolean> working = new MutableLiveData();
     private MutableLiveData<Integer> numberTurnpointsDeleted;
+    private boolean emailCupFile = false;
 
     public TurnpointListViewModel(@NonNull Application application) {
         super(application);
@@ -116,25 +120,52 @@ public class TurnpointListViewModel extends ObservableViewModel {
 
     }
 
+    public void setEmailTurnpoint() {
+        emailCupFile = true;
+    }
+
 
     public void writeTurnpointsToDownloadsFile() {
         working.setValue(true);
-        Disposable disposable = appRepository.findTurnpoints("%").flatMapCompletable(
+        Disposable disposable = appRepository.selectAllTurnpointsForDownload().flatMap(
                 turnpointList ->
                 appRepository.writeTurnpointsToCupFile(turnpointList))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
+                .subscribe((exportFilename) -> {
                             working.setValue(false);
                             post(new SnackbarMessage(getApplication().getString(R.string.turnpoints_exported_to_download_directory)));
+                            if (emailCupFile) {
+                                emailCupFile = false;
+                                sendTurnpointsViaEmail(exportFilename);
+                            }
                         }
                         , error -> {
                             working.setValue(false);
+                            emailCupFile = false;
                             post(new DataBaseError(getApplication().getString(R.string.error_searching_turnpoints), error));
+
                         }
                 );
         compositeDisposable.add(disposable);
     }
+
+
+    public void sendTurnpointsViaEmail(String exportFilename) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Turnpoints " );
+            intent.setData(Uri.parse("mailto:"));
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + exportFilename));
+            intent.putExtra(Intent.EXTRA_TEXT, getApplication().getString(R.string.updated_or_new_turnpoint));
+            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            post(new SendEmail(intent));
+        } catch (Exception e) {
+            post(new SnackbarMessage(getApplication().getString(R.string.error_in_emailing_turnpoint)));
+        }
+    }
+
 
 
     private void post(Object post) {

@@ -1,5 +1,6 @@
 package org.soaringforecast.rasp.turnpoints.edit;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -29,8 +31,10 @@ import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import pub.devrel.easypermissions.EasyPermissions;
+import timber.log.Timber;
 
-public class TurnpointEditFragment extends DaggerFragment implements CheckBeforeGoingBack {
+public class TurnpointEditFragment extends DaggerFragment implements CheckBeforeGoingBack, EasyPermissions.PermissionCallbacks {
 
     @Inject
     AppRepository appRepository;
@@ -39,6 +43,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
     AppPreferences appPreferences;
 
     private static final String TURNPOINT = "TURNPOINT";
+    private static final int WRITE_DOWNLOADS_ACCESS = 67891;
 
     private Turnpoint turnpoint;
     private TurnpointEditViewModel turnpointEditViewModel;
@@ -147,7 +152,6 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
             saveMenuItem.setVisible(false);
             resetMenuItem.setVisible(false);
         }
-
     }
 
     @Override
@@ -157,8 +161,14 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
             case R.id.turnpoint_edit_menu_edit:
                 turnpointEditViewModel.setInEditMode(true);
                 return true;
+            case R.id.turnpoint_edit_menu_toggle_latlng_format:
+                turnpointEditViewModel.toggleLatLongFormat();
+                return true;
+            case R.id.turnpoint_edit_menu_save:
+                confirmSave();
+                return true;
             case R.id.turnpoint_edit_menu_export:
-                export();
+                exportTurnpoint();
                 return true;
             case R.id.turnpoint_edit_menu_email:
                 email();
@@ -174,13 +184,15 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         }
     }
 
-
     private void enableTurnpointEditting() {
         turnpointEditView.turnpointEditTitle.setEnabled(inEditMode);
-        turnpointEditView.turnpointEditCode.setEnabled(inEditMode);
+        // Can't edit code if existing record
+        turnpointEditView.turnpointEditCode.setEnabled(turnpointEditViewModel.isTurnpointCodeEditEnabled());
         turnpointEditView.turnpointEditCountry.setEnabled(inEditMode);
-        turnpointEditView.turnpointEditLatitude.setEnabled(inEditMode);
-        turnpointEditView.turnpointEditLongitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditCupLatitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditCupLongitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditGoogleLatitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditGoogleLongitude.setEnabled(inEditMode);
         turnpointEditView.turnpointEditElevation.setEnabled(inEditMode);
         turnpointEditView.turnpointEditStyleSpinner.setEnabled(inEditMode);
         turnpointEditView.turnpointEditRunwayDirection.setEnabled(inEditMode);
@@ -188,8 +200,6 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         turnpointEditView.turnpointEditAirportFrequency.setEnabled(inEditMode);
         turnpointEditView.turnpointEditDescription.setEnabled(inEditMode);
         getActivity().invalidateOptionsMenu();
-
-
     }
 
     private void checkIfOkToDeleteTurnpoint() {
@@ -227,10 +237,10 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         Disposable disposable = turnpointEditViewModel.deleteTurnpoint()
                 .subscribe(numberDeleted -> {
                     if (numberDeleted == 1) {
-                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.turnpoint_deleted)));
-                        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                        post(new SnackbarMessage(getString(R.string.turnpoint_deleted)));
+                        post(new PopThisFragmentFromBackStack());
                     } else {
-                        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.turnpoint_delete_error)));
+                        post(new SnackbarMessage(getString(R.string.turnpoint_delete_error)));
                     }
                 });
         compositeDisposable.add(disposable);
@@ -253,7 +263,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
                 .setMessage(R.string.save_turnpoint_changes)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     turnpointEditViewModel.saveTurnpoint();
-                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    post(new PopThisFragmentFromBackStack());
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
                     // No action
@@ -270,22 +280,65 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
                 .setMessage(R.string.save_turnpoint_before_exit)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     turnpointEditViewModel.saveTurnpoint();
-                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    post(new PopThisFragmentFromBackStack());
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
                     turnpointEditViewModel.resetTurnpoint();
-                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    post(new PopThisFragmentFromBackStack());
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
-
     }
 
     private void email() {
+        turnpointEditViewModel.setEmailTurnpoint();
+        exportTurnpoint();
     }
 
-    private void export() {
+    private void exportTurnpoint() {
+        if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            turnpointEditViewModel.writeTurnpointToDownloadsFile();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.rational_write_downloads_dir), WRITE_DOWNLOADS_ACCESS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
+    //TODO subclass and set up with TurnpointListFragment
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        Timber.d("Permission has been granted");
+        if (requestCode == WRITE_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            turnpointEditViewModel.writeTurnpointToDownloadsFile();
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        if (requestCode == WRITE_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Timber.d("Permission has been denied");
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.no_permission_to_write_downloads_dir)
+                    .setTitle(R.string.permission_denied)
+                    .setPositiveButton(R.string.ok, (dialog, id) -> {
+                        post(new PopThisFragmentFromBackStack());
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+        }
+    }
+
+    //TODO subclass DaggerFragment and move to there - then update other fragments...
+    private void post(Object  post){
+        EventBus.getDefault().post(post);
     }
 
 

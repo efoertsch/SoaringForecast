@@ -1,11 +1,7 @@
 package org.soaringforecast.rasp.windy;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.webkit.JavascriptInterface;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -21,6 +17,10 @@ import org.soaringforecast.rasp.soaring.json.ModelForecastDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -296,7 +296,7 @@ public class WindyViewModel extends AndroidViewModel {
     }
 
     private void getTask(long taskId) {
-        Disposable disposable = appRepository.getTaskTurnpionts(taskId)
+        Disposable disposable = appRepository.getTaskTurnpoints(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(taskTurnpointList -> {

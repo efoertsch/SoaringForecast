@@ -52,7 +52,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     protected TurnpointListViewModel turnpointListViewModel;
 
     private AlertDialog noTurnpointsDialog;
-    private View rootView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private boolean showSearchIcon = true;
     private boolean refreshOnResume = false;
@@ -110,7 +109,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.turnpoint_list);
-        // subclass my want altered menu items
+        // subclass may want altered menu items
         getActivity().invalidateOptionsMenu();
         if (refreshOnResume){
             turnpointListViewModel.searchTurnpoints("");
@@ -145,6 +144,9 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
                 return true;
             case R.id.turnpoint_menu_add_export_turnpoints:
                 exportTurnpoints();
+                return true;
+            case R.id.turnpoint_menu_add_email_turnpoints:
+                email();
                 return true;
             case R.id.turnpoint_menu_clear_turnpoints:
                 showClearTurnpointsDialog();
@@ -242,7 +244,12 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     }
 
 
-    //TODO export turnpoints to Downloads directory (name include date/time)
+    private void email() {
+        turnpointListViewModel.setEmailTurnpoint();
+        exportTurnpoints();
+    }
+
+
     private void exportTurnpoints() {
         if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             turnpointListViewModel.writeTurnpointsToDownloadsFile();
@@ -251,6 +258,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
         }
     }
 
+    //TODO subclass and set up with TurnpointEditFragment
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
