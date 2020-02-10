@@ -161,6 +161,9 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
             case R.id.turnpoint_edit_menu_edit:
                 turnpointEditViewModel.setInEditMode(true);
                 return true;
+            case R.id.turnpoint_edit_menu_toggle_latlng_format:
+                turnpointEditViewModel.toggleLatLongFormat();
+                return true;
             case R.id.turnpoint_edit_menu_save:
                 confirmSave();
                 return true;
@@ -183,10 +186,13 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
 
     private void enableTurnpointEditting() {
         turnpointEditView.turnpointEditTitle.setEnabled(inEditMode);
-        turnpointEditView.turnpointEditCode.setEnabled(inEditMode);
+        // Can't edit code if existing record
+        turnpointEditView.turnpointEditCode.setEnabled(turnpointEditViewModel.isTurnpointCodeEditEnabled());
         turnpointEditView.turnpointEditCountry.setEnabled(inEditMode);
-        turnpointEditView.turnpointEditLatitude.setEnabled(inEditMode);
-        turnpointEditView.turnpointEditLongitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditCupLatitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditCupLongitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditGoogleLatitude.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditGoogleLongitude.setEnabled(inEditMode);
         turnpointEditView.turnpointEditElevation.setEnabled(inEditMode);
         turnpointEditView.turnpointEditStyleSpinner.setEnabled(inEditMode);
         turnpointEditView.turnpointEditRunwayDirection.setEnabled(inEditMode);

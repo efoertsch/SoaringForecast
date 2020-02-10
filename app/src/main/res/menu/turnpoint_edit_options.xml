@@ -4,6 +4,9 @@
     <item android:id="@+id/turnpoint_edit_menu_edit"
         android:icon="@drawable/ic_mode_edit"
         app:showAsAction="always" />
+    <item android:id="@+id/turnpoint_edit_menu_toggle_latlng_format"
+        android:title="@string/turnpoint_edit_toggle_latlng_format"
+        app:showAsAction="never" />
     <item android:id="@+id/turnpoint_edit_menu_export"
         android:title="@string/turnpoint_edit_export"
         app:showAsAction="never" />
