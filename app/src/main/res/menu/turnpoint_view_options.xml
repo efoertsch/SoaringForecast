@@ -7,6 +7,6 @@
         android:visible="false"/>
     <item android:id="@+id/turnpoint_view_drag_marker"
         android:title="@string/turnpoint_view_drag_marker"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:visible="false"/>
 </menu>

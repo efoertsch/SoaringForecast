@@ -118,7 +118,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         });
 
         // If adding new turnpoint go into edit mode automatically
-        turnpointEditViewModel.setInEditMode(turnpoint.getId() < 0);
+        turnpointEditViewModel.setInEditMode(turnpoint.getId() <= 0);
 
         return turnpointEditView.getRoot();
     }

@@ -130,6 +130,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 turnpointSatelliteView.turnpointMapSaveButton.setOnClickListener(v -> {
                     // Save lat, long and elevation to turnpoint
                     turnpointEditViewModel.updateTurnpointLatLngAndElevation(lastKnownLocation);
+                    removeFragment();
                 });
 
                 turnpointSatelliteView.turnpointMapCancelButton.setVisibility(View.VISIBLE);
@@ -189,7 +190,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     }
 
     private void removeFragment() {
-        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+        post(new PopThisFragmentFromBackStack());
     }
 
 
@@ -265,10 +266,13 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 if (lastKnownLocation != null) {
                     LatLng currentLocationLatLng = new LatLng(lastKnownLocation.getLatitude(),
                             lastKnownLocation.getLongitude());
+                    turnpointEditViewModel.setLatitudeDeg(lastKnownLocation.getLatitude());
+                    turnpointEditViewModel.setLongitudeDeg( lastKnownLocation.getLongitude());
+                    turnpointEditViewModel.setElevation(String.format("%1.1fm", lastKnownLocation.getAltitude()));
                     moveCameraToLatLng(currentLocationLatLng);
                 }
             } else {
-                EventBus.getDefault().post(new SnackbarMessage(getString(R.string.can_not_determine_location)));
+                post(new SnackbarMessage(getString(R.string.can_not_determine_location)));
                 Timber.d("Current location is null. Using defaults.");
                 Timber.e(task.getException(), " Exception");
                 moveCameraToLatLng(defaultLatLng);
@@ -312,13 +316,17 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
             builder.setMessage(R.string.no_permission_to_use_gps_to_get_current_location)
                     .setTitle(R.string.permission_denied)
                     .setPositiveButton(R.string.ok, (dialog, id) -> {
-                        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                        post(new PopThisFragmentFromBackStack());
                     });
             AlertDialog alertDialog = builder.create();
             alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.show();
 
         }
+    }
+
+    private void post(Object object){
+        EventBus.getDefault().post(object);
     }
 
 }
