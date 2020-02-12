@@ -29,8 +29,8 @@ import timber.log.Timber;
 public class TurnpointListViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
-    private MutableLiveData<List<Turnpoint>> turnpoints;
-    private MutableLiveData<Integer> numberTurnpoints;
+    private MutableLiveData<List<Turnpoint>> turnpoints = new MutableLiveData<>();
+    private MutableLiveData<Integer> numberTurnpoints = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private MutableLiveData<Boolean> working = new MutableLiveData();
     private MutableLiveData<Integer> numberTurnpointsDeleted;
@@ -46,16 +46,14 @@ public class TurnpointListViewModel extends ObservableViewModel {
     }
 
     public LiveData<List<Turnpoint>> getTurnpoints() {
-        if (turnpoints == null) {
-            turnpoints = new MutableLiveData<>();
+        if (turnpoints.getValue() == null) {
             searchTurnpoints("%");
         }
         return turnpoints;
     }
 
     public LiveData<Integer> getNumberOfTurnpoints() {
-        if (numberTurnpoints == null) {
-            numberTurnpoints = new MutableLiveData<>();
+        if (numberTurnpoints.getValue() == null || numberTurnpoints.getValue() == 0) {
             getTotalNumberOfTurnpoints();
         }
         return numberTurnpoints;

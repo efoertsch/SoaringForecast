@@ -2,5 +2,5 @@
 <resources>
     <string name="forecast_server_url">http://www.soargbsc.com</string>
     <string name="aviation_weather_gov_url">https://aviationweather.gov/adds/dataserver_current/</string>
-    <string name="usgs_server">https://nationalmap.gov/</string>
+    <string name="usgs_server_url">https://nationalmap.gov/</string>
 </resources>
