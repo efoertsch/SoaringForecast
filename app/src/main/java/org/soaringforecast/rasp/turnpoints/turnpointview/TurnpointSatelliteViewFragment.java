@@ -128,8 +128,6 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 turnpointSatelliteView.turnpointMapCloseButton.setVisibility(View.GONE);
                 turnpointSatelliteView.turnpointMapSaveButton.setVisibility(View.VISIBLE);
                 turnpointSatelliteView.turnpointMapSaveButton.setOnClickListener(v -> {
-                    // Save lat, long and elevation to turnpoint
-                    turnpointEditViewModel.updateTurnpointLatLngAndElevation(lastKnownLocation);
                     removeFragment();
                 });
 
@@ -264,12 +262,12 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 // Set the map's camera position to the current location of the device.
                 lastKnownLocation = task.getResult();
                 if (lastKnownLocation != null) {
+                    turnpointEditViewModel.setCurrentLocationFromGPS(lastKnownLocation);
                     LatLng currentLocationLatLng = new LatLng(lastKnownLocation.getLatitude(),
                             lastKnownLocation.getLongitude());
-                    turnpointEditViewModel.setLatitudeDeg(lastKnownLocation.getLatitude());
-                    turnpointEditViewModel.setLongitudeDeg( lastKnownLocation.getLongitude());
-                    turnpointEditViewModel.setElevation(String.format("%1.1fm", lastKnownLocation.getAltitude()));
                     moveCameraToLatLng(currentLocationLatLng);
+                } else {
+                    post(new SnackbarMessage(getString(R.string.could_not_get_lat_long_from_gps)));
                 }
             } else {
                 post(new SnackbarMessage(getString(R.string.can_not_determine_location)));

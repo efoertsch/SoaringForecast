@@ -1,7 +1,6 @@
 package org.soaringforecast.rasp.turnpoints.edit;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,9 @@ import android.widget.TextView;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.turnpoints.cup.CupStyle;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class CupStyleAdapter extends ArrayAdapter<CupStyle>  {
 
@@ -21,7 +22,7 @@ public class CupStyleAdapter extends ArrayAdapter<CupStyle>  {
 
     }
 
-    public CupStyleAdapter(ArrayList<CupStyle> cupStyles, Context context) {
+    public CupStyleAdapter(List<CupStyle> cupStyles, Context context) {
         super(context, R.layout.cup_style_row, cupStyles);
     }
 

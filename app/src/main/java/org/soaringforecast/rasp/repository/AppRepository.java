@@ -550,6 +550,11 @@ public class AppRepository implements CacheTimeListener {
         return turnpointDao.getTurnpoint(turnpointId);
     }
 
+    public Maybe<Turnpoint> getTurnpointByCode(String code){
+        return turnpointDao.getTurnpointByCode(code);
+    };
+
+
     public Single<Integer> deleteTurnpoint(long turnpointId) {
         return Single.create((SingleOnSubscribe<Integer>) emitter -> {
             try {

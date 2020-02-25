@@ -332,7 +332,7 @@
     <string name="waypoint_google_latitude">Latitude  (-)dd.mmmmm</string>
     <string name="waypoint_cup_longitude">Longitude DDDMM.mmm(W|E) </string>
     <string name="waypoint_google_longitude">Longitude  (-)ddd.mmmmm</string>
-    <string name="waypoint_elevation">Elevation number in m or ft</string>
+    <string name="waypoint_elevation">Elevation ending in ft or m</string>
     <string name="waypoint_style">Waypoint Style</string>
     <string name="waypoint_runway_direction">Runway Direction - 3 digit number</string>
     <string name="waypoint_runway_length">Runway length - ending in ft or m</string>
@@ -392,5 +392,8 @@
     <string name="updated_or_new_turnpoint">New or updated turnpoint information</string>
     <string name="add_email_turnpoints">Email Turnpoints</string>
     <string name="turnpoint_edit_toggle_latlng_format">Toggle Lat/Long Format</string>
+    <string name="could_not_get_lat_long_from_gps">Hmm. Can\'t get GPS coordinates.</string>
+    <string name="duplicate_turnpoint_code">A turnpoint already exists with that code!</string>
+    <string name="error_checking_for_duplicate_turnpoint_code">Oops! An error occurred checking for duplicate turnpoint code!</string>
 
 </resources>
