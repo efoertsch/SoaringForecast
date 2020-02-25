@@ -54,11 +54,9 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     private AlertDialog noTurnpointsDialog;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private boolean showSearchIcon = true;
-    private boolean refreshOnResume = false;
-
 
     private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
-       post(new EditTurnpoint(turnpoint));
+        post(new EditTurnpoint(turnpoint));
     };
 
     private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
@@ -111,10 +109,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
         getActivity().setTitle(R.string.turnpoint_list);
         // subclass may want altered menu items
         getActivity().invalidateOptionsMenu();
-        if (refreshOnResume){
-            turnpointListViewModel.searchTurnpoints("%");
-            refreshOnResume = false;
-        }
+        turnpointListViewModel.searchTurnpoints("%");
     }
 
 
@@ -157,7 +152,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     }
 
     private void addNewTurnpoint() {
-       post(new EditTurnpoint(new Turnpoint()));
+        post(new EditTurnpoint(new Turnpoint()));
     }
 
     @Override
@@ -186,7 +181,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
 
     protected void setUpObservables() {
 
-        turnpointListViewModel.getTurnpoints().observe(this, turnpoints ->{
+        turnpointListViewModel.getTurnpoints().observe(this, turnpoints -> {
             turnpointListAdapter.setTurnpointList(turnpoints);
         });
 
@@ -235,10 +230,9 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
 
     private void addTurnpoints() {
         post(new GoToTurnpointImport());
-        refreshOnResume = true;
     }
 
-    public void showSearchIconInMenu(boolean showSearchIcon){
+    public void showSearchIconInMenu(boolean showSearchIcon) {
         this.showSearchIcon = showSearchIcon;
     }
 
@@ -273,7 +267,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
         }
     }
 
-
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
         if (requestCode == WRITE_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -292,7 +285,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     }
 
     //TODO subclass DaggerFragment and move to there - then update other fragments...
-    protected void post(Object post){
+    protected void post(Object post) {
         EventBus.getDefault().post(post);
     }
 
