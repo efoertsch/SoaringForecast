@@ -7,7 +7,7 @@ public class CupStyle {
 
     @SerializedName("style")
     @Expose
-    private String style;   // "0"
+    private String style = "0";   // "0"
 
     @SerializedName("description")
     @Expose

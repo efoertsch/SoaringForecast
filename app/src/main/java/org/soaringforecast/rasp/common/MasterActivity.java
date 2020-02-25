@@ -30,7 +30,6 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     private ActionBar actionBar;
     private Toolbar toolbar;
     private View rootView;
-
     protected abstract Fragment createFragment();
 
     //TODO allow for master/detail or side by side fragments for large screens
@@ -60,7 +59,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         if (fragment == null) {
             fragment = createFragment();
             if (fragment != null) {
-                fm.beginTransaction().add(R.id.fragmentContainer, fragment)
+                fm.beginTransaction().add(R.id.fragmentContainer, fragment).addToBackStack(null)
                         .commit();
             } else {
                 finish();
@@ -100,7 +99,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         }
     }
 
-   public void displayFragment(Fragment fragment, boolean replace, boolean addToBackstack) {
+    public void displayFragment(Fragment fragment, boolean replace, boolean addToBackstack) {
         FragmentTransaction fragmentTransaction;
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (replace) {
@@ -142,7 +141,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     public void popCurrentFragment() {
         FragmentManager fm = getSupportFragmentManager();
         fm.popBackStack();
-        if (fm.getFragments().size() == 0){
+        if (fm.getFragments().size() <= 1) {
             finish();
         }
     }
