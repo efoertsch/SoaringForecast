@@ -14,7 +14,9 @@ import org.soaringforecast.rasp.task.list.TaskListFragment;
 import org.soaringforecast.rasp.task.messages.EditTask;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
 import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
+import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
+import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
 
 import java.util.List;
 
@@ -83,6 +85,12 @@ public class TaskActivity extends MasterActivity {
     public void onMessageEvent(AddTurnpointsToTask event) {
         displayFragment(TurnpointSearchForTaskFragment.newInstance(), true,true);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(GoToTurnpointImport event) {
+        displayFragment(SeeYouImportFragment.newInstance(), true, true);
+    }
+
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)

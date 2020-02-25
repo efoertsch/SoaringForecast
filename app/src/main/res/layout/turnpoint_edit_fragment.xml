@@ -48,7 +48,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textNoSuggestions"
-                    android:text="@={viewModel.title}" />
+                    android:text="@={viewModel.title}"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -195,7 +196,6 @@
                     android:layout_centerVertical="true"
                     android:contentDescription="@string/turnpoint_edit_gps_imageview_description"
                     android:foregroundGravity="center"
-                    android:onClick="@{() -> viewModel.onClickGpsIcon()}"
                     android:paddingLeft="@dimen/margin_double"
                     app:srcCompat="@drawable/ic_turnpoint_black_48dp" />
 
@@ -229,6 +229,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_elevation_layout" />
 
+            <!-- Could not get onItemSelected to work properly via LiveData/View model so putting
+                 that logic in Fragment -->
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/turnpoint_edit_style_spinner"
                 style="@style/Widget.AppCompat.Spinner.Underlined"
@@ -237,7 +239,6 @@
                 android:layout_marginTop="@dimen/margin_half"
                 android:layout_marginEnd="@dimen/margin_standard"
                 android:prompt="@string/turnpoint_type"
-                android:selectedItemPosition="@={viewModel.cupStylePosition}"
                 android:spinnerMode="dialog"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/black"
@@ -309,7 +310,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
-                app:errorText="@{viewModel.directionErrorText}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_airport_frequency_layout">
 
@@ -322,6 +322,17 @@
                     android:text="@={viewModel.description}" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <ProgressBar
+                android:id="@+id/turnpoint_edit_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:visibility="@{safeUnbox(viewModel.amWorking) ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

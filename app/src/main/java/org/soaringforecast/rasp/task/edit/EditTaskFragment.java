@@ -73,10 +73,10 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(turnpoint -> {
-                            EventBus.getDefault().post(new DisplayTurnpoint(turnpoint));
+                            post(new DisplayTurnpoint(turnpoint));
                         },
                         t -> {
-                            EventBus.getDefault().post(new DataBaseError(getContext().getString(R.string.error_reading_turnpoint, taskTurnpoint.getTitle(),
+                            post(new DataBaseError(getContext().getString(R.string.error_reading_turnpoint, taskTurnpoint.getTitle(),
                                     taskTurnpoint.getCode()), t));
                         });
         compositeDisposable.add(disposable);
@@ -122,9 +122,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
 
         editTaskView = DataBindingUtil.inflate(inflater, R.layout.task_edit_layout, container, false);
         editTaskView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
-
         editTaskView.setViewModel(taskAndTurnpointsViewModel);
-
         RecyclerView recyclerView = editTaskView.editTaskRecyclerView;
         recyclerViewAdapter = TaskTurnpointsRecyclerViewAdapter.getInstance()
                 .setTaskAndTurnpointViewModel(taskAndTurnpointsViewModel)
@@ -188,7 +186,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     }
 
     private void goToAddTaskTurnpoints() {
-        EventBus.getDefault().post(new AddTurnpointsToTask());
+        post(new AddTurnpointsToTask());
     }
 
     @Override
@@ -214,17 +212,21 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
                 .setMessage(R.string.save_task_before_exit)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     taskAndTurnpointsViewModel.saveTask();
-                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    post(new PopThisFragmentFromBackStack());
 
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
                     taskAndTurnpointsViewModel.getTaskTurnpoints().removeObservers(this);
                     taskAndTurnpointsViewModel.reset();
-                    EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                    post(new PopThisFragmentFromBackStack());
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
 
+    }
+
+    public void post(Object object){
+        EventBus.getDefault().post(object);
     }
 }

@@ -9,7 +9,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.repository.Turnpoint;
-import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
@@ -22,7 +21,6 @@ import org.soaringforecast.rasp.turnpoints.messages.TurnpointSearchForEdit;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
 import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
-import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 
 import java.util.List;
 
@@ -66,7 +64,7 @@ public class TurnpointActivity extends MasterActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0 || getSupportFragmentManager().getFragments().size() > 0) {
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             if (fragments.get(fragments.size() - 1) instanceof CheckBeforeGoingBack) {
                 CheckBeforeGoingBack checkBeforeGoingBack = (CheckBeforeGoingBack) fragments.get(fragments.size() - 1);
@@ -89,7 +87,6 @@ public class TurnpointActivity extends MasterActivity {
     private Fragment getSeeYouImportFragment() {
         return SeeYouImportFragment.newInstance();
     }
-
 
     private Fragment getTurnpointsDownloadFragment() {
         return new TurnpointsDownloadFragment();
@@ -128,15 +125,18 @@ public class TurnpointActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTurnpoint event) {
-        displayFragment(getTurnpointEditFragment(event.getTurnpoint()), false, true);
+        // Doing it this way due to  turnpoint edit cupstyle spinner onItemSelected firing when it shouldn't
+       // displayFragment(getTurnpointEditFragment(event.getTurnpoint()), false, true);
+        startActivity(Builder.getBuilder().editTurnpoint(event.getTurnpoint()).build(this));
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
-        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment =
-                TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
-        displayFragment(turnpointSatelliteViewFragment, false, true);
-    }
+    // in superclass
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
+//        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment =
+//                TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
+//        displayFragment(turnpointSatelliteViewFragment, false, true);
+//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTurnpointEmailIntent(SendEmail sendEmail) {
@@ -162,6 +162,12 @@ public class TurnpointActivity extends MasterActivity {
 
         public TurnpointActivity.Builder displayTurnpoints() {
             bundle.putString(TURNPOINT_OP, DISPLAY_TURNPOINTS);
+            return this;
+        }
+
+        public TurnpointActivity.Builder editTurnpoint(Turnpoint turnpoint) {
+            bundle.putString(TURNPOINT_OP,TURNPOINT_EDIT);
+            bundle.putParcelable(TURNPOINT, turnpoint);
             return this;
         }
 

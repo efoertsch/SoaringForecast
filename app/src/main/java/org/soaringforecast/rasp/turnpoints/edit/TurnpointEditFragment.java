@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
@@ -18,6 +19,7 @@ import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.TurnpointEditView;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
     AppPreferences appPreferences;
 
     private static final String TURNPOINT = "TURNPOINT";
-    private static final int WRITE_DOWNLOADS_ACCESS = 67891;
+    private static final int WRITE_DOWNLOADS_ACCESS = 4343;
 
     private Turnpoint turnpoint;
     private TurnpointEditViewModel turnpointEditViewModel;
@@ -54,6 +56,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
     private boolean inEditMode = false;
     private boolean needToSave;
     private TurnpointEditView turnpointEditView;
+    private boolean ignoreFirstOnItemSelected = true;
 
     public static TurnpointEditFragment newInstance(Turnpoint turnpoint) {
         TurnpointEditFragment turnpointEditFragment = new TurnpointEditFragment();
@@ -72,9 +75,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
                 .get(TurnpointEditViewModel.class)
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
-                .reset()
-                .setTurnpoint(getArguments().getParcelable(TURNPOINT));
-
+                .setTurnpoint(turnpoint);
         setHasOptionsMenu(true);
     }
 
@@ -86,21 +87,35 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         turnpointEditView.setViewModel(turnpointEditViewModel);
         cupStyleAdapter = new CupStyleAdapter(new ArrayList<>(), getContext());
         turnpointEditView.setSpinAdapterCupStyle(cupStyleAdapter);
+        turnpointEditView.turnpointEditGpsImageview.setOnClickListener(v -> {
+            displaySatelliteTurnpointView();
+        });
 
-        // Forecasts
-        turnpointEditViewModel.getCupStyles().observe(this, forecasts -> {
+        // CupStyles
+        turnpointEditViewModel.getCupStyles().observe(this, cupStyles -> {
             cupStyleAdapter.clear();
-            cupStyleAdapter.addAll(forecasts);
+            cupStyleAdapter.addAll(cupStyles);
         });
 
-        turnpointEditViewModel.getCupStylePosition().observe(this, newCupStylePosition -> {
-            if (newCupStylePosition != null) {
-                if (lastCupStylePosition != -1 && lastCupStylePosition != newCupStylePosition) {
-                    turnpointEditViewModel.setCupStylePosition(newCupStylePosition);
-                }
-            }
-            lastCupStylePosition = newCupStylePosition;
+        // Placing setting spinner position and onItemSelected here as couldn't get it to work in
+        // viewmodel and xml databinding
+        turnpointEditViewModel.getCupStylePosition().observe(this, cupStylePosition -> {
+            turnpointEditView.turnpointEditStyleSpinner.setSelection(cupStylePosition, false);
         });
+
+        turnpointEditView.turnpointEditStyleSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        turnpointEditViewModel.setCupStylePosition(position);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                }
+        );
 
         turnpointEditViewModel.getOKToSaveFlag().observe(this, okToSave -> {
             this.okToSave = okToSave;
@@ -118,7 +133,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         });
 
         // If adding new turnpoint go into edit mode automatically
-        turnpointEditViewModel.setInEditMode(turnpoint.getId() < 0);
+        turnpointEditViewModel.setInEditMode(turnpoint.getId() <= 0);
 
         return turnpointEditView.getRoot();
     }
@@ -183,6 +198,11 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public void displaySatelliteTurnpointView() {
+        post(new DisplayTurnpoint(turnpoint));
+    }
+
 
     private void enableTurnpointEditting() {
         turnpointEditView.turnpointEditTitle.setEnabled(inEditMode);
@@ -337,10 +357,9 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
     }
 
     //TODO subclass DaggerFragment and move to there - then update other fragments...
-    private void post(Object  post){
+    private void post(Object post) {
         EventBus.getDefault().post(post);
     }
-
 
 }
 

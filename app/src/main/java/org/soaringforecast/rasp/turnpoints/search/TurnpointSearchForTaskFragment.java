@@ -1,19 +1,20 @@
 package org.soaringforecast.rasp.turnpoints.search;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.EventBus;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel;
+
+import androidx.lifecycle.ViewModelProviders;
 
 public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
 
@@ -22,7 +23,7 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
     private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
         TaskTurnpoint taskTurnpoint = new TaskTurnpoint(taskAndTurnpointsViewModel.getTaskId(), turnpoint.getTitle(), turnpoint.getCode(), turnpoint.getLatitudeDeg(), turnpoint.getLongitudeDeg());
         taskAndTurnpointsViewModel.addTaskTurnpoint(taskTurnpoint);
-        EventBus.getDefault().post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle()), Snackbar.LENGTH_SHORT));
+        post(new SnackbarMessage(getString(R.string.added_to_task, turnpoint.getTitle()), Snackbar.LENGTH_SHORT));
         searchView.setQuery("", true);
     };
 

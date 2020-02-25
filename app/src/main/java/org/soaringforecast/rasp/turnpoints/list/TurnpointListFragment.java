@@ -112,7 +112,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
         // subclass may want altered menu items
         getActivity().invalidateOptionsMenu();
         if (refreshOnResume){
-            turnpointListViewModel.searchTurnpoints("");
+            turnpointListViewModel.searchTurnpoints("%");
             refreshOnResume = false;
         }
     }
@@ -199,7 +199,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
                 .setTitle(R.string.no_turnpoints_found)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     addTurnpoints();
-                    //TODO go to Turnpoint import
                     noTurnpointsDialog = null;
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
@@ -293,7 +292,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     }
 
     //TODO subclass DaggerFragment and move to there - then update other fragments...
-    private void post(Object  post){
+    protected void post(Object post){
         EventBus.getDefault().post(post);
     }
 

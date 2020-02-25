@@ -128,8 +128,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 turnpointSatelliteView.turnpointMapCloseButton.setVisibility(View.GONE);
                 turnpointSatelliteView.turnpointMapSaveButton.setVisibility(View.VISIBLE);
                 turnpointSatelliteView.turnpointMapSaveButton.setOnClickListener(v -> {
-                    // Save lat, long and elevation to turnpoint
-                    turnpointEditViewModel.updateTurnpointLatLngAndElevation(lastKnownLocation);
+                    removeFragment();
                 });
 
                 turnpointSatelliteView.turnpointMapCancelButton.setVisibility(View.VISIBLE);
@@ -189,7 +188,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     }
 
     private void removeFragment() {
-        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+        post(new PopThisFragmentFromBackStack());
     }
 
 
@@ -263,12 +262,15 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 // Set the map's camera position to the current location of the device.
                 lastKnownLocation = task.getResult();
                 if (lastKnownLocation != null) {
+                    turnpointEditViewModel.setCurrentLocationFromGPS(lastKnownLocation);
                     LatLng currentLocationLatLng = new LatLng(lastKnownLocation.getLatitude(),
                             lastKnownLocation.getLongitude());
                     moveCameraToLatLng(currentLocationLatLng);
+                } else {
+                    post(new SnackbarMessage(getString(R.string.could_not_get_lat_long_from_gps)));
                 }
             } else {
-                EventBus.getDefault().post(new SnackbarMessage(getString(R.string.can_not_determine_location)));
+                post(new SnackbarMessage(getString(R.string.can_not_determine_location)));
                 Timber.d("Current location is null. Using defaults.");
                 Timber.e(task.getException(), " Exception");
                 moveCameraToLatLng(defaultLatLng);
@@ -312,13 +314,17 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
             builder.setMessage(R.string.no_permission_to_use_gps_to_get_current_location)
                     .setTitle(R.string.permission_denied)
                     .setPositiveButton(R.string.ok, (dialog, id) -> {
-                        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+                        post(new PopThisFragmentFromBackStack());
                     });
             AlertDialog alertDialog = builder.create();
             alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.show();
 
         }
+    }
+
+    private void post(Object object){
+        EventBus.getDefault().post(object);
     }
 
 }
