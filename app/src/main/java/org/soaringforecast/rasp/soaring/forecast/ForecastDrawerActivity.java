@@ -1,9 +1,11 @@
 package org.soaringforecast.rasp.soaring.forecast;
 
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -184,12 +186,17 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_turnpoints:
                 displayTurnpoints();
                 break;
-
             case R.id.nav_menu_settings:
                 displaySettingsActivity();
                 break;
             case R.id.nav_menu_about:
                 displayAbout();
+                break;
+            case R.id.nav_menu_feedback:
+                sendFeedBack();
+                break;
+            case R.id.nav_menu_rate_app:
+                rateApp();
                 break;
         }
         drawerLayout.closeDrawers();
@@ -323,6 +330,54 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         fm.popBackStack();
 
+    }
+
+    public void sendFeedBack() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "SoaringForecast Feedback");
+            intent.setData(Uri.parse("mailto:ericfoertsch@gmail.com"));
+            startActivity(intent);
+        } catch (Exception e) {
+            Snackbar.make(appNavDrawerBinding.getRoot(), getString(R.string.error_in_emailing_feedback), Snackbar.LENGTH_INDEFINITE);
+        }
+    }
+
+    /* Copied rateApp() from https://stackoverflow.com/questions/10816757/rate-this-app-link-in-google-play-store-app-on-the-phone
+     * Start with rating the app
+     * Determine if the Play Store is installed on the device
+     *
+     * */
+    public void rateApp()
+    {
+        try
+        {
+            Intent rateIntent = rateIntentForUrl("market://details");
+            startActivity(rateIntent);
+        }
+        catch (ActivityNotFoundException e)
+        {
+            Intent rateIntent = rateIntentForUrl("https://play.google.com/store/apps/details");
+            startActivity(rateIntent);
+        }
+    }
+
+    private Intent rateIntentForUrl(String url)
+    {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("%s?id=%s", url, getPackageName())));
+        int flags = Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
+        if (Build.VERSION.SDK_INT >= 21)
+        {
+            flags |= Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
+        }
+        else
+        {
+            //noinspection deprecation
+            flags |= Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
+        }
+        intent.addFlags(flags);
+        return intent;
     }
 
 }

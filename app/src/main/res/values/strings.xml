@@ -398,5 +398,8 @@
     <string name="airnav">AirNav</string>
     <string name="turnpoint_view_airnav">AirNav</string>
     <string name="turnpoint_edit_menu_airnav">AirNav</string>
+    <string name="activity_rate_app">Rate App</string>
+    <string name="error_in_emailing_feedback">Error in emailling feedback.</string>
+    <string name="feedback">Feedback</string>
 
 </resources>
