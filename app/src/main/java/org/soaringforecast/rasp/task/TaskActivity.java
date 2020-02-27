@@ -9,11 +9,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.common.MasterActivity;
-import org.soaringforecast.rasp.task.edit.EditTaskFragment;
+import org.soaringforecast.rasp.task.edit.TaskEditFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
 import org.soaringforecast.rasp.task.messages.EditTask;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
+import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
 import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
+import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
 import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
 import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
@@ -66,7 +68,7 @@ public class TaskActivity extends MasterActivity {
                 }
             }
         }
-        super.onBackPressed();
+        popCurrentFragment();
     }
 
     private Fragment getTaskListFragment() {
@@ -78,20 +80,18 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTask event) {
-        displayFragment(new EditTaskFragment().setTaskId( event.getTaskId()), true, true);
+        displayFragment(new TaskEditFragment().setTaskId( event.getTaskId()), false, true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        displayFragment(TurnpointSearchForTaskFragment.newInstance(), true,true);
+        displayFragment(TurnpointSearchForTaskFragment.newInstance(), false,true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToTurnpointImport event) {
-        displayFragment(SeeYouImportFragment.newInstance(), true, true);
+        displayFragment(SeeYouImportFragment.newInstance(), false, true);
     }
-
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SelectedTask selectedTask){
@@ -103,6 +103,11 @@ public class TaskActivity extends MasterActivity {
             setResult(RESULT_OK, intent);
             finish();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DisplayAirNav displayAirNav) {
+        displayFragment(AirNavFragment.newInstance(displayAirNav.getTurnpoint().getCode()),false,true);
     }
 
     public static class Builder {

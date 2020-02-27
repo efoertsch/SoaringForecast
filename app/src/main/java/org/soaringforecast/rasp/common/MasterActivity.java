@@ -14,7 +14,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
-import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
 import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 
 import androidx.annotation.StringRes;
@@ -59,8 +59,9 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         if (fragment == null) {
             fragment = createFragment();
             if (fragment != null) {
-                fm.beginTransaction().add(R.id.fragmentContainer, fragment).addToBackStack(null)
-                        .commit();
+                // Don't use addToBackStack(null) if first fragment added to container
+                // If you do and 'Back' hit, fragment removed but activity continues (with blank screen)
+                fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
             } else {
                 finish();
             }
@@ -132,9 +133,15 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         popCurrentFragment();
     }
 
+
+    // Putting this here because needs to be handled from task and turnpoint activities
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
-        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
+    public void onTurnpointMessageEvent(DisplayTurnpointSatelliteView displayTurnpointSatelliteView) {
+        displayTurnpointSatelliteViewFragment(displayTurnpointSatelliteView);
+    }
+
+    private void displayTurnpointSatelliteViewFragment(DisplayTurnpointSatelliteView displayTurnpointSatelliteView) {
+        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = TurnpointSatelliteViewFragment.newInstance(displayTurnpointSatelliteView.getTurnpoint());
         displayFragment(turnpointSatelliteViewFragment, false, true);
     }
 

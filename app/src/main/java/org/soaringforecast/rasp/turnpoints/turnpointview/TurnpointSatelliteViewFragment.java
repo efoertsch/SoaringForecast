@@ -34,6 +34,7 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditViewModel;
+import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
 
 import java.util.List;
 
@@ -81,6 +82,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     private Marker turnpointMarker;
     private Bitmap turnpointMarkerBitmap;
     private boolean inDragMode = false;
+    private Turnpoint turnpoint;
 
 
     public static TurnpointSatelliteViewFragment newInstance(Turnpoint turnpoint) {
@@ -94,13 +96,14 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        turnpoint  = getArguments().getParcelable(TURNPOINT);
         // Viewmodel may already be defined if coming from TurnpointEditFragment
         // but data 'should' be the same
         turnpointEditViewModel = ViewModelProviders.of(getActivity())
                 .get(TurnpointEditViewModel.class)
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
-                .setTurnpoint(getArguments().getParcelable(TURNPOINT));
+                .setTurnpoint(turnpoint);
         setHasOptionsMenu(true);
         elevationPreference = appPreferences.getAltitudeDisplay();
     }
@@ -161,6 +164,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
         inflater.inflate(R.menu.turnpoint_view_options, menu);
         MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_view_reset_marker);
         MenuItem dragMenuItem = menu.findItem(R.id.turnpoint_view_drag_marker);
+        MenuItem airnavMenuItem = menu.findItem(R.id.turnpoint_view_airnav);
         if (inEditMode) {
             dragMenuItem.setVisible(true);
             resetMenuItem.setVisible(true);
@@ -168,6 +172,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
             dragMenuItem.setVisible(false);
             resetMenuItem.setVisible(false);
         }
+       airnavMenuItem.setVisible(turnpoint != null && (turnpoint.isAirport()));
     }
 
     @Override
@@ -181,6 +186,9 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
             case R.id.turnpoint_view_drag_marker:
                 inDragMode = true;
                 addMarkerDragListener();
+                return true;
+            case R.id.turnpoint_view_airnav:
+                post(new DisplayAirNav(turnpoint));
                 return true;
             default:
                 return false;

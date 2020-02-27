@@ -20,7 +20,7 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
-import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
 import org.soaringforecast.rasp.touchhelper.OnStartDragListener;
 import org.soaringforecast.rasp.touchhelper.SimpleItemTouchHelperCallback;
 import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
@@ -41,7 +41,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class EditTaskFragment extends DaggerFragment implements OnStartDragListener, CheckBeforeGoingBack {
+public class TaskEditFragment extends DaggerFragment implements OnStartDragListener, CheckBeforeGoingBack {
 
     @Inject
     AppRepository appRepository;
@@ -57,7 +57,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
-    public EditTaskFragment setTaskId(long taskId) {
+    public TaskEditFragment setTaskId(long taskId) {
         this.taskId = taskId;
         return this;
     }
@@ -73,7 +73,7 @@ public class EditTaskFragment extends DaggerFragment implements OnStartDragListe
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(turnpoint -> {
-                            post(new DisplayTurnpoint(turnpoint));
+                            post(new DisplayTurnpointSatelliteView(turnpoint));
                         },
                         t -> {
                             post(new DataBaseError(getContext().getString(R.string.error_reading_turnpoint, taskTurnpoint.getTitle(),

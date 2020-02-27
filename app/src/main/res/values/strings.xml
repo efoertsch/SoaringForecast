@@ -395,5 +395,8 @@
     <string name="could_not_get_lat_long_from_gps">Hmm. Can\'t get GPS coordinates.</string>
     <string name="duplicate_turnpoint_code">A turnpoint already exists with that code!</string>
     <string name="error_checking_for_duplicate_turnpoint_code">Oops! An error occurred checking for duplicate turnpoint code!</string>
+    <string name="airnav">AirNav</string>
+    <string name="turnpoint_view_airnav">AirNav</string>
+    <string name="turnpoint_edit_menu_airnav">AirNav</string>
 
 </resources>

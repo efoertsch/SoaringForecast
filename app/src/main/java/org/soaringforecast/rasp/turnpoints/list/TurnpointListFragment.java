@@ -17,7 +17,8 @@ import org.soaringforecast.rasp.databinding.TurnpointListBinding;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
-import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
+import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
 import org.soaringforecast.rasp.turnpoints.messages.EditTurnpoint;
 import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.messages.TurnpointSearchForEdit;
@@ -60,7 +61,11 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     };
 
     private GenericListClickListener<Turnpoint> satelliteOnItemClickListener = (turnpoint, position) -> {
-        post(new DisplayTurnpoint(turnpoint));
+        post(new DisplayTurnpointSatelliteView(turnpoint));
+    };
+
+    private GenericListClickListener<Turnpoint> turnpointOnLongClickListener = (turnpoint, position) -> {
+        post(new DisplayAirNav(turnpoint));
     };
 
 
@@ -86,10 +91,11 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
         turnpointListBinding.setViewModel(turnpointListViewModel);
 
         turnpointListAdapter = TurnpointListAdapter.getInstance()
-                .setSateliteOnItemClickListener(satelliteOnItemClickListener)
+                .setSatelliteOnItemClickListener(satelliteOnItemClickListener)
                 .setTurnpointBitmapUtils(turnpointBitmapUtils);
 
         turnpointListAdapter.setOnItemClickListener(turnpointTextClickListener);
+        turnpointListAdapter.setLongClickListener(turnpointOnLongClickListener);
 
         RecyclerView recyclerView = turnpointListBinding.turnpointListRecyclerView;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
