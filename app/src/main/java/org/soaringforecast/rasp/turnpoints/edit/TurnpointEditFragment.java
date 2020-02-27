@@ -19,7 +19,8 @@ import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.TurnpointEditView;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
-import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
+import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,15 +159,20 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         MenuItem editMenuItem = menu.findItem(R.id.turnpoint_edit_menu_edit);
         MenuItem saveMenuItem = menu.findItem(R.id.turnpoint_edit_menu_save);
         MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_edit_menu_reset);
+        MenuItem deleteMenuItem = menu.findItem(R.id.turnpoint_edit_menu_delete);
+        MenuItem airnavMenuItem = menu.findItem(R.id.turnpoint_edit_menu_airnav);
         if (inEditMode) {
             editMenuItem.setVisible(false);
             saveMenuItem.setVisible(okToSave);
             resetMenuItem.setVisible(true);
+            deleteMenuItem.setVisible(true);
         } else {
             editMenuItem.setVisible(true);
             saveMenuItem.setVisible(false);
             resetMenuItem.setVisible(false);
+            deleteMenuItem.setVisible(false);
         }
+        airnavMenuItem.setVisible(turnpoint != null && (turnpoint.isAirport()));
     }
 
     @Override
@@ -194,15 +200,21 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
             case R.id.turnpoint_edit_menu_delete:
                 checkIfOkToDeleteTurnpoint();
                 return true;
+            case R.id.turnpoint_edit_menu_airnav:
+                displayAirNav();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void displaySatelliteTurnpointView() {
-        post(new DisplayTurnpoint(turnpoint));
+    private void displaySatelliteTurnpointView() {
+        post(new DisplayTurnpointSatelliteView(turnpoint));
     }
 
+    private void displayAirNav() {
+        post(new DisplayAirNav(turnpoint));
+    }
 
     private void enableTurnpointEditting() {
         turnpointEditView.turnpointEditTitle.setEnabled(inEditMode);

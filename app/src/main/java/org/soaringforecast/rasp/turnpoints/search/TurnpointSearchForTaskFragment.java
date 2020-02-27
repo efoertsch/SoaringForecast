@@ -33,7 +33,7 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Shared with EditTaskFragment and
+        // Shared with TaskEditFragment and
         // should already be 'initialized' with AppRepository, taskId, ... before getting here
         taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity()).get(TaskAndTurnpointsViewModel.class);
     }

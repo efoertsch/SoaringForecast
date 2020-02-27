@@ -39,5 +39,6 @@ public class WindyActivity extends MasterActivity {
             intent.putExtras(bundle);
             return intent;
         }
+
     }
 }

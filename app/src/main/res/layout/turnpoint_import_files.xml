@@ -15,7 +15,8 @@
 
         android:id="@+id/turnpoint_import_files_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
 
         <TextView
             android:id="@+id/turnpoint_imports_title"

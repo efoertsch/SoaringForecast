@@ -1,23 +1,28 @@
 package org.soaringforecast.rasp.turnpoints.list;
 
-import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
+import org.soaringforecast.rasp.common.recycleradapter.GenericViewHolder;
 import org.soaringforecast.rasp.databinding.TurnpointListView;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.forecast.TurnpointBitmapUtils;
 
 import java.util.List;
 
-public class TurnpointListAdapter extends GenericRecyclerViewAdapter<Turnpoint, TurnpointListViewHolder> {
+import androidx.databinding.DataBindingUtil;
+
+public class TurnpointListAdapter extends GenericRecyclerViewAdapter<Turnpoint, TurnpointListAdapter.TurnpointListViewHolder> {
 
     private GenericListClickListener<Turnpoint> itemClickListener;
     private GenericListClickListener<Turnpoint> satelliteImageClickListener;
+    private GenericListClickListener<Turnpoint> longClickListener;
     private TurnpointBitmapUtils turnpointBitmapUtils;
+
 
 
     private TurnpointListAdapter(){
@@ -33,8 +38,13 @@ public class TurnpointListAdapter extends GenericRecyclerViewAdapter<Turnpoint, 
         return this;
     }
 
-    public TurnpointListAdapter setSateliteOnItemClickListener(GenericListClickListener<Turnpoint> satelliteGenericListClickListener ) {
+    public TurnpointListAdapter setSatelliteOnItemClickListener(GenericListClickListener<Turnpoint> satelliteGenericListClickListener ) {
         this.satelliteImageClickListener =  satelliteGenericListClickListener;
+        return this;
+    }
+
+    public TurnpointListAdapter setLongClickListener(GenericListClickListener<Turnpoint> longClickListener){
+        this.longClickListener = longClickListener;
         return this;
     }
 
@@ -42,6 +52,8 @@ public class TurnpointListAdapter extends GenericRecyclerViewAdapter<Turnpoint, 
         this.turnpointBitmapUtils = turnpointBitmapUtils;
         return this;
     }
+
+
 
 
     public void setTurnpointList(List<Turnpoint> newTurnpointsList){
@@ -60,11 +72,49 @@ public class TurnpointListAdapter extends GenericRecyclerViewAdapter<Turnpoint, 
     }
 
     @Override
-    public void onBindViewHolder(TurnpointListViewHolder holder, int position) {
+    public void onBindViewHolder(final TurnpointListViewHolder holder, final int position) {
         super.onBindViewHolder(holder, position);
-        holder.getViewDataBinding().setClickListener(itemClickListener);
-        holder.getViewDataBinding().setSatelliteClickListener(satelliteImageClickListener);
+        if (itemClickListener != null) {
+            holder.getViewDataBinding().setClickListener(itemClickListener);
+        }
+        if (satelliteImageClickListener != null) {
+            holder.getViewDataBinding().setSatelliteClickListener(satelliteImageClickListener);
+        }
+        if (longClickListener != null){
+            holder.getViewDataBinding().turnpointListLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    longClickListener.onItemClick(holder.viewDataBinding.getTurnpoint(), position);
+                    return true;
+                }
+            });
+        }
+
         holder.getViewDataBinding().setTurnpointBitmapUtils(turnpointBitmapUtils);
+
     }
+
+    public class TurnpointListViewHolder extends GenericViewHolder<Turnpoint, TurnpointListView> {
+
+        private TurnpointListView viewDataBinding;
+
+
+        TurnpointListViewHolder(TurnpointListView bindingView) {
+            super(bindingView);
+            viewDataBinding = bindingView;
+        }
+
+        public void onBind(Turnpoint item, int position) {
+            viewDataBinding.setTurnpoint(item);
+            viewDataBinding.setPosition(position);
+        }
+
+        @Override
+        public TurnpointListView getViewDataBinding() {
+            return viewDataBinding;
+        }
+
+    }
+
 
 }

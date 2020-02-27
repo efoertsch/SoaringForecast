@@ -9,4 +9,8 @@
         android:title="@string/turnpoint_view_drag_marker"
         app:showAsAction="never"
         android:visible="false"/>
+    <item android:id="@+id/turnpoint_view_airnav"
+        android:title="@string/turnpoint_view_airnav"
+        app:showAsAction="ifRoom"
+        android:visible="true"/>
 </menu>

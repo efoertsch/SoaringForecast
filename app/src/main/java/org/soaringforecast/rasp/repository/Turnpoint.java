@@ -354,6 +354,10 @@ public class Turnpoint implements Cloneable, Parcelable {
         return style.equals("5");
     }
 
+    public boolean isAirport(){
+        return style != null && style.matches("[245]");
+    }
+
     public String getLatitudeInCupFormat() {
         return getLatitudeInCupFormat(latitudeDeg);
     }

@@ -21,15 +21,15 @@ import org.soaringforecast.rasp.about.AboutActivity;
 import org.soaringforecast.rasp.airport.AirportActivity;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.messages.CallFailure;
+import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.AppNavDrawerBinding;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.satellite.SatelliteActivity;
 import org.soaringforecast.rasp.settings.SettingsActivity;
-import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
 import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
-import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 import org.soaringforecast.rasp.windy.WindyActivity;
 
@@ -311,10 +311,18 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTurnpointMessageEvent(DisplayTurnpoint displayTurnpoint) {
-        TurnpointSatelliteViewFragment turnpointSatelliteViewFragment =
-                TurnpointSatelliteViewFragment.newInstance(displayTurnpoint.getTurnpoint());
-        displayFragment(turnpointSatelliteViewFragment, false, true);
+    public void onTurnpointMessageEvent(DisplayTurnpointSatelliteView displayTurnpointSatelliteView) {
+        Intent intent = TurnpointActivity.Builder.getBuilder()
+                .displayTurnpointSatelliteView(displayTurnpointSatelliteView.getTurnpoint()).build(this);
+        startActivity(intent);
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(PopThisFragmentFromBackStack event) {
+        FragmentManager fm = getSupportFragmentManager();
+        fm.popBackStack();
+
     }
 
 }

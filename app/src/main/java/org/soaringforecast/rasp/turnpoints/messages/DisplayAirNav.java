@@ -1,16 +1,18 @@
-package org.soaringforecast.rasp.soaring.messages;
+package org.soaringforecast.rasp.turnpoints.messages;
 
 import org.soaringforecast.rasp.repository.Turnpoint;
 
-public class DisplayTurnpoint {
+public class DisplayAirNav {
 
-    private final Turnpoint turnpoint;
+    final Turnpoint turnpoint;
 
-    public DisplayTurnpoint(Turnpoint turnpoint) {
+    public DisplayAirNav(Turnpoint turnpoint) {
         this.turnpoint = turnpoint;
     }
 
     public Turnpoint getTurnpoint() {
         return turnpoint;
     }
+
+
 }

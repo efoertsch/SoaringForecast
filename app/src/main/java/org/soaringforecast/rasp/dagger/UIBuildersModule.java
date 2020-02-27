@@ -15,9 +15,10 @@ import org.soaringforecast.rasp.settings.regions.RegionSelectionFragment;
 import org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity;
 import org.soaringforecast.rasp.soaring.forecast.SoaringForecastFragment;
 import org.soaringforecast.rasp.task.TaskActivity;
-import org.soaringforecast.rasp.task.edit.EditTaskFragment;
+import org.soaringforecast.rasp.task.edit.TaskEditFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
 import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
+import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
 import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
@@ -70,7 +71,7 @@ public abstract class UIBuildersModule {
     abstract TaskActivity bindTaskActivity();
 
     @ContributesAndroidInjector(modules = {})
-    abstract EditTaskFragment bindEditTaskFragment();
+    abstract TaskEditFragment bindEditTaskFragment();
 
     @ContributesAndroidInjector(modules = {})
     abstract TaskListFragment bindTaskListFragment();
@@ -99,6 +100,9 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract TurnpointSatelliteViewFragment bindTurnpointSatelliteViewFragment();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract AirNavFragment bindAirNavFragment();
 
     // ---- Satellite ----
     @ContributesAndroidInjector(modules = {})

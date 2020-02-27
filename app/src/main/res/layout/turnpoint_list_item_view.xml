@@ -20,6 +20,11 @@
             />
 
         <variable
+            name="longClickListener"
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.Turnpoint&gt;"
+            />
+
+        <variable
             name="turnpoint"
             type="org.soaringforecast.rasp.repository.Turnpoint"/>
 
@@ -34,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
+        android:longClickable="true"
         >
 
         <ImageView

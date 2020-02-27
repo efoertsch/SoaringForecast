@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/turnpoint_edit_menu_edit"
-        android:icon="@drawable/ic_mode_edit"
+        android:icon="@drawable/ic_edit_white"
         app:showAsAction="always" />
     <item android:id="@+id/turnpoint_edit_menu_save"
         android:title="@string/turnpoint_edit_save"
@@ -24,4 +24,8 @@
     <item android:id="@+id/turnpoint_edit_menu_delete"
         android:title="@string/turnpoint_edit_delete"
         app:showAsAction="never"/>
+    <item android:id="@+id/turnpoint_edit_menu_airnav"
+        android:title="@string/turnpoint_edit_menu_airnav"
+        app:showAsAction="never"
+        android:visible="true"/>
 </menu>

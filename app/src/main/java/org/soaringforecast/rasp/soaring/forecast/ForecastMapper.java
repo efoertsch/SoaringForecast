@@ -54,7 +54,7 @@ import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.soaring.json.Sounding;
 import org.soaringforecast.rasp.soaring.messages.DisplayLatLngForecast;
 import org.soaringforecast.rasp.soaring.messages.DisplaySounding;
-import org.soaringforecast.rasp.soaring.messages.DisplayTurnpoint;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
 import org.soaringforecast.rasp.utils.BitmapImageUtils;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
@@ -429,7 +429,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
         if (marker.getTag() instanceof Turnpoint) {
             lastMarkerOpened = marker;
             if (appPreferences.getDisplayTurnpointSatelliteView()) {
-                EventBus.getDefault().post(new DisplayTurnpoint((Turnpoint) marker.getTag()));
+                EventBus.getDefault().post(new DisplayTurnpointSatelliteView((Turnpoint) marker.getTag()));
             }
             if (appPreferences.getDisplayTurnpointInfoWindowView()) {
                 marker.showInfoWindow();
