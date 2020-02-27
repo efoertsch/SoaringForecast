@@ -11,5 +11,5 @@
 <p>The Windy forecast is from windy.com and adapted for the app. You can go to the full Windy site by clicking on the Windy icon on the Windy screen. </p>
 <p>No warranties expressed or implied. Use at your own risk. If the forecast looks great but the day turns out to be sucky, any tow fees, retrieval fees, landout dinners, and/or broken gliders are on you.</>
 
-<p>Please email Eric Foertsch (efoertsch@fisincorporated.com) with any bugs or enhancement requests.
+<p>Please email Eric Foertsch (ericfoertsch@gmail.com) with any bugs or enhancement requests.
 </p>

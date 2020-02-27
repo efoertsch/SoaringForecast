@@ -80,6 +80,14 @@
         android:id="@+id/nav_menu_about"
         android:title="@string/activity_about"/>
 
+
+    <item
+        android:id="@+id/nav_menu_feedback"
+        android:title="@string/feedback"/>
+    <item
+        android:id="@+id/nav_menu_rate_app"
+        android:title="@string/activity_rate_app"/>
+
 </menu>
 
 
