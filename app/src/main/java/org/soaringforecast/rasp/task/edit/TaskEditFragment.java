@@ -43,6 +43,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class TaskEditFragment extends DaggerFragment implements OnStartDragListener, CheckBeforeGoingBack {
 
+    private static final String TASKID = "TASKID";
     @Inject
     AppRepository appRepository;
 
@@ -56,11 +57,14 @@ public class TaskEditFragment extends DaggerFragment implements OnStartDragListe
     private EditTaskView editTaskView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-
-    public TaskEditFragment setTaskId(long taskId) {
-        this.taskId = taskId;
-        return this;
+    public static TaskEditFragment newInstance(long taskId){
+        TaskEditFragment taskEditFragment= new TaskEditFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong(TASKID, taskId);
+        taskEditFragment.setArguments(bundle);
+        return taskEditFragment;
     }
+
 
     private GenericListClickListener<TaskTurnpoint> onItemClickListener = (taskTurnpoint, position) -> {
         // find corresponding turnpoint
@@ -84,6 +88,7 @@ public class TaskEditFragment extends DaggerFragment implements OnStartDragListe
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        taskId = getArguments().getLong(TASKID);
         // Note viewmodel is shared by activity
         taskAndTurnpointsViewModel = ViewModelProviders.of(getActivity())
                 .get(TaskAndTurnpointsViewModel.class)

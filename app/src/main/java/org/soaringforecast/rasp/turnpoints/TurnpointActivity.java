@@ -10,18 +10,12 @@ import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
-import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
-import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
-import org.soaringforecast.rasp.turnpoints.messages.EditTurnpoint;
-import org.soaringforecast.rasp.turnpoints.messages.GoToDownloadImport;
-import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.messages.SendEmail;
 import org.soaringforecast.rasp.turnpoints.messages.TurnpointSearchForEdit;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForEditFragment;
-import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
 import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
 import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
 
@@ -35,9 +29,8 @@ public class TurnpointActivity extends MasterActivity {
     private static final String TURNPOINT_OP = "TURNPOINT_OP";
     private static final String DISPLAY_TURNPOINTS = "DISPLAY_TURNPOINTS";
     private static final String TURNPOINT_EDIT = "TURNPOINT_EDIT";
-    private static final String TURNPOINT_EDIT_SEARCH = "TURNPOINT_EDIT_SEARCH";
-    private static final String TURNPOINT_IMPORT = "TURNPOINT_IMPORT";
     private static final String TURNPOINT_SATELLITE_VIEW = "TURNPOINT_SATELLITE_VIEW";
+    private static final String TURNPOINT_IMPORT = "TURNPOINT_IMPORT";
     private static final String TURNPOINT = "TURNPOINT";
 
     @Override
@@ -54,8 +47,6 @@ public class TurnpointActivity extends MasterActivity {
                     return getTurnpointListFragment();
                 case TURNPOINT_IMPORT:
                     return getSeeYouImportFragment();
-                case TURNPOINT_EDIT_SEARCH:
-                    return getTurnpointSearchForEditFragment();
                 case TURNPOINT_EDIT:
                     return getTurnpointEditFragment();
                 case TURNPOINT_SATELLITE_VIEW:
@@ -67,8 +58,6 @@ public class TurnpointActivity extends MasterActivity {
         return null;
 
     }
-
-
 
     @Override
     public void onBackPressed() {
@@ -90,16 +79,8 @@ public class TurnpointActivity extends MasterActivity {
         return TurnpointListFragment.newInstance();
     }
 
-    private Fragment getTurnpointSearchForEditFragment() {
-        return TurnpointSearchForEditFragment.newInstance();
-    }
-
     private Fragment getSeeYouImportFragment() {
         return SeeYouImportFragment.newInstance();
-    }
-
-    private Fragment getTurnpointsDownloadFragment() {
-        return new TurnpointsDownloadFragment();
     }
 
     private Fragment getTurnpointEditFragment() {
@@ -114,32 +95,9 @@ public class TurnpointActivity extends MasterActivity {
 
 
     // Bus messages
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(AddTurnpointsToTask event) {
-        displayFragment(new TurnpointSearchForTaskFragment().newInstance(), true, true);
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(TurnpointSearchForEdit event) {
         displayFragment(TurnpointSearchForEditFragment.newInstance(), false, true);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoToTurnpointImport event) {
-        displayFragment(getSeeYouImportFragment(), true, true);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoToDownloadImport event) {
-        displayFragment(getTurnpointsDownloadFragment(), true, true);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(EditTurnpoint event) {
-        // Doing it this way due to  turnpoint edit cupstyle spinner onItemSelected firing when it shouldn't
-       // displayFragment(getTurnpointEditFragment(event.getTurnpoint()), false, true);
-        startActivity(Builder.getBuilder().editTurnpoint(event.getTurnpoint()).build(this));
     }
 
 
@@ -172,6 +130,11 @@ public class TurnpointActivity extends MasterActivity {
 
         public TurnpointActivity.Builder displayTurnpoints() {
             bundle.putString(TURNPOINT_OP, DISPLAY_TURNPOINTS);
+            return this;
+        }
+
+        public TurnpointActivity.Builder importTurnpoints() {
+            bundle.putString(TURNPOINT_OP,TURNPOINT_IMPORT);
             return this;
         }
 

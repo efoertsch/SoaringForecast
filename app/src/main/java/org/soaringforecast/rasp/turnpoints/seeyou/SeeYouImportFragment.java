@@ -2,9 +2,6 @@ package org.soaringforecast.rasp.turnpoints.seeyou;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,22 +9,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
-import org.soaringforecast.rasp.retrofit.JSONServerApi;
-import org.soaringforecast.rasp.turnpoints.messages.GoToDownloadImport;
-import org.soaringforecast.rasp.turnpoints.messages.ImportSeeYouFile;
-import org.soaringforecast.rasp.common.messages.SnackbarMessage;
-import org.soaringforecast.rasp.turnpoints.json.TurnpointFile;
-import org.soaringforecast.rasp.turnpoints.common.CommonTurnpointsImportFragment;
+import com.google.android.material.snackbar.Snackbar;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.common.messages.SnackbarMessage;
+import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
+import org.soaringforecast.rasp.retrofit.JSONServerApi;
+import org.soaringforecast.rasp.turnpoints.common.CommonTurnpointsImportFragment;
+import org.soaringforecast.rasp.turnpoints.json.TurnpointFile;
+import org.soaringforecast.rasp.turnpoints.messages.GoToDownloadImport;
+import org.soaringforecast.rasp.turnpoints.messages.ImportSeeYouFile;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -85,6 +84,7 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.turnpoint_menu, menu);
     }
 
@@ -142,7 +142,7 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
     }
 
     private void doCustomImport() {
-        EventBus.getDefault().post(new GoToDownloadImport());
+        post(new GoToDownloadImport());
     }
 
     //TODO move logic into ViewModel

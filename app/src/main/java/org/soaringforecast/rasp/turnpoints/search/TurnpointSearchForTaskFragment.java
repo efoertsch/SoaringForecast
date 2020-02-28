@@ -2,6 +2,9 @@ package org.soaringforecast.rasp.turnpoints.search;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,6 +19,10 @@ import org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel;
 
 import androidx.lifecycle.ViewModelProviders;
 
+/**
+ * This version of search is to be called by Task fragment as it shares the viewmodel with the task
+ * As such it is to run under the TaskActivity
+ */
 public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
 
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
@@ -53,6 +60,30 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.add_turnpoints);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem menuItem = menu.findItem(R.id.turnpoint_search);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+        menuItem = menu.findItem(R.id.turnpoint_menu_add_export_turnpoints);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+        menuItem = menu.findItem(R.id.turnpoint_menu_add_email_turnpoints);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+        menuItem = menu.findItem(R.id.turnpoint_menu_clear_turnpoints);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+
     }
 
 }

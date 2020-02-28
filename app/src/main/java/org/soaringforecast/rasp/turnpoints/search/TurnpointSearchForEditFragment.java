@@ -12,6 +12,10 @@ import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.turnpoints.messages.EditTurnpoint;
 
+
+/**
+ * This version of search is to be called by TurnpointActivity and is used for finding turnpoints for editting
+ */
 public class TurnpointSearchForEditFragment extends TurnpointSearchFragment {
 
     public static TurnpointSearchForEditFragment newInstance() {

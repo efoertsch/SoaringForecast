@@ -1,8 +1,8 @@
 package org.soaringforecast.rasp.task.edit;
 
-import androidx.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
@@ -20,6 +20,7 @@ import org.soaringforecast.rasp.touchhelper.ItemTouchHelperViewHolder;
 
 import java.util.Collections;
 
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -124,8 +125,10 @@ public class TaskTurnpointsRecyclerViewAdapter
             viewDataBinding.setTaskTurnpoint(item);
             viewDataBinding.setPosition(position);
             viewDataBinding.setClickListener(itemClickListener);
+            // Visibility not being properly set via databinding in layout xml so try hammering it here
+            viewDataBinding.taskTurnpointDistanceFromPriorTurnpoint.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
+            viewDataBinding.taskTurnpointDistanceFromStart.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
             displayTurnpointIcon(item);
-
         }
 
         @Override

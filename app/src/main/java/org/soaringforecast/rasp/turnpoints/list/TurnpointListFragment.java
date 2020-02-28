@@ -186,7 +186,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     }
 
     protected void setUpObservables() {
-
         turnpointListViewModel.getTurnpoints().observe(this, turnpoints -> {
             turnpointListAdapter.setTurnpointList(turnpoints);
         });

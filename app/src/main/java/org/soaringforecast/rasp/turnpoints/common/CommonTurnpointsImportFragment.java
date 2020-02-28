@@ -1,29 +1,29 @@
 package org.soaringforecast.rasp.turnpoints.common;
 
-import androidx.lifecycle.ViewModelProviders;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.common.recycleradapter.GenericViewHolder;
 import org.soaringforecast.rasp.databinding.TurnpointsImportView;
-import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.turnpoints.download.TurnpointsImporterViewModel;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 
-import org.greenrobot.eventbus.EventBus;
-
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -51,7 +51,7 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
+        setHasOptionsMenu(true);
         turnpointsImportView = DataBindingUtil.inflate(inflater, R.layout.turnpoint_import_files, container, false);
 
         RecyclerView recyclerView = turnpointsImportView.turnpointImportsRecyclerView;
@@ -69,12 +69,6 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
 
    protected abstract GenericRecyclerViewAdapter getRecyclerViewAdapter();
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
 
     @Override
     public void onResume() {
@@ -83,10 +77,10 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
     }
+
 
     @Override
     public void onDestroy(){
@@ -94,10 +88,6 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
         compositeDisposable.dispose();
     }
 
-
-    protected void exitThisFragment() {
-        EventBus.getDefault().post(new PopThisFragmentFromBackStack());
-    }
 
     protected void showProgressBar(boolean setVisible){
         turnpointsImportView.turnpointImportsProgressBar.setVisibility(setVisible ? View.VISIBLE: View.GONE) ;
