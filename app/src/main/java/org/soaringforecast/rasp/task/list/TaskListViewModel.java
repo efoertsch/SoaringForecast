@@ -2,9 +2,6 @@ package org.soaringforecast.rasp.task.list;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.annotation.NonNull;
 
 import org.soaringforecast.rasp.common.ObservableViewModel;
 import org.soaringforecast.rasp.repository.AppRepository;
@@ -13,6 +10,9 @@ import org.soaringforecast.rasp.repository.Task;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -22,7 +22,7 @@ import timber.log.Timber;
 public class TaskListViewModel extends ObservableViewModel {
 
     private AppRepository appRepository;
-    private MutableLiveData<List<Task>> tasks = new MutableLiveData<>();
+    private MutableLiveData<List<Task>> tasks;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public TaskListViewModel(@NonNull Application application) {
@@ -36,8 +36,16 @@ public class TaskListViewModel extends ObservableViewModel {
         return this;
     }
 
+    public LiveData<List<Task>> getTaskList(){
+        if  (tasks == null) {
+            tasks = new MutableLiveData<>();
+
+        }
+        return tasks;
+    }
+
     @SuppressLint("CheckResult")
-    public LiveData<List<Task>> listTasks() {
+    public void listTasks() {
         Disposable disposable = appRepository.listAllTasks()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -49,7 +57,6 @@ public class TaskListViewModel extends ObservableViewModel {
                             Timber.e(t);
                         });
         compositeDisposable.add(disposable);
-        return tasks;
     }
 
     @Override

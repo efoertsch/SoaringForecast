@@ -121,7 +121,6 @@
             android:layout_margin="@dimen/margin_double"
             android:clickable="true"
             android:focusable="true"
-            android:onClick="@{() -> viewModel.saveTask()}"
             android:scaleType="fitXY"
             android:visibility="@{safeUnbox(viewModel.needToSaveUpdates) ? View.VISIBLE : View.GONE}"
             app:fabSize="normal"

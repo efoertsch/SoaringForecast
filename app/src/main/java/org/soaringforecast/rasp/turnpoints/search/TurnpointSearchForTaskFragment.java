@@ -2,6 +2,8 @@ package org.soaringforecast.rasp.turnpoints.search;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,6 +18,10 @@ import org.soaringforecast.rasp.task.edit.TaskAndTurnpointsViewModel;
 
 import androidx.lifecycle.ViewModelProviders;
 
+/**
+ * This version of search is to be called by Task fragment as it shares the viewmodel with the task
+ * As such it is to run under the TaskActivity
+ */
 public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
 
     private TaskAndTurnpointsViewModel taskAndTurnpointsViewModel;
@@ -53,6 +59,13 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.add_turnpoints);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
 }

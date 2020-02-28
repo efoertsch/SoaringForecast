@@ -27,14 +27,11 @@ import androidx.fragment.app.Fragment;
 
 public class TaskActivity extends MasterActivity {
 
-    private static final String TURNPOINT_IMPORT = "TURNPOINT_IMPORT";
-    private static final String CREATE_TASK = "CREATE_TASK";
-    private static final String EDIT_TASK = "EDIT_TASK";
-    private static final String TURNPOINT_OP = "TURNPOINT_OP";
-    private static final String TURNPOINT_SEARCH = "TURNPOINT_SEARCH";
+    private static final String TASK_OP = "TASK_OP";
     private static final String LIST_TASKS = "LIST_TASKS";
+    private static final String EDIT_TASK = "EDIT_TASK";
+    private static final String TASK_ID = "TASK_ID";
     private static final String ENABLE_CLICK_TASK = "ENABLE_CLICK_TASK";
-    private static final String TURNPOINT_EDIT_SEARCH = "TURNPOINT_EDIT_SEARCH";
 
     private boolean enableClickTask = false;
 
@@ -45,17 +42,20 @@ public class TaskActivity extends MasterActivity {
 
     @Override
     protected Fragment createFragment() {
-        String turnpointOp = getIntent().getExtras().getString(TURNPOINT_OP);
-        if (turnpointOp != null) {
-            switch (turnpointOp) {
+        String taskOp = getIntent().getExtras().getString(TASK_OP);
+        if (taskOp != null) {
+            switch (taskOp) {
                 case LIST_TASKS:
                     return getTaskListFragment();
+                case EDIT_TASK:
+                    return getTaskEditFragment();
                 default:
                     return getTaskListFragment();
             }
         }
         return getTaskListFragment();
     }
+
 
     @Override
     public void onBackPressed() {
@@ -76,15 +76,23 @@ public class TaskActivity extends MasterActivity {
         return  new TaskListFragment();
     }
 
+    private Fragment getTaskEditFragment() {
+        return TaskEditFragment.newInstance(getIntent().getExtras().getLong(TASK_ID));
+    }
+
+
     // Bus messages
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTask event) {
-        displayFragment(new TaskEditFragment().setTaskId( event.getTaskId()), false, true);
+        // Doing it this way so when get back to TaskList onResume will fire to update list
+        // (in case any change)
+        startActivity(Builder.getBuilder().displayTaskEdit(event.getTaskId()).build(this));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
+        // Need to keep within same activity so can share same viewmodel data
         displayFragment(TurnpointSearchForTaskFragment.newInstance(), false,true);
     }
 
@@ -123,7 +131,13 @@ public class TaskActivity extends MasterActivity {
         }
 
         public Builder displayTaskList() {
-            bundle.putString(TURNPOINT_OP, LIST_TASKS);
+            bundle.putString(TASK_OP, LIST_TASKS);
+            return this;
+        }
+
+        public Builder displayTaskEdit(long taskId) {
+            bundle.putString(TASK_OP, EDIT_TASK);
+            bundle.putLong(TASK_ID, taskId);
             return this;
         }
 

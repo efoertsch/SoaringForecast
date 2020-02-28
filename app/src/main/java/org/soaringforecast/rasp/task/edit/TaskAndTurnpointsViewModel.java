@@ -235,6 +235,10 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
         calcTurnpointDistances(numberTurnpoints - 1);
         setTaskDistance();
         needToSaveUpdates.setValue(true);
+        // Doing this way so observers fired with update to turnpoint array in taskTurnpoints
+        List<TaskTurnpoint> taskTurnpointList = taskTurnpoints.getValue();
+        taskTurnpoints.setValue(taskTurnpointList);
+
     }
 
     private void setTaskDistance() {
