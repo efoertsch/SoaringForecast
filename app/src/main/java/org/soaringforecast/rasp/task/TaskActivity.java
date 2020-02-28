@@ -82,7 +82,6 @@ public class TaskActivity extends MasterActivity {
 
 
     // Bus messages
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EditTask event) {
         // Doing it this way so when get back to TaskList onResume will fire to update list
@@ -92,7 +91,7 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddTurnpointsToTask event) {
-        // Need to keep within same activity so can share same viewmodel data
+        // !!!! Need to keep within same activity so can share same viewmodel data !!!
         displayFragment(TurnpointSearchForTaskFragment.newInstance(), false,true);
     }
 

@@ -15,7 +15,14 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
+import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
+import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
+import org.soaringforecast.rasp.turnpoints.messages.EditTurnpoint;
+import org.soaringforecast.rasp.turnpoints.messages.GoToDownloadImport;
+import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewFragment;
+
+import java.util.List;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
@@ -60,7 +67,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
             fragment = createFragment();
             if (fragment != null) {
                 // Don't use addToBackStack(null) if first fragment added to container
-                // If you do and 'Back' hit, fragment removed but activity continues (with blank screen)
+                // If you do and 'Back' hit, fragment removed but activity continues with blank screen
                 fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
             } else {
                 finish();
@@ -134,21 +141,41 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
 
-    // Putting this here because needs to be handled from task and turnpoint activities
+    // Putting these here because needs to be handled from bith task and turnpoint activities
+    // Perhaps should subclass but...
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTurnpointMessageEvent(DisplayTurnpointSatelliteView displayTurnpointSatelliteView) {
-        displayTurnpointSatelliteViewFragment(displayTurnpointSatelliteView);
-    }
-
-    private void displayTurnpointSatelliteViewFragment(DisplayTurnpointSatelliteView displayTurnpointSatelliteView) {
         TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = TurnpointSatelliteViewFragment.newInstance(displayTurnpointSatelliteView.getTurnpoint());
         displayFragment(turnpointSatelliteViewFragment, false, true);
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(GoToTurnpointImport event) {
+        startActivity(TurnpointActivity.Builder.getBuilder().importTurnpoints().build(this));
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(GoToDownloadImport event) {
+        displayFragment(TurnpointsDownloadFragment.newInstance(), false, true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(EditTurnpoint event) {
+        // Doing it this way due to  turnpoint edit cupstyle spinner onItemSelected firing when it shouldn't
+        // displayFragment(getTurnpointEditFragment(event.getTurnpoint()), false, true);
+        startActivity(TurnpointActivity.Builder.getBuilder().editTurnpoint(event.getTurnpoint()).build(this));
+    }
+
+
+
+    /**
+     * Used by fragment when it wants to remove itselft
+     */
     public void popCurrentFragment() {
         FragmentManager fm = getSupportFragmentManager();
-        fm.popBackStack();
-        if (fm.getFragments().size() <= 1) {
+        List<Fragment> fragments = fm.getFragments();
+        if (fragments.size() > 1 ) {
+            fm.beginTransaction().remove(fragments.get(fragments.size() -1)).commit();
+        } else {
             finish();
         }
     }

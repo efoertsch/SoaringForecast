@@ -40,6 +40,10 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
     private boolean bypassOnResume = false;
 
 
+    public static TurnpointsDownloadFragment newInstance() {
+        return new TurnpointsDownloadFragment();
+
+    }
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -110,7 +114,7 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
                     displayButFirstDialog();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
-                    exitThisFragment();
+                    post(new PopThisFragmentFromBackStack());
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
@@ -127,7 +131,7 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
                     dialog.dismiss();
-                    exitThisFragment();
+                    post(new PopThisFragmentFromBackStack());
                 });
         builder.create().show();
 

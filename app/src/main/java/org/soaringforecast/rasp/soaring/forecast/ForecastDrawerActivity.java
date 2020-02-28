@@ -35,6 +35,8 @@ import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
 import org.soaringforecast.rasp.utils.ViewUtilities;
 import org.soaringforecast.rasp.windy.WindyActivity;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -324,12 +326,18 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         startActivity(intent);
     }
 
-
+    /**
+     * Used by fragment when it wants to remove itselft
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(PopThisFragmentFromBackStack event) {
-        FragmentManager fm = getSupportFragmentManager();
-        fm.popBackStack();
-
+            FragmentManager fm = getSupportFragmentManager();
+            List<Fragment> fragments = fm.getFragments();
+            if (fragments.size() > 1 ) {
+                fm.beginTransaction().remove(fragments.get(fragments.size() -1)).commit();
+            } else {
+                // never get rid of SoaringForecastFragment( which should always be first fragment
+            }
     }
 
     public void sendFeedBack() {

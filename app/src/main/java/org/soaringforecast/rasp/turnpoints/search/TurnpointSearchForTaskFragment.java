@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -66,6 +67,23 @@ public class TurnpointSearchForTaskFragment extends TurnpointSearchFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
+        MenuItem menuItem = menu.findItem(R.id.turnpoint_search);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+        menuItem = menu.findItem(R.id.turnpoint_menu_add_export_turnpoints);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+        menuItem = menu.findItem(R.id.turnpoint_menu_add_email_turnpoints);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+        menuItem = menu.findItem(R.id.turnpoint_menu_clear_turnpoints);
+        if (menuItem != null) {
+            menuItem.setVisible(false);
+        }
+
     }
 
 }
