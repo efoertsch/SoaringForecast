@@ -69,6 +69,12 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
 
    protected abstract GenericRecyclerViewAdapter getRecyclerViewAdapter();
 
+    // Used in subclasses
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
 
     @Override
     public void onResume() {
@@ -76,11 +82,12 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
         getActivity().setTitle(R.string.import_turnpoints);
     }
 
+    // Used in subclasses
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
-
 
     @Override
     public void onDestroy(){
@@ -88,6 +95,10 @@ public abstract class CommonTurnpointsImportFragment<T, VH extends GenericViewHo
         compositeDisposable.dispose();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+    }
 
     protected void showProgressBar(boolean setVisible){
         turnpointsImportView.turnpointImportsProgressBar.setVisibility(setVisible ? View.VISIBLE: View.GONE) ;
