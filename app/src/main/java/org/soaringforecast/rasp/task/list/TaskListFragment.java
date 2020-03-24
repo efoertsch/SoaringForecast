@@ -7,18 +7,21 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
+import org.soaringforecast.rasp.common.messages.UndoSuccessful;
 import org.soaringforecast.rasp.common.recycleradapter.GenericEditClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.databinding.TaskListView;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Task;
 import org.soaringforecast.rasp.task.messages.DeleteTask;
+import org.soaringforecast.rasp.task.messages.DeletedTaskDetails;
 import org.soaringforecast.rasp.task.messages.EditTask;
 import org.soaringforecast.rasp.task.messages.RenumberedTaskList;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
@@ -38,13 +41,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.DaggerFragment;
-import io.reactivex.Completable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
-public class TaskListFragment extends DaggerFragment implements GenericListClickListener<Task>, GenericEditClickListener<Task>, OnStartDragListener {
+public class TaskListFragment extends DaggerFragment implements GenericListClickListener<Task>
+        , GenericEditClickListener<Task>, OnStartDragListener, View.OnClickListener {
 
     @Inject
     AppRepository appRepository;
@@ -52,12 +52,14 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
     @Inject
     AppPreferences appPreferences;
 
+    private TaskListView taskListView;
     private List<Task> tasks = new ArrayList<>();
     private TaskListRecyclerViewAdapter recyclerViewAdapter;
     private ItemTouchHelper itemTouchHelper;
     private TaskListViewModel taskListViewModel;
     private ProgressBar progressBar;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private DeletedTaskDetails deletedTaskDetails;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,7 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        TaskListView taskListView = DataBindingUtil.inflate(inflater, R.layout.task_list_layout, container, false);
+        taskListView = DataBindingUtil.inflate(inflater, R.layout.task_list_layout, container, false);
 
         RecyclerView recyclerView = taskListView.taskListRecyclerView;
         recyclerViewAdapter = new TaskListRecyclerViewAdapter(tasks)
@@ -157,29 +159,34 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DeleteTask deleteTask) {
-        Completable completable = appRepository.deleteTask(deleteTask.getTask());
-        Disposable disposable = completable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    //complete
-                }, throwable -> {
-                    // TODO Display some error
-                });
-        compositeDisposable.add(disposable);
+        taskListViewModel.deleteTask(deleteTask.getTask());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DeletedTaskDetails deletedTaskDetails) {
+        this.deletedTaskDetails = deletedTaskDetails;
+        Snackbar snackbar = Snackbar.make(taskListView.taskListCoordinatorLayout,
+                R.string.task_deleted, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.undo, this);
+        snackbar.show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(RenumberedTaskList renumberedTaskList) {
-        Completable completable = appRepository.updateTaskListOrder(renumberedTaskList.getTaskList());
-        Disposable disposable = completable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    //complete
-                }, throwable -> {
-                    // TODO Display some error
+        taskListViewModel.updateTaskListOrder(renumberedTaskList.getTaskList());
+    }
 
-                });
-        compositeDisposable.add(disposable);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(UndoSuccessful undoSuccessful) {
+        taskListViewModel.listTasks();
+    }
+
+    // For undo task delete
+    @Override
+    public void onClick(View v) {
+        if (deletedTaskDetails != null) {
+            taskListViewModel.undeleteTask(deletedTaskDetails);
+        }
     }
 
     // TODO Put into superclass
