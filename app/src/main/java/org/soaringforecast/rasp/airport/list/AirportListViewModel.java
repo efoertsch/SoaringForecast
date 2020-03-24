@@ -1,10 +1,8 @@
 package org.soaringforecast.rasp.airport.list;
 
 import android.annotation.SuppressLint;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
+import org.soaringforecast.rasp.airport.messages.DeletedAirport;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.Airport;
 import org.soaringforecast.rasp.repository.AppRepository;
@@ -12,6 +10,9 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -86,11 +87,24 @@ public class AirportListViewModel extends ViewModel {
         return airports;
     }
 
+    public void unRemoveAirport(DeletedAirport deletedAirport) {
+        airports.getValue().add(deletedAirport.getIndex(), deletedAirport.getAirport());
+        storeNewAirportOrder(airports.getValue());
+        // To fire observer...
+        airports.setValue(airports.getValue());
+
+    }
+
+    public void storeNewAirportOrder(List<Airport> airports) {
+        appPreferences.storeNewAirportOrder(airports);
+    }
+
     @Override
     public void onCleared(){
         compositeDisposable.dispose();
         super.onCleared();
     }
+
 
 
 }

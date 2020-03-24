@@ -1,13 +1,13 @@
 package org.soaringforecast.rasp.airport.list;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.airport.messages.DeletedAirport;
 import org.soaringforecast.rasp.databinding.AirportDetailBinding;
 import org.soaringforecast.rasp.repository.Airport;
 import org.soaringforecast.rasp.touchhelper.ItemTouchHelperAdapter;
@@ -16,6 +16,9 @@ import org.soaringforecast.rasp.touchhelper.OnStartDragListener;
 
 import java.util.Collections;
 import java.util.List;
+
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 // !!! Note that in order to get swipe to work needed to put views inside RelativeLayout rather than
 // !!! just having them in ConstraintLayout
@@ -94,6 +97,7 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
 
     @Override
     public void onItemDismiss(int position) {
+        post(new DeletedAirport(airports.get(position), position));
         airports.remove(position);
         notifyItemRemoved(position);
         notifyNewAirportList(airports);
@@ -111,6 +115,11 @@ public class AirportListAdapter extends RecyclerView.Adapter<AirportListAdapter.
         if (newAirportListListener != null){
             newAirportListListener.newAirportOrder(airports);
         }
+    }
+
+
+    private void post(Object object){
+        EventBus.getDefault().post(object);
     }
 
 

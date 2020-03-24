@@ -41,7 +41,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.DaggerFragment;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class TaskListFragment extends DaggerFragment implements GenericListClickListener<Task>
         , GenericEditClickListener<Task>, OnStartDragListener, View.OnClickListener {
@@ -58,7 +57,6 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
     private ItemTouchHelper itemTouchHelper;
     private TaskListViewModel taskListViewModel;
     private ProgressBar progressBar;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private DeletedTaskDetails deletedTaskDetails;
 
 
@@ -133,7 +131,6 @@ public class TaskListFragment extends DaggerFragment implements GenericListClick
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        compositeDisposable.dispose();
     }
 
     private void setProgressBarVisibility(boolean visible) {
