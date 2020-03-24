@@ -409,5 +409,6 @@
     <string name="error_getting_task_list">Oops! An error occurred getting task list!</string>
     <string name="action_customization">Customization</string>
     <string name="action_information">Information</string>
+    <string name="airport_removed">Airport Removed</string>
 
 </resources>
