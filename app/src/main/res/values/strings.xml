@@ -401,5 +401,13 @@
     <string name="activity_rate_app">Rate App</string>
     <string name="error_in_emailing_feedback">Error in emailling feedback.</string>
     <string name="feedback">Feedback</string>
+    <string name="task_deleted">Task Deleted</string>
+    <string name="undo">Undo?</string>
+    <string name="error_occurred_deleting_task">Oops. Error occurred deleting task!</string>
+    <string name="error_undoing_task_delete">Oops. Could not undelete task!</string>
+    <string name="error_renumbering_task_list">Oops. An error occurred reordering tasks!</string>
+    <string name="error_getting_task_list">Oops! An error occurred getting task list!</string>
+    <string name="action_customization">Customization</string>
+    <string name="action_information">Information</string>
 
 </resources>

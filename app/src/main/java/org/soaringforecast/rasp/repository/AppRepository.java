@@ -438,7 +438,8 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
-    /** Write all turnpoints to download directory
+    /**
+     * Write all turnpoints to download directory
      *
      * @param turnpoints
      * @return
@@ -458,7 +459,8 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
-    /** Write one turnpoint to download directory
+    /**
+     * Write one turnpoint to download directory
      *
      * @param turnpoint
      * @return
@@ -466,7 +468,7 @@ public class AppRepository implements CacheTimeListener {
     public Single<String> writeTurnpointToCupFile(final Turnpoint turnpoint, String cupFilename) {
         return Single.create(emitter -> {
             File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            File exportFile = new File(path,cupFilename );
+            File exportFile = new File(path, cupFilename);
             FileOutputStream stream = new FileOutputStream(exportFile, false);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(stream);
             writeFirstLineOfCuptFile(outputStreamWriter);
@@ -550,9 +552,11 @@ public class AppRepository implements CacheTimeListener {
         return turnpointDao.getTurnpoint(turnpointId);
     }
 
-    public Maybe<Turnpoint> getTurnpointByCode(String code){
+    public Maybe<Turnpoint> getTurnpointByCode(String code) {
         return turnpointDao.getTurnpointByCode(code);
-    };
+    }
+
+    ;
 
 
     public Single<Integer> deleteTurnpoint(long turnpointId) {
@@ -710,7 +714,6 @@ public class AppRepository implements CacheTimeListener {
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
-
     }
 
     @SuppressLint("CheckResult")

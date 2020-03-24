@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="org.soaringforecast.rasp.settings.SettingsActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.soaringforecast.rasp.settings.SettingsActivity">
 
     <!-- TODO - add icons -->
     <group android:checkableBehavior="none">
@@ -10,83 +10,75 @@
             <menu>
                 <item
                     android:id="@+id/nav_menu_windy"
-                    android:title="@string/action_airport_windy"
-                    />
+                    android:title="@string/action_airport_windy" />
 
                 <item
                     android:id="@+id/nav_menu_skysight"
-                    android:title="@string/action_soaring_forecast_skysight"/>
+                    android:title="@string/action_soaring_forecast_skysight" />
 
                 <item
                     android:id="@+id/nav_menu_dr_jacks"
-                    android:title="@string/dr_jacks"/>
+                    android:title="@string/dr_jacks" />
             </menu>
         </item>
 
         <item
             android:id="@+id/nav_menu_airport_weather"
-            android:title="@string/action_airport_metar_taf"
-            />
+            android:title="@string/action_airport_metar_taf" />
 
         <item
             android:id="@+id/nav_menu_satellite"
-            android:title="@string/action_satellite_images"
-            >
+            android:title="@string/action_satellite_images">
             <menu>
                 <item
                     android:id="@+id/nav_menu_noaa_satellite"
-                    android:title="@string/action_satellite_noaa"/>
+                    android:title="@string/action_satellite_noaa" />
 
                 <item
                     android:id="@+id/nav_menu_geos_satellite"
-                    android:title="@string/action_satellite_geos"/>
+                    android:title="@string/action_satellite_geos" />
             </menu>
         </item>
 
         <item
             android:id="@+id/nav_menu_options"
-            android:title="@string/action_soaring_options">
+            android:title="@string/action_customization">
             <menu>
-
-                <item
-                    android:id="@+id/nav_menu_airport_list"
-                    android:title="@string/airport_list"
-                    />
                 <item
                     android:id="@+id/nav_menu_tasks"
-                    android:title="@string/task_list"
-                    />
-
+                    android:title="@string/task_list" />
                 <item
                     android:id="@+id/nav_menu_turnpoints"
-                    android:title="@string/turnpoints"/>
+                    android:title="@string/turnpoints" />
+                <item
+                    android:id="@+id/nav_menu_airport_list"
+                    android:title="@string/airport_list" />
 
+                <item
+                    android:id="@+id/nav_menu_settings"
+                    android:title="@string/action_settings" />
             </menu>
 
         </item>
 
-    </group>
-
-
-    <group android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_menu_settings"
-            android:title="@string/action_settings"
-            />
+            android:id="@+id/nav_menu_information"
+            android:title="@string/action_information">
+            <menu>
+                <item
+                    android:id="@+id/nav_menu_about"
+                    android:title="@string/activity_about" />
+
+                <item
+                    android:id="@+id/nav_menu_feedback"
+                    android:title="@string/feedback" />
+                <item
+                    android:id="@+id/nav_menu_rate_app"
+                    android:title="@string/activity_rate_app" />
+            </menu>
+        </item>
 
     </group>
-
-    <item
-        android:id="@+id/nav_menu_about"
-        android:title="@string/activity_about"/>
-
-
-    <item
-        android:id="@+id/nav_menu_feedback"
-        android:title="@string/feedback"/>
-    <item
-        android:id="@+id/nav_menu_rate_app"
-        android:title="@string/activity_rate_app"/>
 
 </menu>
 

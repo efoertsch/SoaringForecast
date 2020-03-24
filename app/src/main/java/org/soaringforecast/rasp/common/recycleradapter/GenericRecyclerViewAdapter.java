@@ -1,17 +1,18 @@
 package org.soaringforecast.rasp.common.recycleradapter;
 
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.LinearSmoothScroller;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Base generic RecyclerView adapter.
@@ -230,6 +231,25 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
     }
 
     /**
+     * Adds item at given position
+     * Notifies that item has been inserted.
+     *
+     * @param item item which has to be added to the adapter.
+     * @author Eric Foertsch
+     */
+    public void addAtIndex(T item, int index) {
+        if (item == null) {
+            throw new IllegalArgumentException("Cannot add null item to the Recycler adapter");
+        }
+        if (index < 0 || index > items.size()) {
+            throw new IllegalArgumentException("Index must be between 0 and length of array");
+        }
+
+        items.add(index, item);
+        notifyItemInserted(index);
+    }
+
+    /**
      * Adds list of items to the end of the adapter's data set.
      * Notifies that item has been inserted.
      *
@@ -331,8 +351,6 @@ public abstract class GenericRecyclerViewAdapter<T, VH extends GenericViewHolder
         smoothScroller.setTargetPosition(position);
         recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
     }
-
-
 
     public T getSelectedItem() {
         return selectedItem;

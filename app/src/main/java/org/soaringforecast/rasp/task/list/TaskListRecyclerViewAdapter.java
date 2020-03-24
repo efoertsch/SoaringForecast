@@ -1,23 +1,23 @@
 package org.soaringforecast.rasp.task.list;
 
-import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.common.recycleradapter.GenericEditClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.databinding.TaskView;
+import org.soaringforecast.rasp.repository.Task;
 import org.soaringforecast.rasp.task.messages.DeleteTask;
 import org.soaringforecast.rasp.task.messages.RenumberedTaskList;
-import org.soaringforecast.rasp.repository.Task;
 import org.soaringforecast.rasp.touchhelper.ItemTouchHelperAdapter;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.Collections;
 import java.util.List;
+
+import androidx.databinding.DataBindingUtil;
 
 public class TaskListRecyclerViewAdapter
         extends GenericRecyclerViewAdapter<Task, TaskListViewHolder>
@@ -75,7 +75,7 @@ public class TaskListRecyclerViewAdapter
 
     @Override
     public void onItemDismiss(int position) {
-        EventBus.getDefault().post(new DeleteTask(getItems().get(position)));
+        post(new DeleteTask(getItems().get(position)));
         getItems().remove(position);
         notifyItemRemoved(position);
         renumberTaskOrder();
@@ -86,7 +86,11 @@ public class TaskListRecyclerViewAdapter
         for (Task task : getItems()) {
             task.setTaskOrder(i++);
         }
-        EventBus.getDefault().post(new RenumberedTaskList(getItems()));
+        post(new RenumberedTaskList(getItems()));
+    }
+
+    private void post(Object object){
+        EventBus.getDefault().post(object);
     }
 
 }
