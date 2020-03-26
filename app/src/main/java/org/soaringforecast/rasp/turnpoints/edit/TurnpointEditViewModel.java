@@ -6,6 +6,7 @@ import android.location.Location;
 import android.net.Uri;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
@@ -18,6 +19,7 @@ import org.soaringforecast.rasp.repository.messages.DataBaseError;
 import org.soaringforecast.rasp.turnpoints.cup.CupStyle;
 import org.soaringforecast.rasp.turnpoints.json.ElevationQuery;
 import org.soaringforecast.rasp.turnpoints.json.NationalMap;
+import org.soaringforecast.rasp.turnpoints.messages.DeletedTurnpoint;
 import org.soaringforecast.rasp.turnpoints.messages.SendEmail;
 
 import java.text.SimpleDateFormat;
@@ -30,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -156,15 +157,12 @@ public class TurnpointEditViewModel extends ObservableViewModel {
             }
         }
         turnpoint.setCode(value);
-        if (turnpoint.getId() <= 0) {
-
-        }
         setSaveIndicator();
         notifyPropertyChanged(org.soaringforecast.rasp.BR.codeErrorText);
     }
 
     private void checkForDuplicateCode(String value) {
-        if (value != null || !value.isEmpty()) {
+        if (value != null && !value.isEmpty()) {
             Disposable disposable = appRepository.getTurnpointByCode(value)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -644,9 +642,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         return okToSave;
     }
 
-    public Single<Integer> deleteTurnpoint() {
-        return appRepository.deleteTurnpoint(turnpoint.getId());
-    }
+
 
     @Bindable
     public String getFormattedTurnpointDetails() {
@@ -864,4 +860,41 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         notifyPropertyChanged(org.soaringforecast.rasp.BR.elevation);
     }
 
+    public void deleteTurnpoint() {
+        Disposable disposable = appRepository.deleteTurnpoint(turnpoint.getId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(numberDeleted -> {
+                    if (numberDeleted == 1) {
+                        post(new DeletedTurnpoint(originalTurnpoint));
+                    } else {
+                        post(new SnackbarMessage(getApplication().getString(R.string.turnpoint_delete_error)));
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    /**
+     * Restore (undo delete) of original turnpoint
+     */
+    void restoreOriginalTurnpoint() {
+        try {
+            Disposable disposable = appRepository.insertTurnpoint(originalTurnpoint)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(id -> {
+                                // Restored turnpoint
+                            },
+                            t -> {
+                                Timber.e(t);
+                                post(new SnackbarMessage(
+                                        getApplication().getString(R.string.error_saving_turnpoint), Snackbar.LENGTH_INDEFINITE));
+                            });
+            compositeDisposable.add(disposable);
+        } catch (Exception e) {
+            Timber.e(e);
+            post(new SnackbarMessage(getApplication().getString(R.string.error_saving_turnpoint)));
+        }
+
+    }
 }

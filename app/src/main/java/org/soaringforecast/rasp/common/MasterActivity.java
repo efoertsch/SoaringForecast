@@ -3,7 +3,6 @@ package org.soaringforecast.rasp.common;
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -27,6 +26,7 @@ import java.util.List;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -36,7 +36,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
 
     private ActionBar actionBar;
     private Toolbar toolbar;
-    private View rootView;
+    protected CoordinatorLayout rootView;
     protected abstract Fragment createFragment();
 
     //TODO allow for master/detail or side by side fragments for large screens
@@ -47,7 +47,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
-        rootView = findViewById(R.id.task_activity_content);
+        rootView = findViewById(R.id.master_activity_coordinator_layout);
 
         // implement this in superclass?
         toolbar = findViewById(R.id.toolbar);
@@ -165,10 +165,8 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         startActivity(TurnpointActivity.Builder.getBuilder().editTurnpoint(event.getTurnpoint()).build(this));
     }
 
-
-
     /**
-     * Used by fragment when it wants to remove itselft
+     * Used by fragment when it wants to remove itself
      */
     public void popCurrentFragment() {
         FragmentManager fm = getSupportFragmentManager();

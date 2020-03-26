@@ -567,9 +567,7 @@ public class AppRepository implements CacheTimeListener {
             } catch (Throwable t) {
                 emitter.onError(t);
             }
-        })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
+        });
     }
 
 

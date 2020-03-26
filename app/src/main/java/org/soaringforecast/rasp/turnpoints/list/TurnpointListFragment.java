@@ -35,7 +35,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import dagger.android.support.DaggerFragment;
-import io.reactivex.disposables.CompositeDisposable;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
 
@@ -53,7 +52,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     protected TurnpointListViewModel turnpointListViewModel;
 
     private AlertDialog noTurnpointsDialog;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private boolean showSearchIcon = true;
 
     private GenericListClickListener<Turnpoint> turnpointTextClickListener = (turnpoint, position) -> {
@@ -161,12 +159,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
         post(new EditTurnpoint(new Turnpoint()));
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        compositeDisposable.dispose();
-    }
-
     private void displaySearch() {
         post(new TurnpointSearchForEdit());
     }
@@ -189,7 +181,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
         turnpointListViewModel.getTurnpoints().observe(this, turnpoints -> {
             turnpointListAdapter.setTurnpointList(turnpoints);
         });
-
     }
 
 

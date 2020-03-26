@@ -21,11 +21,11 @@
     <item android:id="@+id/turnpoint_edit_menu_email"
         android:title="@string/turnpoint_edit_email"
         app:showAsAction="never" />
-    <item android:id="@+id/turnpoint_edit_menu_delete"
-        android:title="@string/turnpoint_edit_delete"
-        app:showAsAction="never"/>
     <item android:id="@+id/turnpoint_edit_menu_airnav"
         android:title="@string/turnpoint_edit_menu_airnav"
         app:showAsAction="never"
         android:visible="true"/>
+    <item android:id="@+id/turnpoint_edit_menu_delete"
+        android:title="@string/turnpoint_edit_delete"
+        app:showAsAction="never"/>
 </menu>

@@ -11,6 +11,7 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Task;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
+import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,6 +119,20 @@ public class TaskAndTurnpointsViewModel extends ObservableViewModel {
             loadTaskTurnpoints();
         }
         return taskTurnpoints;
+    }
+
+    public void getTurnpointFromTaskTurnpoint(TaskTurnpoint taskTurnpoint) {
+        Disposable disposable = appRepository.getTurnpoint(taskTurnpoint.getTitle(), taskTurnpoint.getCode())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(turnpoint -> {
+                            post(new DisplayTurnpointSatelliteView(turnpoint));
+                        },
+                        t -> {
+                            post(new DataBaseError(getApplication().getString(R.string.error_reading_turnpoint, taskTurnpoint.getTitle(),
+                                    taskTurnpoint.getCode()), t));
+                        });
+        compositeDisposable.add(disposable);
     }
 
     @SuppressLint("CheckResult")
