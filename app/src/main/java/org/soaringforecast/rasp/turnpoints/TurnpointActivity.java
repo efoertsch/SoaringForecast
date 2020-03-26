@@ -8,6 +8,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.MasterActivity;
+import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
 import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
@@ -21,6 +22,8 @@ import org.soaringforecast.rasp.turnpoints.turnpointview.TurnpointSatelliteViewF
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import androidx.fragment.app.Fragment;
 import timber.log.Timber;
 
@@ -32,6 +35,10 @@ public class TurnpointActivity extends MasterActivity {
     private static final String TURNPOINT_SATELLITE_VIEW = "TURNPOINT_SATELLITE_VIEW";
     private static final String TURNPOINT_IMPORT = "TURNPOINT_IMPORT";
     private static final String TURNPOINT = "TURNPOINT";
+
+
+    @Inject
+    public AppRepository appRepository;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,9 +75,7 @@ public class TurnpointActivity extends MasterActivity {
                 if (!checkBeforeGoingBack.okToGoBack()) {
                     return;
                 }
-
             }
-
         }
         popCurrentFragment();
     }
@@ -103,14 +108,14 @@ public class TurnpointActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplayAirNav displayAirNav) {
-        displayFragment(AirNavFragment.newInstance(displayAirNav.getTurnpoint().getCode()),false,true);
+        displayFragment(AirNavFragment.newInstance(displayAirNav.getTurnpoint().getCode()), false, true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTurnpointEmailIntent(SendEmail sendEmail) {
         try {
             startActivity(sendEmail.getIntent());
-        }catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
         }
     }
@@ -134,18 +139,18 @@ public class TurnpointActivity extends MasterActivity {
         }
 
         public TurnpointActivity.Builder importTurnpoints() {
-            bundle.putString(TURNPOINT_OP,TURNPOINT_IMPORT);
+            bundle.putString(TURNPOINT_OP, TURNPOINT_IMPORT);
             return this;
         }
 
         public TurnpointActivity.Builder editTurnpoint(Turnpoint turnpoint) {
-            bundle.putString(TURNPOINT_OP,TURNPOINT_EDIT);
+            bundle.putString(TURNPOINT_OP, TURNPOINT_EDIT);
             bundle.putParcelable(TURNPOINT, turnpoint);
             return this;
         }
 
         public TurnpointActivity.Builder displayTurnpointSatelliteView(Turnpoint turnpoint) {
-            bundle.putString(TURNPOINT_OP,TURNPOINT_SATELLITE_VIEW);
+            bundle.putString(TURNPOINT_OP, TURNPOINT_SATELLITE_VIEW);
             bundle.putParcelable(TURNPOINT, turnpoint);
             return this;
         }

@@ -10,12 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
-import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.TurnpointEditView;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
@@ -32,8 +33,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerFragment;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
 
@@ -51,13 +50,12 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
     private Turnpoint turnpoint;
     private TurnpointEditViewModel turnpointEditViewModel;
     private CupStyleAdapter cupStyleAdapter;
-    private int lastCupStylePosition = -1;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private boolean okToSave = false;
     private boolean inEditMode = false;
     private boolean needToSave;
+    private boolean deletingTurnpoint = false;
     private TurnpointEditView turnpointEditView;
-    private boolean ignoreFirstOnItemSelected = true;
+
 
     public static TurnpointEditFragment newInstance(Turnpoint turnpoint) {
         TurnpointEditFragment turnpointEditFragment = new TurnpointEditFragment();
@@ -129,7 +127,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
 
         turnpointEditViewModel.getEditMode().observe(this, inEditMode -> {
             this.inEditMode = inEditMode;
-            enableTurnpointEditting();
+            enableTurnpointEditting(inEditMode);
 
         });
 
@@ -146,15 +144,13 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
                 inEditMode ? R.string.edit_turnpoint : R.string.turnpoint);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        compositeDisposable.dispose();
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
+        if (deletingTurnpoint){
+            return;
+        }
         inflater.inflate(R.menu.turnpoint_edit_options, menu);
         MenuItem editMenuItem = menu.findItem(R.id.turnpoint_edit_menu_edit);
         MenuItem saveMenuItem = menu.findItem(R.id.turnpoint_edit_menu_save);
@@ -165,7 +161,9 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
             editMenuItem.setVisible(false);
             saveMenuItem.setVisible(okToSave);
             resetMenuItem.setVisible(true);
-            deleteMenuItem.setVisible(true);
+            if (turnpoint.getId() > 0 ) {
+                deleteMenuItem.setVisible(true);
+            }
         } else {
             editMenuItem.setVisible(true);
             saveMenuItem.setVisible(false);
@@ -216,7 +214,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         post(new DisplayAirNav(turnpoint));
     }
 
-    private void enableTurnpointEditting() {
+    private void enableTurnpointEditting(boolean inEditMode) {
         turnpointEditView.turnpointEditTitle.setEnabled(inEditMode);
         // Can't edit code if existing record
         turnpointEditView.turnpointEditCode.setEnabled(turnpointEditViewModel.isTurnpointCodeEditEnabled());
@@ -251,11 +249,18 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
     }
 
     private void okToDeleteOneMoreTime() {
+        needToSave = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.turnpoint_delete)
                 .setMessage(R.string.turnpoint_delete_really_sure_times_two)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    deleteTurnpoint();
+                    enableTurnpointEditting(false);
+                    turnpointEditView.turnpointEditCode.setEnabled(false);
+                    turnpointEditView.turnpointEditGpsImageview.setEnabled(false);
+                    turnpointEditViewModel.deleteTurnpoint();
+                    deletingTurnpoint = true;
+                    getActivity().invalidateOptionsMenu();
+                    displayUndoDelete();
                 })
                 .setNegativeButton(R.string.no, (dialog, which) -> {
                     /// Whew! Saved by the bell.
@@ -265,17 +270,21 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         alertDialog.show();
     }
 
-    private void deleteTurnpoint() {
-        Disposable disposable = turnpointEditViewModel.deleteTurnpoint()
-                .subscribe(numberDeleted -> {
-                    if (numberDeleted == 1) {
-                        post(new SnackbarMessage(getString(R.string.turnpoint_deleted)));
-                        post(new PopThisFragmentFromBackStack());
-                    } else {
-                        post(new SnackbarMessage(getString(R.string.turnpoint_delete_error)));
-                    }
-                });
-        compositeDisposable.add(disposable);
+
+    public void displayUndoDelete() {
+        Snackbar snackbar = Snackbar.make(turnpointEditView.turnpointEditCoordinatorLayout,
+                R.string.turnpoint_deleted, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                turnpointEditViewModel.restoreOriginalTurnpoint();
+                deletingTurnpoint = false;
+                turnpointEditView.turnpointEditGpsImageview.setEnabled(true);
+                enableTurnpointEditting(inEditMode);
+                getActivity().invalidateOptionsMenu();
+            }
+        });
+        snackbar.show();
     }
 
     @Override
