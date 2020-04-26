@@ -1,7 +1,6 @@
 package org.soaringforecast.rasp.turnpoints.turnpointview;
 
 import android.Manifest;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -11,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -67,7 +65,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
 
 
     private static final String TURNPOINT = "TURNPOINT";
-    private ProgressBar progressBar;
+    private static final String LATLONG_CUP_FORMAT = "LATLONG_CUP_FORMAT";
     private static final int FINE_LOCATION_ACCESS = 2020;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location lastKnownLocation;
@@ -76,14 +74,11 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
     private TurnpointEditViewModel turnpointEditViewModel;
 
     private GoogleMap googleMap;
-    private String elevationPreference;
+    //private String elevationPreference;
     TurnpointSatelliteView turnpointSatelliteView;
     private boolean inEditMode;
     private Marker turnpointMarker;
-    private Bitmap turnpointMarkerBitmap;
-    private boolean inDragMode = false;
     private Turnpoint turnpoint;
-
 
     public static TurnpointSatelliteViewFragment newInstance(Turnpoint turnpoint) {
         TurnpointSatelliteViewFragment turnpointSatelliteViewFragment = new TurnpointSatelliteViewFragment();
@@ -96,7 +91,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        turnpoint  = getArguments().getParcelable(TURNPOINT);
+        turnpoint = getArguments().getParcelable(TURNPOINT);
         // Viewmodel may already be defined if coming from TurnpointEditFragment
         // but data 'should' be the same
         turnpointEditViewModel = ViewModelProviders.of(getActivity())
@@ -105,7 +100,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 .setAppPreferences(appPreferences)
                 .setTurnpoint(turnpoint);
         setHasOptionsMenu(true);
-        elevationPreference = appPreferences.getAltitudeDisplay();
+        // elevationPreference = appPreferences.getAltitudeDisplay();
     }
 
 
@@ -129,25 +124,24 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
             if (inEditMode || (turnpointEditViewModel.getLatitudeDeg() == 0 && turnpointEditViewModel.getLongitudeDeg() == 0)) {
                 getActivity().setTitle(R.string.edit_turnpoint);
                 turnpointSatelliteView.turnpointMapCloseButton.setVisibility(View.GONE);
-                turnpointSatelliteView.turnpointMapSaveButton.setVisibility(View.VISIBLE);
+                //turnpointSatelliteView.turnpointMapSaveButton.setVisibility(View.VISIBLE);
                 turnpointSatelliteView.turnpointMapSaveButton.setOnClickListener(v -> {
                     removeFragment();
                 });
 
-                turnpointSatelliteView.turnpointMapCancelButton.setVisibility(View.VISIBLE);
-                turnpointSatelliteView.turnpointMapCancelButton.setOnClickListener(v -> {
+                //turnpointSatelliteView.turnpointMapResetButton.setVisibility(View.VISIBLE);
+                turnpointSatelliteView.turnpointMapResetButton.setOnClickListener(v -> {
                     // close fragment
                     turnpointEditViewModel.resetTurnpointPosition();
-                    removeFragment();
-
+                    moveCameraToLatLng(new LatLng(turnpointEditViewModel.getLatitudeDeg(), turnpointEditViewModel.getLongitudeDeg()));
                 });
                 if ((turnpointEditViewModel.getLatitudeDeg() == 0 && turnpointEditViewModel.getLongitudeDeg() == 0)) {
                     mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
                     checkForGPSLocationPermission();
                 }
-                if (turnpointMarker != null) {
-                    turnpointMarker.setDraggable(true);
-                }
+//                if (turnpointMarker != null) {
+//                    turnpointMarker.setDraggable(true);
+//                }
             } else {
                 getActivity().setTitle(R.string.view_turnpoint);
                 turnpointSatelliteView.turnpointMapCloseButton.setOnClickListener(v -> removeFragment());
@@ -162,33 +156,24 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         inflater.inflate(R.menu.turnpoint_view_options, menu);
-        MenuItem resetMenuItem = menu.findItem(R.id.turnpoint_view_reset_marker);
         MenuItem dragMenuItem = menu.findItem(R.id.turnpoint_view_drag_marker);
+        dragMenuItem.setVisible(inEditMode);
         MenuItem airnavMenuItem = menu.findItem(R.id.turnpoint_view_airnav);
-        if (inEditMode) {
-            dragMenuItem.setVisible(true);
-            resetMenuItem.setVisible(true);
-        } else {
-            dragMenuItem.setVisible(false);
-            resetMenuItem.setVisible(false);
-        }
-       airnavMenuItem.setVisible(turnpoint != null && (turnpoint.isAirport()));
+        airnavMenuItem.setVisible(turnpoint != null && (turnpoint.isAirport()));
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.turnpoint_view_reset_marker:
-                turnpointEditViewModel.resetTurnpointPosition();
-                moveCameraToLatLng(new LatLng(turnpointEditViewModel.getLatitudeDeg(), turnpointEditViewModel.getLongitudeDeg()));
-                return true;
             case R.id.turnpoint_view_drag_marker:
-                inDragMode = true;
                 addMarkerDragListener();
                 return true;
             case R.id.turnpoint_view_airnav:
                 post(new DisplayAirNav(turnpoint));
+                return true;
+            case R.id.turnpoint_view_toggle_latlng_format:
+                turnpointEditViewModel.toggleLatLongFormat();
                 return true;
             default:
                 return false;
@@ -212,10 +197,6 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
 
     private void moveCameraToLatLng(LatLng latLng) {
         if (googleMap != null) {
-//            if (turnpointMarkerBitmap == null) {
-//                // really should just have to pass in turnpoint style but
-//                turnpointMarkerBitmap = turnpointBitmapUtils.getSizedTurnpointBitmap(getContext(), turnpointEditViewModel.getTurnpoint(), (int) currentZoom);
-//            }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
             googleMap.setOnCameraIdleListener(() -> {
@@ -229,34 +210,39 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
                 //.icon(BitmapDescriptorFactory.fromBitmap(turnpointMarkerBitmap)));
             }
             turnpointMarker.setPosition(latLng);
-            turnpointMarker.setDraggable(inEditMode);
-
         }
     }
 
 
     private void addMarkerDragListener() {
         if (googleMap != null) {
-            googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-                @Override
-                public void onMarkerDragStart(Marker arg0) {
-                }
-
-                @Override
-                public void onMarkerDragEnd(Marker marker) {
-                    // Note that new location doesn't provide new elevation.
-                    LatLng latLng = marker.getPosition();
-                    turnpointEditViewModel.setLatitudeDeg(latLng.latitude);
-                    turnpointEditViewModel.setLongitudeDeg(latLng.longitude);
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                    turnpointEditViewModel.getElevationAtLatLng(latLng);
-                }
-
-                @Override
-                public void onMarkerDrag(Marker arg0) {
-                }
-            });
+            turnpointMarker.setDraggable(inEditMode);
+            googleMap.setOnMarkerDragListener(getOnMarkerDragListener());
         }
+    }
+
+    private GoogleMap.OnMarkerDragListener getOnMarkerDragListener() {
+        return new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker arg0) {
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                // Note that new location doesn't provide new elevation.
+                LatLng latLng = marker.getPosition();
+                turnpointEditViewModel.setLatitudeDeg(latLng.latitude);
+                turnpointEditViewModel.setLongitudeDeg(latLng.longitude);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                turnpointEditViewModel.getElevationAtLatLng(latLng);
+                turnpointSatelliteView.turnpointMapSaveButton.setVisibility(View.VISIBLE);
+                turnpointSatelliteView.turnpointMapResetButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onMarkerDrag(Marker arg0) {
+            }
+        };
     }
 
     private void getCurrentLocation() {
@@ -331,7 +317,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
         }
     }
 
-    private void post(Object object){
+    private void post(Object object) {
         EventBus.getDefault().post(object);
     }
 

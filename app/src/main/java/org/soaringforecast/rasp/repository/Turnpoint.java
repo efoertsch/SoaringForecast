@@ -23,8 +23,10 @@ import androidx.room.PrimaryKey;
 @Entity(indices = {@Index(value = {"title", "code"}, unique = true), @Index("code")})
 public class Turnpoint implements Cloneable, Parcelable {
 
-    private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$.5f Long:%5$.5f\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
-    private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$.5f Long:%5$.5f\nElev: %6$s \n%7$s ";
+    private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
+    private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s \n%7$s ";
+    private static final String TURNPOINT_LAT_DECIMAL_FORMAT = "%1$.5f";
+    private static final String TURNPOINT_LONG_DECIMAL_FORMAT = "%1$.5f";
     private static final DecimalFormat latitudeFormat = new DecimalFormat("0000.000");
     private static final DecimalFormat longitudeFormat = new DecimalFormat("00000.000");
     private static final String QUOTE = "\"";
@@ -321,6 +323,10 @@ public class Turnpoint implements Cloneable, Parcelable {
     }
 
     public String getFormattedTurnpointDetails() {
+        return getFormattedTurnpointDetails(false);
+    }
+
+    public String getFormattedTurnpointDetails(boolean cupFormat) {
         String turnpointDetails;
         switch (style) {
             case "2":
@@ -329,7 +335,8 @@ public class Turnpoint implements Cloneable, Parcelable {
                 turnpointDetails = String.format(Locale.getDefault(), AIRPORT_DETAILS
                         , getTitle(), getCode()
                         , getStyleName()
-                        , getLatitudeDeg(), getLongitudeDeg()
+                        , cupFormat ?  getLatitudeInCupFormat(latitudeDeg) : String.format(TURNPOINT_LAT_DECIMAL_FORMAT, latitudeDeg)
+                        , cupFormat ?  getLongitudeInCupFormat(longitudeDeg) :String.format(TURNPOINT_LONG_DECIMAL_FORMAT, longitudeDeg)
                         , getElevation()
                         , getDirection(), getLength()
                         , getFrequency()
@@ -339,7 +346,8 @@ public class Turnpoint implements Cloneable, Parcelable {
                 turnpointDetails = String.format(Locale.getDefault(), NON_AIRPORT_DETAILS
                         , getTitle(), getCode()
                         , getStyleName()
-                        , getLatitudeDeg(), getLongitudeDeg()
+                        , cupFormat ? String.format(TURNPOINT_LAT_DECIMAL_FORMAT, latitudeDeg) :  getLatitudeInCupFormat(latitudeDeg)
+                        , cupFormat ? String.format(TURNPOINT_LONG_DECIMAL_FORMAT, longitudeDeg) : getLongitudeInCupFormat(longitudeDeg)
                         , getElevation()
                         , getDescription());
         }

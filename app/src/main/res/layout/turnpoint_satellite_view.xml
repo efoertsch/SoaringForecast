@@ -18,7 +18,8 @@
         android:id="@+id/turnpoint_view_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/offwhite">
+        android:background="@color/offwhite"
+        android:animateLayoutChanges="true">
 
 
         <TextView
@@ -84,16 +85,16 @@
             android:textColor="@android:color/white"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/turnpoint_map_cancel_button"
+            app:layout_constraintEnd_toStartOf="@+id/turnpoint_map_reset_button"
             app:layout_constraintStart_toEndOf="@+id/turnpoint_map_close_button" />
 
         <Button
-            android:id="@+id/turnpoint_map_cancel_button"
+            android:id="@+id/turnpoint_map_reset_button"
             style="@style/ButtonPrimaryWhite"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/cancel"
+            android:text="@string/turnpoint_edit_reset"
             android:textColor="@android:color/white"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"

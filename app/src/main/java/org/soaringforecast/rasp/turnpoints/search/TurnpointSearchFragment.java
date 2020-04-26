@@ -14,10 +14,18 @@ import androidx.appcompat.widget.SearchView;
 public class TurnpointSearchFragment extends TurnpointListFragment {
 
     protected SearchView searchView;
+    protected String searchString = "";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showSearchIconInMenu(false);
+    }
+
+    public void onResume(){
+        super.onResume();
+        if (!searchString.isEmpty()){
+           searchView.setQuery(searchString, true);
+        }
     }
 
 
@@ -58,6 +66,7 @@ public class TurnpointSearchFragment extends TurnpointListFragment {
 
             @Override
             public boolean onQueryTextChange(String search) {
+                searchString = search;
                 if (search.length() == 0) {
                     runSearch(search);
                 } else if (search.length() <= 2) {
