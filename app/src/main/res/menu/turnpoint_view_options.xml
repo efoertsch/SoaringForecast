@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/turnpoint_view_reset_marker"
-        android:title="@string/turnpoint_view_reset_marker"
+    <item android:id="@+id/turnpoint_view_airnav"
+        android:title="@string/turnpoint_view_airnav"
         app:showAsAction="always"
-        android:visible="false"/>
+        android:visible="true"/>
+    <item android:id="@+id/turnpoint_view_toggle_latlng_format"
+        android:title="@string/turnpoint_edit_toggle_latlng_format"
+        app:showAsAction="never" />
     <item android:id="@+id/turnpoint_view_drag_marker"
         android:title="@string/turnpoint_view_drag_marker"
         app:showAsAction="never"
         android:visible="false"/>
-    <item android:id="@+id/turnpoint_view_airnav"
-        android:title="@string/turnpoint_view_airnav"
-        app:showAsAction="ifRoom"
-        android:visible="true"/>
 </menu>
