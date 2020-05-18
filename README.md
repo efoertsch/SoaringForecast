@@ -1,7 +1,7 @@
 # SoaringForecast
 Display soaring forecast and weather information of interest to glider pilots.
 
-1. Soaring forecasts displayed from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Paavola). Currently NewEngland forecasts are always generated. Mifflin forecasts are also being generated but they may be dropped post Mifflin encampment in May.
+1. Soaring forecasts displayed from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Paavola). Currently NewEngland forecasts are always generated. Mifflin forecasts are also being generated but they may be dropped post Mifflin encampment in May. (A short diversion - Steve Paavola's RASP generating code posted in github at https://github.com/s-paavola/multi-rasp )
 2. Special Use Airspace (SUA) can be displayed. (The GeoJson SUA files were created based on SUA files in Tim Newport-Peace format  from the Worldwide Turnpoint Exchange and run through a converted at  https://mygeodata.cloud/converter/ to produce the GeoJson files)
 3. Turnpoints can be downloaded from Worldwide Turnpoint Exchange (http://soaringweb.org/TP/) or you can import your own (in SeeYou .cup format)
 2. Tasks can be defined using the imported turnpoints and overlaid on the RASP forecast.
