@@ -12,10 +12,6 @@ import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
-import androidx.annotation.DrawableRes;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -39,6 +35,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
@@ -65,6 +62,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.DrawableRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import timber.log.Timber;
 
 /**
@@ -288,12 +288,32 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
 
     // ------ Task Turnpoints ---------------------------------
     public void setTaskTurnpoints(List<TaskTurnpoint> newTaskTurnpoints) {
-        removeTaskTurnpoints();
-        taskTurnpoints.clear();
-        if (newTaskTurnpoints != null) {
-            taskTurnpoints.addAll(newTaskTurnpoints);
-            plotTaskTurnpoints();
+        // if same task turnpoints don't replot (this may happen if have task displayed and user
+        // taps o an turnpoint. The app displays the turnpoint and on return the Activity onResume
+        // if get the task again and request replot.
+        if (!isSameTask(newTaskTurnpoints)) {
+            removeTaskTurnpoints();
+            taskTurnpoints.clear();
+            if (newTaskTurnpoints != null) {
+                taskTurnpoints.addAll(newTaskTurnpoints);
+                plotTaskTurnpoints();
+            }
         }
+    }
+
+    private boolean isSameTask(List<TaskTurnpoint> newTaskTurnpoints) {
+        if ((newTaskTurnpoints == null && taskTurnpoints != null)
+                || (newTaskTurnpoints != null && taskTurnpoints == null)
+                || (newTaskTurnpoints != null && taskTurnpoints != null
+                    && newTaskTurnpoints.size() != taskTurnpoints.size())) {
+            return false;
+        }
+        for (int i = 0; i < taskTurnpoints.size() ; ++i){
+            if (taskTurnpoints.get(i).getId() != newTaskTurnpoints.get(i).getId()){
+                return false;
+            }
+        }
+        return true;
     }
 
     public void removeTaskTurnpoints() {
