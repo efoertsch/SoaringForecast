@@ -1,9 +1,6 @@
 package org.soaringforecast.rasp.turnpoints.download;
 
 import android.annotation.SuppressLint;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import android.os.Environment;
 
 import org.soaringforecast.rasp.app.AppPreferences;
@@ -22,6 +19,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -195,8 +195,8 @@ public class TurnpointsImporterViewModel extends ViewModel {
                 turnpoint = Turnpoint.createTurnpointFromCSVDetail(turnpointLine);
                 if (turnpoint != null) {
                     appRepository.insertTurnpointViaViaBackground(turnpoint);
+                    numberTurnpoints++;
                 }
-                numberTurnpoints++;
             }
             turnpointLine = reader.readLine();
         }

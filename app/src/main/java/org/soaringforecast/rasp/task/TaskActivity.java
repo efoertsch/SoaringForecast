@@ -13,12 +13,12 @@ import org.soaringforecast.rasp.task.edit.TaskEditFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
 import org.soaringforecast.rasp.task.messages.EditTask;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
+import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
 import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
 import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
 import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
 import org.soaringforecast.rasp.turnpoints.search.TurnpointSearchForTaskFragment;
-import org.soaringforecast.rasp.turnpoints.seeyou.SeeYouImportFragment;
 
 import java.util.List;
 
@@ -59,8 +59,8 @@ public class TaskActivity extends MasterActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null && fragments.size() > 0) {
             if (fragments.get(fragments.size()-1) instanceof CheckBeforeGoingBack){
                 CheckBeforeGoingBack checkBeforeGoingBack = (CheckBeforeGoingBack) fragments.get(fragments.size()-1);
                 if (!checkBeforeGoingBack.okToGoBack()){
@@ -97,7 +97,8 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(GoToTurnpointImport event) {
-        displayFragment(SeeYouImportFragment.newInstance(), false, true);
+        //displayFragment(SeeYouImportFragment.newInstance(), false, true);
+        startActivity(TurnpointActivity.Builder.getBuilder().importTurnpoints().build(this));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

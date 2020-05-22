@@ -48,6 +48,7 @@ public class TurnpointListViewModel extends ObservableViewModel {
     public LiveData<List<Turnpoint>> getTurnpoints() {
         if (turnpoints.getValue() == null) {
             searchTurnpoints("%");
+            turnpoints.setValue(new ArrayList<>());
         }
         return turnpoints;
     }
