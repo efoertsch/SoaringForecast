@@ -110,6 +110,7 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
     @Override
     public void onResume() {
         super.onResume();
+        setUpObservables();
         getActivity().setTitle(R.string.turnpoint_list);
         // subclass may want altered menu items
         getActivity().invalidateOptionsMenu();
@@ -172,7 +173,6 @@ public class TurnpointListFragment extends DaggerFragment implements EasyPermiss
                     noTurnpointsDialog.dismiss();
                     noTurnpointsDialog = null;
                 }
-                setUpObservables();
             }
         });
     }

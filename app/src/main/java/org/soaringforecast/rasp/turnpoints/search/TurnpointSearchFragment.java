@@ -60,15 +60,14 @@ public class TurnpointSearchFragment extends TurnpointListFragment {
         return new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String txt) {
-                // do nothing
-                return false;
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String search) {
                 searchString = search;
                 if (search.length() == 0) {
-                    runSearch(search);
+                    runSearch("%");
                 } else if (search.length() <= 2) {
                     clearTurnpointList();
                 } else {
@@ -87,10 +86,5 @@ public class TurnpointSearchFragment extends TurnpointListFragment {
     private void runSearch(String search) {
         turnpointListViewModel.searchTurnpoints(search);
     }
-
-//    private void returnToPreviousScreen() {
-//        getActivity().finish();
-//        //EventBus.getDefault().post(new PopThisFragmentFromBackStack());
-//    }
 
 }
