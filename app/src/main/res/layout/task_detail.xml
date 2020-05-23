@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data class="TaskView">
 
         <variable
             name="position"
-            type="int"/>
+            type="int" />
 
         <variable
             name="task"
-            type="org.soaringforecast.rasp.repository.Task"/>
+            type="org.soaringforecast.rasp.repository.Task" />
 
         <variable
             name="clickListener"
-            type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.Task&gt;"
-            />
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericListClickListener&lt;org.soaringforecast.rasp.repository.Task&gt;" />
 
         <variable
             name="editClickListener"
-            type="org.soaringforecast.rasp.common.recycleradapter.GenericEditClickListener&lt;org.soaringforecast.rasp.repository.Task&gt;"
-            />
+            type="org.soaringforecast.rasp.common.recycleradapter.GenericEditClickListener&lt;org.soaringforecast.rasp.repository.Task&gt;" />
 
     </data>
 
@@ -34,20 +32,19 @@
             android:id="@+id/task_detail_taskname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/margin_standard"
             android:layout_marginBottom="@dimen/margin_standard"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
             android:onClick="@{()->clickListener.onItemClick(task, position)}"
             android:text="@{task.taskName}"
             android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toStartOf="@+id/task_detail_edit_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Sterling Start-Claremont-Southbridge-Sterling Start"
-            />
+            tools:text="Sterling Start-Claremont-Southbridge-Sterling Start" />
 
         <ImageView
             android:id="@+id/task_detail_edit_image"
@@ -56,23 +53,23 @@
             android:layout_marginEnd="@dimen/margin_standard"
             android:gravity="center_vertical"
             android:onClick="@{()->editClickListener.onEditItemClick(task, position)}"
+            app:layout_constraintBottom_toBottomOf="@+id/task_detail_taskname"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/task_detail_taskname"
-            app:layout_constraintBottom_toBottomOf="@+id/task_detail_taskname"
-            app:srcCompat="@drawable/ic_edit_black"
-            />
+            app:srcCompat="@drawable/ic_edit_black" />
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/task_detail_distance"
-            tools:text="300.1k"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_double"
-            app:layout_constraintStart_toStartOf="parent"
             android:onClick="@{()->clickListener.onItemClick(task, position)}"
-            app:layout_constraintTop_toBottomOf="@+id/task_detail_taskname"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@{String.format(@string/distance_km,task.distance)}"
-            />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintEnd_toStartOf="@+id/task_detail_edit_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/task_detail_taskname"
+            tools:text="300.1k" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
