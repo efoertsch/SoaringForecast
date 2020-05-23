@@ -18,6 +18,7 @@ import org.soaringforecast.rasp.task.TaskActivity;
 import org.soaringforecast.rasp.task.edit.TaskEditFragment;
 import org.soaringforecast.rasp.task.list.TaskListFragment;
 import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
+import org.soaringforecast.rasp.turnpoints.airnav.AirNavActivity;
 import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
 import org.soaringforecast.rasp.turnpoints.download.TurnpointsDownloadFragment;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
@@ -102,7 +103,11 @@ public abstract class UIBuildersModule {
     abstract TurnpointSatelliteViewFragment bindTurnpointSatelliteViewFragment();
 
     @ContributesAndroidInjector(modules = {})
+    abstract AirNavActivity bindAirNavActivity();
+
+    @ContributesAndroidInjector(modules = {})
     abstract AirNavFragment bindAirNavFragment();
+
 
     // ---- Satellite ----
     @ContributesAndroidInjector(modules = {})

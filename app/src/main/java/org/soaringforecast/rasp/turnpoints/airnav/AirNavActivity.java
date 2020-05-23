@@ -22,7 +22,7 @@ public class AirNavActivity extends MasterActivity {
         @Override
         protected Fragment createFragment(){
             String airportCode = getIntent().getExtras().getString(AIRPORT_CODE);
-            return new AirNavFragment();
+            return  AirNavFragment.newInstance(airportCode);
         }
 
         public static class Builder {

@@ -10,7 +10,7 @@ import org.soaringforecast.rasp.common.CheckBeforeGoingBack;
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
-import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
+import org.soaringforecast.rasp.turnpoints.airnav.AirNavActivity;
 import org.soaringforecast.rasp.turnpoints.edit.TurnpointEditFragment;
 import org.soaringforecast.rasp.turnpoints.list.TurnpointListFragment;
 import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
@@ -108,7 +108,8 @@ public class TurnpointActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplayAirNav displayAirNav) {
-        displayFragment(AirNavFragment.newInstance(displayAirNav.getTurnpoint().getCode()), false, true);
+        //displayFragment(AirNavFragment.newInstance(displayAirNav.getTurnpoint().getCode()), false, true);
+        startActivity(AirNavActivity.Builder.getBuilder().setAirportCode(displayAirNav.getTurnpoint().getCode()).build(this));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

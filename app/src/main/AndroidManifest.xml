@@ -104,6 +104,16 @@
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity" />
         </activity>
 
+        <activity
+            android:name="org.soaringforecast.rasp.turnpoints.airnav.AirNavActivity"
+            android:label="@string/airnav"
+            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity" />
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

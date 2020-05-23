@@ -14,7 +14,7 @@ import org.soaringforecast.rasp.task.list.TaskListFragment;
 import org.soaringforecast.rasp.task.messages.EditTask;
 import org.soaringforecast.rasp.task.messages.SelectedTask;
 import org.soaringforecast.rasp.turnpoints.TurnpointActivity;
-import org.soaringforecast.rasp.turnpoints.airnav.AirNavFragment;
+import org.soaringforecast.rasp.turnpoints.airnav.AirNavActivity;
 import org.soaringforecast.rasp.turnpoints.messages.AddTurnpointsToTask;
 import org.soaringforecast.rasp.turnpoints.messages.DisplayAirNav;
 import org.soaringforecast.rasp.turnpoints.messages.GoToTurnpointImport;
@@ -115,7 +115,8 @@ public class TaskActivity extends MasterActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DisplayAirNav displayAirNav) {
-        displayFragment(AirNavFragment.newInstance(displayAirNav.getTurnpoint().getCode()),false,true);
+       // displayFragment(AirNavFragment.newInstance(displayAirNav.getTurnpoint().getCode()),false,true);
+        startActivity(AirNavActivity.Builder.getBuilder().setAirportCode(displayAirNav.getTurnpoint().getCode()).build(this));
     }
 
     public static class Builder {
