@@ -410,5 +410,11 @@
     <string name="action_customization">Customization</string>
     <string name="action_information">Information</string>
     <string name="airport_removed">Airport Removed</string>
+    <string name="landout_sms">Landout SMS</string>
+    <string name="send_sms">Send SMS</string>
+    <string name="landout">Landout</string>
+    <string name="landout_gps_latlng">Lat/Long: %1$f, %2$f</string>
+    <string name="rational_send_location_via_sms">Permission is needed to send your location via SMS.</string>
+    <string name="no_permission_to_send_loaction_via_sms">Uh-oh. Can\'t send location via SMS because permission to do so was denied!</string>
 
 </resources>

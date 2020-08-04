@@ -41,6 +41,18 @@
         </item>
 
         <item
+            android:id="@+id/nav_menu_landout_options"
+            android:title="@string/landout">
+
+            <menu>
+                <item
+                    android:id="@+id/nav_menu_landout_sms"
+                    android:title="@string/landout_sms" />
+            </menu>
+
+        </item>
+
+        <item
             android:id="@+id/nav_menu_options"
             android:title="@string/action_customization">
             <menu>
@@ -60,6 +72,7 @@
             </menu>
 
         </item>
+
 
         <item
             android:id="@+id/nav_menu_information"

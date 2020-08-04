@@ -26,6 +26,7 @@ import org.soaringforecast.rasp.common.messages.CallFailure;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.AppNavDrawerBinding;
+import org.soaringforecast.rasp.landout.LandoutActivity;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.satellite.SatelliteActivity;
 import org.soaringforecast.rasp.settings.SettingsActivity;
@@ -200,6 +201,9 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
             case R.id.nav_menu_rate_app:
                 rateApp();
                 break;
+            case R.id.nav_menu_landout_sms:
+                displayLandout();
+                break;
         }
         drawerLayout.closeDrawers();
     }
@@ -286,6 +290,11 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         startActivity(browserIntent);
     }
 
+    private void displayLandout() {
+        startActivity(LandoutActivity.Builder.getBuilder().build(this));
+    }
+
+
     private void checkForGooglePlayServices() {
         int GooglePlayAvailableCode;
         GooglePlayAvailableCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
@@ -343,9 +352,8 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     public void sendFeedBack() {
         try {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_SUBJECT, "SoaringForecast Feedback");
-            intent.setData(Uri.parse("mailto:ericfoertsch@gmail.com"));
+            intent.setDataAndType(Uri.parse("mailto:ericfoertsch@gmail.com"),"text/plain");
             startActivity(intent);
         } catch (Exception e) {
             Snackbar.make(appNavDrawerBinding.getRoot(), getString(R.string.error_in_emailing_feedback), Snackbar.LENGTH_INDEFINITE);
@@ -381,7 +389,7 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
         }
         else
         {
-            //noinspection deprecation
+            //noinspection
             flags |= Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
         }
         intent.addFlags(flags);

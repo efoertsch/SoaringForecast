@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data class="LandoutViewBinding">
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="org.soaringforecast.rasp.turnpoints.edit.TurnpointEditViewModel" />
+    </data>
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/landout_coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/landout_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/landout_gps_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Lat/Long: 42.464217, -71.453958"
+                android:textSize="@dimen/text_size_extra_large"/>
+
+
+            <FrameLayout
+                android:id="@+id/turnpoint_map_frame_layout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="@dimen/margin_standard"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/landout_gps_location"
+                app:layout_constraintBottom_toTopOf="@id/landout_send_sms_btn">
+
+                <fragment
+                    android:id="@+id/landout_map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/landout_send_sms_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ButtonPrimaryWhite"
+                android:textColor="@android:color/white"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/send_sms"
+                android:layout_margin="@dimen/margin_standard"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:enabled="false"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

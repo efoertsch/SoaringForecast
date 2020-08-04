@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:name="org.soaringforecast.rasp.app.SoaringWeatherApplication"
@@ -107,6 +109,16 @@
         <activity
             android:name="org.soaringforecast.rasp.turnpoints.airnav.AirNavActivity"
             android:label="@string/airnav"
+            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity" />
+        </activity>
+
+        <activity
+            android:name="org.soaringforecast.rasp.landout.LandoutActivity"
+            android:label="@string/landout_sms"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
             android:screenOrientation="portrait">
             <meta-data

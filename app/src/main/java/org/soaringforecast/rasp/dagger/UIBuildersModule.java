@@ -6,6 +6,8 @@ import org.soaringforecast.rasp.airport.AirportActivity;
 import org.soaringforecast.rasp.airport.airportweather.AirportMetarTafFragment;
 import org.soaringforecast.rasp.airport.list.AirportListFragment;
 import org.soaringforecast.rasp.airport.search.AirportSearchFragment;
+import org.soaringforecast.rasp.landout.LandoutActivity;
+import org.soaringforecast.rasp.landout.LandoutFragment;
 import org.soaringforecast.rasp.satellite.SatelliteActivity;
 import org.soaringforecast.rasp.satellite.noaa.NoaaSatelliteImageFragment;
 import org.soaringforecast.rasp.settings.SettingsActivity;
@@ -125,6 +127,13 @@ public abstract class UIBuildersModule {
 
     @ContributesAndroidInjector(modules = {})
     abstract ForecastOrderFragment bindForecastOrderFragment();
+
+    // ------ Landout ------
+    @ContributesAndroidInjector(modules = {})
+    abstract LandoutActivity bindLandoutActivity();
+
+    @ContributesAndroidInjector(modules = {})
+    abstract LandoutFragment bindLandoutFragment();
 
 
     // ----- About ------------
