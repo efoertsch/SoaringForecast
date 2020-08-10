@@ -11,11 +11,18 @@ import java.util.Arrays;
  */
 public class RouteBriefingRequest {
 
-    private RouteBriefingRequest(){};
+    private RouteBriefingRequest(){}
 
     public static RouteBriefingRequest newInstance(ArrayList<String> turnpointNames){
         RouteBriefingRequest routeBriefingRequest = new RouteBriefingRequest();
         routeBriefingRequest.turnpointNames = turnpointNames;
+        if (turnpointNames.size() > 0) {
+            routeBriefingRequest.departure = turnpointNames.get(0);
+        }
+        if (turnpointNames.size() > 1) {
+            routeBriefingRequest.destination = turnpointNames.get(turnpointNames.size() -1);
+        }
+        routeBriefingRequest.setRoute(turnpointNames);
         routeBriefingRequest.setProductCodes(defaultProductCodes);
         routeBriefingRequest.setTailoringOptions(defaultTailoringOptions);
         return routeBriefingRequest;
@@ -114,7 +121,7 @@ public class RouteBriefingRequest {
      */
     private ArrayList<String> productCodes = new ArrayList<>();
 
-    private static final ArrayList<String> defaultProductCodes = new ArrayList(Arrays.asList(
+    private static final ArrayList<String> defaultProductCodes = new ArrayList<>(Arrays.asList(
             ProductCodes.TFR.name(),
             ProductCodes.WST.name(),
             ProductCodes.FA.name(),
@@ -201,7 +208,7 @@ public class RouteBriefingRequest {
     private void addTailoringOption(String tailoringOption){
     }
 
-    private static final ArrayList<String> defaultTailoringOptions = new ArrayList(Arrays.asList(
+    private static final ArrayList<String> defaultTailoringOptions = new ArrayList<>(Arrays.asList(
             TailoringOptionNonNGBV2.ENCODED_ONLY.name()));
 
     /**
@@ -443,6 +450,17 @@ public class RouteBriefingRequest {
         this.route = route;
     }
 
+    public void setRoute(ArrayList<String> turnpointNames){
+        StringBuilder sb = new StringBuilder();
+        if (turnpointNames.size() > 2) {
+            for (int i = 1; i < turnpointNames.size() - 1 ; ++i ) {
+                sb.append(turnpointNames.get(i)).append(",");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        route = sb.toString();
+    }
+
     /**
      * Aircraft N number
      * eg 'N68RM'
@@ -503,27 +521,27 @@ public class RouteBriefingRequest {
      */
     public String getRestParmString(){
         StringBuffer sb = new StringBuffer();
-        if (includeCodedMessages != null) {
-            sb.append("includeCodedMessages=" + includeCodedMessages + AMPERSAND);
-        }
-
+        sb.append("includeCodedMessages=").append(includeCodedMessages).append(AMPERSAND);
+        sb.append("type=").append(type).append(AMPERSAND);
+        sb.append("aircraftIdentifier=").append(aircraftIdentifier).append(AMPERSAND);
         sb.append("routeCorridorWidth=").append(routeCorridorWidth).append(AMPERSAND);
-        sb.append("briefingPrerences=").append(getBriefingPreferences()).append( AMPERSAND);
-        sb.append("outlookBriefing=").append(((outlookBriefing != null) ? outlookBriefing : false)).append( AMPERSAND);
-        sb.append("flightRules=" ).append(flightRules).append(AMPERSAND);
+        sb.append("briefingPreferences=").append(getBriefingPreferences()).append(AMPERSAND);
+        sb.append("outlookBriefing=").append(((outlookBriefing != null) ? outlookBriefing : false)).append(AMPERSAND);
+        sb.append("flightRules=").append(flightRules).append(AMPERSAND);
         sb.append("departure=").append(departure).append(AMPERSAND);
-        sb.append("departureInstant=").append(departureInstant ).append( AMPERSAND);
+        sb.append("departureInstant=").append(departureInstant).append(AMPERSAND);
         sb.append("destination=").append(destination).append(AMPERSAND);
+        sb.append("route=").append(route).append(AMPERSAND);
         sb.append("flightDuration=").append(flightDuration).append(AMPERSAND);
-        sb.append("webUserName=").append( webUserName).append(AMPERSAND);
+        sb.append("webUserName=").append(webUserName).append(AMPERSAND);
         sb.append("speedKnots=").append(speedKnots).append(AMPERSAND);
         sb.append("versionRequested=").append("99999999").append(AMPERSAND);
-        sb.append("noABriefing=").append(notABriefing).append(AMPERSAND);
+        sb.append("notABriefing=").append(notABriefing).append(AMPERSAND);
         sb.append("briefingType=").append(briefingType).append(AMPERSAND);
         if (briefingResultFormat != null) {
             sb.append("briefingResultFormat=").append(briefingResultFormat).append(AMPERSAND);
         }
-        sb.append("emailAddress").append(emailAddress).append(AMPERSAND);
+        sb.append("emailAddress=").append(emailAddress);
         return sb.toString();
     }
 
@@ -534,7 +552,7 @@ public class RouteBriefingRequest {
      * @return
      */
     private String getBriefingPreferences() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append('{')
                 .append(getItemsList())
                 .append(',')
@@ -544,8 +562,8 @@ public class RouteBriefingRequest {
     }
 
     private String getItemsList() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("{\"items\":[");
+        StringBuilder sb = new StringBuilder();
+        sb.append("\"items\":[");
         if (defaultProductCodes.size() > 0) {
             for (int i = 0; i < defaultProductCodes.size(); ++i) {
                 sb.append("\"")
@@ -560,8 +578,8 @@ public class RouteBriefingRequest {
     }
 
     private String getTailorOptions() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("{\"tailoring\":[");
+        StringBuilder sb = new StringBuilder();
+        sb.append("\"tailoring\":[");
         if (defaultTailoringOptions.size() > 0 ) {
             for (int i = 0; i < defaultTailoringOptions.size(); ++i) {
                 sb.append("\"")

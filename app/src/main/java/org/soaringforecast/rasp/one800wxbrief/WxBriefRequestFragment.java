@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.databinding.WxBriefRequestView;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefViewModel;
 import org.soaringforecast.rasp.repository.AppRepository;
 
@@ -21,6 +22,7 @@ public class WxBriefRequestFragment extends DaggerFragment {
     private static final String TASKID = "TASKID";
     private WxBriefViewModel wxBriefViewModel;
     private WxBriefRequestView wxBriefRequestView;
+    private long taskId;
 
     @Inject
     AppRepository appRepository;
@@ -51,5 +53,7 @@ public class WxBriefRequestFragment extends DaggerFragment {
 
         wxBriefRequestView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_request_fragment, container, false);
         wxBriefRequestView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
+        return wxBriefRequestView.getRoot();
+    }
 
 }

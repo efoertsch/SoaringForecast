@@ -2,6 +2,7 @@ package org.soaringforecast.rasp.retrofit;
 
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefing;
 
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -16,6 +17,6 @@ public interface One800WxBriefApi {
     Call<ResponseBody> getMETAR(@Query("location") String airport);
 
     @POST("FP/routeBriefing")
-    Call<RouteBriefing> getRouteBriefing(@Body  String completeQueryString);
+    Call<RouteBriefing> getRouteBriefing(@Body RequestBody completeQueryString);
 
 }

@@ -13,15 +13,17 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class OneEightHundredWxBriefJsonText {
 
@@ -48,25 +50,27 @@ public class OneEightHundredWxBriefJsonText {
 
     @Test
     public void shouldStartEmailBriefing() throws Exception {
-        ArrayList<String> turnpointIds = new ArrayList<String>(Arrays.asList("3B3", "KAFN", "KEEN", "3B3"));
+        ArrayList<String> turnpointIds = new ArrayList<>(Arrays.asList("3B3", "KAFN", "KEEN", "3B3"));
         RouteBriefingRequest routeBriefingRequest =   RouteBriefingRequest.newInstance(turnpointIds);
         routeBriefingRequest.setWebUserName("flightservice@soaringforecast.org");
-        routeBriefingRequest.setDepartureInstant("");
+
         String departureTIme = departureDateFormat.format(new Date(System.currentTimeMillis() + 4 * 60  * 60  * 1000) );
         routeBriefingRequest.setDepartureInstant(departureTIme);
         routeBriefingRequest.setFlightDuration("PT04H");
         routeBriefingRequest.setAircraftIdentifier("N68RM");
         routeBriefingRequest.setBriefingType("EMAIL");
         routeBriefingRequest.setEmailAddress("flightservice@soaringforecast.org");
-        Call<RouteBriefing>  call = client.getRouteBriefing(routeBriefingRequest.getRestParmString());
+        // Call<RouteBriefing>  call = client.getRouteBriefing(routeBriefingRequest.getRestParmString());
+        //RouteBriefing routeBriefing = call.execute().body();
+        RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\"") ,routeBriefingRequest.getRestParmString());
+        Call<RouteBriefing>  call = client.getRouteBriefing(body);
         RouteBriefing routeBriefing = call.execute().body();
+
         assertNotNull(routeBriefing);
         assertNotNull(routeBriefing.returnStatus);
-        assertNull(routeBriefing.returnMessages);
+        assertTrue(routeBriefing.returnStatus);
 
     }
-
-
 
     public void createRetrofit() {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()

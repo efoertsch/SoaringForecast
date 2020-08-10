@@ -32,6 +32,11 @@ public class WxBriefViewModel extends AndroidViewModel {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private MutableLiveData<Boolean> working = new MutableLiveData<>();
+    private MutableLiveData<String> taskTitle = new MutableLiveData<>();
+    private MutableLiveData<String> corridorWidth = new MutableLiveData<>();
+    private MutableLiveData<String> webUserName = new MutableLiveData<>();
+    private MutableLiveData<String> windsAloftCorridor = new MutableLiveData<>();
+
     private RouteBriefingRequest routeBriefingRequest;
 
     public WxBriefViewModel(@NonNull Application application) {
@@ -44,7 +49,7 @@ public class WxBriefViewModel extends AndroidViewModel {
         return this;
     }
 
-    public WxBriefViewModel setTaskId(int taskId) {
+    public WxBriefViewModel setTaskId(long taskId) {
         this.taskId  = taskId;
         return this;
     }
@@ -59,14 +64,13 @@ public class WxBriefViewModel extends AndroidViewModel {
         Disposable disposable = appRepository.getTaskTurnpoints(taskId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(taskTurnpoints -> {
-                            createWxBriefRequest(taskTurnpoints);
-                        },
+                .subscribe(taskTurnpoints -> createWxBriefRequest(taskTurnpoints),
                         t -> {
                             post(new DataBaseError(getApplication().getString(R.string.error_loading_task_and_turnpoints), t));
                         });
         compositeDisposable.add(disposable);
     }
+
 
     /**
      * For not assume all turnpoints are airports
@@ -79,8 +83,60 @@ public class WxBriefViewModel extends AndroidViewModel {
         }
 
         routeBriefingRequest = RouteBriefingRequest.newInstance(turnpointIds);
+        working.setValue(false);
     }
 
+    public MutableLiveData<Boolean> getWorking(){
+        return working;
+    }
+
+    public MutableLiveData<String> getTaskTitle() {
+        return taskTitle;
+    }
+
+    public MutableLiveData<String> getAircraftIdErrorText(){
+        return null;
+    }
+
+    public MutableLiveData<String> getTitle(){
+        return null;
+    }
+
+    public MutableLiveData<String> getCorridorWidthErrorText(){
+        return null;
+    }
+
+    public MutableLiveData<String> getCorridorWidth() {
+        return corridorWidth;
+    }
+
+    public void setCorridorWidth(MutableLiveData<String> corridorWidth) {
+        this.corridorWidth = corridorWidth;
+    }
+
+    public MutableLiveData<String> getWebUserNameErrorText(){
+        return null;
+    }
+
+    public MutableLiveData<String> getWebUserName() {
+        return webUserName;
+    }
+
+    public void setWebUserName(MutableLiveData<String> webUserName) {
+        this.webUserName = webUserName;
+    }
+
+    public MutableLiveData<String> getWindsAloftCorridor() {
+        return windsAloftCorridor;
+    }
+
+    public void setWindsAloftCorridor(MutableLiveData<String> windsAloftCorridor) {
+        this.windsAloftCorridor = windsAloftCorridor;
+    }
+
+    public MutableLiveData<String> getWindsAloftCorridorErrorText(){
+        return null;
+    }
 
     // TODO Put into superclass
     private void post(Object object){

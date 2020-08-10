@@ -410,5 +410,9 @@
     <string name="action_customization">Customization</string>
     <string name="action_information">Information</string>
     <string name="airport_removed">Airport Removed</string>
+    <string name="aircraft_id">Aircraft Registration</string>
+    <string name="route_corridor_width">Corridor Width(NM)</string>
+    <string name="wx_brief_web_user_name">1800WxBrief Email address</string>
+    <string name="wx_brief_winds_aloft_corridor">Winds Aloft Corridor NM (100-600)</string>
 
 </resources>
