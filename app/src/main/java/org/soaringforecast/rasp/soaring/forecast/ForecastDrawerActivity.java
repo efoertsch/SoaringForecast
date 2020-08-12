@@ -309,7 +309,7 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    private void displayCallFailure(CallFailure callFailure) {
+    public void displayCallFailure(CallFailure callFailure) {
         ViewUtilities.displayErrorDialog(appNavDrawerBinding.getRoot(), getString(R.string.oops), callFailure.getcallFailure());
     }
 

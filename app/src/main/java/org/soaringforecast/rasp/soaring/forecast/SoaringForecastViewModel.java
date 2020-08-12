@@ -787,14 +787,16 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         soundingDisplay.setValue(true);
     }
 
-
-
     void setSelectedSounding(Sounding selectedSounding) {
         this.selectedSounding = selectedSounding;
         loadForecastSoundings(selectedSounding);
     }
 
     // ------- Task display ---------------------
+
+    long getTaskId(){
+        return appPreferences.getSelectedTaskId();
+    }
 
     void checkIfToDisplayTask() {
         long currentTaskId = appPreferences.getSelectedTaskId();

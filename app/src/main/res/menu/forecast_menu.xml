@@ -34,6 +34,11 @@
     </item>
 
     <item
+        android:id="@+id/forecast_menu_1800wxbrief"
+        android:title="@string/one_800_wx_brief"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/forecast_menu_order_forecasts"
         android:title="@string/order_forecasts"
         app:showAsAction="never"/>

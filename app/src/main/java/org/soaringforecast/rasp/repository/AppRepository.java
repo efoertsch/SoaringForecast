@@ -20,8 +20,10 @@ import org.soaringforecast.rasp.common.Constants.FORECAST_SOUNDING;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.data.metars.MetarResponse;
 import org.soaringforecast.rasp.data.taf.TafResponse;
+import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefing;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
+import org.soaringforecast.rasp.retrofit.One800WxBriefApi;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
 import org.soaringforecast.rasp.retrofit.UsgsApi;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageType;
@@ -69,6 +71,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -110,6 +114,7 @@ public class AppRepository implements CacheTimeListener {
     private JSONServerApi jsonServerApi;
     private AviationWeatherGovApi aviationWeatherGovApi;
     private UsgsApi usgsApi;
+    private One800WxBriefApi one800WxBriefApi;
 
 
     private AppRepository(Context context) {
@@ -130,7 +135,8 @@ public class AppRepository implements CacheTimeListener {
             , String raspUrl
             , StringUtils stringUtils
             , AppPreferences appPreferences
-            , UsgsApi usgsApi) {
+            , UsgsApi usgsApi
+            , One800WxBriefApi one800WxBriefApi) {
         synchronized (AppRepository.class) {
             if (appRepository == null) {
                 appRepository = new AppRepository(context);
@@ -145,6 +151,7 @@ public class AppRepository implements CacheTimeListener {
                 // Since downloader should exist for lifetime of app, not unregistering anywhere
                 appRepository.appPreferences.registerCacheTimeChangeListener(appRepository);
                 appRepository.cacheTimeLimit(appPreferences.getClearCacheTime());
+                appRepository.one800WxBriefApi = one800WxBriefApi;
             }
 
         }
@@ -1011,6 +1018,21 @@ public class AppRepository implements CacheTimeListener {
                 emitter.onSuccess(cupStyles);
             } catch (JsonSyntaxException jse) {
                 emitter.onError(jse);
+            }
+        });
+    }
+
+
+    //----- 1800WXBrief --------------------------------------------------------------
+    public Single<RouteBriefing> submitWxBriefBriefingRequest(String parms) {
+        RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\""), parms);
+        return Single.create(emitter -> {
+            try {
+                Call<RouteBriefing> call = one800WxBriefApi.getRouteBriefing(body);
+                RouteBriefing routeBriefing = call.execute().body();
+                emitter.onSuccess(routeBriefing);
+            } catch (Exception e) {
+                emitter.onError(e);
             }
         });
     }

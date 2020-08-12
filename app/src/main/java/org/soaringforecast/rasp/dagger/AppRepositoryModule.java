@@ -8,6 +8,8 @@ import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovRetrofit;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
+import org.soaringforecast.rasp.retrofit.One800WxBriefApi;
+import org.soaringforecast.rasp.retrofit.One800WxBriefServerRetrofit;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
 import org.soaringforecast.rasp.retrofit.UsgsApi;
 import org.soaringforecast.rasp.retrofit.UsgsServerRetrofit;
@@ -34,7 +36,8 @@ public class AppRepositoryModule extends ForecastServerModule {
             , @Named("forecast_server_url") String raspUrl
             , StringUtils stringUtils
             , AppPreferences appPreferences
-            , UsgsApi usgsApi) {
+            , UsgsApi usgsApi
+            , One800WxBriefApi one800WxBriefApi) {
         return AppRepository.getAppRepository(context
                 , soaringForecastApi
                 , jsonServerApi
@@ -43,7 +46,8 @@ public class AppRepositoryModule extends ForecastServerModule {
                 , raspUrl
                 , stringUtils
                 , appPreferences
-                , usgsApi);
+                , usgsApi
+                ,one800WxBriefApi);
     }
 
     @Provides
@@ -68,6 +72,12 @@ public class AppRepositoryModule extends ForecastServerModule {
     @Singleton
     public UsgsApi providesUsgsApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("usgs_server") String usgsServerUrl) {
         return new UsgsServerRetrofit(okHttpClient, usgsServerUrl).getRetrofit().create(UsgsApi.class);
+    }
+
+    @Provides
+    @Singleton
+    public One800WxBriefApi providesOne800WxBriefApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("one800wxbrief_server") String one800WxbriefUrl){
+        return new One800WxBriefServerRetrofit(okHttpClient, one800WxbriefUrl).getRetrofit().create(One800WxBriefApi.class);
     }
 
 }

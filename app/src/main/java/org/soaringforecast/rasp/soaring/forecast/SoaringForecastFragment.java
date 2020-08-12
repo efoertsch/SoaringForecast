@@ -1,14 +1,8 @@
 package org.soaringforecast.rasp.soaring.forecast;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.graphics.Point;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +16,7 @@ import android.widget.SeekBar;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,6 +24,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.SoaringForecastBinding;
+import org.soaringforecast.rasp.one800wxbrief.WxBriefRequestActivity;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.settings.SettingsActivity;
 import org.soaringforecast.rasp.soaring.json.Forecast;
@@ -41,6 +37,11 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerFragment;
 import timber.log.Timber;
 
@@ -70,7 +71,7 @@ public class SoaringForecastFragment extends DaggerFragment {
     private int lastForecastModelPosition = -1;
     private int lastForecastDatePosition = -1;
     private int lastForecastPosition = -1;
-    private boolean showClearTaskMenuItem;
+    private boolean showTaskSelectedMenuItems;
     private boolean displaySoundings = false;
     private boolean refreshForecastOrder = false;
     private boolean displaySUA = false;
@@ -192,9 +193,9 @@ public class SoaringForecastFragment extends DaggerFragment {
         // List of turnpoints for a selected task
         soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
             if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
-                displayTaskClearMenuItem(true);
+                setShowTaskSelectedMenuItems(true);
             } else {
-                displayTaskClearMenuItem(false);
+                setShowTaskSelectedMenuItems(false);
             }
             forecastMapper.setTaskTurnpoints(taskTurnpoints);
         });
@@ -306,7 +307,11 @@ public class SoaringForecastFragment extends DaggerFragment {
         inflater.inflate(R.menu.forecast_menu, menu);
         MenuItem clearTaskMenuItem = menu.findItem(R.id.forecast_menu_clear_task);
         if (clearTaskMenuItem != null) {
-            clearTaskMenuItem.setEnabled(showClearTaskMenuItem);
+            clearTaskMenuItem.setEnabled(showTaskSelectedMenuItems);
+        }
+        MenuItem one800WxBriefMenuItem = menu.findItem(R.id.forecast_menu_1800wxbrief);
+        if (one800WxBriefMenuItem != null) {
+            one800WxBriefMenuItem.setEnabled(showTaskSelectedMenuItems);
         }
     }
 
@@ -320,7 +325,7 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_clear_task:
                 forecastMapper.removeTaskTurnpoints();
                 soaringForecastViewModel.setTaskId(-1);
-                displayTaskClearMenuItem(false);
+                setShowTaskSelectedMenuItems(false);
                 return true;
             case R.id.forecast_menu_opacity_slider:
                 displayOpacitySlider();
@@ -346,9 +351,17 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_map_hybrid:
                 forecastMapper.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 return true;
+            case R.id.forecast_menu_1800wxbrief:
+                display1800WxBrief();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void display1800WxBrief(){
+        WxBriefRequestActivity.Builder builder = WxBriefRequestActivity.Builder.getBuilder();
+        builder.setWxBriefForTaskId(soaringForecastViewModel.getTaskId());
+        startActivity(builder.build(this.getContext()));
     }
 
     private void displayForecastOrderFragment() {
@@ -378,8 +391,8 @@ public class SoaringForecastFragment extends DaggerFragment {
         }
     }
 
-    private void displayTaskClearMenuItem(boolean visible) {
-        showClearTaskMenuItem = visible;
+    private void setShowTaskSelectedMenuItems(boolean visible) {
+        showTaskSelectedMenuItems = visible;
         getActivity().invalidateOptionsMenu();
     }
 

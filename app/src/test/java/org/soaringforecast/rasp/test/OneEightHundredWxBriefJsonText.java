@@ -7,8 +7,6 @@ import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefingRequest
 import org.soaringforecast.rasp.retrofit.One800WxBriefApi;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -50,8 +48,11 @@ public class OneEightHundredWxBriefJsonText {
 
     @Test
     public void shouldStartEmailBriefing() throws Exception {
-        ArrayList<String> turnpointIds = new ArrayList<>(Arrays.asList("3B3", "KAFN", "KEEN", "3B3"));
-        RouteBriefingRequest routeBriefingRequest =   RouteBriefingRequest.newInstance(turnpointIds);
+
+        RouteBriefingRequest routeBriefingRequest =   RouteBriefingRequest.newInstance();
+        routeBriefingRequest.setDeparture("3B3");
+        routeBriefingRequest.setRoute("KAFN KEEN");
+        routeBriefingRequest.setDestination("3B3");
         routeBriefingRequest.setWebUserName("flightservice@soaringforecast.org");
 
         String departureTIme = departureDateFormat.format(new Date(System.currentTimeMillis() + 4 * 60  * 60  * 1000) );
@@ -59,14 +60,19 @@ public class OneEightHundredWxBriefJsonText {
         routeBriefingRequest.setFlightDuration("PT04H");
         routeBriefingRequest.setAircraftIdentifier("N68RM");
         routeBriefingRequest.setBriefingType("EMAIL");
+        routeBriefingRequest.setBriefingResultFormat("PDF");
         routeBriefingRequest.setEmailAddress("flightservice@soaringforecast.org");
         // Call<RouteBriefing>  call = client.getRouteBriefing(routeBriefingRequest.getRestParmString());
         //RouteBriefing routeBriefing = call.execute().body();
+        System.out.println("Parms: \n" + routeBriefingRequest.getRestParmString());
         RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\"") ,routeBriefingRequest.getRestParmString());
         Call<RouteBriefing>  call = client.getRouteBriefing(body);
         RouteBriefing routeBriefing = call.execute().body();
-
         assertNotNull(routeBriefing);
+        if (routeBriefing !=null && routeBriefing.returnCodedMessage != null && routeBriefing.returnCodedMessage.size()> 0 ) {
+            System.out.println("Code: \n" + routeBriefing.returnCodedMessage.get(0).code);
+            System.out.println("Message: \n" + routeBriefing.returnCodedMessage.get(0).message);
+        }
         assertNotNull(routeBriefing.returnStatus);
         assertTrue(routeBriefing.returnStatus);
 

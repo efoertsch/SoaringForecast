@@ -11,26 +11,30 @@ import java.util.Arrays;
  */
 public class RouteBriefingRequest {
 
-    private RouteBriefingRequest(){}
-
-    public static RouteBriefingRequest newInstance(ArrayList<String> turnpointNames){
-        RouteBriefingRequest routeBriefingRequest = new RouteBriefingRequest();
-        routeBriefingRequest.turnpointNames = turnpointNames;
-        if (turnpointNames.size() > 0) {
-            routeBriefingRequest.departure = turnpointNames.get(0);
-        }
-        if (turnpointNames.size() > 1) {
-            routeBriefingRequest.destination = turnpointNames.get(turnpointNames.size() -1);
-        }
-        routeBriefingRequest.setRoute(turnpointNames);
-        routeBriefingRequest.setProductCodes(defaultProductCodes);
-        routeBriefingRequest.setTailoringOptions(defaultTailoringOptions);
-        return routeBriefingRequest;
-    }
-
     private static final String AMPERSAND = "&";
 
     private ArrayList<String> turnpointNames;
+
+    private RouteBriefingRequest(){}
+
+    public static RouteBriefingRequest newInstance(){
+        RouteBriefingRequest routeBriefingRequest = new RouteBriefingRequest();
+        return routeBriefingRequest;
+    }
+
+    public void setTurnpointNames(ArrayList<String> turnpointNames){
+         turnpointNames = turnpointNames;
+        if (turnpointNames.size() > 0) {
+             departure = turnpointNames.get(0);
+        }
+        if (turnpointNames.size() > 1) {
+             destination = turnpointNames.get(turnpointNames.size() -1);
+        }
+         setRoute(turnpointNames);
+         setProductCodes(defaultProductCodes);
+         setTailoringOptions(defaultTailoringOptions);
+
+    }
 
 
     /**
@@ -121,19 +125,23 @@ public class RouteBriefingRequest {
      */
     private ArrayList<String> productCodes = new ArrayList<>();
 
-    private static final ArrayList<String> defaultProductCodes = new ArrayList<>(Arrays.asList(
-            ProductCodes.TFR.name(),
-            ProductCodes.WST.name(),
-            ProductCodes.FA.name(),
-            ProductCodes.AC.name(),
-            ProductCodes.FB.name(),
-            ProductCodes.UOA.name(),
-            ProductCodes.DEP_NTM.name(),
-            ProductCodes.ENROUTE_NTM_AIRSPACE.name(),
-            ProductCodes.ENROUTE_NTM_RWY_TWY_APRON_AD_FDC.name(),
-            ProductCodes.ENROUTE_NTM_MIL.name(),
-            ProductCodes.ENROUTE_NTM_SUA.name(),
-            ProductCodes.ENROUTE_NTM_OTHER.name()));
+//    private static final ArrayList<String> defaultProductCodes = new ArrayList<>(Arrays.asList(
+//            ProductCodes.TFR.name(),
+//            ProductCodes.WST.name(),
+//            ProductCodes.FA.name(),
+//            ProductCodes.AC.name(),
+//            ProductCodes.FB.name(),
+//            ProductCodes.UOA.name(),
+//            ProductCodes.DEP_NTM.name(),
+//            ProductCodes.ENROUTE_NTM_AIRSPACE.name(),
+//            ProductCodes.ENROUTE_NTM_RWY_TWY_APRON_AD_FDC.name(),
+//            ProductCodes.ENROUTE_NTM_MIL.name(),
+//            ProductCodes.ENROUTE_NTM_SUA.name(),
+//            ProductCodes.ENROUTE_NTM_OTHER.name()));
+private static final ArrayList<String> defaultProductCodes = new ArrayList<>(Arrays.asList(
+        ProductCodes.DD_NTM.name(),
+        ProductCodes.SEV_WX.name(),
+        ProductCodes.METAR.name()));
 
 
 
@@ -209,7 +217,8 @@ public class RouteBriefingRequest {
     }
 
     private static final ArrayList<String> defaultTailoringOptions = new ArrayList<>(Arrays.asList(
-            TailoringOptionNonNGBV2.ENCODED_ONLY.name()));
+            TailoringOptionNGBV2.EXCLUDE_GRAPHICS.name(),
+            TailoringOptionNGBV2.EXCLUDE_HISTORICAL_METARS.name()));
 
     /**
      * REST calls require type, DOMESTIC (being deprecated or ICAO)
@@ -292,6 +301,23 @@ public class RouteBriefingRequest {
      */
     private String briefingType;
 
+    public enum BriefingTypes {
+        EMAIL("EMail"),
+        NGBV2("Online(PDF)");
+
+        private  String displayValue;
+        public String getDisplayValue(){
+            return displayValue;
+        }
+
+
+
+        BriefingTypes(String displayValue) {
+            this.displayValue = displayValue;
+        }
+
+    }
+
     /**
      * The briefingResultFormat is an optional parameter that applies only to briefingType of NGBV2
      * and for this type of briefing it must be specified. If briefingResultFormat is specified as
@@ -300,7 +326,7 @@ public class RouteBriefingRequest {
      * customers. If briefingResultFormat is specified as HTML, the returned briefing will be HTML
      * with NGBv2 contents and formatting
      */
-    private String briefingResultFormat;
+    private String briefingResultFormat = "PDF";
 
     /**
      * Required only if record of briefing to be filed with 1800WXBrief
@@ -490,6 +516,10 @@ public class RouteBriefingRequest {
         this.briefingType = briefingType;
     }
 
+    public String getBriefingType() {
+        return briefingType;
+    }
+
     public void setBriefingResultFormat(String briefingResultFormat) {
         this.briefingResultFormat = briefingResultFormat;
     }
@@ -538,7 +568,8 @@ public class RouteBriefingRequest {
         sb.append("versionRequested=").append("99999999").append(AMPERSAND);
         sb.append("notABriefing=").append(notABriefing).append(AMPERSAND);
         sb.append("briefingType=").append(briefingType).append(AMPERSAND);
-        if (briefingResultFormat != null) {
+
+        if (briefingType != null && briefingType.equals("NGBV2") ) {
             sb.append("briefingResultFormat=").append(briefingResultFormat).append(AMPERSAND);
         }
         sb.append("emailAddress=").append(emailAddress);

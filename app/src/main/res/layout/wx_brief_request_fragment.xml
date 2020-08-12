@@ -14,96 +14,190 @@
     </data>
 
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/wx_brief_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/wx_brief_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_standard"
+        android:layout_marginEnd="@dimen/margin_standard">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_50pct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50" />
+
+
+        <TextView
+            android:id="@+id/wx_brief_task_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:text="@{viewModel.getTaskTitle}"
+            android:textSize="@dimen/text_size_extra_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Sterling Jaffrey Keene Sterling" />
+
+        <TextView
+            android:id="@+id/wx_brief_turnpoints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
-            <!--
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline_50pct"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.50"/>
+            android:text="@={viewModel.turnpointList}"
+            android:textSize="@dimen/text_size_large"
+            android:layout_marginBottom="@dimen/margin_double"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_task_title"
+            tools:text="3B3 KAFN KEEN 3B3" />
 
-                -->
 
-            <TextView
-                android:id="@+id/wx_brief_task_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_standard"
-                android:layout_marginTop="@dimen/margin_standard"
-                android:text="@{viewModel.getTaskTitle}"
-                android:textSize="@dimen/text_size_large"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Sterling Jaffrey Keene Sterling" />
+        <LinearLayout
+            android:id="@+id/wx_briefing_id_and_format_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_turnpoints"
+            android:baselineAligned="false">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/wx_brief_aircraft_id_layout"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="bottom"
                 android:hint="@string/aircraft_id"
                 app:errorEnabled="true"
                 app:errorText="@{viewModel.aircraftIdErrorText}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/wx_brief_task_title">
+                android:layout_weight="1"
+                android:layout_gravity="bottom">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/wx_brief_aircraft_id"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="46dp"
                     android:inputType="textNoSuggestions"
-                    android:text="@={viewModel.title}" />
+                    android:text="@={viewModel.aircraftId}" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/wx_brief_corridor_width_layout"
+        <LinearLayout
+            android:id="@+id/wx_briefing_briefing_format_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+           >
+            <TextView
+                android:id="@+id/wx_brief_briefing_format"
+                style="@style/TextView.ForSpinnerLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/route_corridor_width"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.corridorWidthErrorText}"
-                app:layout_constraintStart_toEndOf="@id/wx_brief_aircraft_id_layout"
-                app:layout_constraintTop_toBottomOf="@id/wx_brief_task_title">
+                android:layout_marginTop="@dimen/margin_standard"
+                android:text="@string/briefing_format" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/wx_brief_corridor_width"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:text="@={viewModel.corridorWidth}" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/wx_briefing_briefing_format_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:entries="@{viewModel.briefingFormats}"
+                android:selectedItemPosition="@={viewModel.selectedBriefingFormatPosition}"
+                android:theme="@style/DividerSpinnerTheme" />
+        </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/wx_brief_web_user_name_layout"
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/wx_brief_web_user_name_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/wx_brief_web_user_name"
+            app:errorEnabled="true"
+            app:errorText="@{viewModel.webUserNameErrorText}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wx_briefing_id_and_format_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/wwx_brief_web_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/wx_brief_web_user_name"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.webUserNameErrorText}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/wx_brief_aircraft_id_layout">
+                android:inputType="textEmailAddress"
+                android:text="@={viewModel.webUserName}" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/wwx_brief_web_user_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:text="@={viewModel.webUserName}" />
-            </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/wx_brief_winds_aloft_corridor_layout"
+        <TextView
+            android:id="@+id/wx_brief_departure_date_label"
+            style="@style/TextView.ForSpinnerLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/departure_date"
+            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_web_user_name_layout" />
+
+        <TextView
+            android:id="@+id/wx_brief_departure_time_label"
+            style="@style/TextView.ForSpinnerLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/departure_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_web_user_name_layout" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/wx_briefing_date_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:entries="@{viewModel.briefingDates}"
+            android:selectedItemPosition="@={viewModel.selectedBriefingDatePosition}"
+            android:theme="@style/DividerSpinnerTheme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_date_label" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/wx_brief_departure_time_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:entries="@{viewModel.departureTimes}"
+            android:selectedItemPosition="@={viewModel.selectedDepartureTimePosition}"
+            android:theme="@style/DividerSpinnerTheme"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_time_label" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/wx_brief_corridor_width_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/route_corridor_width"
+            app:errorEnabled="true"
+            app:errorText="@{viewModel.corridorWidthErrorText}"
+            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wx_briefing_date_spinner">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/wx_brief_corridor_width"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/wx_brief_winds_aloft_corridor"
-                app:errorEnabled="true"
-                app:errorText="@{viewModel.windsAloftCorridorErrorText}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/wx_brief_web_user_name_layout">
+                android:inputType="number"
+                android:text="@={viewModel.corridorWidth}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/wx_brief_winds_aloft_corridor_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/wx_brief_winds_aloft_corridor"
+            app:errorEnabled="true"
+            app:errorText="@{viewModel.windsAloftCorridorErrorText}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_50pct"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_time_spinner">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/wx_brief_winds_aloft_corridor"
@@ -114,16 +208,27 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/wx_brief_submit_briefing_request"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:layout_marginBottom="@dimen/margin_standard"
+            android:text="@string/submit_briefing_request"
+            app:layout_constraintStart_toStartOf="parent"
+            android:onClick="@{() -> viewModel.submitBriefingRequest}"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_winds_aloft_corridor_layout" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>

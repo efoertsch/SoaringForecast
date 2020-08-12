@@ -412,7 +412,16 @@
     <string name="airport_removed">Airport Removed</string>
     <string name="aircraft_id">Aircraft Registration</string>
     <string name="route_corridor_width">Corridor Width(NM)</string>
-    <string name="wx_brief_web_user_name">1800WxBrief Email address</string>
-    <string name="wx_brief_winds_aloft_corridor">Winds Aloft Corridor NM (100-600)</string>
+    <string name="wx_brief_web_user_name">1800WxBrief Account Name (email address)</string>
+    <string name="wx_brief_winds_aloft_corridor">Winds Aloft Corridor(NM)</string>
+    <string name="one_800_wx_brief">1800WXBrief</string>
+    <string name="submit_briefing_request">Submit Briefing Request</string>
+    <string name="time_format">%02d:00</string>
+    <string name="departure_date">Departure Date</string>
+    <string name="departure_time">Departure Time</string>
+    <string name="briefing_format">Briefing Format</string>
+    <string name="error_loading_task">An error occured retrievign the task from the database.</string>
+    <string name="your_briefing_should_arrive_in_your_mailbox_shortly">Your briefing should arrive in your mailbox shortly</string>
+    <string name="undefined_error_occurred_on_1800wxbrief_request">Oops. Undefined error occurred submitted request to 1800WxBrief</string>
 
 </resources>
