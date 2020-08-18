@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
+import androidx.lifecycle.MutableLiveData;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -33,6 +34,7 @@ import timber.log.Timber;
 public class WxBriefViewModel extends ObservableViewModel {
 
     private static final SimpleDateFormat departureDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final long OneDayInMillisec = 24 * 60 * 60 * 1000;
 
     private AppRepository appRepository;
     private long taskId = 0;
@@ -46,8 +48,8 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     private String defaultRouteCorridorWidth = "25";
     private String routeCorridorWidth = defaultRouteCorridorWidth;
-    private String windsAloftCorridor;
     private String defaultWindsAloftCorridor = "100";
+    private String windsAloftCorridor = defaultWindsAloftCorridor;
     private String turnpointList;
     private String aircraftId;
     private Pattern aircraftIdPattern = Pattern.compile("[A-Z0-9]{2,7}");
@@ -64,7 +66,9 @@ public class WxBriefViewModel extends ObservableViewModel {
     private String corridorWidthErrorText;
     private String wxBriefUserNameErrorText;
     private String windsAloftCorridorErrorText;
-
+    private boolean validBriefingData;
+    private boolean displayTailoringOptions;
+    private MutableLiveData<Boolean> tailoringListListUpdatedFlag;
 
     public WxBriefViewModel(@NonNull Application application) {
         super(application);
@@ -88,11 +92,14 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     public void init() {
         routeBriefingRequest = RouteBriefingRequest.newInstance();
-        getBriefingFormats();
+        getBriefingTypes();
         getWxBriefUserName();
         getBriefingDates();
         getDepartureTimes();
+        formatDepartureInstant();
         setCorridorValues();
+        routeBriefingRequest.createProductCodeList();
+        routeBriefingRequest.createTailoringOptionList();
         loadTask();
         loadTaskTurnpoints();
 
@@ -103,6 +110,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         notifyPropertyChanged(BR.routeCorridorWidth);
         routeBriefingRequest.setWindsAloftCorridorWidth(windsAloftCorridor);
         notifyPropertyChanged(BR.windsAloftCorridor);
+
     }
 
 
@@ -199,6 +207,26 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     @Bindable
+    // Unfortunate 1800WXBrief naming convention
+    public Boolean getOfficialBriefing() {
+        return !routeBriefingRequest.getNotABriefing();
+    }
+
+    @Bindable
+    public void setOfficialBriefing(Boolean isOfficialBriefing) {
+        // **** Confusing - Note opposite meanings of flag ****
+        //  if notABriefing = 'true' then it is not an 'official' (recorded) briefing in 188WxBrief)
+        // If isOfficialBriefing = true, user wants briefing to be recorded in system, if false then
+        // briefing not recorded in 1800WxBrief
+        if (routeBriefingRequest.getNotABriefing() == isOfficialBriefing) {
+            routeBriefingRequest.setNotABriefing(!isOfficialBriefing);
+            //notifyPropertyChanged(BR.officialBriefing);
+        }
+        getBriefingTypes();
+        notifyPropertyChanged(BR.briefingTypes);
+    }
+
+    @Bindable
     public String getAircraftId() {
         aircraftId = appPreferences.getAircraftRegistration();
         return aircraftId;
@@ -224,6 +252,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private void setAircraftIdErrorText(String errorText) {
         aircraftIdErrorText = errorText;
         notifyPropertyChanged(BR.aircraftIdErrorText);
+        validateData();
     }
 
     @Bindable
@@ -256,6 +285,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private void setWxBriefUserNameErrorText(String errorText) {
         wxBriefUserNameErrorText = errorText;
         notifyPropertyChanged(BR.wxBriefUserNameErrorText);
+        validateData();
     }
 
     @Bindable
@@ -297,6 +327,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private void setCorridorWidthErrorText(String errorText) {
         corridorWidthErrorText = errorText;
         notifyPropertyChanged(BR.corridorWidthErrorText);
+        validateData();
     }
 
     @Bindable
@@ -304,6 +335,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         return windsAloftCorridor;
     }
 
+    @Bindable
     public void setWindsAloftCorridor(String windsAloftCorridor) {
         if (windsAloftCorridor.isEmpty()) {
             this.windsAloftCorridor = defaultWindsAloftCorridor;
@@ -324,7 +356,6 @@ public class WxBriefViewModel extends ObservableViewModel {
         }
     }
 
-
     @Bindable
     public String getWindsAloftCorridorErrorText() {
         return windsAloftCorridorErrorText;
@@ -333,25 +364,40 @@ public class WxBriefViewModel extends ObservableViewModel {
     private void setWindsAloftCorridorErrorText(String errorText) {
         windsAloftCorridorErrorText = errorText;
         notifyPropertyChanged(BR.windsAloftCorridorErrorText);
+        validateData();
     }
 
 
+    /**
+     * Note these dates are suppose to represent local date (not Zulu)
+     *
+     * @return
+     */
     @Bindable
     public ArrayList<String> getBriefingDates() {
         if (briefingDates == null) {
             ArrayList<String> dateList = new ArrayList<>();
-            // Just use today and tomorrow
-            dateList.add(departureDateFormat.format(System.currentTimeMillis()));
-            dateList.add(departureDateFormat.format(System.currentTimeMillis() + (24 * 60 * 60 * 1000)));
+            long currentTime = System.currentTimeMillis();
+            dateList.add(departureDateFormat.format(currentTime));
+            dateList.add(departureDateFormat.format(currentTime + OneDayInMillisec));
+            dateList.add(departureDateFormat.format(currentTime + (2 * OneDayInMillisec)));
             briefingDates = dateList;
             selectedBriefingDatePosition = 0;
-            formatDepartureInstant();
         }
         return briefingDates;
     }
 
+    /**
+     * Convert seleced local/date and  time to Zulu
+     * Time must be in format of yyyy-MM-ddTHH:mm:ss.S
+     */
     private void formatDepartureInstant() {
-        //TODO format date/time for route request
+        StringBuilder sb = new StringBuilder();
+        sb.append(briefingDates.get(selectedBriefingDatePosition))
+                .append("T")
+                .append(departureTimes.get(selectedDepartureTimePosition))
+                .append(":00.000");
+        routeBriefingRequest.setDepartureInstant(routeBriefingRequest.convertLocalTimeToZulu(sb.toString()));
     }
 
     @Bindable
@@ -362,8 +408,14 @@ public class WxBriefViewModel extends ObservableViewModel {
     @Bindable
     public void setSelectedBriefingDatePosition(int selectedBriefingDatePosition) {
         this.selectedBriefingDatePosition = selectedBriefingDatePosition;
+        formatDepartureInstant();
     }
 
+    /**
+     * Note these times are suppose to represent local date (not Zulu)
+     *
+     * @return
+     */
     @Bindable
     public ArrayList<String> getDepartureTimes() {
         if (departureTimes == null) {
@@ -389,32 +441,97 @@ public class WxBriefViewModel extends ObservableViewModel {
     @Bindable
     public void setSelectedDepartureTimePosition(int selectedDepartureTimePosition) {
         this.selectedDepartureTimePosition = selectedDepartureTimePosition;
+        formatDepartureInstant();
     }
 
     @Bindable
-    public ArrayList<String> getBriefingFormats() {
-        if (briefingFormats == null) {
-            briefingFormats = new ArrayList<>();
-            for (RouteBriefingRequest.BriefingTypes briefingType : RouteBriefingRequest.BriefingTypes.values()) {
-                briefingFormats.add(briefingType.getDisplayValue());
-            }
-            setSelectedBriefingFormatPosition(0);
-        }
+    public ArrayList<String> getBriefingTypes() {
+        briefingFormats = routeBriefingRequest.getBriefingTypeList();
+        setSelectedBriefingTypePosition(0);
         return briefingFormats;
     }
 
     @Bindable
-    public int getSelectedBriefingFormatPosition() {
+    public int getSelectedBriefingTypePosition() {
         return selectedBriefingFormatPosition;
     }
 
     @Bindable
-    public void setSelectedBriefingFormatPosition(int selectedBriefingFormatPosition) {
+    public void setSelectedBriefingTypePosition(int selectedBriefingFormatPosition) {
         this.selectedBriefingFormatPosition = selectedBriefingFormatPosition;
-        routeBriefingRequest.setBriefingType(RouteBriefingRequest.BriefingTypes.values()[selectedBriefingFormatPosition].name());
+        routeBriefingRequest.setSelectedBriefingType(routeBriefingRequest.getBriefTypeBasedOnDisplayValue(
+                briefingFormats.get(selectedBriefingFormatPosition)));
+        routeBriefingRequest.createTailoringOptionList();
+        if (RouteBriefingRequest.BriefingType.values()[selectedBriefingFormatPosition] == RouteBriefingRequest.BriefingType.SIMPLE) {
+            displayTailoringOptions = false;
+        } else {
+            displayTailoringOptions = true;
+        }
+        notifyPropertyChanged(BR.displayTailoringOptions);
+        toggleTailoringListUpdatedFlag();
+    }
+
+    public MutableLiveData<Boolean> getTailoringListUpdatedFlag() {
+        if (tailoringListListUpdatedFlag == null) {
+            tailoringListListUpdatedFlag = new MutableLiveData<>();
+            tailoringListListUpdatedFlag.setValue(true);
+        }
+        return tailoringListListUpdatedFlag;
+    }
+
+    public void toggleTailoringListUpdatedFlag() {
+        if (tailoringListListUpdatedFlag == null) {
+            getTailoringListUpdatedFlag();
+        }
+        tailoringListListUpdatedFlag.setValue(!tailoringListListUpdatedFlag.getValue());
+    }
+
+
+    public List<String> getTailoringOptionDescriptionsList() {
+        return routeBriefingRequest.getTailoringOptionDescriptionsList();
+
+    }
+
+    public boolean[] getSelectedTailoringOptions() {
+        return routeBriefingRequest.getSelectedTailoringOptions();
+
+    }
+
+    public void setSelectedTailoringOptions(boolean[] selected) {
+        routeBriefingRequest.setSelectedTailoringOptions(selected);
+    }
+
+    @Bindable
+    public boolean getDisplayTailoringOptions() {
+        return displayTailoringOptions;
+    }
+
+    public List<String> getProductCodeDescriptionList() {
+        return routeBriefingRequest.getProductCodeDescriptionList();
+    }
+
+    public boolean[] getSelectedProductCodes() {
+        return routeBriefingRequest.getSelectedProductCodes();
+    }
+
+    public void setSelectedProductCodes(boolean[] selected) {
+        routeBriefingRequest.setSelectedProductCodes(selected);
+    }
+
+    private void validateData() {
+        validBriefingData = (getAircraftIdErrorText() == null)
+                && (wxBriefUserNameErrorText == null)
+                && (corridorWidthErrorText == null)
+                && (windsAloftCorridorErrorText == null);
+    }
+
+    @Bindable
+    public boolean isValidData() {
+        return validBriefingData;
     }
 
     public void submitBriefingRequest() {
+        Timber.d("WxBriefViewModel parm string: %1$s", routeBriefingRequest.getRestParmString());
         setWorkingFlag(true);
         Disposable disposable = appRepository.submitWxBriefBriefingRequest(routeBriefingRequest.getRestParmString())
                 .subscribeOn(Schedulers.io())
@@ -425,6 +542,7 @@ public class WxBriefViewModel extends ObservableViewModel {
                         t -> {
                             //TODO email stack trace
                             Timber.e(t);
+                            evaluateRouteBriefingCall(null);
 
                         });
         compositeDisposable.add(disposable);
@@ -435,7 +553,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         setWorkingFlag(false);
         if (routeBriefing != null && routeBriefing.returnStatus) {
             // request submitted OK
-            if (routeBriefingRequest.getBriefingType().equals(RouteBriefingRequest.BriefingTypes.EMAIL.name())) {
+            if (routeBriefingRequest.getSelectedBriefingType().equals(RouteBriefingRequest.BriefingType.EMAIL.name())) {
                 post(new Email1800WxBriefRequestResponse());
             } else {
                 // need to get NGBV2 briefing from
@@ -447,9 +565,14 @@ public class WxBriefViewModel extends ObservableViewModel {
                 post(new Email1800WxBriefRequestResponse(getApplication()
                         .getString((R.string.undefined_error_occurred_on_1800wxbrief_request))));
             } else if (routeBriefing.returnCodedMessage != null && routeBriefing.returnCodedMessage.size() > 0) {
-                ReturnCodedMessage returnCodedMessage = routeBriefing.returnCodedMessage.get(0);
-                post(new Email1800WxBriefRequestResponse(returnCodedMessage.code + '\n'
-                        + returnCodedMessage.message));
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < routeBriefing.returnCodedMessage.size(); ++i) {
+                    sb.append(routeBriefing.returnCodedMessage.get(0))
+                            .append(":")
+                            .append(routeBriefing.returnCodedMessage.get(0))
+                            .append('\n');
+                }
+                post(new Email1800WxBriefRequestResponse(sb.toString()));
             } else { // error but no error msg
                 post(new Email1800WxBriefRequestResponse(getApplication()
                         .getString((R.string.undefined_error_occurred_on_1800wxbrief_request))));

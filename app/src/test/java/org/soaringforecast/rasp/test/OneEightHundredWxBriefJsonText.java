@@ -41,7 +41,7 @@ public class OneEightHundredWxBriefJsonText {
     public void shouldGetMETAR() throws Exception {
         Call<ResponseBody> call = client.getMETAR("KORH");
         ResponseBody responseBody = call.execute().body();
-        System.out.println( responseBody.string());
+        System.out.println(responseBody.string());
         assertNotNull(responseBody);
     }
 
@@ -49,27 +49,27 @@ public class OneEightHundredWxBriefJsonText {
     @Test
     public void shouldStartEmailBriefing() throws Exception {
 
-        RouteBriefingRequest routeBriefingRequest =   RouteBriefingRequest.newInstance();
+        RouteBriefingRequest routeBriefingRequest = RouteBriefingRequest.newInstance();
         routeBriefingRequest.setDeparture("3B3");
         routeBriefingRequest.setRoute("KAFN KEEN");
         routeBriefingRequest.setDestination("3B3");
         routeBriefingRequest.setWebUserName("flightservice@soaringforecast.org");
 
-        String departureTIme = departureDateFormat.format(new Date(System.currentTimeMillis() + 4 * 60  * 60  * 1000) );
+        String departureTIme = departureDateFormat.format(new Date(System.currentTimeMillis() + 4 * 60 * 60 * 1000));
         routeBriefingRequest.setDepartureInstant(departureTIme);
         routeBriefingRequest.setFlightDuration("PT04H");
         routeBriefingRequest.setAircraftIdentifier("N68RM");
-        routeBriefingRequest.setBriefingType("EMAIL");
+        routeBriefingRequest.setSelectedBriefingType(RouteBriefingRequest.BriefingType.EMAIL);
         routeBriefingRequest.setBriefingResultFormat("PDF");
         routeBriefingRequest.setEmailAddress("flightservice@soaringforecast.org");
         // Call<RouteBriefing>  call = client.getRouteBriefing(routeBriefingRequest.getRestParmString());
         //RouteBriefing routeBriefing = call.execute().body();
         System.out.println("Parms: \n" + routeBriefingRequest.getRestParmString());
-        RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\"") ,routeBriefingRequest.getRestParmString());
-        Call<RouteBriefing>  call = client.getRouteBriefing(body);
+        RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\""), routeBriefingRequest.getRestParmString());
+        Call<RouteBriefing> call = client.getRouteBriefing(body);
         RouteBriefing routeBriefing = call.execute().body();
         assertNotNull(routeBriefing);
-        if (routeBriefing !=null && routeBriefing.returnCodedMessage != null && routeBriefing.returnCodedMessage.size()> 0 ) {
+        if (routeBriefing != null && routeBriefing.returnCodedMessage != null && routeBriefing.returnCodedMessage.size() > 0) {
             System.out.println("Code: \n" + routeBriefing.returnCodedMessage.get(0).code);
             System.out.println("Message: \n" + routeBriefing.returnCodedMessage.get(0).message);
         }
@@ -102,11 +102,62 @@ public class OneEightHundredWxBriefJsonText {
                 .build();
     }
 
-    private  String getBase64UidPwd() {
+    private String getBase64UidPwd() {
         String encoded = Base64.getEncoder().encodeToString(("flightservice@soaringforecast.org" + ":" + "SoaringForecast2020!!!").getBytes());
         System.out.println("Encoded :" + encoded);
         return encoded;
         // Following should give   Sm9lc0ZsaWdodFNlcnZpY2VzOlNlY3JldFBX
-       // return Base64.getEncoder().encodeToString(("JoesFlightServices:SecretPW").getBytes());
+        // return Base64.getEncoder().encodeToString(("JoesFlightServices:SecretPW").getBytes());
     }
+
+
+    @Test
+    public void shouldCreateSimpleBriefForNotABriefingWithProductAndTailoringOptions() throws Exception {
+        // Not a NGBV2
+        String parmString =
+                "notABriefing=true&includeCodedMessages=true&type=ICAO&routeCorridorWidth=25&briefingPreferences={\"items\":[\"DD_NTM\",\"TFR\",\"FA\"],\"tailoring\":[]}&outlookBriefing=false&flightRules=VFR&departure=3B3&departureInstant=2020-08-15T18:00:00.000&destination=3B3&route=3B3 AFN EEN 3B3 &flightDuration=PT05H&speedKnots=50&versionRequested=99999999&briefingType=NGB&plainTextTimeZone=EST";
+
+        RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\""), parmString);
+        Call<RouteBriefing> call = client.getRouteBriefing(body);
+        RouteBriefing routeBriefing = call.execute().body();
+        assertNotNull(routeBriefing);
+        if (routeBriefing != null && routeBriefing.returnCodedMessage != null && routeBriefing.returnCodedMessage.size() > 0) {
+            System.out.println("Code: \n" + routeBriefing.returnCodedMessage.get(0).code);
+            System.out.println("Message: \n" + routeBriefing.returnCodedMessage.get(0).message);
+
+        }
+    }
+
+    @Test
+    public void shouldCreateNGBV2BriefWithProductAndTailoringOptions() throws Exception {
+        // Not a NGBV2
+        String parmString =
+                "includeCodedMessages=true&type=ICAO&aircraftIdentifier=N68RM&routeCorridorWidth=25&briefingPreferences={\"items\":[\"DD_NTM\",\"SEV_WX\",\"METAR\"],\"tailoring\":[\"EXCLUDE_GRAPHICS\",\"EXCLUDE_HISTORICAL_METARS\"]}&outlookBriefing=false&flightRules=VFR&departure=3B3&departureInstant=2020-08-18T19:36:06&destination=3B3&route=KAFN,KEEN&flightDuration=PT04H&webUserName=flightservice@soaringforecast.org&speedKnots=50&versionRequested=99999999&notABriefing=false&briefingType=NGBV2&briefingResultFormat=PDF&emailAddress=flightservice@soaringforecast.org";
+
+        RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\""), parmString);
+        Call<RouteBriefing> call = client.getRouteBriefing(body);
+        RouteBriefing routeBriefing = call.execute().body();
+        assertNotNull(routeBriefing);
+        if (routeBriefing != null && routeBriefing.returnCodedMessage != null && routeBriefing.returnCodedMessage.size() > 0) {
+            System.out.println("Code: \n" + routeBriefing.returnCodedMessage.get(0).code);
+            System.out.println("Message: \n" + routeBriefing.returnCodedMessage.get(0).message);
+
+        }
+    }
+
+    @Test
+    public void shouldReturnEDT() {
+        String timeZone = RouteBriefingRequest.getLocalTimeZoneAbbrev();
+        System.out.println("Current abbreviation for either standard or summer time: "
+                + timeZone);
+    }
+
+    @Test
+    public void shouldReturnTimeInUTC() {
+        String localTime = "2020-08-15T11:25:00.000";
+        System.out.println("Local time: " + localTime);
+        String zuluDate  = RouteBriefingRequest.convertLocalTimeToZulu(localTime);
+        System.out.println("Zulu Time: " + zuluDate);
+    }
+
 }

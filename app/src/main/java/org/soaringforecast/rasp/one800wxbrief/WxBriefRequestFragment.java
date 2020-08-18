@@ -36,6 +36,7 @@ public class WxBriefRequestFragment extends DaggerFragment {
 
     @Inject
     AppPreferences appPreferences;
+    private boolean firstTime = true;
 
 
     public static WxBriefRequestFragment newInstance(long taskId){
@@ -64,12 +65,40 @@ public class WxBriefRequestFragment extends DaggerFragment {
         wxBriefRequestView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_request_fragment, container, false);
         wxBriefRequestView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
         wxBriefRequestView.setViewModel(wxBriefViewModel);
+        wxBriefRequestView.wxBriefOfficialBriefInfo.setOnClickListener(v -> displayOfficialBriefingDialog());
+        wxBriefViewModel.init();
+
         return wxBriefRequestView.getRoot();
     }
 
     public void onViewCreated(View view, Bundle savedInstance){
         super.onViewCreated(view, savedInstance);
-        wxBriefViewModel.init();
+
+        setTailoringOptionsSpinnerValues();
+
+        setProductCodesSpinnerValues();
+
+        wxBriefViewModel.getTailoringListUpdatedFlag().observe(getViewLifecycleOwner(), newValue ->{
+            if (firstTime) {
+                firstTime = false;
+            } else {
+                setTailoringOptionsSpinnerValues();
+            }
+        });
+    }
+
+    private void setTailoringOptionsSpinnerValues() {
+        wxBriefRequestView.wxBriefTailoringOptionsSpinner.setItems(wxBriefViewModel.getTailoringOptionDescriptionsList()
+                , wxBriefViewModel.getSelectedTailoringOptions()
+                , getString(R.string.select_wx800brief_tailoring_options)
+                , selected -> wxBriefViewModel.setSelectedTailoringOptions(selected));
+    }
+
+    private void setProductCodesSpinnerValues() {
+        wxBriefRequestView.wxBriefProductCodesSpinner.setItems(wxBriefViewModel.getProductCodeDescriptionList()
+                , wxBriefViewModel.getSelectedProductCodes()
+                , getString(R.string.select_wx800brief_product_options)
+                , selected -> wxBriefViewModel.setSelectedProductCodes(selected));
     }
 
     @Override
@@ -83,6 +112,22 @@ public class WxBriefRequestFragment extends DaggerFragment {
         super.onStop();
         EventBus.getDefault().unregister(this);
     }
+
+    private void displayOfficialBriefingDialog() {
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                .setTitle("1800WxBrief")
+                .setMessage(getString(R.string.check_to_record_briefing_in_1800wxbrief_system))
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+        alertDialog.setCanceledOnTouchOutside(false);
+    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Email1800WxBriefRequestResponse email1800WxBriefRequestResponse) {
@@ -103,7 +148,6 @@ public class WxBriefRequestFragment extends DaggerFragment {
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
         alertDialog.setCanceledOnTouchOutside(false);
     }
