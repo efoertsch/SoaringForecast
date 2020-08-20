@@ -88,7 +88,7 @@ public class WxBriefRequestFragment extends DaggerFragment {
     }
 
     private void setTailoringOptionsSpinnerValues() {
-        wxBriefRequestView.wxBriefTailoringOptionsSpinner.setItems(wxBriefViewModel.getTailoringOptionDescriptionsList()
+        wxBriefRequestView.wxBriefTailoringOptionsSpinner.setItems(wxBriefViewModel.getTailoringOptionDescriptions()
                 , wxBriefViewModel.getSelectedTailoringOptions()
                 , getString(R.string.select_wx800brief_tailoring_options)
                 , selected -> wxBriefViewModel.setSelectedTailoringOptions(selected));

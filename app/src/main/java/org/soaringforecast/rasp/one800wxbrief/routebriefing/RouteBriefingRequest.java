@@ -26,55 +26,241 @@ public class RouteBriefingRequest {
     public static final  SimpleDateFormat wxbriefTimeFormatter =
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
+    private ArrayList<String> productCodes;
 
-    private ArrayList<String> turnpointNames;
+    /**
+     * User selected tailoring Options to generate the tailoringOptions list in briefingPreferences
+     * <p>
+     * eg.
+     * ... ,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]
+     * ... ,"tailoring":["EXCLUDE_GRAPHICS","EXCLUDE_HISTORICAL_METARS"]
+     */
+    private ArrayList<String> tailoringOptions = new ArrayList<>();
 
-    private RouteBriefingRequest() {
-    }
 
-    public static RouteBriefingRequest newInstance() {
-        RouteBriefingRequest routeBriefingRequest = new RouteBriefingRequest();
-        return routeBriefingRequest;
-    }
 
-    public void setTurnpointNames(ArrayList<String> turnpointNames) {
-        turnpointNames = turnpointNames;
-        if (turnpointNames.size() > 0) {
-            departure = turnpointNames.get(0);
-        }
-        if (turnpointNames.size() > 1) {
-            destination = turnpointNames.get(turnpointNames.size() - 1);
-        }
-        setRoute(turnpointNames);
-        createProductCodeList();
-        createTailoringOptionList();
-
-    }
-
-    private enum TypeOfBrief{
+    public enum TypeOfBrief{
         OUTLOOK("Outlook"),
         STANDARD("Standard"),
         ABBREVIATED("Abbreviated");
-
-        private final String displayValue;
-
+        public final String displayValue;
         TypeOfBrief(String displayValue) {
             this.displayValue = displayValue;
         }
     }
 
-    public List<String> getTypeOfBriefs(){
-        ArrayList<String> typeOfBriefs = new ArrayList<>();
-        for (TypeOfBrief typeOfBrief: TypeOfBrief.values()){
-            typeOfBriefs.add(typeOfBrief.displayValue);
+    /**
+     * One of
+     * enum { 'RAW', 'HTML', 'SIMPLE', 'NGB', 'EMAIL', 'SUMMARY', 'NGBV2' }
+     * numeration to indicate format of the briefing response.
+     * SUMMARY and HTML types are for internal Leidos use only, and are disabled for
+     * external customers. RAW type has been deprecated.
+     *
+     * NGB not implemented as don't want to handle alll returned data types
+     * So left with those below
+     */
+    private BriefingType selectedBriefingType;
+
+    public enum BriefingType {
+        EMAIL("EMail"),
+        SIMPLE("Simple"),
+        NGBV2("Online(PDF)");
+
+        private String displayValue;
+
+        public String getDisplayValue() {
+            return displayValue;
         }
-        return typeOfBriefs;
+
+        BriefingType(String displayValue) {
+            this.displayValue = displayValue;
+        }
     }
 
-    public void setTypeOfBrief(int position){
+
+    /**
+     * Product codes that can go into briefingPrefences  items array
+     * {"items":["productCode","productCode",...,"productCode"], ...
+     * <p>
+     * Does not apply to  SIMPLE briefingType.
+     */
+    public enum ProductCode {
+        TFR("Temporary Flight Restrictions",false,false,false,false,false,false),
+        DD_NTM("Closed/Unsafe NOTAMs",false,false,false,false,false,false),
+        DEP_NTM("Departure NOTAM",true,true,false,false,false,false),
+        DEST_NTM("Destination NOTAM",true, true,false,false,false,false),
+        UOA("UAS Operating Area",false,false,false,false,false,false),
+        ENROUTE_NTM_COM("Communication NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_OBST("Obstruction NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_SUA("Special Use Airspace NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_OTHER("Other/Unverified NOTAM",false,false,false,false,false,false),
+        GENFDC_NTM("General FDC NOTAM",false,false,false,false,false,false),
+        ALTN1_NTM("Alternate 1 NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_NAV("Navigation NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_SVC("Service NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_AIRSPACE("Airspace NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_RWY_TWY_APRON_AD_FDC("Runway/Taxiway/Apron/Aerodome/FDC NOTAM",false,false,false,false,false,false),
+        ENROUTE_NTM_MIL("Military NOTAM",false,false,false,false,false,false),
+        UNCATEGORIZED_NTM("Uncategorized NOTAM",false,false,false,false,false,false),
+        FA("Area Forecast",false,false,false,false,false,false),
+        FB("Winds Aloft",false,false,false,false,false,false),
+        METAR("METARs",false,false,false,false,false,false),
+        TAF("Terminal Forecast",false,false,false,false,false,false),
+        VIS("Graphical Area Forecast Vis, Sfc. Winds, and Precip",false,false,false,false,false,false),
+        AC("Convective Outlook",false,false,false,false,false,false),
+        SEV_WX("Severe Weather",false,false,false,false,false,false),
+        WST("Convective SIGMET",false,false,false,false,false,false),
+        IFR("IFR AIRMET",false,false,false,false,false,false),
+        ICING("Icing AIRMET",false,false,false,false,false,false),
+        TURBO_LO("Turbulence Low Altitude AIRMET",false,false,false,false,false,false),
+        WINDS_GT_30("Winds Over 30 Knots AIRMET",false,false,false,false,false,false),
+        OTHER("Other AIRMET",false,false,false,false,false,false),
+        UUA("Urgent Pilot Report",false,false,false,false,false,false),
+        CC("Graphical Area Forecast Cloud Coverage",false,false,false,false,false,false),
+        ALTN2_NTM("Alternate 2 NOTAM",false,false,false,false,false,false),
+        WH("NHC Bulletins",false,false,false,false,false,false),
+        WS("SIGMET",false,false,false,false,false,false),
+        MTN_OBSCN("Mountain Obscuration AIRMET",false,false,false,false,false,false),
+        FZLVL("Freezing Level AIRMET",false,false,false,false,false,false),
+        TURBO_HI("Turbulence High Altitude AIRMET",false,false,false,false,false,false),
+        LLWS("Low Level Wind Shear AIRMET",false,false,false,false,false,false),
+        CWA("Center Weather Advisory",false,false,false,false,false,false),
+        SYNS("Synopsis",false,false,false,false,false,false),
+        PIREP("Pilot Reports",false,false,false,false,false,false),
+        INTL_NTM("International NOTAM",false,false,false,false,false,false),
+        ATCSCC("Air Traffic Control System Command Center",false,false,false,false,false,false),
+        VAA("Volcanic Ash Advisory (applicable to NGBV2 briefing type, or versions prior to 20171207)",false,false,false,false,false,false);
+
+        public final String description;
+        // should this be displayed as an option for Outlook briefing
+
+        public final boolean outLookBriefOption;
+        // should it default to selected for Outlook briefing
+        public final boolean selectForOutLookBrief;
+        // ditto for other briefings
+        public final boolean standardBriefOption;
+        public final boolean selectForStandardBrief;
+        public final boolean abbreviatedBriefOption;
+        public final boolean selectForAbbreviatedBrief;
+
+
+        ProductCode(String description
+                , boolean outLookBriefOption
+                , boolean selectForOutLookBrief
+                , boolean standardBriefOption
+                , boolean selectForStandardBrief
+                , boolean abbreviatedBriefOption
+                , boolean selectForAbbreviatedBrief) {
+            this.description = description;
+            this.outLookBriefOption = outLookBriefOption;
+            this.selectForOutLookBrief = selectForOutLookBrief;
+            this.standardBriefOption = standardBriefOption;
+            this.selectForStandardBrief = selectForStandardBrief;
+            this.abbreviatedBriefOption = abbreviatedBriefOption;
+            this.selectForAbbreviatedBrief = selectForAbbreviatedBrief;
+        }
 
     }
 
+    /**
+     * Tailoring options for non-NGBv2 briefing type (Email,NGB) briefingType that can go into the  tailoring array in briefingPreferences
+     * {"items":[...],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
+     */
+
+    private enum TailoringOptionNonNGBV2 {
+        ENCODED_ONLY("Include encoded data",false,false,false,false,false,false),
+        PLAINTEXT_ONLY("Include plaintext",false,false,false,false,false,false),
+        NO_GEOMETRY("Do not include Geometry data",false,false,false,false,false,false),
+        NO_SUMMARIZATION_PASSING_TIMES("Do not include Summarization and passing times",false,false,false,false,false,false),
+        NO_NOTAM_CATEGORIZATION("Do not include inside / outside corridor categorization for NOTAMs",false,false,false,false,false,false),
+        NO_TFR_NOTAM_RECORD("Do not include NotamRecord for TFRs",false,false,false,false,false,false),
+        NO_FIX_LIST("Do not include the fix list in a NGB Weather Briefing object",false,false,false,false,false,false);
+
+        private final String description;
+        public final boolean outLookBriefOption;
+        // should it default to selected for Outlook briefing
+        public final boolean selectForOutLookBrief;
+        // ditto for other briefings
+        public final boolean standardBriefOption;
+        public final boolean selectForStandardBrief;
+        public final boolean abbreviatedBriefOption;
+        public final boolean selectForAbbreviatedBrief;
+
+        TailoringOptionNonNGBV2(String description
+                , boolean outLookBriefOption
+                , boolean selectForOutLookBrief
+                , boolean standardBriefOption
+                , boolean selectForStandardBrief
+                , boolean abbreviatedBriefOption
+                , boolean selectForAbbreviatedBrief) {
+            this.description = description;
+            this.outLookBriefOption = outLookBriefOption;
+            this.selectForOutLookBrief = selectForOutLookBrief;
+            this.standardBriefOption = standardBriefOption;
+            this.selectForStandardBrief = selectForStandardBrief;
+            this.abbreviatedBriefOption = abbreviatedBriefOption;
+            this.selectForAbbreviatedBrief = selectForAbbreviatedBrief;
+        }
+    }
+
+    /**
+     * * Tailoring options for NGBv2 briefingType that can go into the  tailoring array in briefingPreferences
+     * {"items":["productCode","productCode",...,"productCode"],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
+     */
+    public enum TailoringOptionNGBV2 {
+        EXCLUDE_GRAPHICS("", "Exclude graphics",true,false,false,false,false,false),
+        EXCLUDE_HISTORICAL_METARS("", "Exclude historical METARs",false,false,false,false,false,false),
+        EXCLUDE_NEXTGEN("", "Exclude Nextgen content",true,false,false,false,false,false),
+        EXCLUDE_PLAINTEXT("", "Exclude plaintext",true,false,false,false,false,false),
+        EXCLUDE_ENROUTE_METARS_TAFS("", "Exclude en route METARs and TAFs (only if the filed altitude is at least 18,000ft)",false,false,false,false,false,false),
+        EXCLUDE_FAR_WINDS_ALOFT("", "Exclude Winds Aloft data not within 4000ft of the filed altitude",false,false,false,false,false,false),
+        EXCLUDE_LOW_ENROUTE_OBSTRUCTIONS("", "Exclude en route obstructions more than 1000ft below the filed altitude",false,false,false,false,false,false),
+        EXCLUDE_GFA_BEYOND_DEP_TIME("", "Exclude Graphical Forecast beyond the departure time",false,false,false,false,false,false),
+        EXCLUDE_FLOW_CONTROL("", "Exclude Flow Control Messages",false,false,false,false,false,false),
+        EXCLUDE_NHC_BULLETIN("", "Exclude NHC Bulletin",false,false,false,false,false,false),
+        EXCLUDE_NON_LOCATION_FDC_NOTAM("", "Exclude non-location FDC NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_STATE_DEPARTMENT_NOTAM("", "Exclude State Department NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_MILITARY_NOTAM("", "Exclude Military NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_ENROUTE_NAV_VOR("", "Exclude en route navigational VOR NOTAMs",false,false,false,false,false,false),
+        // Note the following parm should actually be EXCLUDE_ENROUTE_NAV_VOR-DME ( - between VOR-DME)
+        // hence need to have actualParmValue field
+        EXCLUDE_ENROUTE_NAV_VOR_DME("EXCLUDE_ENROUTE_NAV_VOR-DME", "Exclude en route navigational VOR-DME NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_ENROUTE_NAV_VORTAC("", "Exclude en route navigational VORTAC NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_ENROUTE_NAV_NDB("", "Exclude en route navigational NDB NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_ENROUTE_NAV_DME("", "Exclude en route navigational DME NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_ENROUTE_NAV_TACAN("", "Exclude en route navigational TACAN NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_ENROUTE_NAV_ILS("", "Exclude en route navigational ILS NOTAMs",false,false,false,false,false,false),
+        EXCLUDE_ENROUTE_NAV_OTHER("", "Exclude other en route navigational NOTAMs",false,false,false,false,false,false);
+
+        public final String actualParmValue;
+        private final String description;
+        public final boolean outLookBriefOption;
+        // should it default to selected for Outlook briefing
+        public final boolean selectForOutLookBrief;
+        // ditto for other briefings
+        public final boolean standardBriefOption;
+        public final boolean selectForStandardBrief;
+        public final boolean abbreviatedBriefOption;
+        public final boolean selectForAbbreviatedBrief;
+
+        TailoringOptionNGBV2(String actualParmValue
+                , String description
+                , boolean outLookBriefOption
+                , boolean selectForOutLookBrief
+                , boolean standardBriefOption
+                , boolean selectForStandardBrief
+                , boolean abbreviatedBriefOption
+                , boolean selectForAbbreviatedBrief) {
+            this.actualParmValue = actualParmValue;
+            this.description = description;
+            this.outLookBriefOption = outLookBriefOption;
+            this.selectForOutLookBrief = selectForOutLookBrief;
+            this.standardBriefOption = standardBriefOption;
+            this.selectForStandardBrief = selectForStandardBrief;
+            this.abbreviatedBriefOption = abbreviatedBriefOption;
+            this.selectForAbbreviatedBrief = selectForAbbreviatedBrief;
+        }
+    }
 
     /**
      * The briefing preferences element is a JSON string containing the desired briefing products, tailoring options, and a plain text parameter.
@@ -95,296 +281,10 @@ public class RouteBriefingRequest {
      */
     private String briefingPreferences;
 
-    /**
-     * Product codes that can go into briefingPrefences  items array
-     * {"items":["productCode","productCode",...,"productCode"], ...
-     * <p>
-     * Does not apply to  SIMPLE briefingType.
-     */
-    private enum ProductCode {
-        DD_NTM("Closed/Unsafe NOTAMs"),
-        TFR("Temporary Flight Restrictions"),
-        FA("Area Forecast"),
-        FB("Winds Aloft"),
-        METAR("METARs"),
-        TAF("Terminal Forecast"),
-        UOA("UAS Operating Area"),
-        DEP_NTM("Departure NOTAM"),
-        SEV_WX("Severe Weather"),
-        WST("Convective SIGMET"),
-        IFR("IFR AIRMET"),
-        ICING("Icing AIRMET"),
-        TURBO_LO("Turbulence Low Altitude AIRMET"),
-        WINDS_GT_30("Winds Over 30 Knots AIRMET"),
-        OTHER("Other AIRMET"),
-        UUA("Urgent Pilot Report"),
-        CC("Graphical Area Forecast Cloud Coverage"),
-        DEST_NTM("Destination NOTAM"),
-        ALTN2_NTM("Alternate 2 NOTAM"),
-        ENROUTE_NTM_COM("Communication NOTAM"),
-        ENROUTE_NTM_OBST("Obstruction NOTAM"),
-        ENROUTE_NTM_SUA("Special Use Airspace NOTAM"),
-        ENROUTE_NTM_OTHER("Other/Unverified NOTAM"),
-        GENFDC_NTM("General FDC NOTAM"),
-        UNCATEGORIZED_NTM("Uncategorized NOTAM"),
-        WH("NHC Bulletins"),
-        WS("SIGMET"),
-        MTN_OBSCN("Mountain Obscuration AIRMET"),
-        FZLVL("Freezing Level AIRMET"),
-        TURBO_HI("Turbulence High Altitude AIRMET"),
-        LLWS("Low Level Wind Shear AIRMET"),
-        CWA("Center Weather Advisory"),
-        SYNS("Synopsis"),
-        PIREP("Pilot Reports"),
-        VIS("Graphical Area Forecast Vis, Sfc. Winds, and Precip"),
-        ALTN1_NTM("Alternate 1 NOTAM"),
-        ENROUTE_NTM_NAV("Navigation NOTAM"),
-        ENROUTE_NTM_SVC("Service NOTAM"),
-        ENROUTE_NTM_AIRSPACE("Airspace NOTAM"),
-        ENROUTE_NTM_RWY_TWY_APRON_AD_FDC("Runway/Taxiway/Apron/Aerodome/FDC NOTAM"),
-        ENROUTE_NTM_MIL("Military NOTAM"),
-        INTL_NTM("International NOTAM"),
-        ATCSCC("Air Traffic Control System Command Center"),
-        AC("Convective Outlook"),
-        VAA("Volcanic Ash Advisory (applicable to NGBV2 briefing type, or versions prior to 20171207)");
 
-        private final String description;
-
-        ProductCode(String description) {
-            this.description = description;
-        }
-    }
-
-    /**
-     * User selected productCodes (NGBV2 or non-NGB) to generate the items in briefingPreferences
-     * eg.
-     * {"items":["productCode","productCode",...,"productCode"], ...
-     * {"items":["DD_NTM","SEV_WX","METAR","PIREP"], ...
-     */
-    private ArrayList<String> productCodes = new ArrayList<>();
-
-    private static final ArrayList<ProductCode> defaultProductCodes = new ArrayList<>(Arrays.asList(
-            ProductCode.DD_NTM,
-            ProductCode.TFR,
-            ProductCode.FA));
-
-    private ArrayList<String> productCodeList = new ArrayList<>();
-    private ArrayList<String> productCodeDescriptionList = new ArrayList<>();
-    private boolean[] selectedProductCodes = new boolean[]{};
-
-    /**
-     * Return list of tailoring options based on the selected briefing type
-     * Also note which options are default selected
-     *
-     * @return
-     */
-    public synchronized void createProductCodeList() {
-        productCodeList = new ArrayList<>();
-        productCodeDescriptionList = new ArrayList<>();
-        selectedProductCodes = new boolean[ProductCode.values().length];
-        ProductCode[] productCodes = ProductCode.values();
-        for (int i = 0; i < productCodes.length; ++i) {
-            productCodeList.add(productCodes[i].name());
-            productCodeDescriptionList.add(productCodes[i].description);
-            selectedProductCodes[i] = defaultProductCodes.contains(productCodes[i]);
-        }
-    }
-
-    public List<String> getProductCodeDescriptionList() {
-        return productCodeDescriptionList;
-    }
-
-    public synchronized boolean[] getSelectedProductCodes() {
-        if (selectedProductCodes.length == productCodeList.size()) {
-            return selectedProductCodes;
-        }
-        // something went wrong
-        selectedProductCodes = new boolean[productCodeList.size()];
-        for (int i = 0; i < productCodeList.size(); ++i) {
-            selectedProductCodes[i] = false;
-        }
-        return selectedProductCodes;
-    }
-
-    public synchronized void setSelectedProductCodes(boolean[] selected) {
-        if (selectedProductCodes.length == selected.length) {
-            selectedProductCodes = selected.clone();
-        }
-    }
-
-    /**
-     * Tailoring options for non-NGBv2 briefing type (Email,NGB) briefingType that can go into the  tailoring array in briefingPreferences
-     * {"items":[...],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
-     */
-
-    private enum TailoringOptionNonNGBV2 {
-        ENCODED_ONLY("Include encoded data"),
-        PLAINTEXT_ONLY("Include plaintext"),
-        NO_GEOMETRY("Do not include Geometry data"),
-        NO_SUMMARIZATION_PASSING_TIMES("Do not include Summarization and passing times"),
-        NO_NOTAM_CATEGORIZATION("Do not include inside / outside corridor categorization for NOTAMs"),
-        NO_TFR_NOTAM_RECORD("Do not include NotamRecord for TFRs"),
-        NO_FIX_LIST("Do not include the fix list in a NGB Weather Briefing object");
-
-        private final String description;
-
-        TailoringOptionNonNGBV2(String description) {
-            this.description = description;
-        }
-    }
-
-    private static final ArrayList<TailoringOptionNonNGBV2> defaultTailorOptionNonNGBV2 = new ArrayList<>(Arrays.asList(
-            TailoringOptionNonNGBV2.ENCODED_ONLY
-    ));
-
-
-    /**
-     * * Tailoring options for NGBv2 briefingType that can go into the  tailoring array in briefingPreferences
-     * {"items":["productCode","productCode",...,"productCode"],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
-     */
-    private enum TailoringOptionNGBV2 {
-        EXCLUDE_GRAPHICS("", "Exclude graphics"),
-        EXCLUDE_HISTORICAL_METARS("", "Exclude historical METARs"),
-        EXCLUDE_NEXTGEN("", "Exclude Nextgen content"),
-        EXCLUDE_PLAINTEXT("", "Exclude plaintext"),
-        EXCLUDE_ENROUTE_METARS_TAFS("", "Exclude en route METARs and TAFs (only if the filed altitude is at least 18,000ft)"),
-        EXCLUDE_FAR_WINDS_ALOFT("", "Exclude Winds Aloft data not within 4000ft of the filed altitude"),
-        EXCLUDE_LOW_ENROUTE_OBSTRUCTIONS("", "Exclude en route obstructions more than 1000ft below the filed altitude"),
-        EXCLUDE_GFA_BEYOND_DEP_TIME("", "Exclude Graphical Forecast beyond the departure time"),
-        EXCLUDE_FLOW_CONTROL("", "Exclude Flow Control Messages"),
-        EXCLUDE_NHC_BULLETIN("", "Exclude NHC Bulletin"),
-        EXCLUDE_NON_LOCATION_FDC_NOTAM("", "Exclude non-location FDC NOTAMs"),
-        EXCLUDE_STATE_DEPARTMENT_NOTAM("", "Exclude State Department NOTAMs"),
-        EXCLUDE_MILITARY_NOTAM("", "Exclude Military NOTAMs"),
-        EXCLUDE_ENROUTE_NAV_VOR("", "Exclude en route navigational VOR NOTAMs"),
-        // Note the following parm should actually be EXCLUDE_ENROUTE_NAV_VOR-DME ( - between VOR-DME)
-        // hence need to have actualParmValue field
-        EXCLUDE_ENROUTE_NAV_VOR_DME("EXCLUDE_ENROUTE_NAV_VOR-DME", "Exclude en route navigational VOR-DME NOTAMs"),
-        EXCLUDE_ENROUTE_NAV_VORTAC("", "Exclude en route navigational VORTAC NOTAMs"),
-        EXCLUDE_ENROUTE_NAV_NDB("", "Exclude en route navigational NDB NOTAMs"),
-        EXCLUDE_ENROUTE_NAV_DME("", "Exclude en route navigational DME NOTAMs"),
-        EXCLUDE_ENROUTE_NAV_TACAN("", "Exclude en route navigational TACAN NOTAMs"),
-        EXCLUDE_ENROUTE_NAV_ILS("", "Exclude en route navigational ILS NOTAMs"),
-        EXCLUDE_ENROUTE_NAV_OTHER("", "Exclude other en route navigational NOTAMs");
-
-        private final String actualParmValue;
-        private final String description;
-
-        TailoringOptionNGBV2(String actualParmValue, String description) {
-            this.actualParmValue = actualParmValue;
-            this.description = description;
-        }
-    }
-
-    private static final ArrayList<TailoringOptionNGBV2> defaultTailoringOptionNGBV2 = new ArrayList<>(Arrays.asList(
-            TailoringOptionNGBV2.EXCLUDE_GRAPHICS,
-            TailoringOptionNGBV2.EXCLUDE_HISTORICAL_METARS));
-
-    private ArrayList<String> tailoringOptionList = new ArrayList<>();
-    private ArrayList<String> tailoringOptionDescriptionList = new ArrayList<>();
-    private boolean[] selectedTrailoringOptions = new boolean[]{};
-
-    /**
-     * Return list of tailoring options based on the selected briefing type
-     * Also not which options are default selected
-     *
-     * @return
-     */
-    public synchronized void createTailoringOptionList() {
-        tailoringOptionList = new ArrayList<>();
-        tailoringOptionDescriptionList = new ArrayList<>();
-        if (selectedBriefingType.equals(BriefingType.NGBV2)) {
-            selectedTrailoringOptions = new boolean[TailoringOptionNGBV2.values().length];
-            TailoringOptionNGBV2[] tailoringOptions = TailoringOptionNGBV2.values();
-            for (int i = 0; i < tailoringOptions.length; ++i) {
-                tailoringOptionList.add(tailoringOptions[i].name());
-                tailoringOptionDescriptionList.add(tailoringOptions[i].description);
-                selectedTrailoringOptions[i] = defaultTailoringOptionNGBV2.contains(tailoringOptions[i]);
-            }
-        } else {
-            selectedTrailoringOptions = new boolean[TailoringOptionNonNGBV2.values().length];
-            TailoringOptionNonNGBV2[] tailoringOptions = TailoringOptionNonNGBV2.values();
-            for (int i = 0; i < tailoringOptions.length; ++i) {
-                tailoringOptionList.add(tailoringOptions[i].name());
-                tailoringOptionDescriptionList.add(tailoringOptions[i].description);
-                selectedTrailoringOptions[i] = defaultTailoringOptionNGBV2.contains(tailoringOptions[i]);
-            }
-
-        }
-    }
-
-    public List<String> getTailoringOptionDescriptionsList() {
-        return tailoringOptionDescriptionList;
-    }
-
-    /**
-     * Should be called immediately after getTailoringOptions()
-     *
-     * @return
-     */
-    public synchronized boolean[] getSelectedTailoringOptions() {
-        if (selectedTrailoringOptions.length == tailoringOptionList.size()) {
-            return selectedTrailoringOptions;
-        }
-        // something went wrong
-        if (selectedBriefingType.equals(BriefingType.NGBV2)) {
-            selectedTrailoringOptions = new boolean[TailoringOptionNGBV2.values().length];
-        } else {
-            selectedTrailoringOptions = new boolean[TailoringOptionNonNGBV2.values().length];
-        }
-
-        for (int i = 0; i < tailoringOptionList.size(); ++i) {
-            selectedTrailoringOptions[i] = false;
-        }
-        return selectedTrailoringOptions;
-    }
-
-    public synchronized void setSelectedTailoringOptions(boolean[] selected) {
-        if (selected.length == selectedTrailoringOptions.length) {
-            selectedTrailoringOptions = selected.clone();
-        }
-    }
-
-
-    /**
-     * User selected tailoring Options to generate the tailoringOptions list in briefingPreferences
-     * <p>
-     * eg.
-     * ... ,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]
-     * ... ,"tailoring":["EXCLUDE_GRAPHICS","EXCLUDE_HISTORICAL_METARS"]
-     */
-    private ArrayList<String> tailoringOptions = new ArrayList<>();
-
-
-    /**
-     * One of
-     * enum { 'RAW', 'HTML', 'SIMPLE', 'NGB', 'EMAIL', 'SUMMARY', 'NGBV2' }
-     * numeration to indicate format of the briefing response.
-     * SUMMARY and HTML types are for internal Leidos use only, and are disabled for
-     * external customers. RAW type has been deprecated.
-     */
-    private BriefingType selectedBriefingType;
-
-    public enum BriefingType {
-        EMAIL("EMail"),
-        SIMPLE("Simple"),
-        NGB("Next Gen Brief"),
-        NGBV2("Online(PDF)");
-
-        private String displayValue;
-
-        public String getDisplayValue() {
-            return displayValue;
-        }
-
-        BriefingType(String displayValue) {
-            this.displayValue = displayValue;
-        }
-    }
 
     public enum TimeZoneAbbrev{AST, ADT, EST, EDT, CST, CDT,  MST,  MDT,  PST
         , PDT, AKST, AKDT, HST, UTC}
-
 
 
     /**
@@ -560,6 +460,26 @@ public class RouteBriefingRequest {
      * all times will be in zulu time.
      */
     private String plainTextTimeZone;
+
+    private RouteBriefingRequest() {
+    }
+
+    public static RouteBriefingRequest newInstance() {
+        RouteBriefingRequest routeBriefingRequest = new RouteBriefingRequest();
+        return routeBriefingRequest;
+    }
+
+    public void setTurnpointNames(ArrayList<String> turnpointNames) {
+        turnpointNames = turnpointNames;
+        if (turnpointNames.size() > 0) {
+            departure = turnpointNames.get(0);
+        }
+        if (turnpointNames.size() > 1) {
+            destination = turnpointNames.get(turnpointNames.size() - 1);
+        }
+        setRoute(turnpointNames);
+
+    }
 
     public Boolean getNotABriefing() {
         return notABriefing;
@@ -779,6 +699,10 @@ public class RouteBriefingRequest {
         return sb.toString();
     }
 
+    /**
+     * Items are the list of product codes to be requested
+     * @return
+     */
     private synchronized String getItemsList() {
         StringBuilder sb = new StringBuilder();
         boolean atLeastOne = false;
@@ -866,7 +790,6 @@ public class RouteBriefingRequest {
         return 0;
     }
 
-
     public static String getLocalTimeZoneAbbrev(){
         String zoneAbbrev;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -882,7 +805,5 @@ public class RouteBriefingRequest {
         }
         return  zoneAbbrev;
     }
-
-
 
 }

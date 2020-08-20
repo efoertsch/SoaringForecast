@@ -13,7 +13,6 @@
 
     </data>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/wx_brief_layout"
         android:layout_width="match_parent"
@@ -52,6 +51,7 @@
             app:layout_constraintTop_toBottomOf="@id/wx_brief_task_title"
             tools:text="3B3 KAFN KEEN 3B3" />
 
+        <!--
         <ImageButton
             android:id="@+id/wx_brief_official_brief_info"
             android:layout_width="wrap_content"
@@ -77,6 +77,7 @@
             app:layout_constraintStart_toEndOf="@id/wx_brief_official_brief_info"
             app:layout_constraintTop_toTopOf="@+id/wx_brief_official_brief_info" />
 
+        -->
         <TextView
             android:id="@+id/wx_brief_type_of_brief_label"
             style="@style/TextView.ForSpinnerLabel"
@@ -85,42 +86,44 @@
             android:text="@string/type_of_brief"
             app:layout_constraintEnd_toEndOf="@id/guideline_50pct"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_record_briefing" />
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_turnpoints"/>
 
         <!-- Outlook, Standard, Abbreviated brief -->
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/wx_brief_type_of_brief_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:entries="@{viewModel.briefingTypes}"
+            android:entries="@{viewModel.typesOfBriefs}"
             android:paddingBottom="@dimen/margin_standard"
-            android:selectedItemPosition="@={viewModel.selectedBriefingTypePosition}"
+            android:selectedItemPosition="@={viewModel.selectedTypeOfBriefPosition}"
             android:theme="@style/DividerSpinnerTheme"
             app:layout_constraintEnd_toEndOf="@id/guideline_50pct"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/wx_brief_type_of_brief_label" />
 
+
         <TextView
-            android:id="@+id/wx_brief_briefing_type_label"
+            android:id="@+id/wx_brief_format_label"
             style="@style/TextView.ForSpinnerLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/briefing_type"
-            app:layout_constraintEnd_toEndOf="@id/guideline_50pct"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/wx_brief_aircraft_id_layout" />
+            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_turnpoints" />
 
+        <!-- EMAIL, PDF -->
         <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/wx_briefing_briefing_type_spinner"
+            android:id="@+id/wx_briefing_format_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:entries="@{viewModel.briefingTypes}"
+            android:entries="@{viewModel.briefFormats}"
             android:paddingBottom="@dimen/margin_standard"
-            android:selectedItemPosition="@={viewModel.selectedBriefingTypePosition}"
+            android:selectedItemPosition="@={viewModel.selectedBriefFormatPosition}"
             android:theme="@style/DividerSpinnerTheme"
-            app:layout_constraintEnd_toEndOf="@id/guideline_50pct"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_briefing_type_label" />
+            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_format_label" />
 
         <org.soaringforecast.rasp.common.BaselineTextInputLayout
             android:id="@+id/wx_brief_aircraft_id_layout"
@@ -133,8 +136,8 @@
             android:visibility="@{viewModel.officialBriefing ? View.VISIBLE : View.GONE}"
             app:errorEnabled="true"
             app:errorText="@{viewModel.aircraftIdErrorText}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/wx_brief_type_of_brief_spinner">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -154,7 +157,7 @@
             app:errorEnabled="true"
             app:errorText="@{viewModel.wxBriefUserNameErrorText}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_briefing_briefing_type_spinner">
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_aircraft_id_layout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/wwx_brief_web_user_name"
@@ -273,8 +276,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/tailoring_options"
-            app:layout_constraintStart_toStartOf="@id/guideline_50pct"
             android:visibility="@{safeUnbox(viewModel.displayTailoringOptions) ? View.VISIBLE : View.GONE}"
+            app:layout_constraintStart_toStartOf="@id/guideline_50pct"
             app:layout_constraintTop_toBottomOf="@+id/wx_brief_corridor_width_layout" />
 
         <org.soaringforecast.rasp.common.MultiSpinner
@@ -284,10 +287,9 @@
             android:paddingBottom="@dimen/margin_standard"
             android:theme="@style/DividerSpinnerTheme"
             android:visibility="@{safeUnbox(viewModel.displayTailoringOptions) ? View.VISIBLE : View.GONE}"
-            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
             app:layout_constraintTop_toBottomOf="@+id/wx_brief_tailoring_options" />
-
 
 
         <Button
@@ -299,8 +301,8 @@
             android:enabled="@{viewModel.isValidData()}"
             android:onClick="@{() -> viewModel.submitBriefingRequest()}"
             android:text="@string/submit_briefing_request"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ProgressBar
             android:layout_width="wrap_content"
