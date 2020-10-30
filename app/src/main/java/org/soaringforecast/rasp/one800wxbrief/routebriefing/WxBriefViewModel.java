@@ -8,9 +8,13 @@ import org.soaringforecast.rasp.BR;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.ObservableViewModel;
+import org.soaringforecast.rasp.one800wxbrief.options.NGBv2TailoringOption;
+import org.soaringforecast.rasp.one800wxbrief.options.NonNGBv2TailoringOption;
+import org.soaringforecast.rasp.one800wxbrief.options.ProductCode;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
+import org.soaringforecast.rasp.utils.TimeUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,8 +30,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefingRequest.*;
 
 /**
  * Retrieve the task turnpoints to get the names of airports
@@ -78,10 +80,9 @@ public class WxBriefViewModel extends ObservableViewModel {
     private List<String> tailoringOptionDescriptions;
     private boolean[] selectedTailoringOptions;
 
-
-
     private List<String> productCodeDescriptionList = new ArrayList<>();
     private boolean[] selectedProductCodes;
+    private boolean officalBriefing = false;
 
     public WxBriefViewModel(@NonNull Application application) {
         super(application);
@@ -102,9 +103,74 @@ public class WxBriefViewModel extends ObservableViewModel {
         return this;
     }
 
+    public enum TypeOfBrief{
+        OUTLOOK("Outlook"),
+        STANDARD("Standard"),
+        ABBREVIATED("Abbreviated");
+        public final String displayValue;
+        TypeOfBrief(String displayValue) {
+            this.displayValue = displayValue;
+        }
+    }
+
+    /**
+     * One of
+     * enum { 'RAW', 'HTML', 'SIMPLE', 'NGB', 'EMAIL', 'SUMMARY', 'NGBV2' }
+     * numeration to indicate format of the briefing response.
+     * SUMMARY and HTML types are for internal Leidos use only, and are disabled for
+     * external customers. RAW type has been deprecated.
+     *
+     * NGB not implemented as don't want to handle all returned data types
+     * So left with those below
+     */
+    private BriefingType selectedBriefingType;
+
+    public enum BriefingType {
+        EMAIL("EMail"),
+        // SIMPLE("Simple"),
+        NGBV2("Online(PDF)");
+
+        private String displayValue;
+
+        public String getDisplayValue() {
+            return displayValue;
+        }
+
+        BriefingType(String displayValue) {
+            this.displayValue = displayValue;
+        }
+    }
+
+    /**
+     * Product codes that can go into briefingPreferences  items array
+     * {"items":["productCode","productCode",...,"productCode"], ...
+     * <p>
+     * The items parameter does not apply to  SIMPLE briefingType. (But we are ignoring SIMPLE briefingType in app for now)
+     */
+    ArrayList<ProductCode> productCodes;
+
+    /**
+     * Tailoring options for non-NGBv2 briefing type (Email,NGB) briefingType that can go into the  tailoring array in briefingPreferences
+     * {"items":[...],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
+     */
+    ArrayList<NonNGBv2TailoringOption> nonNGBv2TailoringOptions;
+
+
+    /**
+     * * Tailoring options for NGBv2 briefingType that can go into the  tailoring array in briefingPreferences
+     * {"items":["productCode","productCode",...,"productCode"],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
+     */
+    ArrayList<NGBv2TailoringOption> ngBv2TailoringOptions;
+
+
+
+
+
+
+
 
     public void init() {
-        routeBriefingRequest = newInstance();
+        routeBriefingRequest = RouteBriefingRequest.newInstance();
         getBriefFormats();
         getWxBriefUserName();
         getBriefingDates();
@@ -286,7 +352,6 @@ public class WxBriefViewModel extends ObservableViewModel {
         return working;
     }
 
-
     private void setWorkingFlag() {
         if (turnpointList != null && taskTitle != null) {
             working = false;
@@ -322,6 +387,15 @@ public class WxBriefViewModel extends ObservableViewModel {
         notifyPropertyChanged(BR.turnpointList);
     }
 
+    @Bindable
+    public Boolean getOfficalBriefing(){
+        return officalBriefing;
+    }
+
+    @Bindable
+    public void setOfficalBriefing(boolean isChecked){
+        officalBriefing = isChecked;
+    }
 
     /**
      * Type of Brief - Outlook, Standard, Abbreviated)
@@ -558,7 +632,7 @@ public class WxBriefViewModel extends ObservableViewModel {
                 .append("T")
                 .append(departureTimes.get(selectedDepartureTimePosition))
                 .append(":00.000");
-        routeBriefingRequest.setDepartureInstant(routeBriefingRequest.convertLocalTimeToZulu(sb.toString()));
+        routeBriefingRequest.setDepartureInstant(TimeUtils.convertLocalTimeToZulu(sb.toString()));
     }
 
     @Bindable
@@ -620,7 +694,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     @Bindable
     public void setSelectedBriefFormatPosition(int selectedBriefingFormatPosition) {
         this.selectedBriefFormatPosition = selectedBriefingFormatPosition;
-        routeBriefingRequest.setSelectedBriefingType(routeBriefingRequest.getBriefTypeBasedOnDisplayValue(
+        routeBriefingRequest.setSelectedBriefingType(getBriefTypeBasedOnDisplayValue(
                 briefingFormats.get(selectedBriefingFormatPosition)));
         routeBriefingRequest.createTailoringOptionList();
         if (BriefingType.values()[selectedBriefingFormatPosition] == BriefingType.SIMPLE) {
@@ -781,6 +855,29 @@ public class WxBriefViewModel extends ObservableViewModel {
         }
     }
 
+    public ArrayList<String> getBriefingTypeList(){
+        ArrayList<String> briefingTypes = new ArrayList<>();
+        for(BriefingType briefingType : BriefingType.values()){
+            if (notABriefing
+                    // && (briefingType == BriefingType.EMAIL || briefingType == BriefingType.SIMPLE)
+                    && briefingType == BriefingType.EMAIL ){
+                // bypass
+            } else {
+                briefingTypes.add(briefingType.getDisplayValue());
+            }
+        }
+        return briefingTypes;
+    }
+
+    public BriefingType getBriefTypeBasedOnDisplayValue(String displayValue){
+        for (BriefingType briefingType : BriefingType.values()){
+            if (briefingType.displayValue.equals(displayValue)){
+                return briefingType;
+            }
+        }
+        // Oh-oh something really wrong
+        return null;
+    };
 
 
 

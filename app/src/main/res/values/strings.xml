@@ -419,7 +419,7 @@
     <string name="time_format">%02d:00</string>
     <string name="departure_date">Departure Date</string>
     <string name="departure_time">Departure Time</string>
-    <string name="briefing_type">Briefing Type</string>
+    <string name="briefing_format">Briefing Format</string>
     <string name="error_loading_task">An error occured retrievign the task from the database.</string>
     <string name="your_briefing_should_arrive_in_your_mailbox_shortly">Your briefing should arrive in your mailbox shortly</string>
     <string name="undefined_error_occurred_on_1800wxbrief_request">Oops. Undefined error occurred on 1800WxBrief request.</string>
@@ -427,7 +427,7 @@
     <string name="invalid_wxbrief_web_username">Invalid 1800WXBrief user name. Must be email address.</string>
     <string name="route_corridor_width_must_be_between_25_and_100">Route Corridor width must be between 25 and 100.</string>
     <string name="winds_aloft_corridor_must_be_between_100_and_600">Winds aloft corridor must be between 100 and 600.</string>
-    <string name="record_wxbrief">Record briefing</string>
+    <string name="offical_wxbrief">Offical briefing?</string>
     <string name="check_to_record_briefing_in_1800wxbrief_system">If checked your request will be recorded as an official briefing in 1800WXBrief system.</string>
     <string name="tailoring_options">Tailoring Options</string>
     <string name="select_wx800brief_tailoring_options">Select Tailoring Options</string>

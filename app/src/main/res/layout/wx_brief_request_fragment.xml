@@ -51,7 +51,7 @@
             app:layout_constraintTop_toBottomOf="@id/wx_brief_task_title"
             tools:text="3B3 KAFN KEEN 3B3" />
 
-        <!--
+
         <ImageButton
             android:id="@+id/wx_brief_official_brief_info"
             android:layout_width="wrap_content"
@@ -71,13 +71,13 @@
             android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
             android:drawablePadding="@dimen/margin_double"
             android:paddingRight="@dimen/margin_standard"
-            android:text="@string/record_wxbrief"
+            android:text="@string/offical_wxbrief"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintBottom_toBottomOf="@+id/wx_brief_official_brief_info"
             app:layout_constraintStart_toEndOf="@id/wx_brief_official_brief_info"
             app:layout_constraintTop_toTopOf="@+id/wx_brief_official_brief_info" />
 
-        -->
+
         <TextView
             android:id="@+id/wx_brief_type_of_brief_label"
             style="@style/TextView.ForSpinnerLabel"
@@ -86,7 +86,7 @@
             android:text="@string/type_of_brief"
             app:layout_constraintEnd_toEndOf="@id/guideline_50pct"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_turnpoints"/>
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_official_brief_info"/>
 
         <!-- Outlook, Standard, Abbreviated brief -->
         <androidx.appcompat.widget.AppCompatSpinner
@@ -107,10 +107,10 @@
             style="@style/TextView.ForSpinnerLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/briefing_type"
+            android:text="@string/briefing_format"
             app:layout_constraintStart_toEndOf="@id/guideline_50pct"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_turnpoints" />
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_official_brief_info" />
 
         <!-- EMAIL, PDF -->
         <androidx.appcompat.widget.AppCompatSpinner
