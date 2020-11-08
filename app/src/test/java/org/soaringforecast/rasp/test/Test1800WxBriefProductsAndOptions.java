@@ -1,7 +1,7 @@
 package org.soaringforecast.rasp.test;
 
 import org.junit.Test;
-import org.soaringforecast.rasp.one800wxbrief.options.ProductCode;
+import org.soaringforecast.rasp.one800wxbrief.options.BriefingOption;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import timber.log.Timber;
-
 public class Test1800WxBriefProductsAndOptions {
 
     @Test
@@ -19,24 +17,24 @@ public class Test1800WxBriefProductsAndOptions {
         BufferedReader reader = null;
         String line;
         int linesRead = 0;
-        ProductCode productCode;
-        ArrayList<ProductCode> productCodes = new ArrayList<>();
+        BriefingOption briefingOption;
+        ArrayList<BriefingOption> briefingOptions = new ArrayList<>();
         try {
-            File file = new File("wxbrief_product_codes.csv");
+            File file = new File(getClass().getResource("/wxbrief_product_codes.csv").getPath());
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             line = reader.readLine();
             while (line != null && !line.isEmpty()) {
-                linesRead++;
-                if (linesRead > 1) {
-                    productCode = ProductCode.createProductCodeFromCSVDetail(line);
-                    if (productCode != null) {
-                        productCodes.add(productCode);
+                if (linesRead > 0) {
+                    briefingOption = BriefingOption.createBriefingOptionFromCSVDetail(line);
+                    if (briefingOption != null) {
+                        briefingOptions.add(briefingOption);
                     }
-                    linesRead++;
+
                 }
+                linesRead++;
                 line = reader.readLine();
             }
-            Timber.d("Lines read: %1$d   Number of product codes  %2$d", linesRead, productCodes.size());
+            System.out.println(String.format("Lines read: %1$d   Number of product codes  %2$d", linesRead, briefingOptions.size()));
 
         }  finally {
             if (reader != null) try {

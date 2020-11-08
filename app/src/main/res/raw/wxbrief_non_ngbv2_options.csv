@@ -1,4 +1,4 @@
-1800WxBrief Parameter name,1800WXBrief Parameter Description,Display Description,outLookBriefOption,selectForOutLookBrief,standardBriefOption,selectForStandardBrief,abbreviatedBriefOption,selectForAbbreviatedBrief
+1800WxBrief Parameter name,1800WxBrief parm description,Display Description,Display for OutlookBrief,Default Value OutLook Brief ,Display for StandardBrief,Default value for Standard Brief,Display For Abbreviated Brief,Default vale for Abbreviated Brief
 ENCODED_ONLY, Include encoded data, Include encoded data,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
 PLAINTEXT_ONLY, Include plaintext, Include plaintext,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
 NO_GEOMETRY,Do not include Geometry data,Include Geometry data,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE

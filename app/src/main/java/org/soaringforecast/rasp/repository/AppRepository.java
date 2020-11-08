@@ -20,6 +20,7 @@ import org.soaringforecast.rasp.common.Constants.FORECAST_SOUNDING;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.data.metars.MetarResponse;
 import org.soaringforecast.rasp.data.taf.TafResponse;
+import org.soaringforecast.rasp.one800wxbrief.options.BriefingOption;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefing;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
@@ -1022,8 +1023,54 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
-
     //----- 1800WXBrief --------------------------------------------------------------
+
+    public Single<ArrayList<BriefingOption>> getWxBriefProductCodes(){
+        return getWxBriefingOptions(R.raw.wxbrief_product_codes);
+    }
+
+    public   Single<ArrayList<BriefingOption>> getWxBriefNGBV2TailoringOptions() {
+        return getWxBriefingOptions(R.raw.wxbrief_ngbv2_options);
+    }
+
+    public   Single<ArrayList<BriefingOption>> getWxBriefNonNGBV2TailoringOptions() {
+        return getWxBriefingOptions(R.raw.wxbrief_non_ngbv2_options);
+    }
+
+
+
+    public Single<ArrayList<BriefingOption>> getWxBriefingOptions(int rawResourceId) {
+        return Single.create(emitter -> {
+            BufferedReader reader = null;
+            String line;
+            int linesRead = 0;
+            BriefingOption briefingOption;
+            ArrayList<BriefingOption> briefingOptions = new ArrayList<>();
+            try {
+                InputStream is = context.getResources().openRawResource(rawResourceId);
+                reader = new BufferedReader(new InputStreamReader(is));
+                line = reader.readLine();
+                while (line != null && !line.isEmpty()) {
+                    if (linesRead > 0) {
+                        briefingOption = BriefingOption.createBriefingOptionFromCSVDetail(line);
+                        if (briefingOption != null) {
+                            briefingOptions.add(briefingOption);
+                        }
+                    }
+                    linesRead++;
+                    line = reader.readLine();
+                }
+                Timber.d("Lines read: %1$d   Number of product codes  %2$d", linesRead, briefingOptions.size());
+                emitter.onSuccess(briefingOptions);
+
+            } finally {
+                if (reader != null) try {
+                    reader.close();
+                } catch (IOException ignored) {
+                }
+            }
+        });
+    }
 
 
     public Single<RouteBriefing> submitWxBriefBriefingRequest(String parms) {
@@ -1038,7 +1085,6 @@ public class AppRepository implements CacheTimeListener {
             }
         });
     }
-
 
     // ---------------- Miscellaneous -----------------------------------------------
     private void post(Object post) {

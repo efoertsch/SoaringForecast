@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.one800wxbrief.routebriefing;
+package org.soaringforecast.rasp.one800wxbrief;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -8,9 +8,11 @@ import org.soaringforecast.rasp.BR;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.ObservableViewModel;
-import org.soaringforecast.rasp.one800wxbrief.options.NGBv2TailoringOption;
-import org.soaringforecast.rasp.one800wxbrief.options.NonNGBv2TailoringOption;
-import org.soaringforecast.rasp.one800wxbrief.options.ProductCode;
+import org.soaringforecast.rasp.one800wxbrief.options.BriefingOption;
+import org.soaringforecast.rasp.one800wxbrief.options.BriefingOptions;
+import org.soaringforecast.rasp.one800wxbrief.routebriefing.Email1800WxBriefRequestResponse;
+import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefing;
+import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefingRequest;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.TaskTurnpoint;
 import org.soaringforecast.rasp.repository.messages.DataBaseError;
@@ -18,13 +20,13 @@ import org.soaringforecast.rasp.utils.TimeUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -74,7 +76,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private boolean validBriefingData;
     private boolean displayTailoringOptions;
     private MutableLiveData<Boolean> tailoringListUpdatedFlag;
-    private int selectedTypeOfBriefPosition;
+    private int selectedTypeOfBriefPosition = 0;
 
     private ArrayList<String> tailoringOptionList = new ArrayList<>();
     private List<String> tailoringOptionDescriptions;
@@ -82,7 +84,8 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     private List<String> productCodeDescriptionList = new ArrayList<>();
     private boolean[] selectedProductCodes;
-    private boolean officalBriefing = false;
+
+    private boolean notABriefing;
 
     public WxBriefViewModel(@NonNull Application application) {
         super(application);
@@ -103,29 +106,31 @@ public class WxBriefViewModel extends ObservableViewModel {
         return this;
     }
 
-    public enum TypeOfBrief{
-        OUTLOOK("Outlook"),
-        STANDARD("Standard"),
-        ABBREVIATED("Abbreviated");
+    public enum TypeOfBrief {
+        //  OUTLOOK("Outlook"),
+        STANDARD("Standard");
+        //  ABBREVIATED("Abbreviated");
         public final String displayValue;
+
         TypeOfBrief(String displayValue) {
             this.displayValue = displayValue;
         }
     }
 
     /**
+     * In API call the briefing format is referred to as briefing type
      * One of
      * enum { 'RAW', 'HTML', 'SIMPLE', 'NGB', 'EMAIL', 'SUMMARY', 'NGBV2' }
      * numeration to indicate format of the briefing response.
      * SUMMARY and HTML types are for internal Leidos use only, and are disabled for
      * external customers. RAW type has been deprecated.
-     *
+     * <p>
      * NGB not implemented as don't want to handle all returned data types
      * So left with those below
      */
-    private BriefingType selectedBriefingType;
+    private BriefingFormat selectedBriefingFormat = BriefingFormat.EMAIL;
 
-    public enum BriefingType {
+    public enum BriefingFormat {
         EMAIL("EMail"),
         // SIMPLE("Simple"),
         NGBV2("Online(PDF)");
@@ -136,7 +141,7 @@ public class WxBriefViewModel extends ObservableViewModel {
             return displayValue;
         }
 
-        BriefingType(String displayValue) {
+        BriefingFormat(String displayValue) {
             this.displayValue = displayValue;
         }
     }
@@ -147,25 +152,20 @@ public class WxBriefViewModel extends ObservableViewModel {
      * <p>
      * The items parameter does not apply to  SIMPLE briefingType. (But we are ignoring SIMPLE briefingType in app for now)
      */
-    ArrayList<ProductCode> productCodes;
+    ArrayList<BriefingOption> productCodes;
 
     /**
      * Tailoring options for non-NGBv2 briefing type (Email,NGB) briefingType that can go into the  tailoring array in briefingPreferences
      * {"items":[...],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
      */
-    ArrayList<NonNGBv2TailoringOption> nonNGBv2TailoringOptions;
+    ArrayList<BriefingOption> nonNGBV2TailoringOptions;
 
 
     /**
      * * Tailoring options for NGBv2 briefingType that can go into the  tailoring array in briefingPreferences
      * {"items":["productCode","productCode",...,"productCode"],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
      */
-    ArrayList<NGBv2TailoringOption> ngBv2TailoringOptions;
-
-
-
-
-
+    ArrayList<BriefingOption> ngbv2TailoringOptions;
 
 
 
@@ -177,11 +177,32 @@ public class WxBriefViewModel extends ObservableViewModel {
         getDepartureTimes();
         formatDepartureInstant();
         setCorridorValues();
-        routeBriefingRequest.createProductCodeList();
-        routeBriefingRequest.createTailoringOptionList();
         loadTask();
         loadTaskTurnpoints();
+        loadProductsAndTailoringOptions();
 
+    }
+
+    private void loadProductsAndTailoringOptions() {
+        Single<ArrayList<BriefingOption>> singleProductCodes = appRepository.getWxBriefProductCodes();
+        Single<ArrayList<BriefingOption>> singleTailoringOptions = appRepository.getWxBriefNGBV2TailoringOptions();
+        Disposable disposable = Single.zip(
+                singleProductCodes,
+                singleTailoringOptions,
+                (productCodes, tailoringOptions) -> createBriefingOptions(  productCodes,   tailoringOptions))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(briefingOptions -> {
+                            // do stuff for display of products and tailoring options
+                        },
+                        Timber::e);
+
+        compositeDisposable.add(disposable);
+
+    }
+
+    private  BriefingOptions createBriefingOptions(ArrayList<BriefingOption> productCodes, ArrayList<BriefingOption> tailoringOptions) {
+            return new BriefingOptions(productCodes,tailoringOptions, TypeOfBrief.values()[0]);
     }
 
     private void setCorridorValues() {
@@ -204,6 +225,7 @@ public class WxBriefViewModel extends ObservableViewModel {
                         t -> {
                             post(new DataBaseError(getApplication().getString(R.string.error_loading_task), t));
                         });
+        compositeDisposable.add(disposable);
 
     }
 
@@ -221,110 +243,6 @@ public class WxBriefViewModel extends ObservableViewModel {
                         });
         compositeDisposable.add(disposable);
     }
-
-
-    /**
-     * Return list of tailoring options based on the selected briefing type
-     * Also note which options are default selected
-     *
-     * @return
-     */
-    public synchronized void createProductCodeList() {
-        productCodeList = new ArrayList<>();
-        productCodeDescriptionList = new ArrayList<>();
-        selectedProductCodes = new boolean[ProductCode.values().length];
-        ProductCode[] productCodes = ProductCode.values();
-        for (int i = 0; i < productCodes.length; ++i) {
-            productCodeList.add(productCodes[i].name());
-            productCodeDescriptionList.add(productCodes[i].description);
-            selectedProductCodes[i] = defaultProductCodes.contains(productCodes[i]);
-        }
-    }
-
-    public List<String> getProductCodeDescriptionList() {
-        return productCodeDescriptionList;
-    }
-
-    public synchronized boolean[] getSelectedProductCodes() {
-        if (selectedProductCodes.length == productCodeList.size()) {
-            return selectedProductCodes;
-        }
-        // something went wrong
-        selectedProductCodes = new boolean[productCodeList.size()];
-        for (int i = 0; i < productCodeList.size(); ++i) {
-            selectedProductCodes[i] = false;
-        }
-        return selectedProductCodes;
-    }
-
-    public synchronized void setSelectedProductCodes(boolean[] selected) {
-        if (selectedProductCodes.length == selected.length) {
-            selectedProductCodes = selected.clone();
-        }
-    }
-
-    /**
-     * Return list of tailoring options based on the selected briefing type
-     * Also not which options are default selected
-     *
-     * @return
-     */
-    public synchronized void createTailoringOptionList() {
-        tailoringOptionList = new ArrayList<>();
-        tailoringOptionDescriptionList = new ArrayList<>();
-        if (selectedBriefingType.equals(BriefingType.NGBV2)) {
-            selectedTrailoringOptions = new boolean[TailoringOptionNGBV2.values().length];
-            TailoringOptionNGBV2[] tailoringOptions = TailoringOptionNGBV2.values();
-            for (int i = 0; i < tailoringOptions.length; ++i) {
-                tailoringOptionList.add(tailoringOptions[i].name());
-                tailoringOptionDescriptionList.add(tailoringOptions[i].description);
-                selectedTrailoringOptions[i] = defaultTailoringOptionNGBV2.contains(tailoringOptions[i]);
-            }
-        } else {
-            selectedTrailoringOptions = new boolean[TailoringOptionNonNGBV2.values().length];
-            TailoringOptionNonNGBV2[] tailoringOptions = TailoringOptionNonNGBV2.values();
-            for (int i = 0; i < tailoringOptions.length; ++i) {
-                tailoringOptionList.add(tailoringOptions[i].name());
-                tailoringOptionDescriptionList.add(tailoringOptions[i].description);
-                selectedTrailoringOptions[i] = defaultTailoringOptionNGBV2.contains(tailoringOptions[i]);
-            }
-
-        }
-    }
-
-    public List<String> getTailoringOptionDescriptionsList() {
-        return tailoringOptionDescriptionList;
-    }
-
-    /**
-     * Should be called immediately after getTailoringOptions()
-     *
-     * @return
-     */
-    public synchronized boolean[] getSelectedTailoringOptions() {
-        if (selectedTrailoringOptions.length == tailoringOptionList.size()) {
-            return selectedTrailoringOptions;
-        }
-        // something went wrong
-        if (selectedBriefingType.equals(BriefingType.NGBV2)) {
-            selectedTrailoringOptions = new boolean[TailoringOptionNGBV2.values().length];
-        } else {
-            selectedTrailoringOptions = new boolean[TailoringOptionNonNGBV2.values().length];
-        }
-
-        for (int i = 0; i < tailoringOptionList.size(); ++i) {
-            selectedTrailoringOptions[i] = false;
-        }
-        return selectedTrailoringOptions;
-    }
-
-    public synchronized void setSelectedTailoringOptions(boolean[] selected) {
-        if (selected.length == selectedTrailoringOptions.length) {
-            selectedTrailoringOptions = selected.clone();
-        }
-    }
-
-
 
     /**
      * For not assume all turnpoints are airports
@@ -388,29 +306,28 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     @Bindable
-    public Boolean getOfficalBriefing(){
-        return officalBriefing;
+    public Boolean getOfficialBriefing() {
+        return notABriefing;
     }
 
-    @Bindable
-    public void setOfficalBriefing(boolean isChecked){
-        officalBriefing = isChecked;
+    public void setOfficialBriefing(Boolean isChecked) {
+        notABriefing = !isChecked;
+        notifyPropertyChanged(BR.officialBriefing);
     }
 
     /**
      * Type of Brief - Outlook, Standard, Abbreviated)
+     *
      * @return
      */
     @Bindable
     public List<String> getTypesOfBriefs() {
         ArrayList<String> typeOfBriefs = new ArrayList<>();
-        for (TypeOfBrief typeOfBrief: TypeOfBrief.values()){
+        for (TypeOfBrief typeOfBrief : TypeOfBrief.values()) {
             typeOfBriefs.add(typeOfBrief.displayValue);
         }
         return typeOfBriefs;
     }
-
-
 
 
     @Bindable
@@ -421,25 +338,13 @@ public class WxBriefViewModel extends ObservableViewModel {
     /**
      * Based on selected brief  (Outlook, Standard, Abbreviated)
      * set various briefing options
+     *
      * @param position
      */
     @Bindable
-    public void setSelectedTypeOfBriefPosition(int position){
+    public void setSelectedTypeOfBriefPosition(int position) {
         selectedTypeOfBriefPosition = position;
-        if (TypeOfBrief.values()[position].name()
-                .equals(TypeOfBrief.OUTLOOK.name())){
-            // Outlook brief
-            // Old format options (NGB)
-            //  1. Route briefing and wind corridor
-            //  2. Destination and departure TAFS
-            //  3. Email option only
-            // New format (NGBV2)
-            //
-
-        }
     }
-
-
 
 //    @Bindable
 //    // Unfortunate 1800WXBrief naming convention
@@ -491,6 +396,11 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     @Bindable
+    public Boolean getDisplayEmailAddressField() {
+        return selectedBriefingFormat == BriefingFormat.EMAIL;
+    }
+
+    @Bindable
     public String getWxBriefUserName() {
         if (wxBriefWebUserName == null) {
             wxBriefWebUserName = appPreferences.getOne800WxBriefUserId();
@@ -503,7 +413,9 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     @Bindable
     public void setWxBriefUserName(String wxBriefUserName) {
-        if (wxBriefWebUserNamePattern.matcher(wxBriefUserName).matches()) {
+        if (selectedBriefingFormat == BriefingFormat.EMAIL
+                && wxBriefUserName != null
+                && wxBriefWebUserNamePattern.matcher(wxBriefUserName).matches()) {
             appPreferences.setOne800WxBriefUserId(wxBriefUserName);
             assignUserNameAndEmailAddress(wxBriefUserName);
             setWxBriefUserNameErrorText(null);
@@ -681,7 +593,7 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     @Bindable
     public ArrayList<String> getBriefFormats() {
-        briefingFormats = routeBriefingRequest.getBriefingTypeList();
+        briefingFormats = getBriefingTypeList();
         setSelectedBriefFormatPosition(0);
         return briefingFormats;
     }
@@ -691,62 +603,28 @@ public class WxBriefViewModel extends ObservableViewModel {
         return selectedBriefFormatPosition;
     }
 
+    //TODO replace code with BriefingOptions object
     @Bindable
     public void setSelectedBriefFormatPosition(int selectedBriefingFormatPosition) {
         this.selectedBriefFormatPosition = selectedBriefingFormatPosition;
         routeBriefingRequest.setSelectedBriefingType(getBriefTypeBasedOnDisplayValue(
-                briefingFormats.get(selectedBriefingFormatPosition)));
-        routeBriefingRequest.createTailoringOptionList();
-        if (BriefingType.values()[selectedBriefingFormatPosition] == BriefingType.SIMPLE) {
-            displayTailoringOptions = false;
-        } else {
-            displayTailoringOptions = true;
-        }
+                briefingFormats.get(selectedBriefingFormatPosition)).name());
+        // createTailoringOptionList();
+//        if (BriefingFormat.values()[selectedBriefingFormatPosition] == BriefingFormat.SIMPLE) {
+//            displayTailoringOptions = false;
+//        } else {
+//            displayTailoringOptions = true;
+//        }
+        displayTailoringOptions = true;
         notifyPropertyChanged(BR.displayTailoringOptions);
+        notifyPropertyChanged(BR.displayEmailAddressField);
         toggleTailoringListUpdatedFlag();
     }
 
-    /**
-     * Outlook tailoring options
-     * !!! Note that createOutlookNGBV2TailoringOptions() expects EXCLUDE_FAR_WINDS_ALOFT to be indexed at 3!!!
-     * */
-    private static final ArrayList<TailoringOptionNGBV2> outlookNGBV2TailoringOptions = new ArrayList<>(Arrays.asList(
-            TailoringOptionNGBV2.EXCLUDE_PLAINTEXT,
-            TailoringOptionNGBV2.EXCLUDE_GRAPHICS,
-            TailoringOptionNGBV2.EXCLUDE_NEXTGEN,
-            TailoringOptionNGBV2.EXCLUDE_FAR_WINDS_ALOFT));
-
-
-    private void createOutlookNGBV2TailoringOptions(){
-       tailoringOptionDescriptions = new ArrayList<>();
-        for (TailoringOptionNGBV2 tailoringOption : outlookNGBV2TailoringOptions){
-            tailoringOptionDescriptions.add(tailoringOption.description);
-        }
-        selectedTailoringOptions = new boolean[tailoringOptionDescriptions.size()];
-        //  !!!! Make sure this is right !!!!
-        selectedTailoringOptions[3] = true;
-    }
-
-    private static final ArrayList<ProductCode> outlookProductCodeList = new ArrayList<>(Arrays.asList(
-            ProductCode.DEP_NTM,
-            ProductCode.DEST_NTM
-            ));
-    
-    private void createOutlookProductCodeList(){
-        productCodeDescriptionList = new ArrayList<>();
-        selectedProductCodes = new boolean[outlookProductCodeList.size()];
-        for (int i = 0; i <  outlookProductCodeList.size(); ++i){
-            productCodeDescriptionList.add(outlookProductCodeList.get(i).description);
-            selectedProductCodes[i] = true;
-        }
-    }
 
     /**
      * Standard tailoring options
-     *
-     * */
-
-
+     */
     public MutableLiveData<Boolean> getTailoringListUpdatedFlag() {
         if (tailoringListUpdatedFlag == null) {
             tailoringListUpdatedFlag = new MutableLiveData<>();
@@ -772,7 +650,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     public void setSelectedTailoringOptions(boolean[] selected) {
-        routeBriefingRequest.setSelectedTailoringOptions(selected);
+        this.selectedTailoringOptions = selected;
     }
 
     @Bindable
@@ -781,15 +659,15 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     public List<String> getProductCodeDescriptionList() {
-        return routeBriefingRequest.getProductCodeDescriptionList();
+        return productCodeDescriptionList;
     }
 
     public boolean[] getSelectedProductCodes() {
-        return routeBriefingRequest.getSelectedProductCodes();
+        return selectedProductCodes;
     }
 
     public void setSelectedProductCodes(boolean[] selected) {
-        routeBriefingRequest.setSelectedProductCodes(selected);
+        selectedProductCodes = selected;
     }
 
     private void validateData() {
@@ -827,7 +705,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         setWorkingFlag(false);
         if (routeBriefing != null && routeBriefing.returnStatus) {
             // request submitted OK
-            if (routeBriefingRequest.getSelectedBriefingType().equals(BriefingType.EMAIL.name())) {
+            if (selectedBriefingFormat.equals(BriefingFormat.EMAIL.name())) {
                 post(new Email1800WxBriefRequestResponse());
             } else {
                 // need to get NGBV2 briefing from
@@ -855,31 +733,31 @@ public class WxBriefViewModel extends ObservableViewModel {
         }
     }
 
-    public ArrayList<String> getBriefingTypeList(){
+    public ArrayList<String> getBriefingTypeList() {
         ArrayList<String> briefingTypes = new ArrayList<>();
-        for(BriefingType briefingType : BriefingType.values()){
+        for (BriefingFormat briefingFormat : BriefingFormat.values()) {
             if (notABriefing
                     // && (briefingType == BriefingType.EMAIL || briefingType == BriefingType.SIMPLE)
-                    && briefingType == BriefingType.EMAIL ){
+                    && briefingFormat == BriefingFormat.EMAIL) {
                 // bypass
             } else {
-                briefingTypes.add(briefingType.getDisplayValue());
+                briefingTypes.add(briefingFormat.getDisplayValue());
             }
         }
         return briefingTypes;
     }
 
-    public BriefingType getBriefTypeBasedOnDisplayValue(String displayValue){
-        for (BriefingType briefingType : BriefingType.values()){
-            if (briefingType.displayValue.equals(displayValue)){
-                return briefingType;
+    public BriefingFormat getBriefTypeBasedOnDisplayValue(String displayValue) {
+        for (BriefingFormat briefingFormat : BriefingFormat.values()) {
+            if (briefingFormat.displayValue.equals(displayValue)) {
+                return briefingFormat;
             }
         }
         // Oh-oh something really wrong
         return null;
-    };
+    }
 
-
+    ;
 
     private void createRouteBriefingPDF(String ngbv2PdfBriefing) {
         // 1. String in base64 so need to decode
@@ -890,7 +768,6 @@ public class WxBriefViewModel extends ObservableViewModel {
     private void post(Object object) {
         EventBus.getDefault().post(object);
     }
-
 
     @Override
     public void onCleared() {

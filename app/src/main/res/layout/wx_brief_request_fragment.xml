@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefViewModel" />
+            type="org.soaringforecast.rasp.one800wxbrief.WxBriefViewModel" />
 
     </data>
 
@@ -149,11 +149,19 @@
 
         </org.soaringforecast.rasp.common.BaselineTextInputLayout>
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/wxb_brief_email_barrier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="wx_brief_aircraft_id_layout,wx_brief_type_of_brief_spinner" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/wx_brief_web_user_name_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/wx_brief_web_user_name"
+            android:visibility="@{safeUnbox(viewModel.displayEmailAddressField) ? View.VISIBLE : View.GONE}"
             app:errorEnabled="true"
             app:errorText="@{viewModel.wxBriefUserNameErrorText}"
             app:layout_constraintStart_toStartOf="parent"
@@ -167,6 +175,14 @@
                 android:text="@={viewModel.wxBriefUserName}" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/wxb_brief_departure_barrier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="wxb_brief_email_barrier,wx_brief_web_user_name_layout" />
+
 
         <TextView
             android:id="@+id/wx_brief_departure_date_label"

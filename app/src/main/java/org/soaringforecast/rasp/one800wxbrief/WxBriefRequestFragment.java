@@ -13,7 +13,6 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.WxBriefRequestView;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.Email1800WxBriefRequestResponse;
-import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefViewModel;
 import org.soaringforecast.rasp.repository.AppRepository;
 
 import javax.inject.Inject;

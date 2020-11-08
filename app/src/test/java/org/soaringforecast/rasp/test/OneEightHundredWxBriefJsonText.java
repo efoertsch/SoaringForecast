@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefing;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefingRequest;
 import org.soaringforecast.rasp.retrofit.One800WxBriefApi;
+import org.soaringforecast.rasp.utils.TimeUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -59,7 +60,7 @@ public class OneEightHundredWxBriefJsonText {
         routeBriefingRequest.setDepartureInstant(departureTIme);
         routeBriefingRequest.setFlightDuration("PT04H");
         routeBriefingRequest.setAircraftIdentifier("N68RM");
-        routeBriefingRequest.setSelectedBriefingType(RouteBriefingRequest.BriefingType.EMAIL);
+        routeBriefingRequest.setSelectedBriefingType("EMAIL");
         routeBriefingRequest.setBriefingResultFormat("PDF");
         routeBriefingRequest.setEmailAddress("flightservice@soaringforecast.org");
         // Call<RouteBriefing>  call = client.getRouteBriefing(routeBriefingRequest.getRestParmString());
@@ -147,7 +148,7 @@ public class OneEightHundredWxBriefJsonText {
 
     @Test
     public void shouldReturnEDT() {
-        String timeZone = RouteBriefingRequest.getLocalTimeZoneAbbrev();
+        String timeZone = TimeUtils.getLocalTimeZoneAbbrev();
         System.out.println("Current abbreviation for either standard or summer time: "
                 + timeZone);
     }
@@ -156,7 +157,7 @@ public class OneEightHundredWxBriefJsonText {
     public void shouldReturnTimeInUTC() {
         String localTime = "2020-08-15T11:25:00.000";
         System.out.println("Local time: " + localTime);
-        String zuluDate  = RouteBriefingRequest.convertLocalTimeToZulu(localTime);
+        String zuluDate  = TimeUtils.convertLocalTimeToZulu(localTime);
         System.out.println("Zulu Time: " + zuluDate);
     }
 
