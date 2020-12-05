@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.WxBriefRequestView;
+import org.soaringforecast.rasp.one800wxbrief.options.BriefingOptions;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.Email1800WxBriefRequestResponse;
 import org.soaringforecast.rasp.repository.AppRepository;
 
@@ -38,8 +39,8 @@ public class WxBriefRequestFragment extends DaggerFragment {
     private boolean firstTime = true;
 
 
-    public static WxBriefRequestFragment newInstance(long taskId){
-        WxBriefRequestFragment  wxBriefRequestFragment= new WxBriefRequestFragment();
+    public static WxBriefRequestFragment newInstance(long taskId) {
+        WxBriefRequestFragment wxBriefRequestFragment = new WxBriefRequestFragment();
         Bundle bundle = new Bundle();
         bundle.putLong(TASKID, taskId);
         wxBriefRequestFragment.setArguments(bundle);
@@ -65,39 +66,33 @@ public class WxBriefRequestFragment extends DaggerFragment {
         wxBriefRequestView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
         wxBriefRequestView.setViewModel(wxBriefViewModel);
         wxBriefRequestView.wxBriefOfficialBriefInfo.setOnClickListener(v -> displayOfficialBriefingDialog());
-        wxBriefViewModel.init();
 
         return wxBriefRequestView.getRoot();
     }
 
-    public void onViewCreated(View view, Bundle savedInstance){
+    public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
+        wxBriefViewModel.getBriefingOptions().observe(getViewLifecycleOwner(), briefingOptions -> {
+            setTailoringOptionsSpinnerValues(briefingOptions);
+            setProductCodesSpinnerValues(briefingOptions);
+                }
+        );
 
-        setTailoringOptionsSpinnerValues();
-
-        setProductCodesSpinnerValues();
-
-        wxBriefViewModel.getTailoringListUpdatedFlag().observe(getViewLifecycleOwner(), newValue ->{
-            if (firstTime) {
-                firstTime = false;
-            } else {
-                setTailoringOptionsSpinnerValues();
-            }
-        });
+        wxBriefViewModel.init();
     }
 
-    private void setTailoringOptionsSpinnerValues() {
-        wxBriefRequestView.wxBriefTailoringOptionsSpinner.setItems(wxBriefViewModel.getTailoringOptionDescriptions()
-                , wxBriefViewModel.getSelectedTailoringOptions()
+    private void setTailoringOptionsSpinnerValues(BriefingOptions briefingOptions) {
+        wxBriefRequestView.wxBriefTailoringOptionsSpinner.setItems(briefingOptions.getTailoringOptionDescriptions()
+                , briefingOptions.getSelectedTailoringOptions()
                 , getString(R.string.select_wx800brief_tailoring_options)
-                , selected -> wxBriefViewModel.setSelectedTailoringOptions(selected));
+                , selected -> briefingOptions.updateTailoringOptionsSelected(selected));
     }
 
-    private void setProductCodesSpinnerValues() {
-        wxBriefRequestView.wxBriefProductCodesSpinner.setItems(wxBriefViewModel.getProductCodeDescriptionList()
-                , wxBriefViewModel.getSelectedProductCodes()
+    private void setProductCodesSpinnerValues(BriefingOptions briefingOptions) {
+        wxBriefRequestView.wxBriefProductCodesSpinner.setItems(briefingOptions.getProductCodeDescriptionList()
+                , briefingOptions.getProductCodesSelected()
                 , getString(R.string.select_wx800brief_product_options)
-                , selected -> wxBriefViewModel.setSelectedProductCodes(selected));
+                , selected -> briefingOptions.updateProductCodesSelected(selected));
     }
 
     @Override

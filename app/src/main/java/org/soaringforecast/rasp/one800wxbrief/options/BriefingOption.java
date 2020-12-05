@@ -1,5 +1,6 @@
 package org.soaringforecast.rasp.one800wxbrief.options;
 
+import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.utils.CSVUtils;
 
 import java.util.List;
@@ -13,37 +14,38 @@ import java.util.List;
  */
 public class BriefingOption {
     private String wxBriefParameterName;
-    private String additionalParamDescription;
+    private String wxBriefParamDescription;
     private String displayDescription;
-    // if true it means this option should be displayed for outlook brief
-    private boolean outLookBriefOption;
-    // Default value (whether displayed or not) for outlook brief
-    private boolean selectForOutLookBrief;
     // if true it means this option should be displayed for standard brief
-    private boolean standardBriefOption;
-    // Default value (whether displayed or not) for standard brief
-    private boolean selectForStandardBrief;
-    // if true it means this option should be displayed for abbreviated brief
-    private boolean abbreviatedBriefOption;
-    // Default value (whether displayed or not) for abbreviated brief
-    private boolean selectForAbbreviatedBrief;
+    private boolean briefOption;
+    // Default value (whether displayed or not) for the selected type of briefing
+    private boolean selectForBrief;
+
 
     private BriefingOption(){}
 
-    public static BriefingOption createBriefingOptionFromCSVDetail(String productCodeString) {
+    public static BriefingOption createBriefingOptionFromCSVDetail(String productCodeString, Constants.TypeOfBrief selectedTypeOfBrief) {
 
         List<String> briefingOptionDetails = CSVUtils.parseLine(productCodeString);
         BriefingOption briefingOption = new BriefingOption();
         try {
             briefingOption.wxBriefParameterName = briefingOptionDetails.get(0);
-            briefingOption.additionalParamDescription = briefingOptionDetails.get(1);
+            briefingOption.wxBriefParamDescription = briefingOptionDetails.get(1);
             briefingOption.displayDescription = briefingOptionDetails.get(2);
-            briefingOption.outLookBriefOption = Boolean.parseBoolean(briefingOptionDetails.get(3));
-            briefingOption.selectForOutLookBrief = Boolean.parseBoolean(briefingOptionDetails.get(4));
-            briefingOption.standardBriefOption = Boolean.parseBoolean(briefingOptionDetails.get(5));
-            briefingOption.selectForStandardBrief = Boolean.parseBoolean(briefingOptionDetails.get(6));
-            briefingOption.abbreviatedBriefOption = Boolean.parseBoolean(briefingOptionDetails.get(7));
-            briefingOption.selectForAbbreviatedBrief = Boolean.parseBoolean(briefingOptionDetails.get(8));
+            switch (selectedTypeOfBrief){
+                case OUTLOOK:
+                    briefingOption.briefOption = Boolean.parseBoolean(briefingOptionDetails.get(3));
+                    briefingOption.selectForBrief = Boolean.parseBoolean(briefingOptionDetails.get(4));
+                    break;
+                case STANDARD:
+                    briefingOption.briefOption = Boolean.parseBoolean(briefingOptionDetails.get(5));
+                    briefingOption.selectForBrief = Boolean.parseBoolean(briefingOptionDetails.get(6));
+                    break;
+                case ABBREVIATED:
+                    briefingOption.briefOption = Boolean.parseBoolean(briefingOptionDetails.get(7));
+                    briefingOption.selectForBrief = Boolean.parseBoolean(briefingOptionDetails.get(8));
+                    break;
+            }
         } catch (Exception nfe) {
             briefingOption = null;
         }
@@ -54,46 +56,24 @@ public class BriefingOption {
         return wxBriefParameterName;
     }
 
-    public String getAdditionalParamDescription() {
-        return additionalParamDescription;
+    public String getWxBriefParamDescription() {
+        return wxBriefParamDescription;
     }
 
     public String getDisplayDescription() {
         return displayDescription;
     }
 
-    public boolean isOutLookBriefOption() {
-        return outLookBriefOption;
+    public boolean isBriefOption() {
+        return briefOption;
     }
 
-    public boolean isSelectForOutLookBrief() {
-        return selectForOutLookBrief;
+    public boolean isSelectForBrief() {
+        return selectForBrief;
     }
 
-    public void setSelectForOutLookBrief(boolean selectForOutLookBrief) {
-        this.selectForOutLookBrief = selectForOutLookBrief;
+    public void setSelectForBrief(boolean selectForBrief) {
+        this.selectForBrief = selectForBrief;
     }
 
-    public boolean isStandardBriefOption() {
-        return standardBriefOption;
-    }
-
-    public boolean isSelectForStandardBrief() {
-        return selectForStandardBrief;
-    }
-
-    public void setSelectForStandardBrief(boolean selectForStandardBrief) {
-        this.selectForStandardBrief = selectForStandardBrief;
-    }
-
-    public boolean isAbbreviatedBriefOption() {
-        return abbreviatedBriefOption;
-    }
-
-    public boolean isSelectForAbbreviatedBrief() {
-        return selectForAbbreviatedBrief;
-    }
-    public void setSelectForAbbreviatedBrief(boolean selectForAbbreviatedBrief) {
-        this.selectForAbbreviatedBrief = selectForAbbreviatedBrief;
-    }
 }

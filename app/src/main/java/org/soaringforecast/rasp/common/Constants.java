@@ -16,7 +16,7 @@ public class Constants {
         LOOP
     }
 
-   public enum FORECAST_SOUNDING {
+    public enum FORECAST_SOUNDING {
         FORECAST, SOUNDING
     }
 
@@ -26,5 +26,15 @@ public class Constants {
     public static final String NEWENGLAND_REGION = "NewEngland";
 
 
+    public enum TypeOfBrief {
+        OUTLOOK("Outlook"),
+        STANDARD("Standard"),
+        ABBREVIATED("Abbreviated");
+        public final String displayValue;
+
+        TypeOfBrief(String displayValue) {
+            this.displayValue = displayValue;
+        }
+    }
 
 }

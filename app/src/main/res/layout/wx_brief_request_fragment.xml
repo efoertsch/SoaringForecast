@@ -314,7 +314,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_standard"
             android:layout_marginBottom="@dimen/margin_standard"
-            android:enabled="@{viewModel.isValidData()}"
+            android:enabled="@{viewModel.isValidData}"
             android:onClick="@{() -> viewModel.submitBriefingRequest()}"
             android:text="@string/submit_briefing_request"
             app:layout_constraintBottom_toBottomOf="parent"

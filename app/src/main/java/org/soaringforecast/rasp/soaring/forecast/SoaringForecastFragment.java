@@ -192,11 +192,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
         // List of turnpoints for a selected task
         soaringForecastViewModel.getTaskTurnpoints().observe(this, taskTurnpoints -> {
-            if (taskTurnpoints != null && taskTurnpoints.size() > 0) {
-                setShowTaskSelectedMenuItems(true);
-            } else {
-                setShowTaskSelectedMenuItems(false);
-            }
+            setShowTaskSelectedMenuItems(taskTurnpoints != null && taskTurnpoints.size() > 0);
             forecastMapper.setTaskTurnpoints(taskTurnpoints);
         });
 

@@ -1,8 +1,10 @@
 package org.soaringforecast.rasp.one800wxbrief.options;
 
-import java.util.ArrayList;
+import org.soaringforecast.rasp.common.Constants;
 
-import static org.soaringforecast.rasp.one800wxbrief.WxBriefViewModel.TypeOfBrief;
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 /**
@@ -10,132 +12,134 @@ import static org.soaringforecast.rasp.one800wxbrief.WxBriefViewModel.TypeOfBrie
  */
 public class BriefingOptions {
 
-    private ArrayList<BriefingOption> productCodes;
-    private ArrayList<BriefingOption> tailoringOptions;
-
-    //A subset of the full productCodes that are pertinient to the type of brief
-    private ArrayList<String> displayableProductCodes = new ArrayList<>();
+    // Full set of briefing options
+    private ArrayList<BriefingOption> fullProductCodeList;
+    //A subset of the full productCodes that are pertinent to the type of brief (Standard, Outlook, Abbreviated)
+    private ArrayList<String> productCodeDescriptions = new ArrayList<>();
     // only associated products with a 'true' value are to be included in the wxbrief api call
-    private ArrayList<Boolean> productCodeIsChecked = new ArrayList<>();
-    private ArrayList<Integer> productCodeListIndex = new ArrayList<>();
+    // same size as productCodeDescriptions
+    private  boolean[]  productCodesSelected ;
+    // index of this option back to the full set of productCodes
+    // same size as productCodeDescriptions
+    private ArrayList<Integer> productCodeListIndex = new ArrayList<>() ;
 
-    //A subset of the full tailoringOptions that are pertinient to the type of brief
-    private ArrayList<String> displayableTailoringOptions = new ArrayList<>();
-    private ArrayList<Boolean> tailoringOptionIsChecked = new ArrayList<>();
-    private ArrayList<Integer> tailoringOptionListIndex = new ArrayList<>();
+    // Full set of tailoringOptions
+    private ArrayList<BriefingOption> fullTailoringOptionList;
+    //A subset of the full tailoringOptions that are pertinent to the type of brief (Standard, Outlook, Abbreviated)
+    private ArrayList<String> tailorOptionDescriptions = new ArrayList<>();
+    // only associated options with a 'true' value are to be included in the wxbrief api call
+    // same size as tailorOptionDescriptions
+    private boolean[] tailoringOptionsSelected ;
+    // index of this option back to the full set of tailoringOptions
+    // same size as tailorOptionDescriptions
+    private ArrayList<Integer>  tailoringOptionListIndex  = new ArrayList<>();
 
-    TypeOfBrief typeOfBrief;
-
+    Constants.TypeOfBrief typeOfBrief;
 
     private BriefingOptions(){};
 
     /**
      *
-     * @param productCodes
-     * @param tailoringOptions - may be NGBV2 or non-NGBV2 options
-     * @param typeOfBrief
+     * @param fullProductCodeList
+     * @param fullTailoringOptionList - may be NGBV2 or non-NGBV2 options
      */
-    public BriefingOptions(ArrayList<BriefingOption> productCodes, ArrayList<BriefingOption> tailoringOptions, TypeOfBrief typeOfBrief){
-        this.productCodes = productCodes;
-        this.tailoringOptions = tailoringOptions;
-        this.typeOfBrief = typeOfBrief;
+    public BriefingOptions(ArrayList<BriefingOption> fullProductCodeList, ArrayList<BriefingOption> fullTailoringOptionList){
+        this.fullProductCodeList = fullProductCodeList;
+        this.fullTailoringOptionList = fullTailoringOptionList;
+        createProductCodeDisplayFields();
+        createTailoringOptionsDisplayFields();
+
 
     }
-    private void createDisplayFields() {
-        switch (typeOfBrief) {
-            case STANDARD:
-                createStandardProductCodeOptions();
-                createStandardTailoringOptions();
-                break;
-//            case OUTLOOK:
-//                createOutlookOptions();
-//                break;
-//            case ABBREVIATED:
-//                createAbbreviatedOptions();
-//                break;
+
+    private void createProductCodeDisplayFields() {
+        BriefingOption briefingOption;
+        productCodeDescriptions.clear();
+        productCodeListIndex.clear();
+        ArrayList<Boolean> selectedList = new ArrayList<>();
+        for (int i = 0; i < fullProductCodeList.size() - 1; ++i) {
+            if (fullProductCodeList.get(i).isBriefOption()) {
+                briefingOption = fullProductCodeList.get(i);
+                productCodeDescriptions.add(briefingOption.getDisplayDescription());
+                selectedList.add(briefingOption.isSelectForBrief());
+                productCodeListIndex.add(i);
+            }
+        }
+        productCodesSelected =  new boolean[selectedList.size()];
+        for (int i = 0; i < productCodesSelected.length; ++i) {
+            productCodesSelected[i] = selectedList.get(i);
         }
     }
 
-    private void createAbbreviatedOptions() {
-
+    public List<String> getProductCodeDescriptionList() {
+        return productCodeDescriptions;
     }
 
-    private void createOutlookOptions() {
+
+    public boolean[] getProductCodesSelected() {
+        return productCodesSelected;
     }
+
 
     /**
-     * Create a list of product codes/descriptions that can be include in a brief
+     * Replace the list of product codes to be sent in a briefing request.
+     * @param selectedProductCodes
      */
-    private void createStandardProductCodeOptions() {
-        BriefingOption briefingOption;
-        displayableProductCodes.clear();
-        productCodeIsChecked.clear();
-        productCodeListIndex.clear();
-        for (int i = 0; i < productCodes.size() - 1; ++i) {
-            if (productCodes.get(i).isStandardBriefOption()) {
-                briefingOption = productCodes.get(i);
-                displayableProductCodes.add(briefingOption.getDisplayDescription());
-                productCodeIsChecked.add(briefingOption.isSelectForStandardBrief());
-                productCodeListIndex.add(i);
-            }
+    public void updateProductCodesSelected(boolean[] selectedProductCodes ){
+        if (selectedProductCodes.length == productCodesSelected.length){
+            productCodesSelected = selectedProductCodes;
         }
     }
 
     // Display a list of tailoring options to include (do not send EXCLUDE key value)  in a brief
-    private void createStandardTailoringOptions() {
+    private void createTailoringOptionsDisplayFields() {
         BriefingOption briefingOption;
-        displayableTailoringOptions.clear();
-        tailoringOptionIsChecked.clear();
+        tailorOptionDescriptions.clear();
         tailoringOptionListIndex.clear();
-        for (int i = 0; i < tailoringOptions.size() - 1; ++i) {
-            if (tailoringOptions.get(i).isStandardBriefOption()) {
-                briefingOption = tailoringOptions.get(i);
-                displayableTailoringOptions.add(briefingOption.getDisplayDescription());
-                tailoringOptionIsChecked.add(briefingOption.isSelectForStandardBrief());
+        ArrayList<Boolean> selectedList = new ArrayList<>();
+        for (int i = 0; i < fullTailoringOptionList.size() - 1; ++i) {
+            if (fullTailoringOptionList.get(i).isBriefOption()) {
+                briefingOption = fullTailoringOptionList.get(i);
+                tailorOptionDescriptions.add(briefingOption.getDisplayDescription());
+                selectedList.add(briefingOption.isSelectForBrief());
                 tailoringOptionListIndex.add(i);
             }
         }
+        tailoringOptionsSelected = new boolean[selectedList.size()];
+        for (int i = 0; i < tailoringOptionsSelected.length; ++i) {
+            tailoringOptionsSelected[i] = selectedList.get(i);
+        }
+
     }
 
-    /**
-     * Update the list of product codes to be sent in a briefing request.
-     * @param selectedProductCodes
-     */
-    private void updateProductCodesSelected(boolean[]selectedProductCodes ){
-        if (selectedProductCodes.length == productCodeListIndex.size()){
-            for (int i = 0; i < selectedProductCodes.length; ++i) {
-                productCodeIsChecked.set(i,selectedProductCodes[i]);
-            }
-        }
-    }
+
+
 
     /**
      * Update both the display list AND original list of tailoring options (as app can send EXCLUDE values
      * for those options not of interest to glider pilots (like inactive vors,...)
      * @param selectedTailoringOptions
      */
-    private void updateTailoringOptionsSelected(boolean[] selectedTailoringOptions){
+    public void updateTailoringOptionsSelected(boolean[] selectedTailoringOptions){
         BriefingOption briefingOption;
-        if (selectedTailoringOptions.length == tailoringOptionListIndex.size()){
+        if (selectedTailoringOptions.length == tailoringOptionsSelected.length){
+            tailoringOptionsSelected  = selectedTailoringOptions;
             for (int i = 0; i < selectedTailoringOptions.length; ++i) {
-                tailoringOptionIsChecked.set(i,selectedTailoringOptions[i]);
-                briefingOption = tailoringOptions.get(tailoringOptionListIndex.get(i));
-                switch (typeOfBrief) {
-                    case STANDARD:
-                       briefingOption.setSelectForOutLookBrief(selectedTailoringOptions[i]);
-                        break;
-//            case OUTLOOK:
-//                createOutlookOptions();
-//                break;
-//            case ABBREVIATED:
-//                createAbbreviatedOptions();
-//                break;
-                }
+                briefingOption = fullTailoringOptionList.get(tailoringOptionListIndex.get(i));
+                       briefingOption.setSelectForBrief(selectedTailoringOptions[i]);
 
             }
-
         }
-
     }
+
+    public List<String> getTailoringOptionDescriptions() {
+        return tailorOptionDescriptions;
+    }
+
+    public boolean[] getSelectedTailoringOptions() {
+        return tailoringOptionsSelected;
+    }
+
+
 
 }

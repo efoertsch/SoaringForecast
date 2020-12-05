@@ -25,7 +25,7 @@ public class Test1800WxBriefProductsAndOptions {
             line = reader.readLine();
             while (line != null && !line.isEmpty()) {
                 if (linesRead > 0) {
-                    briefingOption = BriefingOption.createBriefingOptionFromCSVDetail(line);
+                    briefingOption = BriefingOption.createBriefingOptionFromCSVDetail(line, selectedTypeOfBrief);
                     if (briefingOption != null) {
                         briefingOptions.add(briefingOption);
                     }

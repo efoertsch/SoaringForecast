@@ -1025,21 +1025,21 @@ public class AppRepository implements CacheTimeListener {
 
     //----- 1800WXBrief --------------------------------------------------------------
 
-    public Single<ArrayList<BriefingOption>> getWxBriefProductCodes(){
-        return getWxBriefingOptions(R.raw.wxbrief_product_codes);
+    public Single<ArrayList<BriefingOption>> getWxBriefProductCodes(Constants.TypeOfBrief selectedTypeOfBrief){
+        return getWxBriefingOptions(R.raw.wxbrief_product_codes,selectedTypeOfBrief);
     }
 
-    public   Single<ArrayList<BriefingOption>> getWxBriefNGBV2TailoringOptions() {
-        return getWxBriefingOptions(R.raw.wxbrief_ngbv2_options);
+    public   Single<ArrayList<BriefingOption>> getWxBriefNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
+        return getWxBriefingOptions(R.raw.wxbrief_ngbv2_options, selectedTypeOfBrief);
     }
 
-    public   Single<ArrayList<BriefingOption>> getWxBriefNonNGBV2TailoringOptions() {
-        return getWxBriefingOptions(R.raw.wxbrief_non_ngbv2_options);
+    public   Single<ArrayList<BriefingOption>> getWxBriefNonNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
+        return getWxBriefingOptions(R.raw.wxbrief_non_ngbv2_options, selectedTypeOfBrief);
     }
 
 
 
-    public Single<ArrayList<BriefingOption>> getWxBriefingOptions(int rawResourceId) {
+    public Single<ArrayList<BriefingOption>> getWxBriefingOptions(int rawResourceId, Constants.TypeOfBrief selectedTypeOfBrief) {
         return Single.create(emitter -> {
             BufferedReader reader = null;
             String line;
@@ -1052,7 +1052,7 @@ public class AppRepository implements CacheTimeListener {
                 line = reader.readLine();
                 while (line != null && !line.isEmpty()) {
                     if (linesRead > 0) {
-                        briefingOption = BriefingOption.createBriefingOptionFromCSVDetail(line);
+                        briefingOption = BriefingOption.createBriefingOptionFromCSVDetail(line, selectedTypeOfBrief);
                         if (briefingOption != null) {
                             briefingOptions.add(briefingOption);
                         }
@@ -1060,7 +1060,7 @@ public class AppRepository implements CacheTimeListener {
                     linesRead++;
                     line = reader.readLine();
                 }
-                Timber.d("Lines read: %1$d   Number of product codes  %2$d", linesRead, briefingOptions.size());
+                Timber.d("Lines read: %1$d   Number of product/options codes  %2$d", linesRead, briefingOptions.size());
                 emitter.onSuccess(briefingOptions);
 
             } finally {

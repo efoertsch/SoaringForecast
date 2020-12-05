@@ -327,6 +327,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
             marker.remove();
         }
         taskTurnpointMarkers.clear();
+        taskTurnpoints.clear();
     }
 
     @SuppressLint("DefaultLocale")
