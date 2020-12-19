@@ -169,6 +169,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         startActivity(TurnpointActivity.Builder.getBuilder().editTurnpoint(event.getTurnpoint()).build(this));
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(CrashReport event) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
