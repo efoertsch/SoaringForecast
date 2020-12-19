@@ -30,11 +30,14 @@ public class Constants {
         OUTLOOK("Outlook"),
         STANDARD("Standard"),
         ABBREVIATED("Abbreviated");
+        public static String BufferedReader;
         public final String displayValue;
 
         TypeOfBrief(String displayValue) {
             this.displayValue = displayValue;
         }
     }
+
+    public static final String CRASH_REPORT_EMAIL = "ericfoertsch@gmail.com";
 
 }

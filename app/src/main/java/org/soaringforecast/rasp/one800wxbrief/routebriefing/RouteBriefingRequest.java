@@ -4,6 +4,8 @@ import org.soaringforecast.rasp.utils.TimeUtils;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 /**
  * A much simplified class to hold values needed to make the routeBriefing call to the 1800wxbrief
  * routeBriefing api
@@ -14,7 +16,7 @@ public class RouteBriefingRequest {
 
     private static final String AMPERSAND = "&";
 
-    private ArrayList<String> productCodes;
+    private ArrayList<String> productCodes = new ArrayList<>();
 
     /**
      * User selected tailoring Options to generate the tailoringOptions list in briefingPreferences
@@ -46,8 +48,8 @@ public class RouteBriefingRequest {
      */
     private String briefingPreferences;
     private String selectedBriefingType;
-    private ArrayList<String> productCodeList;
-    private ArrayList<String> tailoringOptionList;
+
+
 
     public enum TimeZoneAbbrev {
         AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HST, UTC
@@ -76,6 +78,11 @@ public class RouteBriefingRequest {
     private String flightDuration = "PT05H";
 
     /**
+     * Default flight to 6 thousand feet
+     */
+    private String flightLevel = "060";
+
+    /**
      * Route  (airports along task, comma separated
      * eg. KAFN, KEEN  (Jaffrey and Dillant-Hopkins)
      */
@@ -95,6 +102,7 @@ public class RouteBriefingRequest {
     private String speedKnots = "50";
 
     /**
+     * Used to provide key/value error msg when errors occur
      * Optional but we want more definitive error info if error does occur
      */
     private Boolean includeCodedMessages = true;
@@ -408,6 +416,7 @@ public class RouteBriefingRequest {
         if (selectedBriefingType != null & selectedBriefingType.equals("EMAIL")) {
             sb.append(AMPERSAND).append("emailAddress=").append(emailAddress);
         }
+        sb.append(AMPERSAND).append("altitudeFL=").append(flightLevel);
         String plainTextTimeZone = TimeZoneAbbrev.UTC.name();
         try {
             // make sure current timezone valid
@@ -416,6 +425,7 @@ public class RouteBriefingRequest {
             //nope
         }
         sb.append(AMPERSAND).append("plainTextTimeZone=").append(plainTextTimeZone);
+        Timber.d("Briefing Request Options: %1$s", sb.toString());
         return sb.toString();
     }
 
@@ -429,9 +439,9 @@ public class RouteBriefingRequest {
     private String getBriefingPreferences() {
         StringBuilder sb = new StringBuilder();
         sb.append('{')
-                .append(getItemsList())
+                .append(getProductCodesJson())
                 .append(',')
-                .append(getTailorOptions())
+                .append(getTailorOptionsJson())
                 .append('}');
         return sb.toString();
     }
@@ -441,46 +451,35 @@ public class RouteBriefingRequest {
      *
      * @return
      */
-    private synchronized String getItemsList() {
+    private synchronized String getProductCodesJson() {
         StringBuilder sb = new StringBuilder();
         boolean atLeastOne = false;
         sb.append("\"items\":[");
-        if (productCodeList.size() > 0) {
-            for (int i = 0; i < productCodeList.size(); ++i) {
-                atLeastOne = true;
-                sb.append("\"")
-                        .append(productCodeList.get(i))
-                        .append("\",");
+        if (productCodes.size() > 0) {
+            for (int i = 0; i < productCodes.size(); ++i) {
+                sb.append(i > 0 ? ",\"" : "\"")
+                        .append(productCodes.get(i))
+                        .append("\"");
             }
-            if (atLeastOne) {
-                sb.deleteCharAt(sb.length() - 1);
-            }
-
-            sb.append(']');
         }
+        sb.append(']');
         return sb.toString();
     }
 
-    private synchronized String getTailorOptions() {
+    private synchronized String getTailorOptionsJson() {
         StringBuilder sb = new StringBuilder();
         boolean atLeastOne = false;
         sb.append("\"tailoring\":[");
-        if (tailoringOptionList.size() > 0) {
-            for (int i = 0; i < tailoringOptionList.size(); ++i) {
-                atLeastOne = true;
-                sb.append("\"")
-                        .append(tailoringOptionList.get(i))
-                        .append("\",");
-
+        if (tailoringOptions.size() > 0) {
+            for (int i = 0; i < tailoringOptions.size(); ++i) {
+                sb.append(i > 0 ? ",\"" : "\"")
+                        .append(tailoringOptions.get(i))
+                        .append("\"");
             }
-            if (atLeastOne) {
-                sb.deleteCharAt(sb.length() - 1);
-            }
-
-            sb.append(']');
         }
+        sb.append(']');
+
         return sb.toString();
     }
-
 
 }

@@ -27,6 +27,8 @@ public class WxBriefRequestActivity extends MasterActivity {
         return   WxBriefRequestFragment.newInstance(taskId);
     }
 
+
+
     public static class Builder {
 
         private Bundle bundle;

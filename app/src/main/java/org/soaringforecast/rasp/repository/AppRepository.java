@@ -2,8 +2,12 @@ package org.soaringforecast.rasp.repository;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Environment;
+import android.util.Base64;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
@@ -44,6 +48,7 @@ import org.soaringforecast.rasp.windy.WindyAltitude;
 import org.soaringforecast.rasp.windy.WindyLayer;
 import org.soaringforecast.rasp.windy.WindyModel;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
@@ -63,6 +68,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -88,6 +94,10 @@ import timber.log.Timber;
 
 public class AppRepository implements CacheTimeListener {
 
+    private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final String ONE_800_WX_BRIEF_FILE_NAME = "WxBrief.pdf";
+    public static final String MIME_TYPE_PDF = "application/pdf";
+
     private static AppRepository appRepository;
     private static AppDatabase db;
     private static ArrayList<SatelliteRegion> satelliteRegions;
@@ -95,7 +105,6 @@ public class AppRepository implements CacheTimeListener {
     private static ArrayList<WindyModel> windyModels;
     private static ArrayList<WindyLayer> windyLayers;
     private static ArrayList<WindyAltitude> windyAltitudes;
-    private static final String NEW_LINE = System.getProperty("line.separator");
 
     private Context context;
     private AirportDao airportDao;
@@ -116,7 +125,6 @@ public class AppRepository implements CacheTimeListener {
     private AviationWeatherGovApi aviationWeatherGovApi;
     private UsgsApi usgsApi;
     private One800WxBriefApi one800WxBriefApi;
-
 
     private AppRepository(Context context) {
         db = AppDatabase.getDatabase(context);
@@ -1025,15 +1033,15 @@ public class AppRepository implements CacheTimeListener {
 
     //----- 1800WXBrief --------------------------------------------------------------
 
-    public Single<ArrayList<BriefingOption>> getWxBriefProductCodes(Constants.TypeOfBrief selectedTypeOfBrief){
-        return getWxBriefingOptions(R.raw.wxbrief_product_codes,selectedTypeOfBrief);
+    public Single<ArrayList<BriefingOption>> getWxBriefProductCodes(Constants.TypeOfBrief selectedTypeOfBrief) {
+        return getWxBriefingOptions(R.raw.wxbrief_product_codes, selectedTypeOfBrief);
     }
 
-    public   Single<ArrayList<BriefingOption>> getWxBriefNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
+    public Single<ArrayList<BriefingOption>> getWxBriefNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
         return getWxBriefingOptions(R.raw.wxbrief_ngbv2_options, selectedTypeOfBrief);
     }
 
-    public   Single<ArrayList<BriefingOption>> getWxBriefNonNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
+    public Single<ArrayList<BriefingOption>> getWxBriefNonNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
         return getWxBriefingOptions(R.raw.wxbrief_non_ngbv2_options, selectedTypeOfBrief);
     }
 
@@ -1077,13 +1085,48 @@ public class AppRepository implements CacheTimeListener {
         RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\""), parms);
         return Single.create(emitter -> {
             try {
-                Call<RouteBriefing> call = one800WxBriefApi.getRouteBriefing(body);
+                Call<RouteBriefing> call = one800WxBriefApi.getRouteBriefing(get1800WXBriefAPIAuthorization(), body);
                 RouteBriefing routeBriefing = call.execute().body();
                 emitter.onSuccess(routeBriefing);
             } catch (Exception e) {
                 emitter.onError(e);
             }
         });
+    }
+
+    private String get1800WXBriefAPIAuthorization() {
+        String encoded = Base64.encodeToString((context.getString(R.string.One800WXBriefID)
+                + ":"
+                + context.getString(R.string.One800WXBriefPassword)).getBytes(), Base64.NO_WRAP);
+        return "Basic " + encoded;
+    }
+
+    public Single<Uri> writeWxBriefToDownloadsDirectory(final String briefAsBase64PdfString) {
+        return Single.create(emitter -> {
+            byte[] wxBriefPdf = Base64.decode(briefAsBase64PdfString, Base64.DEFAULT);
+            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File wxBriefFile = new File(path, ONE_800_WX_BRIEF_FILE_NAME);
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(wxBriefFile, false));
+            bos.write(wxBriefPdf);
+            emitter.onSuccess(FileProvider.getUriForFile(context
+                    ,context.getApplicationContext().getPackageName() + ".provider",
+                    wxBriefFile));
+        });
+    }
+
+
+    public boolean canDisplayPdf(){
+        return canDisplayPdf(context);
+    }
+    public static boolean canDisplayPdf(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent testIntent = new Intent(Intent.ACTION_VIEW);
+        testIntent.setType(MIME_TYPE_PDF);
+        if (packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // ---------------- Miscellaneous -----------------------------------------------

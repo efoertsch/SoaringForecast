@@ -18,10 +18,10 @@ public class BriefingOptions {
     private ArrayList<String> productCodeDescriptions = new ArrayList<>();
     // only associated products with a 'true' value are to be included in the wxbrief api call
     // same size as productCodeDescriptions
-    private  boolean[]  productCodesSelected ;
+    private boolean[] productCodesSelected;
     // index of this option back to the full set of productCodes
     // same size as productCodeDescriptions
-    private ArrayList<Integer> productCodeListIndex = new ArrayList<>() ;
+    private ArrayList<Integer> productCodeListIndex = new ArrayList<>();
 
     // Full set of tailoringOptions
     private ArrayList<BriefingOption> fullTailoringOptionList;
@@ -29,27 +29,27 @@ public class BriefingOptions {
     private ArrayList<String> tailorOptionDescriptions = new ArrayList<>();
     // only associated options with a 'true' value are to be included in the wxbrief api call
     // same size as tailorOptionDescriptions
-    private boolean[] tailoringOptionsSelected ;
+    private boolean[] tailoringOptionsSelected;
     // index of this option back to the full set of tailoringOptions
     // same size as tailorOptionDescriptions
-    private ArrayList<Integer>  tailoringOptionListIndex  = new ArrayList<>();
+    private ArrayList<Integer> tailoringOptionListIndex = new ArrayList<>();
 
     Constants.TypeOfBrief typeOfBrief;
 
-    private BriefingOptions(){};
+    private BriefingOptions() {
+    }
+
+    ;
 
     /**
-     *
      * @param fullProductCodeList
      * @param fullTailoringOptionList - may be NGBV2 or non-NGBV2 options
      */
-    public BriefingOptions(ArrayList<BriefingOption> fullProductCodeList, ArrayList<BriefingOption> fullTailoringOptionList){
+    public BriefingOptions(ArrayList<BriefingOption> fullProductCodeList, ArrayList<BriefingOption> fullTailoringOptionList) {
         this.fullProductCodeList = fullProductCodeList;
         this.fullTailoringOptionList = fullTailoringOptionList;
         createProductCodeDisplayFields();
         createTailoringOptionsDisplayFields();
-
-
     }
 
     private void createProductCodeDisplayFields() {
@@ -57,7 +57,7 @@ public class BriefingOptions {
         productCodeDescriptions.clear();
         productCodeListIndex.clear();
         ArrayList<Boolean> selectedList = new ArrayList<>();
-        for (int i = 0; i < fullProductCodeList.size() - 1; ++i) {
+        for (int i = 0; i < fullProductCodeList.size() ; ++i) {
             if (fullProductCodeList.get(i).isBriefOption()) {
                 briefingOption = fullProductCodeList.get(i);
                 productCodeDescriptions.add(briefingOption.getDisplayDescription());
@@ -65,7 +65,7 @@ public class BriefingOptions {
                 productCodeListIndex.add(i);
             }
         }
-        productCodesSelected =  new boolean[selectedList.size()];
+        productCodesSelected = new boolean[selectedList.size()];
         for (int i = 0; i < productCodesSelected.length; ++i) {
             productCodesSelected[i] = selectedList.get(i);
         }
@@ -83,12 +83,40 @@ public class BriefingOptions {
 
     /**
      * Replace the list of product codes to be sent in a briefing request.
+     *
      * @param selectedProductCodes
      */
-    public void updateProductCodesSelected(boolean[] selectedProductCodes ){
-        if (selectedProductCodes.length == productCodesSelected.length){
+    public void updateProductCodesSelected(boolean[] selectedProductCodes) {
+        if (selectedProductCodes.length == productCodesSelected.length) {
             productCodesSelected = selectedProductCodes;
         }
+    }
+
+
+    public ArrayList<String> getProductCodesForBriefing() {
+        BriefingOption briefingOption;
+        ArrayList<String> productCodesList = new ArrayList<>();
+
+        int j = 0;
+        for (int i = 0; i < fullProductCodeList.size(); ++i) {
+            if (i == productCodeListIndex.get(j)) {
+                // this option was one that was displayed to user to see what user wants
+                if (productCodesSelected[j]) {
+                    // User doesn't want to see this option so we add EXCLUDE value to list
+                    briefingOption = fullProductCodeList.get(i);
+                    productCodesList.add(briefingOption.getWxBriefParameterName());
+                } else {
+                    // see if we should send it based on default value
+                    briefingOption = fullProductCodeList.get(i);
+                    if (briefingOption.isSelectForBrief()) {
+                        // Default is to add this product code.
+                        productCodesList.add(briefingOption.getWxBriefParameterName());
+                    }
+                }
+                ++j;
+            }
+        }
+        return productCodesList;
     }
 
     // Display a list of tailoring options to include (do not send EXCLUDE key value)  in a brief
@@ -97,7 +125,7 @@ public class BriefingOptions {
         tailorOptionDescriptions.clear();
         tailoringOptionListIndex.clear();
         ArrayList<Boolean> selectedList = new ArrayList<>();
-        for (int i = 0; i < fullTailoringOptionList.size() - 1; ++i) {
+        for (int i = 0; i < fullTailoringOptionList.size() ; ++i) {
             if (fullTailoringOptionList.get(i).isBriefOption()) {
                 briefingOption = fullTailoringOptionList.get(i);
                 tailorOptionDescriptions.add(briefingOption.getDisplayDescription());
@@ -109,24 +137,50 @@ public class BriefingOptions {
         for (int i = 0; i < tailoringOptionsSelected.length; ++i) {
             tailoringOptionsSelected[i] = selectedList.get(i);
         }
-
     }
 
 
+    public ArrayList<String> getTailoringOptionsForBriefing() {
+        BriefingOption briefingOption;
+        ArrayList<String> tailoringOptionList = new ArrayList<>();
+
+        int j = 0;
+        for (int i = 0; i < fullTailoringOptionList.size(); ++i) {
+            if (j < tailoringOptionListIndex.size() && i == tailoringOptionListIndex.get(j)) {
+                // this option was one that was displayed to user to see what user wants
+                if (!tailoringOptionsSelected[j]) {
+                    // User doesn't want to see this option so we add EXCLUDE value to list
+                    briefingOption = fullTailoringOptionList.get(i);
+                    tailoringOptionList.add(briefingOption.getWxBriefParameterName());
+                }
+
+            } else {
+                // see if we should send it based on default value
+                briefingOption = fullTailoringOptionList.get(i);
+                if (!briefingOption.isSelectForBrief()) {
+                    // Default is to not include this options so we add EXCLUDE value to list
+                    tailoringOptionList.add(briefingOption.getWxBriefParameterName());
+                }
+            }
+            ++j;
+        }
+        return tailoringOptionList;
+    }
 
 
     /**
      * Update both the display list AND original list of tailoring options (as app can send EXCLUDE values
      * for those options not of interest to glider pilots (like inactive vors,...)
+     *
      * @param selectedTailoringOptions
      */
-    public void updateTailoringOptionsSelected(boolean[] selectedTailoringOptions){
+    public void updateTailoringOptionsSelected(boolean[] selectedTailoringOptions) {
         BriefingOption briefingOption;
-        if (selectedTailoringOptions.length == tailoringOptionsSelected.length){
-            tailoringOptionsSelected  = selectedTailoringOptions;
+        if (selectedTailoringOptions.length == tailoringOptionsSelected.length) {
+            tailoringOptionsSelected = selectedTailoringOptions;
             for (int i = 0; i < selectedTailoringOptions.length; ++i) {
                 briefingOption = fullTailoringOptionList.get(tailoringOptionListIndex.get(i));
-                       briefingOption.setSelectForBrief(selectedTailoringOptions[i]);
+                briefingOption.setSelectForBrief(selectedTailoringOptions[i]);
 
             }
         }
@@ -139,7 +193,5 @@ public class BriefingOptions {
     public boolean[] getSelectedTailoringOptions() {
         return tailoringOptionsSelected;
     }
-
-
 
 }

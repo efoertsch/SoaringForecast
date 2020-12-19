@@ -526,7 +526,7 @@ public class AppPreferences {
 
     // For 1800wxbrief
     public String getAircraftRegistration(){
-        return sharedPreferences.getString(AIRCRAFT_REGISTRATION, null);
+        return sharedPreferences.getString(AIRCRAFT_REGISTRATION, " ");
     }
 
     public void setAircraftRegistration(String aircraftRegistration){

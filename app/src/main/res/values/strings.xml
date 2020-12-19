@@ -425,14 +425,17 @@
     <string name="undefined_error_occurred_on_1800wxbrief_request">Oops. Undefined error occurred on 1800WxBrief request.</string>
     <string name="invalid_aircraftid">"Invalid aircraft registration id. "</string>
     <string name="invalid_wxbrief_web_username">Invalid 1800WXBrief user name. Must be email address.</string>
-    <string name="route_corridor_width_must_be_between_25_and_100">Route Corridor width must be between 25 and 100.</string>
-    <string name="winds_aloft_corridor_must_be_between_100_and_600">Winds aloft corridor must be between 100 and 600.</string>
-    <string name="offical_wxbrief">Offical briefing?</string>
+    <string name="route_corridor_width_min_and_max_range">Route Corridor width must be between %1$d and %2$d.</string>
+    <string name="winds_aloft_corridor_min_to_max_value">Winds aloft corridor must be between %1$d and %2$d.</string>
+    <string name="offical_wxbrief">Official briefing?</string>
     <string name="check_to_record_briefing_in_1800wxbrief_system">If checked your request will be recorded as an official briefing in 1800WXBrief system.</string>
     <string name="tailoring_options">Tailoring Options</string>
     <string name="select_wx800brief_tailoring_options">Select Tailoring Options</string>
     <string name="select_wx800brief_product_options">Select Product Options</string>
     <string name="product_options">Product Options</string>
     <string name="type_of_brief">Type Of Brief</string>
+    <string name="reporting_options">Reporting Options</string>
+    <string name="report">Report</string>
+    <string name="pdf_downloaded_but_no_pdf_viewer">The PDF was downloaded to the Downloads directory, but Android says your device does not have a PDF viewer installed to view it.</string>
 
 </resources>

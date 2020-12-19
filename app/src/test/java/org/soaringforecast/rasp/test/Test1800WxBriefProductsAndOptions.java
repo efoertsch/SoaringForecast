@@ -1,6 +1,7 @@
 package org.soaringforecast.rasp.test;
 
 import org.junit.Test;
+import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.one800wxbrief.options.BriefingOption;
 
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ public class Test1800WxBriefProductsAndOptions {
 
     @Test
     public void testReadOf1800WXBrief_Products_CSV_file() throws IOException {
+        Constants.TypeOfBrief selectedTypeOfBrief = Constants.TypeOfBrief.STANDARD;
         BufferedReader reader = null;
         String line;
         int linesRead = 0;
