@@ -85,7 +85,7 @@ dependencies {
     final ANDROID_MAPS_UTILS = '0.5+'
     final RX_ANDROID = '2.0.2'
     final RX_JAVA = '2.1.12'
-    final RETROFIT = '2.2.0'
+    final RETROFIT = '2.7.0'
     final SIMPLE_XML = '2.1.0'
     final GSON = '2.8.2'
     final GSON_CONVERTER = '2.3.0'
