@@ -91,14 +91,14 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         });
 
         // CupStyles
-        turnpointEditViewModel.getCupStyles().observe(this, cupStyles -> {
+        turnpointEditViewModel.getCupStyles().observe(getViewLifecycleOwner(), cupStyles -> {
             cupStyleAdapter.clear();
             cupStyleAdapter.addAll(cupStyles);
         });
 
         // Placing setting spinner position and onItemSelected here as couldn't get it to work in
         // viewmodel and xml databinding
-        turnpointEditViewModel.getCupStylePosition().observe(this, cupStylePosition -> {
+        turnpointEditViewModel.getCupStylePosition().observe(getViewLifecycleOwner(), cupStylePosition -> {
             turnpointEditView.turnpointEditStyleSpinner.setSelection(cupStylePosition, false);
         });
 
@@ -116,16 +116,16 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
                 }
         );
 
-        turnpointEditViewModel.getOKToSaveFlag().observe(this, okToSave -> {
+        turnpointEditViewModel.getOKToSaveFlag().observe(getViewLifecycleOwner(), okToSave -> {
             this.okToSave = okToSave;
             getActivity().invalidateOptionsMenu();
         });
 
-        turnpointEditViewModel.getNeedToSaveUpdates().observe(this, needToSave -> {
+        turnpointEditViewModel.getNeedToSaveUpdates().observe(getViewLifecycleOwner(), needToSave -> {
             this.needToSave = needToSave;
         });
 
-        turnpointEditViewModel.getEditMode().observe(this, inEditMode -> {
+        turnpointEditViewModel.getEditMode().observe(getViewLifecycleOwner(), inEditMode -> {
             this.inEditMode = inEditMode;
             enableTurnpointEditting(inEditMode);
 
@@ -227,6 +227,7 @@ public class TurnpointEditFragment extends DaggerFragment implements CheckBefore
         turnpointEditView.turnpointEditStyleSpinner.setEnabled(inEditMode);
         turnpointEditView.turnpointEditRunwayDirection.setEnabled(inEditMode);
         turnpointEditView.turnpointEditRunwayLength.setEnabled(inEditMode);
+        turnpointEditView.turnpointEditRunwayWidth.setEnabled(inEditMode);
         turnpointEditView.turnpointEditAirportFrequency.setEnabled(inEditMode);
         turnpointEditView.turnpointEditDescription.setEnabled(inEditMode);
         getActivity().invalidateOptionsMenu();

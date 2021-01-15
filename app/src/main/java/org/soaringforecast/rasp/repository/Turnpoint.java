@@ -32,7 +32,7 @@ import androidx.room.PrimaryKey;
 @Entity(indices = {@Index(value = {"title", "code"}, unique = true), @Index("code")})
 public class Turnpoint implements Cloneable, Parcelable {
 
-    private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s \nDirection: %7$s Length:%8$s Width:%9$s\n Width:%Freq: %10$s\n%11$s";
+    private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s Dir: %7$s Lngth:%8$s Width:%9$s\nFreq: %10$s\n%11$s";
     private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s \n%7$s ";
     private static final String TURNPOINT_LAT_DECIMAL_FORMAT = "%1$.5f";
     private static final String TURNPOINT_LONG_DECIMAL_FORMAT = "%1$.5f";

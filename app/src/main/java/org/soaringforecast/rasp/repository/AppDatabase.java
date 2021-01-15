@@ -46,7 +46,7 @@ public abstract class AppDatabase extends RoomDatabase {
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE  Turnpoint  ADD COLUMN rwwidth TEXT NOT NULL DEFAULT '' ");
+            database.execSQL("ALTER TABLE  Turnpoint  ADD COLUMN runwayWidth TEXT NOT NULL DEFAULT '' ");
         }
     };
 

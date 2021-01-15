@@ -291,7 +291,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/turnpoint_edit_runway_length_width"
+                    android:id="@+id/turnpoint_edit_runway_width_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:errorEnabled="true"
@@ -316,7 +316,7 @@
                     app:errorEnabled="true"
                     app:errorText="@{viewModel.frequencyErrorText}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_length_width">
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_width_layout">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/turnpoint_edit_airport_frequency"
