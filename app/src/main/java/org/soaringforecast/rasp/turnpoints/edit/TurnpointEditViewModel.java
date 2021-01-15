@@ -54,6 +54,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     private String elevationErrorText = null;
     private String directionErrorText = null;
     private String lengthErrorText = null;
+    private String widthErrorText = null;
     private String frequencyErrorText = null;
     private String elevationPreference;
     private boolean noErrors = true;
@@ -72,12 +73,14 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     private static final String elevationRegex = "([0-9]{1,4}(\\.[0-9])?|(\\.[0-9]))(m|ft)";
     private static final String directionRegex = "(360|(3[0-5][0-9])|([12][0-9][0-9])|(0[0-9][0-9]))";
     private static final String lengthRegex = "([0-9]{1,5}((\\.[0-9])?))(m|ft)";
+    private static final String widthRegex = "([0-9]{1,3})(m|ft)";
     private static final String frequencyRegex = "1[1-3][0-9]\\.[0-9][0-9](0|5)";
     private static final Pattern longitudeCupPattern = Pattern.compile(longitudeCupRegex);
     private static final Pattern latitudeCupPattern = Pattern.compile(latitudeCupRegex);
     private static final Pattern elevationPattern = Pattern.compile(elevationRegex);
     private static final Pattern directionPattern = Pattern.compile(directionRegex);
     private static final Pattern lengthPattern = Pattern.compile(lengthRegex);
+    private static final Pattern widthPattern = Pattern.compile(widthRegex);
     private static final Pattern frequencyPatten = Pattern.compile(frequencyRegex);
     private AppPreferences appPreferences;
     private boolean emailCupFile = false;
@@ -460,6 +463,33 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     }
 
     @Bindable
+    public String getWidth() {
+        return turnpoint.getRunwayWidth();
+    }
+
+    // Only used with Waypoint style types 2, 3, 4 and 5
+    @Bindable
+    public void setWidth(String value) {
+        value = value.trim();
+        validateWidth(value);
+        turnpoint.setRunwayWidth(value);
+    }
+
+    private void validateWidth(String value) {
+        if ((value.isEmpty() && !isLandable())
+                || (isLandable() && widthPattern.matcher(value).matches())) {
+            if (!originalTurnpoint.getRunwayWidth().equals(value)) {
+                needToSaveUpdates.setValue(true);
+            }
+            widthErrorText = null;
+        } else {
+            widthErrorText = getApplication().getString(R.string.runway_width_error);
+        }
+        setSaveIndicator();
+        notifyPropertyChanged(org.soaringforecast.rasp.BR.widthErrorText);
+    }
+
+    @Bindable
     public String getFrequency() {
         return turnpoint.getFrequency();
     }
@@ -539,6 +569,11 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     }
 
     @Bindable
+    public String getWidthErrorText() {
+        return widthErrorText;
+    }
+
+    @Bindable
     public String getFrequencyErrorText() {
         return frequencyErrorText;
     }
@@ -555,15 +590,20 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         if (turnpoint.isLandable()) {
             validateDirection(turnpoint.getDirection());
             validateLength(turnpoint.getLength());
+            validateWidth(turnpoint.getRunwayWidth());
         } else {
             turnpoint.setDirection("");
             turnpoint.setLength("");
+            turnpoint.setRunwayWidth("");
             directionErrorText = null;
             notifyPropertyChanged(org.soaringforecast.rasp.BR.directionErrorText);
             notifyPropertyChanged(org.soaringforecast.rasp.BR.direction);
             lengthErrorText = null;
             notifyPropertyChanged(org.soaringforecast.rasp.BR.lengthErrorText);
             notifyPropertyChanged(org.soaringforecast.rasp.BR.length);
+            widthErrorText = null;
+            notifyPropertyChanged(org.soaringforecast.rasp.BR.widthErrorText);
+            notifyPropertyChanged(org.soaringforecast.rasp.BR.width);
         }
     }
 
@@ -610,6 +650,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         elevationErrorText = null;
         directionErrorText = null;
         lengthErrorText = null;
+        widthErrorText = null;
         frequencyErrorText = null;
         noErrors = true;
         notifyChange();
@@ -624,6 +665,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
                 && elevationErrorText == null
                 && directionErrorText == null
                 && lengthErrorText == null
+                && widthErrorText == null
                 && frequencyErrorText == null);
 
         okToSave.setValue(noErrors);
@@ -632,8 +674,6 @@ public class TurnpointEditViewModel extends ObservableViewModel {
     MutableLiveData<Boolean> getOKToSaveFlag() {
         return okToSave;
     }
-
-
 
     @Bindable
     public String getFormattedTurnpointDetails() {
@@ -678,7 +718,6 @@ public class TurnpointEditViewModel extends ObservableViewModel {
         notifyLatLongListeners();
 
     }
-
 
     private void setElevationFromUsgs(NationalMap nationalMap) {
         if (nationalMap != null && nationalMap.getUSGSElevationPointQueryService() != null

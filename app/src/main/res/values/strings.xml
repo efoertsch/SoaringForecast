@@ -350,6 +350,7 @@
     <string name="elevation_error">Elevation must be number followed by m or ft.</string>
     <string name="direction_error">Empty or 3 digit direction from 000 - 360.</string>
     <string name="runway_length_error">Empty or format nnnn.n(ft|m)</string>
+    <string name="runway_width_error">Empty or format nnn(ft|m)</string>
     <string name="frequency_format_errror">Empty or format of nnn.nnn (last digit 0 or 5)</string>
     <string name="turnpoint_cup_style_type">Turnpoint Type</string>
     <string name="turnpoint_type">Turnpoint type</string>
@@ -410,5 +411,11 @@
     <string name="action_customization">Customization</string>
     <string name="action_information">Information</string>
     <string name="airport_removed">Airport Removed</string>
+    <string name="invalid_seeyou_file_format">Invalid SeeYou Format</string>
+    <string name="unknown_seeyou_file_format">The header line of the SeeYou file: \n %1$s \n is not a known SeeYou format and file can not be imported. Click %2$s to send email for support or OK to return.</string>
+    <string name="send_email">Send Email</string>
+    <string name="invalid_seeyou_file_email_text">"An attempt was made to import a SeeYou file with a format unknown to the app: \n\n %1$s \n\n  Please enter additional details , such as where you got the turnpoint file or better yet add file as attachment to this email. "</string>
+    <string name="error_in_emailing_invalid_seeyou_format">Oops. An error occurred in creating email!</string>
+    <string name="waypoint_runway_width">Runway Width</string>
 
 </resources>

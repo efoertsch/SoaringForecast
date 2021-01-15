@@ -17,13 +17,22 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 //SeeYou cup file format
+// Official doc - http://download.naviter.com/docs/CUP-file-format-description.pdf
+// Original code based on
 //Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description
 //"Sterling","3B3",US,4225.500N,07147.470W,459ft,5,160,3086ft,122.900,"Home Field, Finish Point, Turn Point, 3B3, RW width: 40, CTAF: 122.9, Fuel: 100LL"
+//
+// 1/14/2021 from John Leibacher (Turnpoint Exchange guy) he has received multiple variations in SeeYou format files
+// name,code,country,lat,lon,elev,style,rwdir,rwlen,rwwidth,freq,desc
+//name,code,country,lat,lon,elev,style,rwdir,rwlen,rwwidth,freq,desc,userdata,pics
+//Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency
+//Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description
+
 
 @Entity(indices = {@Index(value = {"title", "code"}, unique = true), @Index("code")})
 public class Turnpoint implements Cloneable, Parcelable {
 
-    private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s \nDirection: %7$s Length:%8$s\nFreq: %9$s\n%10$s";
+    private static final String AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s \nDirection: %7$s Length:%8$s Width:%9$s\n Width:%Freq: %10$s\n%11$s";
     private static final String NON_AIRPORT_DETAILS = "%1$s  %2$s\n%3$s\nLat: %4$s Long: %5$s\nElev: %6$s \n%7$s ";
     private static final String TURNPOINT_LAT_DECIMAL_FORMAT = "%1$.5f";
     private static final String TURNPOINT_LONG_DECIMAL_FORMAT = "%1$.5f";
@@ -31,6 +40,20 @@ public class Turnpoint implements Cloneable, Parcelable {
     private static final DecimalFormat longitudeFormat = new DecimalFormat("00000.000");
     private static final String QUOTE = "\"";
     private static final String COMMA = ",";
+
+    public enum SeeYouFormat {
+        WITH_WIDTH_AND_DESCRIPTION  ( "name,code,country,lat,lon,elev,style,rwdir,rwlen,rwwidth,freq,desc" ),
+        NO_WIDTH_OR_DESCRIPTION ("Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency"),
+        NO_WIDTH_WITH_DESCRIPTION ("Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description");
+        private final String fields;
+        SeeYouFormat(String fields) {
+            this.fields = fields;
+        }
+        public String getFields(){
+            return this.fields;
+        }
+    }
+
     @NonNull
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -59,6 +82,8 @@ public class Turnpoint implements Cloneable, Parcelable {
 
     private String description = "";
 
+    private String runwayWidth = "";
+
     public Turnpoint() {
     }
 
@@ -76,10 +101,11 @@ public class Turnpoint implements Cloneable, Parcelable {
         newTurnpoint.length = turnpoint.length;
         newTurnpoint.frequency = turnpoint.frequency;
         newTurnpoint.description = turnpoint.description;
+        newTurnpoint.runwayWidth = turnpoint.runwayWidth;
         return newTurnpoint;
     }
 
-    public static Turnpoint createTurnpointFromCSVDetail(String turnpointDetail) {
+    public static Turnpoint createTurnpointFromCSVDetail(String turnpointDetail, SeeYouFormat seeYouFormat) {
         List<String> turnpointDetails = CSVUtils.parseLine(turnpointDetail);
 
         Turnpoint turnpoint = new Turnpoint();
@@ -95,14 +121,42 @@ public class Turnpoint implements Cloneable, Parcelable {
             turnpoint.style = turnpointDetails.get(6);
             turnpoint.direction = turnpointDetails.get(7);
             turnpoint.length = turnpointDetails.get(8);
-            turnpoint.frequency = turnpointDetails.get(9);
-            turnpoint.description = turnpointDetails.get(10);
+
+            ///Following depends on file format
+            switch (seeYouFormat) {
+                case WITH_WIDTH_AND_DESCRIPTION:
+                    turnpoint.frequency = turnpointDetails.get(10);
+                    turnpoint.description = turnpointDetails.get(11);
+                    turnpoint.runwayWidth = turnpointDetails.get(9);
+                    break;
+                case NO_WIDTH_OR_DESCRIPTION:
+                    turnpoint.frequency = turnpointDetails.get(9);
+                    turnpoint.description = "";
+                    turnpoint.runwayWidth = "";
+                    break;
+                case NO_WIDTH_WITH_DESCRIPTION:
+                default:
+                    turnpoint.frequency = turnpointDetails.get(9);
+                    turnpoint.description = turnpointDetails.get(10);
+                    turnpoint.runwayWidth = "";
+                    break;
+            }
 
         } catch (Exception e) {
             turnpoint = null;
         }
         return turnpoint;
 
+    }
+
+    public static SeeYouFormat determineTurnpointFileFormat(String turnpointLine) {
+        SeeYouFormat formats[] = SeeYouFormat.values();
+       for (SeeYouFormat format: formats){
+           if (turnpointLine.startsWith(format.fields)){
+               return format;
+           }
+        }
+       return null;
     }
 
     public void setId(@NonNull long id) {
@@ -212,6 +266,14 @@ public class Turnpoint implements Cloneable, Parcelable {
         this.description = description;
     }
 
+    public String getRunwayWidth() {
+        return runwayWidth;
+    }
+
+    public void setRunwayWidth(String runwayWidth) {
+        this.runwayWidth = runwayWidth;
+    }
+
 
     public void updateTurnpoint(Turnpoint turnpointUpdate) {
         country = turnpointUpdate.getCountry();
@@ -223,6 +285,7 @@ public class Turnpoint implements Cloneable, Parcelable {
         length = turnpointUpdate.getLength();
         frequency = turnpointUpdate.getFrequency();
         description = turnpointUpdate.getDescription();
+        runwayWidth = turnpointUpdate.getRunwayWidth();
 
     }
 
@@ -338,7 +401,7 @@ public class Turnpoint implements Cloneable, Parcelable {
                         , cupFormat ?  getLatitudeInCupFormat(latitudeDeg) : String.format(TURNPOINT_LAT_DECIMAL_FORMAT, latitudeDeg)
                         , cupFormat ?  getLongitudeInCupFormat(longitudeDeg) :String.format(TURNPOINT_LONG_DECIMAL_FORMAT, longitudeDeg)
                         , getElevation()
-                        , getDirection(), getLength()
+                        , getDirection(), getLength(), getRunwayWidth()
                         , getFrequency()
                         , getDescription());
                 break;
@@ -436,6 +499,7 @@ public class Turnpoint implements Cloneable, Parcelable {
         dest.writeString(this.length);
         dest.writeString(this.frequency);
         dest.writeString(this.description);
+        dest.writeString(this.runwayWidth);
     }
 
     protected Turnpoint(Parcel in) {
@@ -451,6 +515,7 @@ public class Turnpoint implements Cloneable, Parcelable {
         this.length = in.readString();
         this.frequency = in.readString();
         this.description = in.readString();
+        this.runwayWidth = in.readString();
     }
 
     public static final Parcelable.Creator<Turnpoint> CREATOR = new Parcelable.Creator<Turnpoint>() {
@@ -464,5 +529,6 @@ public class Turnpoint implements Cloneable, Parcelable {
             return new Turnpoint[size];
         }
     };
+
 
 }

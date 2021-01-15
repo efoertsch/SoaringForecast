@@ -291,13 +291,32 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/turnpoint_edit_runway_length_width"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.widthErrorText}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_length_layout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/turnpoint_edit_runway_width"
+                        style="@style/turnpointEditStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/waypoint_runway_width"
+                        android:text="@={viewModel.width}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/turnpoint_edit_airport_frequency_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:errorEnabled="true"
                     app:errorText="@{viewModel.frequencyErrorText}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_length_layout">
+                    app:layout_constraintTop_toBottomOf="@+id/turnpoint_edit_runway_length_width">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/turnpoint_edit_airport_frequency"

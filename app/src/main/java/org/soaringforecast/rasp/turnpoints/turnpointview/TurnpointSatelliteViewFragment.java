@@ -1,6 +1,7 @@
 package org.soaringforecast.rasp.turnpoints.turnpointview;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -118,7 +119,7 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
 
         turnpointSatelliteView.turnpointMapDetails.setMovementMethod(new ScrollingMovementMethod());
 
-        turnpointEditViewModel.getEditMode().observe(this, inEditMode -> {
+        turnpointEditViewModel.getEditMode().observe(getViewLifecycleOwner(), inEditMode -> {
             this.inEditMode = inEditMode;
             getActivity().invalidateOptionsMenu();
             if (inEditMode || (turnpointEditViewModel.getLatitudeDeg() == 0 && turnpointEditViewModel.getLongitudeDeg() == 0)) {
@@ -250,7 +251,9 @@ public class TurnpointSatelliteViewFragment extends DaggerFragment implements On
          * Get the best and most recent location of the device, which may be null in rare
          * cases when a location is not available.
          */
+        @SuppressLint("MissingPermission")
         Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+
         locationResult.addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // Set the map's camera position to the current location of the device.
