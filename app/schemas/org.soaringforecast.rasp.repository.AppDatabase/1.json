@@ -70,7 +70,7 @@
             "columnNames": [
               "name"
             ],
-            "createSql": "CREATE  INDEX `index_Airport_name` ON `${TABLE_NAME}` (`name`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Airport_name` ON `${TABLE_NAME}` (`name`)"
           },
           {
             "name": "index_Airport_state_name",
@@ -79,7 +79,7 @@
               "state",
               "name"
             ],
-            "createSql": "CREATE  INDEX `index_Airport_state_name` ON `${TABLE_NAME}` (`state`, `name`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Airport_state_name` ON `${TABLE_NAME}` (`state`, `name`)"
           },
           {
             "name": "index_Airport_municipality",
@@ -87,7 +87,7 @@
             "columnNames": [
               "municipality"
             ],
-            "createSql": "CREATE  INDEX `index_Airport_municipality` ON `${TABLE_NAME}` (`municipality`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Airport_municipality` ON `${TABLE_NAME}` (`municipality`)"
           }
         ],
         "foreignKeys": []
@@ -183,7 +183,7 @@
               "title",
               "code"
             ],
-            "createSql": "CREATE UNIQUE INDEX `index_Turnpoint_title_code` ON `${TABLE_NAME}` (`title`, `code`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Turnpoint_title_code` ON `${TABLE_NAME}` (`title`, `code`)"
           },
           {
             "name": "index_Turnpoint_code",
@@ -191,7 +191,7 @@
             "columnNames": [
               "code"
             ],
-            "createSql": "CREATE  INDEX `index_Turnpoint_code` ON `${TABLE_NAME}` (`code`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Turnpoint_code` ON `${TABLE_NAME}` (`code`)"
           }
         ],
         "foreignKeys": []
@@ -312,7 +312,7 @@
             "columnNames": [
               "taskId"
             ],
-            "createSql": "CREATE  INDEX `index_TaskTurnpoint_taskId` ON `${TABLE_NAME}` (`taskId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TaskTurnpoint_taskId` ON `${TABLE_NAME}` (`taskId`)"
           }
         ],
         "foreignKeys": [
@@ -330,6 +330,7 @@
         ]
       }
     ],
+    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
       "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a7b5ad8d62b1177238f7905c4c2f4ed6\")"
