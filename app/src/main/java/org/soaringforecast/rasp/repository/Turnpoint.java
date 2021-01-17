@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.soaringforecast.rasp.turnpoints.common.CommonTurnpointsImportFragment;
 import org.soaringforecast.rasp.utils.CSVUtils;
 
 import java.text.DecimalFormat;
@@ -41,6 +42,7 @@ public class Turnpoint implements Cloneable, Parcelable {
     private static final String QUOTE = "\"";
     private static final String COMMA = ",";
 
+    // Besides determining the input file format, also used for exporting turnpoints to a file
     public enum SeeYouFormat {
         WITH_WIDTH_AND_DESCRIPTION  ( "name,code,country,lat,lon,elev,style,rwdir,rwlen,rwwidth,freq,desc" ),
         NO_WIDTH_OR_DESCRIPTION ("Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency"),
@@ -472,6 +474,7 @@ public class Turnpoint implements Cloneable, Parcelable {
         sb.append(style).append(COMMA);
         sb.append(direction).append(COMMA);
         sb.append(length).append(COMMA);
+        sb.append(runwayWidth).append(COMMA);
         sb.append(frequency).append(COMMA);
         if (!description.isEmpty()) {
             sb.append(QUOTE).append(description).append(QUOTE);
