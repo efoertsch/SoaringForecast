@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "a7b5ad8d62b1177238f7905c4c2f4ed6",
+    "version": 2,
+    "identityHash": "0809fe4b4cae7f6370883fcedb558c95",
     "entities": [
       {
         "tableName": "Airport",
@@ -94,7 +94,7 @@
       },
       {
         "tableName": "Turnpoint",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL, `country` TEXT, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `elevation` TEXT, `style` TEXT, `direction` TEXT, `length` TEXT, `frequency` TEXT, `description` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `code` TEXT NOT NULL, `country` TEXT, `latitudeDeg` REAL NOT NULL, `longitudeDeg` REAL NOT NULL, `elevation` TEXT, `style` TEXT, `direction` TEXT, `length` TEXT, `frequency` TEXT, `description` TEXT, `runwayWidth` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -165,6 +165,12 @@
           {
             "fieldPath": "description",
             "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "runwayWidth",
+            "columnName": "runwayWidth",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -333,7 +339,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a7b5ad8d62b1177238f7905c4c2f4ed6\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0809fe4b4cae7f6370883fcedb558c95')"
     ]
   }
 }

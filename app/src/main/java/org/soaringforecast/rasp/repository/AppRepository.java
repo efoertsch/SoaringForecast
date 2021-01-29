@@ -479,7 +479,7 @@ public class AppRepository implements CacheTimeListener {
     }
 
     private void writeFirstLineOfCuptFile(OutputStreamWriter outputStreamWriter) throws IOException {
-        outputStreamWriter.write("Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description"
+        outputStreamWriter.write(Turnpoint.SeeYouFormat.WITH_WIDTH_AND_DESCRIPTION.getFields()
                 + NEW_LINE);
     }
 

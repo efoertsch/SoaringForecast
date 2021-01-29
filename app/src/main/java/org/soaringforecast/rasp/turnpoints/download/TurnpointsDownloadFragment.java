@@ -20,6 +20,8 @@ import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.common.recycleradapter.GenericRecyclerViewAdapter;
 import org.soaringforecast.rasp.turnpoints.common.CommonTurnpointsImportFragment;
 import org.soaringforecast.rasp.turnpoints.messages.ImportFile;
+import org.soaringforecast.rasp.turnpoints.messages.SendEmail;
+import org.soaringforecast.rasp.turnpoints.messages.UnknownSeeYouFormat;
 
 import java.io.File;
 import java.util.List;
@@ -64,7 +66,7 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
 
     private void getTurnpoints() {
         // have permission so check for downloaded files
-        turnpointsImporterViewModel.getCupFiles().observe(this, files -> {
+        turnpointsImporterViewModel.getCupFiles().observe(getViewLifecycleOwner(), files -> {
             if (files == null || files.size() == 0) {
                 displayNoTurnpointFilesDialog();
             } else {
@@ -160,6 +162,37 @@ public class TurnpointsDownloadFragment extends CommonTurnpointsImportFragment<F
                             //TODO mail crash
                         });
         compositeDisposable.add(disposable);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(UnknownSeeYouFormat unknownSeeYouFormat) {
+        showProgressBar(false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.invalid_seeyou_file_format)
+                .setMessage(getString(R.string.unknown_seeyou_file_format, unknownSeeYouFormat.getSeeYouFormat(), getString(R.string.send_email)))
+                .setPositiveButton(R.string.ok, (dialog, id) -> {
+                    // just return
+                })
+                .setNegativeButton(R.string.send_email, (dialog, which) -> {
+                     sendEmail(unknownSeeYouFormat);
+                });
+        builder.create().show();
+
+    }
+
+    private void sendEmail(UnknownSeeYouFormat unknownSeeYouFormat) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.One800WXBriefID));
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.invalid_seeyou_file_format));
+            intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invalid_seeyou_file_email_text, unknownSeeYouFormat.getSeeYouFormat()));
+            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            post(new SnackbarMessage(getString(R.string.error_in_emailing_invalid_seeyou_format)));
+        }
     }
 
 }
