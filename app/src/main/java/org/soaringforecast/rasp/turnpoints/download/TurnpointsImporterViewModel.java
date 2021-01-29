@@ -3,6 +3,7 @@ package org.soaringforecast.rasp.turnpoints.download;
 import android.annotation.SuppressLint;
 import android.os.Environment;
 
+import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.repository.Turnpoint;
@@ -11,6 +12,7 @@ import org.soaringforecast.rasp.retrofit.TurnpointFileApi;
 import org.soaringforecast.rasp.retrofit.TurnpointFileRetrofit;
 import org.soaringforecast.rasp.turnpoints.json.TurnpointFile;
 import org.soaringforecast.rasp.turnpoints.json.TurnpointRegion;
+import org.soaringforecast.rasp.turnpoints.messages.UnknownSeeYouFormat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -188,11 +190,17 @@ public class TurnpointsImporterViewModel extends ViewModel {
         int numberTurnpoints = 0;
         String turnpointLine;
         Turnpoint turnpoint;
+        Turnpoint.SeeYouFormat  seeYouFormat = null;
         turnpointLine = reader.readLine();
         while (turnpointLine != null && !turnpointLine.isEmpty()) {
             linesRead++;
-            if (linesRead > 1) {
-                turnpoint = Turnpoint.createTurnpointFromCSVDetail(turnpointLine);
+            if (linesRead == 1 ) {
+               seeYouFormat =  Turnpoint.determineTurnpointFileFormat(turnpointLine);
+               if (seeYouFormat == null) {
+                   EventBus.getDefault().post(new UnknownSeeYouFormat(turnpointLine));
+               }
+            } else {
+                turnpoint = Turnpoint.createTurnpointFromCSVDetail(turnpointLine, seeYouFormat );
                 if (turnpoint != null) {
                     appRepository.insertTurnpointViaViaBackground(turnpoint);
                     numberTurnpoints++;
