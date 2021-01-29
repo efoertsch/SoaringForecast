@@ -13,7 +13,7 @@ import dagger.Provides;
 public class One800WxBriefUrlModule {
 
     @Provides
-    @Named("one800wxbrief_server")
+    @Named("one_800wxbrief_server")
     public String getOne800WxBriefUrl(Context context){
         return context.getString(R.string.one_800wxbrief_url);
     }

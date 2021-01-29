@@ -76,7 +76,7 @@ public class AppRepositoryModule extends ForecastServerModule {
 
     @Provides
     @Singleton
-    public One800WxBriefApi providesOne800WxBriefApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("one800wxbrief_server") String one800WxbriefUrl){
+    public One800WxBriefApi providesOne800WxBriefApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("one_800wxbrief_server") String one800WxbriefUrl){
         return new One800WxBriefServerRetrofit(okHttpClient, one800WxbriefUrl).getRetrofit().create(One800WxBriefApi.class);
     }
 
