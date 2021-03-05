@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data class="WxBriefRequestView">
 
@@ -16,7 +17,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/wx_brief_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:animateLayoutChanges="true">
 
     <ScrollView
@@ -133,40 +134,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/wx_brief_format_label" />
 
-        <org.soaringforecast.rasp.common.BaselineTextInputLayout
-            android:id="@+id/wx_brief_aircraft_id_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginTop="@dimen/margin_standard"
-            android:gravity="bottom"
-            android:hint="@string/aircraft_id"
-            android:visibility="@{viewModel.officialBriefing ? View.VISIBLE : View.GONE}"
-            app:errorEnabled="true"
-            app:errorText="@{viewModel.aircraftIdErrorText}"
-            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_type_of_brief_spinner">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/wx_brief_aircraft_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textNoSuggestions|textCapCharacters"
-                android:nextFocusForward="@+id/wwx_brief_web_user_name"
-                android:text="@={viewModel.aircraftId}" />
-
-        </org.soaringforecast.rasp.common.BaselineTextInputLayout>
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/wxb_brief_email_barrier"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="wx_brief_aircraft_id_layout,wx_brief_type_of_brief_spinner" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/wx_brief_web_user_name_layout"
+            android:id="@+id/wx_brief_web_email_name_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_standard"
@@ -175,10 +145,10 @@
             app:errorEnabled="true"
             app:errorText="@{viewModel.wxBriefUserNameErrorText}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_aircraft_id_layout">
+            app:layout_constraintTop_toBottomOf="@+id/wx_briefing_format_spinner">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/wwx_brief_web_user_name"
+                android:id="@+id/wx_brief_email_addr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -192,7 +162,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="wxb_brief_email_barrier,wx_brief_web_user_name_layout" />
+            app:constraint_referenced_ids="@+id/wx_brief_type_of_brief_spinner,@+id/wx_brief_web_email_name_layout" />
 
 
         <TextView
@@ -203,7 +173,7 @@
             android:text="@string/departure_date"
             app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_web_user_name_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/wxb_brief_departure_barrier"/>
 
         <TextView
             android:id="@+id/wx_brief_departure_time_label"
@@ -213,7 +183,7 @@
             android:text="@string/departure_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline_50pct"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_web_user_name_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/wxb_brief_departure_barrier" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/wx_briefing_date_spinner"
@@ -237,48 +207,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline_50pct"
             app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_time_label" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/wx_brief_corridor_width_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_double"
-            android:hint="@string/route_corridor_width"
-            app:errorEnabled="true"
-            app:errorText="@{viewModel.corridorWidthErrorText}"
-            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_briefing_date_spinner">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/wx_brief_corridor_width"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:nextFocusForward="@+id/wx_brief_winds_aloft_corridor"
-                android:text="@={viewModel.routeCorridorWidth}" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/wx_brief_winds_aloft_corridor_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_double"
-            android:hint="@string/wx_brief_winds_aloft_corridor"
-            app:errorEnabled="true"
-            app:errorText="@{viewModel.windsAloftCorridorErrorText}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline_50pct"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_time_spinner">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/wx_brief_winds_aloft_corridor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:nextFocusForward="@+id/wx_brief_product_codes_spinner"
-                android:text="@={viewModel.windsAloftCorridor}" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/wx_brief_product_code_options"
@@ -333,7 +261,7 @@
             android:enabled="@{viewModel.isValidData()}"
             android:onClick="@{() -> viewModel.submitBriefingRequest()}"
             android:text="@string/submit_briefing_request"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_product_codes_spinner"
+            app:layout_constraintTop_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -375,27 +303,15 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <FrameLayout
-        android:id="@+id/wx_brief_frame_progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="@{safeUnbox(viewModel.working) ? View.VISIBLE : View.GONE}"
-        android:layout_marginStart="@dimen/margin_standard"
-        android:layout_marginEnd="@dimen/margin_standard"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
-    <ProgressBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-         />
+        <include
+            android:id="@+id/progress_indicator"
+            layout="@layout/indeterminate_progress_bar"
+            gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            bind:isWorking="@{viewModel.working}" />
 
-    </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

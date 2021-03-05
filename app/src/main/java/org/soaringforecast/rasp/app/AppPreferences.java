@@ -536,7 +536,7 @@ public class AppPreferences {
     }
 
     public String getOne800WxBriefUserId(){
-        return sharedPreferences.getString(ONE_800_WX_BRIEF_USER_ID, null);
+        return sharedPreferences.getString(ONE_800_WX_BRIEF_USER_ID, "");
     }
 
     public void setOne800WxBriefUserId(String userId){

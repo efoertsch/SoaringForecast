@@ -1,5 +1,6 @@
 package org.soaringforecast.rasp.one800wxbrief;
 
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +13,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
+import org.soaringforecast.rasp.common.MasterFragment;
 import org.soaringforecast.rasp.common.messages.CrashReport;
+import org.soaringforecast.rasp.databinding.WxBriefDefaultsView;
 import org.soaringforecast.rasp.databinding.WxBriefRequestView;
 import org.soaringforecast.rasp.one800wxbrief.options.BriefingOptions;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefRequestResponse;
@@ -26,22 +29,17 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.DaggerFragment;
 
-public class WxBriefRequestFragment extends DaggerFragment {
+public class WxBriefRequestFragment extends MasterFragment {
 
     private static final String TASKID = "TASKID";
     private WxBriefViewModel wxBriefViewModel;
-    private WxBriefRequestView wxBriefRequestView;
-    private long taskId;
-    private int shortAnimationDuration;
-
+    private WxBriefDefaultsView wxBriefDefaultsView;
 
     @Inject
     AppRepository appRepository;
 
     @Inject
     AppPreferences appPreferences;
-    private boolean firstTime = true;
-
 
     public static WxBriefRequestFragment newInstance(long taskId) {
         WxBriefRequestFragment wxBriefRequestFragment = new WxBriefRequestFragment();
@@ -53,38 +51,30 @@ public class WxBriefRequestFragment extends DaggerFragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        taskId = getArguments().getLong(TASKID);
+
         // Note viewmodel is shared by activity
-        wxBriefViewModel = ViewModelProviders.of(this)
+        wxBriefViewModel = ViewModelProviders.of(getActivity())
                 .get(WxBriefViewModel.class)
                 .setAppRepository(appRepository)
                 .setAppPreferences(appPreferences)
-                .setTaskId(taskId);
+                ;
 
-        // Retrieve and cache the system's default "short" animation time.
-        shortAnimationDuration = getResources().getInteger(
-                android.R.integer.config_shortAnimTime);
     }
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        wxBriefRequestView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_request_fragment, container, false);
-        wxBriefRequestView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
-        wxBriefRequestView.setViewModel(wxBriefViewModel);
-        wxBriefRequestView.wxBriefOfficialBriefInfo.setOnClickListener(v -> displayOfficialBriefingDialog());
+        wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_defaults, container, false);
+        wxBriefDefaultsView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
+        wxBriefDefaultsView.setViewModel(wxBriefViewModel);
 
-        return wxBriefRequestView.getRoot();
+        return wxBriefDefaultsView.getRoot();
     }
 
     public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
-        wxBriefViewModel.getMasterBriefingOptions().observe(getViewLifecycleOwner(), briefingOptions -> {
-                    setTailoringOptionsSpinnerValues(briefingOptions);
-                    setProductCodesSpinnerValues(briefingOptions);
-                }
-        );
+
 
         wxBriefViewModel.init();
 
@@ -92,62 +82,12 @@ public class WxBriefRequestFragment extends DaggerFragment {
         wxBriefViewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
         });
 
-        wxBriefViewModel.getWxBriefUri().observe(getViewLifecycleOwner(), wxbriefUri -> {
-            if (wxbriefUri == null) {
-                return;
-            }
-            boolean canDisplayPdf = AppRepository.canDisplayPdf(getContext());
-             if (canDisplayPdf) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.setDataAndType(wxbriefUri, "application/pdf");
-                startActivity(intent);
-            } else {
-                displayPdfNotDisplayable();
-            }
-        });
+
     }
 
-    private void setTailoringOptionsSpinnerValues(BriefingOptions briefingOptions) {
-        wxBriefRequestView.wxBriefTailoringOptionsSpinner.setItems(briefingOptions.getTailoringOptionDescriptions()
-                , briefingOptions.getSelectedTailoringOptions()
-                , getString(R.string.select_wx800brief_tailoring_options)
-                , selected -> wxBriefViewModel.updateTailoringOptionsSelected(selected));
-    }
 
-    private void setProductCodesSpinnerValues(BriefingOptions briefingOptions) {
-        wxBriefRequestView.wxBriefProductCodesSpinner.setItems(briefingOptions.getProductCodeDescriptionList()
-                , briefingOptions.getProductCodesSelected()
-                , getString(R.string.select_wx800brief_product_options)
-                , selected -> wxBriefViewModel.updateProductCodesSelected(selected));
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    private void displayPdfNotDisplayable() {
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
-                .setTitle("1800WxBrief")
-                .setMessage(getString(R.string.pdf_downloaded_but_no_pdf_viewer))
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-        alertDialog.setCanceledOnTouchOutside(false);
-    }
-
-    private void displayOfficialBriefingDialog() {
+    private void displayInfoDialog() {
         AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle("1800WxBrief")
                 .setMessage(getString(R.string.check_to_record_briefing_in_1800wxbrief_system))
@@ -183,23 +123,6 @@ public class WxBriefRequestFragment extends DaggerFragment {
 
         AlertDialog alertDialog = builder.show();
         alertDialog.setCanceledOnTouchOutside(false);
-    }
-
-    private void crossfadeToSimpleBrief() {
-        View simpleBriefLayout =  wxBriefRequestView.wxBriefSimpleBriefingLayout;
-        View progressBarLayout = wxBriefRequestView.wxBriefFrameProgressBar;
-        // Set the content view to 0% opacity but visible, so that it is visible
-        // (but fully transparent) during the animation.
-        simpleBriefLayout.setAlpha(0f);
-        simpleBriefLayout.setVisibility(View.VISIBLE);
-
-        // Animate the content view to 100% opacity, and clear any animation
-        // listener set on the view.
-        simpleBriefLayout.animate()
-                .alpha(1f)
-                .setDuration(shortAnimationDuration)
-                .setListener(null);
-
     }
 
 }

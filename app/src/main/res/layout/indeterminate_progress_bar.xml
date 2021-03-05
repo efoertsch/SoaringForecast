@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data >
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isWorking"
+            type="Boolean" />
+    </data>
+
+    <FrameLayout
+
+        android:id="@+id/progressBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="@{isWorking? View.VISIBLE: View.GONE}">
+
+        <ProgressBar
+            android:id="@+id/product_data_progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
+</layout>

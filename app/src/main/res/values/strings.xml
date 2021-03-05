@@ -412,9 +412,9 @@
     <string name="action_information">Information</string>
     <string name="airport_removed">Airport Removed</string>
     <string name="aircraft_id">Aircraft Registration</string>
-    <string name="route_corridor_width">Corridor Width(NM)</string>
+    <string name="route_corridor_width">Route Width(NM)</string>
     <string name="wx_brief_web_user_name">1800WxBrief Account Name (email address)</string>
-    <string name="wx_brief_winds_aloft_corridor">Winds Aloft Corridor(NM)</string>
+    <string name="wx_brief_winds_aloft_corridor">Winds Aloft (NM)</string>
     <string name="one_800_wx_brief">1800WXBrief</string>
     <string name="submit_briefing_request">Submit Briefing Request</string>
     <string name="time_format">%02d:00</string>
@@ -444,5 +444,7 @@
     <string name="invalid_seeyou_file_email_text">"An attempt was made to import a SeeYou file with a format unknown to the app: \n\n %1$s \n\n  Please enter additional details , such as where you got the turnpoint file or better yet add file as attachment to this email. "</string>
     <string name="error_in_emailing_invalid_seeyou_format">Oops. An error occurred in creating email!</string>
     <string name="waypoint_runway_width">Runway Width</string>
+    <string name="default_wxbrief_label">Default 1800WxBrief Values</string>
+    <string name="default_corridor_width_label">Corridors</string>
 
 </resources>

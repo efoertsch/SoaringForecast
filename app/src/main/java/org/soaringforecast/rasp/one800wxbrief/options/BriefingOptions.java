@@ -36,10 +36,7 @@ public class BriefingOptions {
 
     Constants.TypeOfBrief typeOfBrief;
 
-    private BriefingOptions() {
-    }
-
-    ;
+    private BriefingOptions() { };
 
     /**
      * @param fullProductCodeList
@@ -98,22 +95,24 @@ public class BriefingOptions {
         ArrayList<String> productCodesList = new ArrayList<>();
 
         int j = 0;
-        for (int i = 0; i < fullProductCodeList.size(); ++i) {
+        for (int i = 0; i < fullProductCodeList.size() && j < productCodeListIndex.size(); ++i) {
             if (i == productCodeListIndex.get(j)) {
                 // this option was one that was displayed to user to see what user wants
                 if (productCodesSelected[j]) {
-                    // User doesn't want to see this option so we add EXCLUDE value to list
+                    // User checked it so add the parm to the list
                     briefingOption = fullProductCodeList.get(i);
                     productCodesList.add(briefingOption.getWxBriefParameterName());
                 } else {
-                    // see if we should send it based on default value
-                    briefingOption = fullProductCodeList.get(i);
-                    if (briefingOption.isSelectForBrief()) {
-                        // Default is to add this product code.
-                        productCodesList.add(briefingOption.getWxBriefParameterName());
-                    }
+                    // The user didn't select it so don't send the parm
                 }
                 ++j;
+            }
+            // On an option what wasn't displayable but
+            // see if we should send it based on default value
+            // true means send the parm value
+            briefingOption = fullProductCodeList.get(i);
+            if (briefingOption.isSelectForBrief()) {
+                productCodesList.add(briefingOption.getWxBriefParameterName());
             }
         }
         return productCodesList;

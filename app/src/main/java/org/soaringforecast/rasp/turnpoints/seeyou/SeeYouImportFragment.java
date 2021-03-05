@@ -36,7 +36,7 @@ import okhttp3.OkHttpClient;
 // TODO create viewmodel and move business logic to it
 public class SeeYouImportFragment extends CommonTurnpointsImportFragment<TurnpointFile, SeeYouImportViewHolder> {
 
-    @Inject @Named("interceptor")
+    @Inject @Named("no_interceptor")
     OkHttpClient okHttpClient;
 
     @Inject

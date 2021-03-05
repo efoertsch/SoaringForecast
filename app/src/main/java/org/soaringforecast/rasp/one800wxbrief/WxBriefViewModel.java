@@ -467,8 +467,8 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     private void assignUserNameAndEmailAddress(String username) {
-        routeBriefingRequest.setEmailAddress(username);
         routeBriefingRequest.setWebUserName(username);
+        routeBriefingRequest.setEmailAddress(username);
     }
 
     private void setWxBriefUserNameErrorText(String errorText) {
@@ -800,7 +800,6 @@ public class WxBriefViewModel extends ObservableViewModel {
                 post(new WxBriefRequestResponse(getApplication()
                         .getString((R.string.undefined_error_occurred_on_1800wxbrief_request)),true));
             }
-
         }
     }
 
@@ -847,6 +846,10 @@ public class WxBriefViewModel extends ObservableViewModel {
         // for subsequent briefings
         wxBriefUri.setValue(null);
         wxBriefUri.setValue(pdfBriefUri);
+    }
+
+    public void saveDefaultSettings(){
+        
     }
 
 

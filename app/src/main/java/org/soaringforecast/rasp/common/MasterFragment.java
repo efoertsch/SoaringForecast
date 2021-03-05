@@ -1,4 +1,4 @@
-package org.soaringforecast.rasp.common.recycleradapter;
+package org.soaringforecast.rasp.common;
 
 import org.greenrobot.eventbus.EventBus;
 
