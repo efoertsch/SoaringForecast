@@ -856,7 +856,11 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(suaJSONObject -> {
                         setSuaJSONObject(suaJSONObject);
-                    });
+                        }
+                        , t -> {
+                            //TODO email stack trace
+                            Timber.e(t);
+                        });
             compositeDisposable.add(disposable);
         }
 
