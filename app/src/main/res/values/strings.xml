@@ -446,5 +446,6 @@
     <string name="waypoint_runway_width">Runway Width</string>
     <string name="default_wxbrief_label">Default 1800WxBrief Values</string>
     <string name="default_corridor_width_label">Corridors</string>
+    <string name="error_getting_sua_list">Error occurred getting list of SUAs</string>
 
 </resources>

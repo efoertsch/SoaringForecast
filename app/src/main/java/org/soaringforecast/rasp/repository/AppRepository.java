@@ -845,6 +845,7 @@ public class AppRepository implements CacheTimeListener {
      */
     public Observable<JSONObject> displaySuaForRegion(String region) {
         return Observable.create(emitter -> {
+            SUARegionFiles suaRegionFiles = null;
             // return current stored file if there is one
             String oldSuaFilename = seeIfRegionSUAFileExists(region);
             if (oldSuaFilename != null) {
@@ -854,26 +855,31 @@ public class AppRepository implements CacheTimeListener {
                 Timber.d("No SUA file found on device for region: %1$s ", region);
             }
             // get list of sua files for regions
-            SUARegionFiles suaRegionFiles = jsonServerApi.getSUARegions().blockingGet();
-            // get file name for region you are on
-            if (suaRegionFiles != null) {
-                String newSuaFilename = getSuaFilenameForRegion(suaRegionFiles, region);
-                // if no new file found (some oops here) or no updated file just end
-                if (newSuaFilename == null || newSuaFilename.equalsIgnoreCase(oldSuaFilename)) {
-                    Timber.d("No server SUA file found OR current device file same as server version for region: %1$s ", region);
-                } else {
-                    // else download new file, delete old and emit new sua geojson object
-                    Timber.d("Updated SUA file available for region: %1$s  updated file name: %2$s", region, newSuaFilename);
-                    getDownloadSUACompleteable(region, newSuaFilename).blockingGet();
-                    if (oldSuaFilename != null) {
-                        deleteSUAFile(region, oldSuaFilename);
+            try {
+                suaRegionFiles = jsonServerApi.getSUARegions().blockingGet();
+                // get file name for region you are on
+                if (suaRegionFiles != null) {
+                    String newSuaFilename = getSuaFilenameForRegion(suaRegionFiles, region);
+                    // if no new file found (some oops here) or no updated file just end
+                    if (newSuaFilename == null || newSuaFilename.equalsIgnoreCase(oldSuaFilename)) {
+                        Timber.d("No server SUA file found OR current device file same as server version for region: %1$s ", region);
+                    } else {
+                        // else download new file, delete old and emit new sua geojson object
+                        Timber.d("Updated SUA file available for region: %1$s  updated file name: %2$s", region, newSuaFilename);
+                        getDownloadSUACompleteable(region, newSuaFilename).blockingGet();
+                        if (oldSuaFilename != null) {
+                            deleteSUAFile(region, oldSuaFilename);
+                        }
+                        post(new SnackbarMessage(context.getString(R.string.downloading_new_sua)));
+                        emitter.onNext(getSuaJSONObject(region, newSuaFilename));
                     }
-                    post(new SnackbarMessage(context.getString(R.string.downloading_new_sua)));
-                    emitter.onNext(getSuaJSONObject(region, newSuaFilename));
+                } else {
+                    Timber.d("No server sua_regions file found ");
                 }
-            } else {
-                Timber.d("No server sua_regions file found ");
+            } catch (Exception e) {
+                post(new SnackbarMessage(context.getString(R.string.error_getting_sua_list)));
             }
+
             emitter.onComplete();
         });
     }

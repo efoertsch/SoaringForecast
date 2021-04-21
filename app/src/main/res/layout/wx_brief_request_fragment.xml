@@ -162,7 +162,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="@+id/wx_brief_type_of_brief_spinner,@+id/wx_brief_web_email_name_layout" />
+            app:constraint_referenced_ids="wx_brief_type_of_brief_spinner,wx_brief_web_email_name_layout" />
 
 
         <TextView
