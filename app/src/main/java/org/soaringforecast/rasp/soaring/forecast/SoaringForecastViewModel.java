@@ -787,8 +787,6 @@ public class SoaringForecastViewModel extends AndroidViewModel {
         soundingDisplay.setValue(true);
     }
 
-
-
     void setSelectedSounding(Sounding selectedSounding) {
         this.selectedSounding = selectedSounding;
         loadForecastSoundings(selectedSounding);

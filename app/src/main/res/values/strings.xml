@@ -417,5 +417,6 @@
     <string name="invalid_seeyou_file_email_text">"An attempt was made to import a SeeYou file with a format unknown to the app: \n\n %1$s \n\n  Please enter additional details , such as where you got the turnpoint file or better yet add file as attachment to this email. "</string>
     <string name="error_in_emailing_invalid_seeyou_format">Oops. An error occurred in creating email!</string>
     <string name="waypoint_runway_width">Runway Width</string>
+    <string name="error_getting_sua_list">Error occurred getting list of SUAs</string>
 
 </resources>
