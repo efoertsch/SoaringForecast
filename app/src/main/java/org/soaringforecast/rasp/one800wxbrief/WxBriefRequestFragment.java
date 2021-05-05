@@ -56,9 +56,7 @@ public class WxBriefRequestFragment extends MasterFragment {
         wxBriefViewModel = ViewModelProviders.of(getActivity())
                 .get(WxBriefViewModel.class)
                 .setAppRepository(appRepository)
-                .setAppPreferences(appPreferences)
-                ;
-
+                .setAppPreferences(appPreferences);
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -68,24 +66,16 @@ public class WxBriefRequestFragment extends MasterFragment {
         wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_defaults, container, false);
         wxBriefDefaultsView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
         wxBriefDefaultsView.setViewModel(wxBriefViewModel);
-
         return wxBriefDefaultsView.getRoot();
     }
 
     public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
-
-
         wxBriefViewModel.init();
-
         // Only using this observer so the validation logic in mediator will be fired
         wxBriefViewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
         });
-
-
     }
-
-
 
     private void displayInfoDialog() {
         AlertDialog alertDialog = new AlertDialog.Builder(getContext())

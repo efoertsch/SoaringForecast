@@ -77,6 +77,9 @@ public class WxBriefViewModel extends ObservableViewModel {
     private MutableLiveData<Boolean> validBriefingData = new MutableLiveData<>();
     private MutableLiveData<Uri> wxBriefUri;
     private MutableLiveData<String> simpleBriefingText;
+    private MutableLiveData<String> aircraftRegistration = new MutableLiveData<>();
+    private MutableLiveData<String> accountName = new MutableLiveData<>();
+
 
     private MediatorLiveData validationMediator = new MediatorLiveData<Void>();
 
@@ -110,8 +113,6 @@ public class WxBriefViewModel extends ObservableViewModel {
      * {"items":[...],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
      */
     ArrayList<BriefingOption> tailoringOptions;
-
-
 
 
     /**
@@ -176,10 +177,12 @@ public class WxBriefViewModel extends ObservableViewModel {
         getAircraftId();
         getTypesOfBriefs();
         getWxBriefUserName();
+        getDisplayEmailAddressField();
         getBriefingDates();
         getDepartureTimes();
         formatDepartureInstant();
         setCorridorValues();
+        getTurnpointList();
         loadTask();
         loadTaskTurnpoints();
         loadProductsAndTailoringOptions();
@@ -275,7 +278,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     /**
-     * For not assume all turnpoints are airports
+     * For now assume all turnpoints are airports
      *
      * @param taskTurnpoints
      */
@@ -377,7 +380,6 @@ public class WxBriefViewModel extends ObservableViewModel {
         }
         return typeOfBriefs;
     }
-
 
 
     public MutableLiveData<Integer> getSelectedTypeOfBriefPosition() {
@@ -673,9 +675,8 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
 
-
     public void updateBriefingFormat(int selectedBriefingFormatPosition) {
-        selectedBriefingFormat =  getBriefingFormatBasedOnDisplayValue(
+        selectedBriefingFormat = getBriefingFormatBasedOnDisplayValue(
                 briefingFormats.getValue().get(selectedBriefingFormatPosition));
         routeBriefingRequest.setSelectedBriefingType(selectedBriefingFormat.name());
         displayEmailAddressField.setValue(selectedBriefingFormat == BriefingFormat.EMAIL);
@@ -734,7 +735,7 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     public void updateProductCodesSelected(boolean[] selectedProductCodes) {
         masterBriefingOptions.getValue().updateProductCodesSelected(selectedProductCodes);
-        routeBriefingRequest.setProductCodes(masterBriefingOptions.getValue().getProductCodesForBriefing() );
+        routeBriefingRequest.setProductCodes(masterBriefingOptions.getValue().getProductCodesForBriefing());
 
     }
 
@@ -775,18 +776,18 @@ public class WxBriefViewModel extends ObservableViewModel {
         if (routeBriefing != null && routeBriefing.returnStatus && routeBriefing.returnMessages.size() == 0) {
             // request submitted OK
             if (selectedBriefingFormat.equals(BriefingFormat.EMAIL)) {
-                post(new WxBriefRequestResponse(getApplication().getString(R.string.your_briefing_should_arrive_in_your_mailbox_shortly),false));
+                post(new WxBriefRequestResponse(getApplication().getString(R.string.your_briefing_should_arrive_in_your_mailbox_shortly), false));
             } else if (selectedBriefingFormat.equals(BriefingFormat.NGBV2)) {
                 // need to get NGBV2 briefing from
                 createRouteBriefingPDF(routeBriefing.ngbv2PdfBriefing);
-            } else if ((selectedBriefingFormat.equals(BriefingFormat.SIMPLE))){
+            } else if ((selectedBriefingFormat.equals(BriefingFormat.SIMPLE))) {
                 createSimpleRouteBriefing(routeBriefing.simpleWeatherBriefing);
             }
         } else {
             // Error in request
             if (routeBriefing == null) {
                 post(new WxBriefRequestResponse(getApplication()
-                        .getString((R.string.undefined_error_occurred_on_1800wxbrief_request)),true));
+                        .getString((R.string.undefined_error_occurred_on_1800wxbrief_request)), true));
             } else if (routeBriefing.returnCodedMessage != null && routeBriefing.returnCodedMessage.size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 for (ReturnCodedMessage returnCodedMessage : routeBriefing.returnCodedMessage) {
@@ -795,24 +796,25 @@ public class WxBriefViewModel extends ObservableViewModel {
                             .append(returnCodedMessage.message)
                             .append('\n');
                 }
-                post(new WxBriefRequestResponse(sb.toString(),true));
+                post(new WxBriefRequestResponse(sb.toString(), true));
             } else { // error but no error msg
                 post(new WxBriefRequestResponse(getApplication()
-                        .getString((R.string.undefined_error_occurred_on_1800wxbrief_request)),true));
+                        .getString((R.string.undefined_error_occurred_on_1800wxbrief_request)), true));
             }
         }
     }
 
-    public MutableLiveData<String> getSimpleBriefingText(){
+    public MutableLiveData<String> getSimpleBriefingText() {
         return simpleBriefingText;
     }
 
-    public void removeSimpleBriefingText(){
+    public void removeSimpleBriefingText() {
         simpleBriefingText.setValue(null);
 
     }
+
     private void createSimpleRouteBriefing(String simpleWeatherBriefing) {
-        simpleBriefingText.setValue(simpleWeatherBriefing.replace("_NL_" , "\n"));
+        simpleBriefingText.setValue(simpleWeatherBriefing.replace("_NL_", "\n"));
     }
 
     private void createRouteBriefingPDF(String ngbv2PdfBriefing) {
@@ -828,13 +830,13 @@ public class WxBriefViewModel extends ObservableViewModel {
                             //TODO email stack trace
                             Timber.e(t);
                             post(new WxBriefRequestResponse(getApplication()
-                                    .getString(R.string.undefined_error_occurred_on_1800wxbrief_request),true, new Exception(t) ));
+                                    .getString(R.string.undefined_error_occurred_on_1800wxbrief_request), true, new Exception(t)));
                             setWorkingFlag(false);
                         });
         compositeDisposable.add(disposable);
     }
 
-    public LiveData<Uri> getWxBriefUri(){
+    public LiveData<Uri> getWxBriefUri() {
         if (wxBriefUri == null) {
             wxBriefUri = new MutableLiveData<>();
         }
@@ -849,7 +851,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     public void saveDefaultSettings(){
-        
+
     }
 
 
