@@ -13,16 +13,16 @@ import retrofit2.http.Streaming;
 public interface JSONServerApi {
 
     // Get list of turnpoint files
-    @GET("/soaringforecast/turnpoint_regions.json")
+    @GET("https://soargbsc.com/soaringforecast/turnpoint_regions.json")
     Single<TurnpointRegions> getTurnpointRegions();
 
 
     // Get list of SUA files
-    @GET("/soaringforecast/sua_regions.json")
+    @GET("https://soargbsc.com/soaringforecast/sua_regions.json")
     Single<SUARegionFiles> getSUARegions();
 
     @Streaming
-    @GET("/soaringforecast/{suaFilename}")
+    @GET("https://soargbsc.com/soaringforecast/{suaFilename}")
     Single<Response<ResponseBody>> downloadSuaFile(@Path("suaFilename") String suaFilename);
 
 
