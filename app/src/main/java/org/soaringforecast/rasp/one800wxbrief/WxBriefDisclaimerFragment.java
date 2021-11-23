@@ -11,17 +11,15 @@ import androidx.lifecycle.ViewModelProviders;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
-import org.soaringforecast.rasp.common.MasterFragment;
-import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.databinding.WxBriefDisclaimerView;
-import org.soaringforecast.rasp.generated.callback.OnClickListener;
+import org.soaringforecast.rasp.one800wxbrief.messages.ContineWithWxBrief;
 import org.soaringforecast.rasp.repository.AppRepository;
 
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-public class WxBriefDisclaimerFragment extends MasterFragment {
+public class WxBriefDisclaimerFragment extends DaggerFragment {
     @Inject
     public AppRepository appRepository;
 
@@ -43,20 +41,20 @@ public class WxBriefDisclaimerFragment extends MasterFragment {
         wxBriefDisclaimerView.setLifecycleOwner(this);
         wxBriefDisclaimerView.setViewModel(wxBriefViewModel);
         Button cancelButton = wxBriefDisclaimerView.wxBriefDisclaimerCancel;
-        if(cancelButton != null){
+        if (cancelButton != null) {
             cancelButton.setOnClickListener(v -> getActivity().finish());
         }
         Button continueButton = wxBriefDisclaimerView.wxBriefDisclaimerContinue;
-        if(continueButton != null){
-            cancelButton.setOnClickListener(v -> sendWxBriefContinue());
+        if (continueButton != null) {
+            continueButton.setOnClickListener(v -> sendWxBriefContinue());
         }
         return wxBriefDisclaimerView.getRoot();
     }
 
     private void sendWxBriefContinue() {
-            EventBus.getDefault().post(new ContineWithWxBrief());
-        }
-
+        EventBus.getDefault().post(new ContineWithWxBrief());
     }
 
 }
+
+

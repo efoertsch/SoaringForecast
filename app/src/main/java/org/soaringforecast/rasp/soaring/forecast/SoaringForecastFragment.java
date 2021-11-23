@@ -347,16 +347,25 @@ public class SoaringForecastFragment extends DaggerFragment {
             case R.id.forecast_menu_map_hybrid:
                 forecastMapper.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 return true;
-            case R.id.forecast_menu_1800wxbrief:
-                display1800WxBrief();
+            case R.id.wxbrief_task_notams:
+                display1800WxNOTAMBrief();
+                    return true;
+            case R.id.wxbrief_route_briefing:
+                display1800WxRouteBrief();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void display1800WxBrief(){
+    private void display1800WxNOTAMBrief(){
         WxBriefRequestActivity.Builder builder = WxBriefRequestActivity.Builder.getBuilder();
         builder.displayTaskNotams(soaringForecastViewModel.getTaskId());
+        startActivity(builder.build(this.getContext()));
+    }
+    private void display1800WxRouteBrief(){
+        WxBriefRequestActivity.Builder builder = WxBriefRequestActivity.Builder.getBuilder();
+        builder.displayRouteBriefing(soaringForecastViewModel.getTaskId());
         startActivity(builder.build(this.getContext()));
     }
 

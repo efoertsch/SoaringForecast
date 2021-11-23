@@ -6,16 +6,13 @@ import android.os.Bundle;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterActivity;
-import org.soaringforecast.rasp.common.messages.SnackbarMessage;
+import org.soaringforecast.rasp.one800wxbrief.messages.ContineWithWxBrief;
+import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDefaults;
 import org.soaringforecast.rasp.repository.AppRepository;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
 
@@ -24,8 +21,8 @@ public class WxBriefRequestActivity extends MasterActivity {
     private static final String WX_BRIEF_OPTION = "WX_BRIEF_OPTION";
     private static final String TASK_ID = "TASK_ID";
     private static final String TASK_NOTAMS = "TASK_NOTAMS";
-    private static final String WX_BRIEF_DEFAULTS = "WX_BRIEF_DEFAULTS";
-    private static final String WX_BRIEF_BRIEFING = "WX_BRIEF_BRIEFING";
+    private static final String TASK_ROUTE_BRIEFING = "TASK_ROUTE_BRIEFING ";
+
 
     @Inject
     public AppRepository appRepository;
@@ -40,23 +37,35 @@ public class WxBriefRequestActivity extends MasterActivity {
 
     @Override
     protected Fragment createFragment() {
-        if (!appPreferences.doNotDisplayWxBriefDisclaimer()){
+        long taskId;
+        if (appPreferences.getWxBriefShowDisclaimer()){
             return getWxBriefDisclaimerFragment();
         }
 
+        String wxBriefOption = getIntent().getExtras().getString(WX_BRIEF_OPTION);
+        if (wxBriefOption != null) {
+            switch (wxBriefOption) {
+                case TASK_NOTAMS:
+                     taskId = getIntent().getExtras().getLong(TASK_ID, -1);
+                    return getWxBriefRequestFragment(taskId);
+                case TASK_ROUTE_BRIEFING:
+                      taskId = getIntent().getExtras().getLong(TASK_ID, -1);
+                    return getWxBriefRequestFragment(taskId);
+            }
+        }
+        return getWxBriefDisclaimerFragment();
     }
 
     private Fragment getWxBriefDisclaimerFragment() {
         return new WxBriefDisclaimerFragment();
     }
 
-
     private Fragment getWxBriefRequestFragment(long taskId) {
         return WxBriefRequestFragment.newInstance(taskId);
     }
 
     private Fragment getWxBriefDefaultsFragment(){
-        return WxBriefDefaultsFragment.newInstance();
+        return new WxBriefDefaultsFragment();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -64,17 +73,26 @@ public class WxBriefRequestActivity extends MasterActivity {
        goToNextScreen();
     }
 
-    private Fragment goToNextScreen() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(WxBriefShowDefaults wxBriefShowDefaults) {
+        displayFragment(getWxBriefDefaultsFragment(),false, true);
+    }
+
+    private void goToNextScreen() {
+        long taskId;
         String wxBriefOption = getIntent().getExtras().getString(WX_BRIEF_OPTION);
         if (wxBriefOption != null){
             switch (wxBriefOption){
-                case "TASK_NOTAMS":
-                    displayFragment(getWxBriefDefaultsFragment(),true, true);
+                case TASK_NOTAMS:
+                    taskId = getIntent().getExtras().getLong(TASK_ID, -1);
+                    displayFragment(getWxBriefRequestFragment(taskId),true, true);
+                case TASK_ROUTE_BRIEFING:
+                    taskId = getIntent().getExtras().getLong(TASK_ID, -1);
+                    displayFragment(getWxBriefRequestFragment(taskId),true, true);
             }
-            return getWxBriefDefaultsFragment();
+
         }
-        long taskId = getIntent().getExtras().getLong(TASK_ID, -1);
-        return getWxBriefRequestFragment(taskId);
+        finish();
     }
 
     public static class Builder {
@@ -95,16 +113,12 @@ public class WxBriefRequestActivity extends MasterActivity {
             return this;
         }
 
-        public WxBriefRequestActivity.Builder displayBriefingOptions(long taskId) {
-            bundle.putString(WX_BRIEF_OPTION,WX_BRIEF_BRIEFING);
+        public WxBriefRequestActivity.Builder displayRouteBriefing(long taskId) {
+            bundle.putString(WX_BRIEF_OPTION,TASK_ROUTE_BRIEFING);
             bundle.putLong(TASK_ID, taskId);
             return this;
         }
 
-        public WxBriefRequestActivity.Builder displayWxBriefDefaults() {
-            bundle.putString(WX_BRIEF_OPTION,WX_BRIEF_DEFAULTS);
-            return this;
-        }
 
         public Intent build(Context context) {
             Intent intent = new Intent(context, WxBriefRequestActivity.class);

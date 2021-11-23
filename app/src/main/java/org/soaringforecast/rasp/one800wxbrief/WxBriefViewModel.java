@@ -872,7 +872,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     public void doNotShowDisclaimerAgain(boolean checked){
-        appPreferences.setWxBriefAuthorizationDisplay(checked);
+        appPreferences.setWxBriefShowDisclaimer(checked);
     }
 
 

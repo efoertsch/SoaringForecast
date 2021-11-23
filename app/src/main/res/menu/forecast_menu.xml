@@ -1,57 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/forecast_menu_select_task"
         android:title="@string/forecast_menu_select_task"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/forecast_menu_clear_task"
         android:title="@string/forecast_menu_clear_task"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/forecast_menu_display_options"
         android:title="@string/forecast_menu_display_options"
-        app:showAsAction="never"
-        />
+        app:showAsAction="never" />
 
-    <item android:id="@+id/forecast_menu_map_background"
-          android:title="@string/map_background" >
+    <item
+        android:id="@+id/forecast_menu_map_background"
+        android:title="@string/map_background">
 
         <menu>
-            <item android:id="@+id/forecast_menu_map_topo"
-                  android:title="@string/terrain" />
-            <item android:id="@+id/forecast_menu_map_satellite"
-                  android:title="@string/satellite" />
-            <item android:id="@+id/forecast_menu_map_roadmap"
-                  android:title="@string/roadmap" />
-            <item android:id="@+id/forecast_menu_map_hybrid"
-                  android:title="@string/hybrid" />
+            <item
+                android:id="@+id/forecast_menu_map_topo"
+                android:title="@string/terrain" />
+            <item
+                android:id="@+id/forecast_menu_map_satellite"
+                android:title="@string/satellite" />
+            <item
+                android:id="@+id/forecast_menu_map_roadmap"
+                android:title="@string/roadmap" />
+            <item
+                android:id="@+id/forecast_menu_map_hybrid"
+                android:title="@string/hybrid" />
         </menu>
     </item>
 
     <item
         android:id="@+id/forecast_menu_1800wxbrief"
         android:title="@string/one_800_wx_brief"
-        app:showAsAction="never"/>
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/wxbrief_task_notams"
+                android:title="@string/wxbrief_task_notams" />
+            <item
+                android:id="@+id/wxbrief_route_briefing"
+                android:title="@string/wxbrief_route_briefing" />
+        </menu>
+    </item>
 
     <item
         android:id="@+id/forecast_menu_order_forecasts"
         android:title="@string/order_forecasts"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/forecast_menu_opacity_slider"
         android:title="@string/opacity_slider"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/forecast_menu_select_regions"
         android:title="@string/select_region"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
 
 </menu>

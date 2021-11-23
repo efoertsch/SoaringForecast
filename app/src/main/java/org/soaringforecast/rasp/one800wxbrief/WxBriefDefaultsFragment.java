@@ -36,13 +36,7 @@ public class WxBriefDefaultsFragment extends MasterFragment {
 
     @Inject
     AppPreferences appPreferences;
-    private boolean firstTime = true;
 
-
-    public static WxBriefDefaultsFragment newInstance() {
-        WxBriefDefaultsFragment wxBriefDefaultsFragment = new WxBriefDefaultsFragment();
-        return wxBriefDefaultsFragment;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

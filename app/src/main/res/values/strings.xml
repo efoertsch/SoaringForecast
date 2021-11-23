@@ -451,5 +451,8 @@
     <string name="error_getting_sua_list">Error occurred getting list of SUAs</string>
     <string name="default_continue">Continue</string>
     <string name="wx_brief_do_not_show_again">Do not sure this again</string>
+    <string name="wx_brief_notams">1800WxBrief NOTAMS</string>
+    <string name="wxbrief_task_notams">Task NOTAMS</string>
+    <string name="wxbrief_route_briefing">Route Briefing</string>
 
 </resources>
