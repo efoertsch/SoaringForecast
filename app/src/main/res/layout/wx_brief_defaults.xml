@@ -116,68 +116,87 @@
             app:srcCompat="@drawable/ic_info" />
 
 
-        <TextView
-            android:id="@+id/wx_brief_default_corridor_label"
-            android:layout_width="wrap_content"
+        <!-- currently keeping but not displaying as just using 1800wxbrief for NOTAMS -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/wx_brief_corridor_layout"
+            android:visibility="gone"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_double"
-            android:text="@string/default_corridor_width_label"
-            android:textSize="@dimen/text_size_large"
+            android:animateLayoutChanges="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_web_user_name_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_web_user_name_layout">
 
-        <ImageButton
-            android:id="@+id/wx_brief_default_corridor_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:background="?android:colorBackground"
-            app:layout_constraintBottom_toBottomOf="@+id/wx_brief_default_corridor_label"
-            app:layout_constraintStart_toEndOf="@+id/wx_brief_default_corridor_label"
-            app:layout_constraintTop_toTopOf="@+id/wx_brief_default_corridor_label"
-            app:srcCompat="@drawable/ic_info" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/wx_brief_corridor_width_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_double"
-            android:hint="@string/route_corridor_width"
-            app:errorEnabled="true"
-            app:errorText="@{viewModel.corridorWidthErrorText}"
-            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_corridor_label">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/wx_brief_corridor_width"
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_corridor_50pct"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:nextFocusForward="@+id/wx_brief_winds_aloft_corridor"
-                android:text="@={viewModel.routeCorridorWidth}" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.50" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/wx_brief_winds_aloft_corridor_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_double"
-            android:hint="@string/wx_brief_winds_aloft_corridor"
-            app:errorEnabled="true"
-            app:errorText="@{viewModel.windsAloftCorridorErrorText}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline_50pct"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_corridor_label">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/wx_brief_winds_aloft_corridor"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/wx_brief_default_corridor_label"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:nextFocusForward="@+id/wx_brief_product_codes_spinner"
-                android:text="@={viewModel.windsAloftCorridor}" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="@dimen/margin_double"
+                android:text="@string/default_corridor_width_label"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/wx_brief_default_corridor_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:colorBackground"
+                app:layout_constraintBottom_toBottomOf="@+id/wx_brief_default_corridor_label"
+                app:layout_constraintStart_toEndOf="@+id/wx_brief_default_corridor_label"
+                app:layout_constraintTop_toTopOf="@+id/wx_brief_default_corridor_label"
+                app:srcCompat="@drawable/ic_info" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/wx_brief_corridor_width_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_double"
+                android:hint="@string/route_corridor_width"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.corridorWidthErrorText}"
+                app:layout_constraintEnd_toStartOf="@id/guideline_corridor_50pct"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_corridor_label">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/wx_brief_corridor_width"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:nextFocusForward="@+id/wx_brief_winds_aloft_corridor"
+                    android:text="@={viewModel.routeCorridorWidth}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/wx_brief_winds_aloft_corridor_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_double"
+                android:hint="@string/wx_brief_winds_aloft_corridor"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.windsAloftCorridorErrorText}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline_corridor_50pct"
+                app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_corridor_label">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/wx_brief_winds_aloft_corridor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:nextFocusForward="@+id/wx_brief_product_codes_spinner"
+                    android:text="@={viewModel.windsAloftCorridor}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/wx_brief_default_close_btn"
@@ -186,7 +205,7 @@
             android:layout_marginTop="@dimen/margin_standard"
             android:layout_marginBottom="@dimen/margin_standard"
             android:background="@drawable/button_selector"
-            android:enabled="true"
+            android:enabled="@{viewModel.isValidData}"
             android:onClick="@{() -> viewModel.saveDefaultSettings()}"
             android:text="@string/save"
             android:textColor="@android:color/white"

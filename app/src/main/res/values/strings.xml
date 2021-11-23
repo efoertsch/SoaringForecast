@@ -431,8 +431,10 @@
     <string name="offical_wxbrief">Official briefing?</string>
     <string name="check_to_record_briefing_in_1800wxbrief_system">If checked your request will be recorded as an official briefing in 1800WXBrief system.</string>
     <string name="tailoring_options">Tailoring Options</string>
-    <string name="select_wx800brief_tailoring_options">Select Tailoring Options</string>
-    <string name="select_wx800brief_product_options">Select Product Options</string>
+    <string name="select_1800wxbrief_tailoring_options">Select Tailoring Options</string>
+    <string name="select_1800wxbrief_product_options">Select Product Options</string>
+    <string name="wxbrief_disclaimer_file_is_missing">Oops! The 1800wxbrief disclaime file is missing.</string>
+    <string name="oops_error_reading_wxbrief_displaimer_file">Oops. Error reading the 1800WxBrief disclaimer file.</string>
     <string name="product_options">Product Options</string>
     <string name="type_of_brief">Type Of Brief</string>
     <string name="reporting_options">Reporting Options</string>
@@ -447,5 +449,7 @@
     <string name="default_wxbrief_label">Default 1800WxBrief Values</string>
     <string name="default_corridor_width_label">Corridors</string>
     <string name="error_getting_sua_list">Error occurred getting list of SUAs</string>
+    <string name="default_continue">Continue</string>
+    <string name="wx_brief_do_not_show_again">Do not sure this again</string>
 
 </resources>

@@ -135,34 +135,12 @@
             app:layout_constraintTop_toBottomOf="@+id/wx_brief_format_label" />
 
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/wx_brief_web_email_name_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_standard"
-            android:hint="@string/wx_brief_web_user_name"
-            android:visibility="@{safeUnbox(viewModel.displayEmailAddressField) ? View.VISIBLE : View.GONE}"
-            app:errorEnabled="true"
-            app:errorText="@{viewModel.wxBriefUserNameErrorText}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wx_briefing_format_spinner">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/wx_brief_email_addr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:nextFocusForward="@+id/wx_briefing_date_spinner"
-                android:text="@={viewModel.wxBriefUserName}" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/wxb_brief_departure_barrier"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="wx_brief_type_of_brief_spinner,wx_brief_web_email_name_layout" />
+            app:constraint_referenced_ids="wx_brief_type_of_brief_spinner" />
 
 
         <TextView
@@ -216,7 +194,7 @@
             android:text="@string/product_options"
             app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_corridor_width_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/wx_briefing_date_spinner" />
 
         <org.soaringforecast.rasp.common.MultiSpinner
             android:id="@+id/wx_brief_product_codes_spinner"
@@ -236,7 +214,7 @@
             android:text="@string/reporting_options"
             android:visibility="@{safeUnbox(viewModel.displayTailoringOptions) ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="@id/guideline_50pct"
-            app:layout_constraintTop_toBottomOf="@+id/wx_brief_corridor_width_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_departure_time_spinner" />
 
         <org.soaringforecast.rasp.common.MultiSpinner
             android:id="@+id/wx_brief_tailoring_options_spinner"

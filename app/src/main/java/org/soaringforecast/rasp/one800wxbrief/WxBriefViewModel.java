@@ -3,6 +3,8 @@ package org.soaringforecast.rasp.one800wxbrief;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.net.Uri;
+import android.text.Html;
+import android.text.Spanned;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
@@ -29,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -155,7 +158,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         super(application);
     }
 
-    public WxBriefViewModel setAppRepository(AppRepository appRepository) {
+    public WxBriefViewModel setRepository(AppRepository appRepository) {
         this.appRepository = appRepository;
         return this;
     }
@@ -344,10 +347,11 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
 
+    // always make it official briefing for now
     public MutableLiveData<Boolean> getOfficialBriefing() {
         if (officialBriefing == null) {
             officialBriefing = new MutableLiveData<>();
-            officialBriefing.setValue(false);
+            officialBriefing.setValue(true);
             updateOfficialBriefing(officialBriefing.getValue());
         }
         return officialBriefing;
@@ -408,19 +412,22 @@ public class WxBriefViewModel extends ObservableViewModel {
             aircraftId = new MutableLiveData<>();
             String savedAircraftId = appPreferences.getAircraftRegistration();
             aircraftId.setValue(savedAircraftId.isEmpty() ? "" : savedAircraftId);
+            validateAircraftId(savedAircraftId);
         }
         return aircraftId;
     }
 
     public void validateAircraftId(String aircraftId) {
         String trimmedId = aircraftId.trim();
-        if (aircraftId != null && aircraftIdPattern.matcher(trimmedId).matches()) {
+        if (aircraftId != null &&
+                aircraftIdPattern.matcher(trimmedId).matches()) {
             routeBriefingRequest.setAircraftIdentifier(trimmedId);
             appPreferences.setAircraftRegistration(trimmedId);
             setAircraftIdErrorText(null);
         } else {
             setAircraftIdErrorText(getApplication().getString(R.string.invalid_aircraftid));
         }
+        validateData();
     }
 
 
@@ -454,11 +461,12 @@ public class WxBriefViewModel extends ObservableViewModel {
             // validate
             validateWxBriefUserName(wxBriefWebUserName.getValue());
         }
+        validateData();
         return wxBriefWebUserName;
     }
 
     public void validateWxBriefUserName(String userName) {
-        if (userName != null
+        if (userName != null && userName.length() > 2
                 && wxBriefWebUserNamePattern.matcher(userName).matches()) {
             appPreferences.setOne800WxBriefUserId(userName);
             assignUserNameAndEmailAddress(userName);
@@ -466,6 +474,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         } else {
             setWxBriefUserNameErrorText(getApplication().getString(R.string.invalid_wxbrief_web_username));
         }
+        validateData();
     }
 
     private void assignUserNameAndEmailAddress(String username) {
@@ -716,22 +725,20 @@ public class WxBriefViewModel extends ObservableViewModel {
         tailoringListUpdatedFlag.setValue(!tailoringListUpdatedFlag.getValue());
     }
 
+    // always assume official briefing
     private void validateData() {
         validBriefingData.setValue(
-                ((getOfficialBriefing().getValue() && (aircraftIdErrorText.getValue() == null)) ||
-                        !getOfficialBriefing().getValue())
-                        && !wxBriefWebUserName.getValue().isEmpty()
+                aircraftIdErrorText.getValue() == null
                         && wxBriefUserNameErrorText.getValue() == null
                         && corridorWidthErrorText.getValue() == null
                         && windsAloftCorridorErrorText.getValue() == null
                         && masterBriefingOptions.getValue() != null);
     }
 
-
     public MutableLiveData<Boolean> isValidData() {
+        validateData();
         return validBriefingData;
     }
-
 
     public void updateProductCodesSelected(boolean[] selectedProductCodes) {
         masterBriefingOptions.getValue().updateProductCodesSelected(selectedProductCodes);
@@ -850,8 +857,22 @@ public class WxBriefViewModel extends ObservableViewModel {
         wxBriefUri.setValue(pdfBriefUri);
     }
 
-    public void saveDefaultSettings(){
 
+    public void saveDefaultSettings() {
+        appPreferences.setAircraftRegistration(aircraftRegistration.getValue());
+        appPreferences.setOne800WxBriefUserId(wxBriefWebUserName.getValue());
+    }
+
+    public MutableLiveData<Spanned>  getWxBriefDisclaimer(){
+        MutableLiveData wxBriefDisclaimer = new MutableLiveData<>();
+        wxBriefDisclaimer.setValue(Html.fromHtml(appRepository.loadAssetText("wx_brief_experimental_disclaimer"
+                , R.string.wxbrief_disclaimer_file_is_missing
+                , R.string.oops_error_reading_wxbrief_displaimer_file)));
+        return wxBriefDisclaimer;
+    }
+
+    public void doNotShowDisclaimerAgain(boolean checked){
+        appPreferences.setWxBriefAuthorizationDisplay(checked);
     }
 
 

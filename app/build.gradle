@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     //buildToolsVersion "25.0.2" - Android Gradle Plugin now includes default version of build tools
     defaultConfig {
         applicationId "org.soaringforecast.rasp"
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 19
         versionName "1.6.4"
         //https://artemzin.com/blog/how-to-mock-dependencies-in-unit-integration-and-functional-tests-dagger-robolectric-instrumentation/
@@ -44,8 +44,8 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
 
@@ -102,7 +102,7 @@ dependencies {
     final EVENT_BUS = '3.1.1'
     final MEMORY_CACHE = '1.0.2.Final'
     final DISK_CACHE = '2.0.2'
-    final ROOM_VERSION = '2.2.5'
+    final ROOM_VERSION = '2.3.0'
     final ARCH_LIFE_CYCLE_VERSION = '2.2.0'
     final ARCH_CORE_TESTING = '1.1.1'
     final WORK_VERSION = "2.4.0"

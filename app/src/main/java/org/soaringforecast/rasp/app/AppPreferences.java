@@ -50,6 +50,7 @@ public class AppPreferences {
     private static final String CLEAR_CACHE_TIME_MINUTES = "CLEAR_CACHE_TIME_MINUTES";
     private static final String AIRCRAFT_REGISTRATION = "AIRCRAFT_REGISTRATION";
     private static final String ONE_800_WX_BRIEF_USER_ID = "ONE_800_WX_BRIEF_USER_ID";
+    private static final String WX_BRIEF_DO_NOT_DISPLAY_DISCLAIMER = "WX_BRIEF_DO_NOT_DISPLAY_DISCLAIMER"; ;
 
 
     // These string values are assigned in code so they match what is used in Settings
@@ -524,7 +525,17 @@ public class AppPreferences {
     }
 
 
-    // For 1800wxbrief
+    // ----------- 1800wxbrief  --------------------
+    public boolean doNotDisplayWxBriefDisclaimer(){
+        return sharedPreferences.getBoolean(WX_BRIEF_DO_NOT_DISPLAY_DISCLAIMER, false);
+    }
+
+    public void setWxBriefAuthorizationDisplay(boolean displayAuthorization){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(WX_BRIEF_DO_NOT_DISPLAY_DISCLAIMER, displayAuthorization);
+        editor.apply();
+    }
+
     public String getAircraftRegistration(){
         return sharedPreferences.getString(AIRCRAFT_REGISTRATION, " ");
     }

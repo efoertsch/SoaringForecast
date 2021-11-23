@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
+import android.text.Html;
 import android.util.Base64;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -53,6 +55,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,7 +70,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.core.content.FileProvider;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
@@ -1144,6 +1149,28 @@ public class AppRepository implements CacheTimeListener {
     private void post(Object post) {
         EventBus.getDefault().post(post);
 
+    }
+
+    //   Read asset file
+    // Keep just in case
+    public String loadAssetText(String filename, @StringRes int fileNotFoundErrorMsg, @StringRes int ioExceptionErrorMsg ) {
+        StringBuilder sb = new StringBuilder();
+        AssetManager assetManager = context.getApplicationContext().getAssets();
+        InputStream inputStream;
+        try {
+            inputStream = assetManager.open(filename);
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    inputStream));
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (FileNotFoundException e) {
+            EventBus.getDefault().post(new SnackbarMessage(context.getApplicationContext().getString(R.string.oops_about_file_is_missing)));
+        } catch (IOException e) {
+            EventBus.getDefault().post(new SnackbarMessage(context.getApplicationContext().getString(R.string.oops_error_reading_about_file)));
+        }
+        return sb.toString();
     }
 
 }

@@ -26,4 +26,5 @@ app/release/output.json
 app/src/debug/res/values/api_keys.xml
 app/src/release/res/values/api_keys.xml
 
-app/release/app-release.apk
+app/release/
+

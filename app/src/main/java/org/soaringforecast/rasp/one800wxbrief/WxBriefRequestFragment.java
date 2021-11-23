@@ -1,8 +1,6 @@
 package org.soaringforecast.rasp.one800wxbrief;
 
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +14,6 @@ import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterFragment;
 import org.soaringforecast.rasp.common.messages.CrashReport;
 import org.soaringforecast.rasp.databinding.WxBriefDefaultsView;
-import org.soaringforecast.rasp.databinding.WxBriefRequestView;
-import org.soaringforecast.rasp.one800wxbrief.options.BriefingOptions;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefRequestResponse;
 import org.soaringforecast.rasp.repository.AppRepository;
 
@@ -27,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
-import dagger.android.support.DaggerFragment;
 
 public class WxBriefRequestFragment extends MasterFragment {
 
@@ -55,15 +50,15 @@ public class WxBriefRequestFragment extends MasterFragment {
         // Note viewmodel is shared by activity
         wxBriefViewModel = ViewModelProviders.of(getActivity())
                 .get(WxBriefViewModel.class)
-                .setAppRepository(appRepository)
+                .setRepository(appRepository)
                 .setAppPreferences(appPreferences);
     }
 
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-        wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_defaults, container, false);
+        //wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_defaults, container, false);
+        wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_request_fragment, container, false);
         wxBriefDefaultsView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
         wxBriefDefaultsView.setViewModel(wxBriefViewModel);
         return wxBriefDefaultsView.getRoot();

@@ -356,7 +356,7 @@ public class SoaringForecastFragment extends DaggerFragment {
 
     private void display1800WxBrief(){
         WxBriefRequestActivity.Builder builder = WxBriefRequestActivity.Builder.getBuilder();
-        builder.setWxBriefForTaskId(soaringForecastViewModel.getTaskId());
+        builder.displayTaskNotams(soaringForecastViewModel.getTaskId());
         startActivity(builder.build(this.getContext()));
     }
 
