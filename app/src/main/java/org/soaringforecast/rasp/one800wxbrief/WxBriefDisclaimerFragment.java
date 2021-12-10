@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.databinding.WxBriefDisclaimerView;
 import org.soaringforecast.rasp.one800wxbrief.messages.ContineWithWxBrief;
 import org.soaringforecast.rasp.repository.AppRepository;
@@ -22,16 +24,13 @@ import dagger.android.support.DaggerFragment;
 public class WxBriefDisclaimerFragment extends DaggerFragment {
     @Inject
     public AppRepository appRepository;
-
-    private WxBriefViewModel wxBriefViewModel;
+    @Inject
+    public AppPreferences appPreferences;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        wxBriefViewModel = ViewModelProviders.of(this)
-                .get(WxBriefViewModel.class)
-                .setRepository(appRepository);
     }
 
     @Override
@@ -39,7 +38,12 @@ public class WxBriefDisclaimerFragment extends DaggerFragment {
                              Bundle savedInstanceState) {
         WxBriefDisclaimerView wxBriefDisclaimerView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_disclaimer, container, false);
         wxBriefDisclaimerView.setLifecycleOwner(this);
-        wxBriefDisclaimerView.setViewModel(wxBriefViewModel);
+        wxBriefDisclaimerView.wxBriefDisclaimerText.setText(appRepository.getWxBriefDisclaimer());
+        wxBriefDisclaimerView.wxBriefDisclaimerDoNotShowAgain
+                .setOnCheckedChangeListener((buttonView, isChecked) ->
+                        appPreferences.setWxBriefShowDisclaimer(isChecked)
+                );
+
         Button cancelButton = wxBriefDisclaimerView.wxBriefDisclaimerCancel;
         if (cancelButton != null) {
             cancelButton.setOnClickListener(v -> getActivity().finish());

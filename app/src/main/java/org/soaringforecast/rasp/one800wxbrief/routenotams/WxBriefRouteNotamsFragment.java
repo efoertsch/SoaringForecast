@@ -17,8 +17,7 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterFragment;
 import org.soaringforecast.rasp.common.messages.CrashReport;
-import org.soaringforecast.rasp.databinding.WxBriefDefaultsView;
-import org.soaringforecast.rasp.one800wxbrief.WxBriefRequestFragment;
+import org.soaringforecast.rasp.databinding.WxBriefNotamsView;
 import org.soaringforecast.rasp.one800wxbrief.WxBriefViewModel;
 import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDefaults;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefRequestResponse;
@@ -29,8 +28,8 @@ import javax.inject.Inject;
 public class WxBriefRouteNotamsFragment extends MasterFragment {
     private static final String TASKID = "TASKID";
 
-    private WxBriefViewModel wxBriefViewModel;
-    private WxBriefDefaultsView wxBriefDefaultsView;
+    private WxBriefViewModel viewModel;
+    private WxBriefNotamsView wxBriefNotamsView;
 
     @Inject
     AppRepository appRepository;
@@ -52,7 +51,7 @@ public class WxBriefRouteNotamsFragment extends MasterFragment {
 
 
         // Note viewmodel is shared by activity
-        wxBriefViewModel = ViewModelProviders.of(getActivity())
+        viewModel = ViewModelProviders.of(requireActivity())
                 .get(WxBriefViewModel.class)
                 .setRepository(appRepository)
                 .setAppPreferences(appPreferences);
@@ -61,27 +60,44 @@ public class WxBriefRouteNotamsFragment extends MasterFragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_route_notams, container, false);
-        wxBriefDefaultsView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
-        wxBriefDefaultsView.setViewModel(wxBriefViewModel);
-        return wxBriefDefaultsView.getRoot();
+        wxBriefNotamsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_route_notams, container, false);
+        wxBriefNotamsView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
+        wxBriefNotamsView.setViewModel(viewModel);
+        return wxBriefNotamsView.getRoot();
     }
 
     public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
-        wxBriefViewModel.init();
+        viewModel.init();
         // Only using this observer so the validation logic in mediator will be fired
-        wxBriefViewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
-        });
+//        viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
+//        });
+
     }
 
     public void onResume() {
         super.onResume();
         if (appPreferences.getFirstTimeforDefaultsDisplay()){
             EventBus.getDefault().post(new WxBriefShowDefaults());
+        } else {
+            // Only using this observer so the validation logic in mediator will be fired
+            viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
+            });
+            viewModel.startListening();
         }
     }
 
+    public void onPause() {
+        super.onPause();
+        // Only using this observer so the validation logic in mediator will be fired
+        viewModel.getValidator().removeObservers(getViewLifecycleOwner());
+        viewModel.stopListening();
+    }
+
+    public void onDestroyView() {
+        super.onDestroyView();
+        wxBriefNotamsView = null;
+    }
 
     // Also is in WxBriefRequestFragment - consolidate in superclass?
     @Subscribe(threadMode = ThreadMode.MAIN)

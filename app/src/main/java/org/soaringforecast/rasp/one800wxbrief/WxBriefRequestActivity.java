@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.one800wxbrief.messages.ContineWithWxBrief;
 import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDefaults;
+import org.soaringforecast.rasp.one800wxbrief.routenotams.WxBriefRouteNotamsFragment;
 import org.soaringforecast.rasp.repository.AppRepository;
 
 import androidx.fragment.app.Fragment;
@@ -41,13 +43,16 @@ public class WxBriefRequestActivity extends MasterActivity {
         if (appPreferences.getWxBriefShowDisclaimer()){
             return getWxBriefDisclaimerFragment();
         }
+        if (appPreferences.getFirstTimeforDefaultsDisplay()){
+            return getWxBriefDefaultsFragment();
+        }
 
         String wxBriefOption = getIntent().getExtras().getString(WX_BRIEF_OPTION);
         if (wxBriefOption != null) {
             switch (wxBriefOption) {
                 case TASK_NOTAMS:
                      taskId = getIntent().getExtras().getLong(TASK_ID, -1);
-                    return getWxBriefRequestFragment(taskId);
+                    return getWxBriefRouteNotamsFragment(taskId);
                 case TASK_ROUTE_BRIEFING:
                       taskId = getIntent().getExtras().getLong(TASK_ID, -1);
                     return getWxBriefRequestFragment(taskId);
@@ -60,13 +65,19 @@ public class WxBriefRequestActivity extends MasterActivity {
         return new WxBriefDisclaimerFragment();
     }
 
+    private Fragment getWxBriefDefaultsFragment(){
+        return new WxBriefDefaultsFragment();
+    }
+
+    private Fragment getWxBriefRouteNotamsFragment(long taskId) {
+        return WxBriefRouteNotamsFragment.newInstance(taskId);
+    }
+
     private Fragment getWxBriefRequestFragment(long taskId) {
         return WxBriefRequestFragment.newInstance(taskId);
     }
 
-    private Fragment getWxBriefDefaultsFragment(){
-        return new WxBriefDefaultsFragment();
-    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ContineWithWxBrief contineWithWxBrief) {
@@ -85,14 +96,16 @@ public class WxBriefRequestActivity extends MasterActivity {
             switch (wxBriefOption){
                 case TASK_NOTAMS:
                     taskId = getIntent().getExtras().getLong(TASK_ID, -1);
-                    displayFragment(getWxBriefRequestFragment(taskId),true, true);
+                    displayFragment(getWxBriefRouteNotamsFragment(taskId),false, true);
+                    break;
                 case TASK_ROUTE_BRIEFING:
                     taskId = getIntent().getExtras().getLong(TASK_ID, -1);
-                    displayFragment(getWxBriefRequestFragment(taskId),true, true);
+                    displayFragment(getWxBriefRequestFragment(taskId),false, true);
+                    break;
             }
 
         }
-        finish();
+        //finish();
     }
 
     public static class Builder {

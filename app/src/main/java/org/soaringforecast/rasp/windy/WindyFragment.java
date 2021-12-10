@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import androidx.databinding.DataBindingUtil;
+
+import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -78,7 +80,7 @@ public class WindyFragment extends DaggerFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         windyView = DataBindingUtil.inflate(inflater, R.layout.fragment_windy, container, false);
-        windyView.setLifecycleOwner(getActivity());
+        windyView.setLifecycleOwner(this);
         windyView.setViewModel(windyViewModel);
         setupViews();
         return windyView.getRoot();
@@ -91,7 +93,9 @@ public class WindyFragment extends DaggerFragment {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(windyViewModel, "android");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true);
+            if (0 != (getActivity().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
+                WebView.setWebContentsDebuggingEnabled(true);
+            }
         }
         // prevents popups and new windows by not not overriding the onCreateWindow() )
         webView.getSettings().setSupportMultipleWindows(true);
@@ -176,8 +180,8 @@ public class WindyFragment extends DaggerFragment {
         windyViewModel.getStartUpComplete().observe(this, isComplete -> {
             if (isComplete) {
                 //webView.loadUrl(windyFile);
-                webView.loadData(getWindyHTML(webView.getHeight())
-                             ,"text/html; charset=utf-8", "UTF-8");
+                webView.loadDataWithBaseURL("https://www.windy.com", getWindyHTML(webView.getHeight())
+                             ,"text/html; charset=utf-8", "UTF-8","https://www.windy.com");
             }
         });
         windyViewModel.getCommand().observe(this, command -> {

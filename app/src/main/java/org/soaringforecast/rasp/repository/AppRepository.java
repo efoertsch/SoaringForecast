@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Base64;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -1149,6 +1150,13 @@ public class AppRepository implements CacheTimeListener {
     private void post(Object post) {
         EventBus.getDefault().post(post);
 
+    }
+
+
+    public Spanned getWxBriefDisclaimer(){
+        return Html.fromHtml(appRepository.loadAssetText("wx_brief_experimental_disclaimer"
+                , R.string.wxbrief_disclaimer_file_is_missing
+                , R.string.oops_error_reading_wxbrief_displaimer_file));
     }
 
     //   Read asset file

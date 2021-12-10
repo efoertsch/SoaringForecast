@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModelProviders;
 public class WxBriefRequestFragment extends MasterFragment {
 
     private static final String TASKID = "TASKID";
-    private WxBriefViewModel wxBriefViewModel;
+    private WxBriefViewModel viewModel;
     private WxBriefRequestView wxBriefRequestView;
 
     @Inject
@@ -49,7 +49,7 @@ public class WxBriefRequestFragment extends MasterFragment {
         super.onCreate(savedInstanceState);
 
         // Note viewmodel is shared by activity
-        wxBriefViewModel = ViewModelProviders.of(getActivity())
+        viewModel = ViewModelProviders.of(requireActivity())
                 .get(WxBriefViewModel.class)
                 .setRepository(appRepository)
                 .setAppPreferences(appPreferences);
@@ -60,23 +60,35 @@ public class WxBriefRequestFragment extends MasterFragment {
                              @Nullable Bundle savedInstanceState) {
         wxBriefRequestView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_request_fragment, container, false);
         wxBriefRequestView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
-        wxBriefRequestView.setViewModel(wxBriefViewModel);
+        wxBriefRequestView.setViewModel(viewModel);
         return wxBriefRequestView.getRoot();
     }
 
     public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
-        wxBriefViewModel.init();
-        // Only using this observer so the validation logic in mediator will be fired
-        wxBriefViewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
-        });
+        viewModel.init();
+
     }
 
     public void onResume() {
         super.onResume();
-        if (appPreferences.getFirstTimeforDefaultsDisplay()){
-            EventBus.getDefault().post(new WxBriefShowDefaults());
-        }
+        // Only using this observer so the validation logic in mediator will be fired
+        viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
+        });
+        viewModel.startListening();
+    }
+
+    public void onPause() {
+        super.onPause();
+        // Only using this observer so the validation logic in mediator will be fired
+        viewModel.getValidator().removeObservers(getViewLifecycleOwner());
+        viewModel.stopListening();
+    }
+
+
+    public void onDestroyView() {
+        super.onDestroyView();
+        wxBriefRequestView = null;
     }
 
     private void displayInfoDialog() {

@@ -80,7 +80,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private MutableLiveData<Boolean> validBriefingData = new MutableLiveData<>();
     private MutableLiveData<Uri> wxBriefUri;
     private MutableLiveData<String> simpleBriefingText;
-    private MutableLiveData<String> aircraftRegistration = new MutableLiveData<>();
+    //private MutableLiveData<String> aircraftRegistration = new MutableLiveData<>();
     private MutableLiveData<String> accountName = new MutableLiveData<>();
 
 
@@ -174,7 +174,9 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     public void init() {
-        routeBriefingRequest = RouteBriefingRequest.newInstance();
+        if (routeBriefingRequest == null) {
+            routeBriefingRequest = RouteBriefingRequest.newInstance();
+        }
         getOfficialBriefing();
         getBriefFormats();
         getAircraftId();
@@ -189,11 +191,11 @@ public class WxBriefViewModel extends ObservableViewModel {
         loadTask();
         loadTaskTurnpoints();
         loadProductsAndTailoringOptions();
-        setupLiveDataMediator();
     }
 
+
     // Using MediatorLiveData to handle post LiveData updates for validation checks etc.
-    private void setupLiveDataMediator() {
+    public void startListening() {
         validationMediator.addSource(officialBriefing, isChecked -> updateOfficialBriefing((Boolean) isChecked));
         validationMediator.addSource(selectedTypeOfBriefPosition, position -> setSelectedTypeOfBriefPosition((Integer) position));
         validationMediator.addSource(aircraftId, aircraftId -> validateAircraftId((String) aircraftId));
@@ -203,6 +205,17 @@ public class WxBriefViewModel extends ObservableViewModel {
         validationMediator.addSource(selectedBriefingDatePosition, selectedBriefingDatePosition -> formatDepartureInstant());
         validationMediator.addSource(selectedDepartureTimePosition, selectedDepartureTimePosition -> formatDepartureInstant());
         validationMediator.addSource(selectedBriefFormatPosition, selectedBriefFormatPosition -> updateBriefingFormat((Integer) selectedBriefFormatPosition));
+    }
+    public void stopListening(){
+        validationMediator.removeSource(officialBriefing);
+        validationMediator.removeSource(selectedTypeOfBriefPosition);
+        validationMediator.removeSource(aircraftId);
+        validationMediator.removeSource(wxBriefWebUserName);
+        validationMediator.removeSource(routeCorridorWidth);
+        validationMediator.removeSource(windsAloftCorridor);
+        validationMediator.removeSource(selectedBriefingDatePosition);
+        validationMediator.removeSource(selectedDepartureTimePosition);
+        validationMediator.removeSource(selectedBriefFormatPosition);
     }
 
     public MediatorLiveData<Void> getValidator() {
@@ -859,21 +872,10 @@ public class WxBriefViewModel extends ObservableViewModel {
 
 
     public void saveDefaultSettings() {
-        appPreferences.setAircraftRegistration(aircraftRegistration.getValue());
+        appPreferences.setAircraftRegistration(aircraftId.getValue());
         appPreferences.setOne800WxBriefUserId(wxBriefWebUserName.getValue());
     }
 
-    public MutableLiveData<Spanned>  getWxBriefDisclaimer(){
-        MutableLiveData wxBriefDisclaimer = new MutableLiveData<>();
-        wxBriefDisclaimer.setValue(Html.fromHtml(appRepository.loadAssetText("wx_brief_experimental_disclaimer"
-                , R.string.wxbrief_disclaimer_file_is_missing
-                , R.string.oops_error_reading_wxbrief_displaimer_file)));
-        return wxBriefDisclaimer;
-    }
-
-    public void doNotShowDisclaimerAgain(boolean checked){
-        appPreferences.setWxBriefShowDisclaimer(checked);
-    }
 
 
     // TODO Put into superclass

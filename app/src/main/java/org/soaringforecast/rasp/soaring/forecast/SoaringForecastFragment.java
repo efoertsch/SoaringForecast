@@ -349,7 +349,7 @@ public class SoaringForecastFragment extends DaggerFragment {
                 return true;
             case R.id.wxbrief_task_notams:
                 display1800WxNOTAMBrief();
-                    return true;
+                return true;
             case R.id.wxbrief_route_briefing:
                 display1800WxRouteBrief();
                 return true;

@@ -1,13 +1,9 @@
 package org.soaringforecast.rasp.one800wxbrief;
 
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -21,14 +17,19 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterFragment;
 import org.soaringforecast.rasp.common.messages.CrashReport;
+import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.databinding.WxBriefDefaultsView;
+import org.soaringforecast.rasp.generated.callback.OnClickListener;
+import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDefaults;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefRequestResponse;
 import org.soaringforecast.rasp.repository.AppRepository;
+
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 public class WxBriefDefaultsFragment extends MasterFragment {
-    private WxBriefViewModel wxBriefViewModel;
+    private WxBriefViewModel viewModel;
     private WxBriefDefaultsView wxBriefDefaultsView;
 
     @Inject
@@ -42,7 +43,7 @@ public class WxBriefDefaultsFragment extends MasterFragment {
         super.onCreate(savedInstanceState);
 
         // Note viewmodel is shared by activity
-        wxBriefViewModel = ViewModelProviders.of(getActivity())
+        viewModel = ViewModelProviders.of(requireActivity())
                 .get(WxBriefViewModel.class)
                 .setRepository(appRepository)
                 .setAppPreferences(appPreferences);
@@ -53,16 +54,39 @@ public class WxBriefDefaultsFragment extends MasterFragment {
                              @Nullable Bundle savedInstanceState) {
         wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_defaults, container, false);
         wxBriefDefaultsView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
-        wxBriefDefaultsView.setViewModel(wxBriefViewModel);
+        wxBriefDefaultsView.setViewModel(viewModel);
+        wxBriefDefaultsView.wxBriefDefaultSaveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.saveDefaultSettings();
+                //EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+            }
+        });
+
         return wxBriefDefaultsView.getRoot();
     }
 
     public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
-        wxBriefViewModel.init();
+        viewModel.init();
         // Only using this observer so the validation logic in mediator will be fired
-        wxBriefViewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
+        viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
         });
+    }
+
+    public void onResume() {
+        super.onResume();
+        viewModel.startListening();
+    }
+
+    public void onPause(){
+        super.onPause();
+        viewModel.stopListening();
+    }
+
+    public void onDestroyView(){
+        super.onDestroyView();
+        wxBriefDefaultsView = null;
     }
 
 

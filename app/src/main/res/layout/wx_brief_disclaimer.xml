@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data class="WxBriefDisclaimerView">
-        <variable
-            name="viewModel"
-            type="org.soaringforecast.rasp.one800wxbrief.WxBriefViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,14 +34,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoLink="all"
-                    android:text="@{viewModel.getWxBriefDisclaimer()}"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <CheckBox
                     android:id="@+id/wx_brief_disclaimer_do_not_show_again"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onCheckedChanged="@{(v, checked) -> viewModel.doNotShowDisclaimerAgain(checked)}"
                     android:text="@string/wx_brief_do_not_show_again" />
             </LinearLayout>
         </ScrollView>

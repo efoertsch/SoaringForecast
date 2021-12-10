@@ -421,7 +421,7 @@
     <string name="departure_date">Departure Date</string>
     <string name="departure_time">Departure Time</string>
     <string name="briefing_format">Briefing Format</string>
-    <string name="error_loading_task">An error occured retrievign the task from the database.</string>
+    <string name="error_loading_task">An error occured retrieving the task from the database.</string>
     <string name="your_briefing_should_arrive_in_your_mailbox_shortly">Your briefing should arrive in your mailbox shortly</string>
     <string name="undefined_error_occurred_on_1800wxbrief_request">Oops. Undefined error occurred on 1800WxBrief request.</string>
     <string name="invalid_aircraftid">"Invalid aircraft registration id. "</string>
