@@ -99,6 +99,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private RouteBriefingRequest routeBriefingRequest;
     private AppPreferences appPreferences;
     private Constants.TypeOfBrief selectedTypeOfBrief;
+    private boolean isInitialized = false;
 
     /**
      * Product codes that can go into briefingPreferences  items array
@@ -174,6 +175,11 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     public void init() {
+        // Since viewmodel shared among fragments only initialize once
+        if (isInitialized){
+            return;
+        }
+        isInitialized = true;
         if (routeBriefingRequest == null) {
             routeBriefingRequest = RouteBriefingRequest.newInstance();
         }
@@ -592,14 +598,15 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     /**
-     * Convert seleced local/date and  time to Zulu
+     * Convert selected local/date and  time to Zulu
      * Time must be in format of yyyy-MM-ddTHH:mm:ss.S
      */
     private void formatDepartureInstant() {
         StringBuilder sb = new StringBuilder();
         sb.append(briefingDates.getValue().get(selectedBriefingDatePosition.getValue()))
                 .append("T")
-                .append(departureTimes.getValue().get(selectedDepartureTimePosition.getValue()))
+                //.append(departureTimes.getValue().get(selectedDepartureTimePosition.getValue()))
+                .append("07:00")
                 .append(":00.000");
         routeBriefingRequest.setDepartureInstant(TimeUtils.convertLocalTimeToZulu(sb.toString()));
     }
@@ -854,6 +861,11 @@ public class WxBriefViewModel extends ObservableViewModel {
                             setWorkingFlag(false);
                         });
         compositeDisposable.add(disposable);
+    }
+
+    public void requestNOTAMSBriefing(){
+        //construct standard brief only requesting NOTAMS
+
     }
 
     public LiveData<Uri> getWxBriefUri() {

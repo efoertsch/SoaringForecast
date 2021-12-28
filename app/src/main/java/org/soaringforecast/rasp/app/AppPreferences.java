@@ -31,6 +31,7 @@ import io.reactivex.Observable;
 
 import static android.content.Context.MODE_PRIVATE;
 
+// TODO move this into repository
 public class AppPreferences {
 
     //private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";

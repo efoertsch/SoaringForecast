@@ -428,12 +428,12 @@
     <string name="invalid_wxbrief_web_username">Invalid 1800WXBrief user name. Must be email address.</string>
     <string name="route_corridor_width_min_and_max_range">Route Corridor width must be between %1$d and %2$d.</string>
     <string name="winds_aloft_corridor_min_to_max_value">Winds aloft corridor must be between %1$d and %2$d.</string>
-    <string name="offical_wxbrief">Official briefing?</string>
-    <string name="check_to_record_briefing_in_1800wxbrief_system">If checked your request will be recorded as an official briefing in 1800WXBrief system.</string>
+    <string name="official_wxbrief">Official briefing?</string>
+    <string name="check_to_record_briefing_in_1800wxbrief_system">If checked your request will be recorded as an official briefing in 1800WXBrief system. An aircraft registration will be needed.</string>
     <string name="tailoring_options">Tailoring Options</string>
     <string name="select_1800wxbrief_tailoring_options">Select Tailoring Options</string>
     <string name="select_1800wxbrief_product_options">Select Product Options</string>
-    <string name="wxbrief_disclaimer_file_is_missing">Oops! The 1800wxbrief disclaime file is missing.</string>
+    <string name="wxbrief_disclaimer_file_is_missing">Oops! The 1800wxbrief disclaimer file is missing.</string>
     <string name="oops_error_reading_wxbrief_displaimer_file">Oops. Error reading the 1800WxBrief disclaimer file.</string>
     <string name="product_options">Product Options</string>
     <string name="type_of_brief">Type Of Brief</string>
@@ -450,9 +450,30 @@
     <string name="default_corridor_width_label">Corridors</string>
     <string name="error_getting_sua_list">Error occurred getting list of SUAs</string>
     <string name="default_continue">Continue</string>
-    <string name="wx_brief_do_not_show_again">Do not sure this again</string>
+    <string name="wx_brief_do_not_show_again">Do not show this again</string>
     <string name="wx_brief_notams">1800WxBrief NOTAMS</string>
     <string name="wxbrief_task_notams">Task NOTAMS</string>
     <string name="wxbrief_route_briefing">Route Briefing</string>
+    <string name="request_notams">Request NOTAMS</string>
+    <string name="get_notams">GET NOTAMS</string>
+    <string name="get_briefing">GET BRIEFING</string>
+    <string name="wx_brief_route_briefing">188WXBrief Route Briefing</string>
+    <string name="set_defaults">Defaults</string>
+    <string name="notams_abbreviated_brief">NOTAMS Abbreviated Brief</string>
+    <string name="wxbrief_notams_abbreviated_brief_info">This option provides an abbreviated brief with assumed takeoff time of 1 hr in the future and a flight duration of 10 hrs.
+        \nHowever 1800WXBrief defaults provides information from 2 hrs before this time to 72 hours pass the end of the flight duration.
+        \nOnly the following are requested for this briefing.
+        \nTemporary Flight Restrictions
+        \nClose/Unsafe NOTAMS
+        \nDeparture and Destination NOTAMS
+        \nUAS Operating Area
+        \nCommunication NOTAM
+        \nSpecial Use Airspace NOTAM
+        \nMilitary NOTAM
+        \nThe route corridor is set to the minimum of 25nm allowed by 1800WXBrief
+    </string>
+    <string name="wxbrief_aircraft_registration_info">Use any club aircraft registration or your own glider.</string>
+    <string name="wxbrief_account_name_info">Your email address associated with your 1800WXBrief account.</string>
+    <string name="wxbrief_official_brief_info">If checked the briefing will be retained on the system.\nIf not checked it won\'t be retained, nor is an aircraft registration required.</string>
 
 </resources>

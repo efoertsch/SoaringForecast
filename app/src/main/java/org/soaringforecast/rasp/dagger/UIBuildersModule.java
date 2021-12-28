@@ -10,7 +10,7 @@ import org.soaringforecast.rasp.one800wxbrief.WxBriefDefaultsFragment;
 import org.soaringforecast.rasp.one800wxbrief.WxBriefDisclaimerFragment;
 import org.soaringforecast.rasp.one800wxbrief.WxBriefRequestFragment;
 import org.soaringforecast.rasp.one800wxbrief.WxBriefRequestActivity;
-import org.soaringforecast.rasp.one800wxbrief.routenotams.WxBriefRouteNotamsFragment;
+import org.soaringforecast.rasp.one800wxbrief.WxBriefRouteNotamsFragment;
 import org.soaringforecast.rasp.satellite.SatelliteActivity;
 import org.soaringforecast.rasp.satellite.noaa.NoaaSatelliteImageFragment;
 import org.soaringforecast.rasp.settings.SettingsActivity;

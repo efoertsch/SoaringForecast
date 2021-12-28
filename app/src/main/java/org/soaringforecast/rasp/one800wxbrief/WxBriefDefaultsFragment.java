@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -19,12 +20,8 @@ import org.soaringforecast.rasp.common.MasterFragment;
 import org.soaringforecast.rasp.common.messages.CrashReport;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.databinding.WxBriefDefaultsView;
-import org.soaringforecast.rasp.generated.callback.OnClickListener;
-import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDefaults;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefRequestResponse;
 import org.soaringforecast.rasp.repository.AppRepository;
-
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -47,6 +44,8 @@ public class WxBriefDefaultsFragment extends MasterFragment {
                 .get(WxBriefViewModel.class)
                 .setRepository(appRepository)
                 .setAppPreferences(appPreferences);
+
+        setHasOptionsMenu(true);
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -55,12 +54,15 @@ public class WxBriefDefaultsFragment extends MasterFragment {
         wxBriefDefaultsView = DataBindingUtil.inflate(inflater, R.layout.wx_brief_defaults, container, false);
         wxBriefDefaultsView.setLifecycleOwner(getViewLifecycleOwner()); // update UI based on livedata changes.
         wxBriefDefaultsView.setViewModel(viewModel);
-        wxBriefDefaultsView.wxBriefDefaultSaveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewModel.saveDefaultSettings();
-                //EventBus.getDefault().post(new PopThisFragmentFromBackStack());
-            }
+
+        wxBriefDefaultsView.wxBriefCancel.setOnClickListener(v ->
+                EventBus.getDefault().post(new PopThisFragmentFromBackStack()));
+
+        wxBriefDefaultsView.wxBriefDefaultSaveBtn.setOnClickListener(v -> {
+            viewModel.saveDefaultSettings();
+            appPreferences.setFirstTimeforDefaultsDisplay(false);
+            EventBus.getDefault().post(new PopThisFragmentFromBackStack());
+
         });
 
         return wxBriefDefaultsView.getRoot();
@@ -69,18 +71,21 @@ public class WxBriefDefaultsFragment extends MasterFragment {
     public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
         viewModel.init();
-        // Only using this observer so the validation logic in mediator will be fired
-        viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
-        });
+
     }
 
     public void onResume() {
         super.onResume();
+        // Only using this observer so the validation logic in mediator will be fired
+        viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
+        });
         viewModel.startListening();
     }
 
     public void onPause(){
         super.onPause();
+        // Only using this observer so the validation logic in mediator will be fired
+        viewModel.getValidator().removeObservers(getViewLifecycleOwner());
         viewModel.stopListening();
     }
 

@@ -5,14 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
+import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.databinding.WxBriefDisclaimerView;
 import org.soaringforecast.rasp.one800wxbrief.messages.ContineWithWxBrief;
 import org.soaringforecast.rasp.repository.AppRepository;
@@ -44,7 +43,7 @@ public class WxBriefDisclaimerFragment extends DaggerFragment {
                         appPreferences.setWxBriefShowDisclaimer(isChecked)
                 );
 
-        Button cancelButton = wxBriefDisclaimerView.wxBriefDisclaimerCancel;
+        Button cancelButton = wxBriefDisclaimerView.wxBriefCancel;
         if (cancelButton != null) {
             cancelButton.setOnClickListener(v -> getActivity().finish());
         }

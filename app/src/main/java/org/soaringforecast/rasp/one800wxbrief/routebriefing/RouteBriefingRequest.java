@@ -73,9 +73,9 @@ public class RouteBriefingRequest {
     private String destination;
 
     /**
-     * Default to 5 hr flight
+     * Default to 10 hr (so basically all day) flight
      */
-    private String flightDuration = "PT05H";
+    private String flightDuration = "PT12H";
 
     /**
      * Default flight to 6 thousand feet
