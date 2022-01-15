@@ -462,18 +462,20 @@
     <string name="notams_abbreviated_brief">NOTAMS Abbreviated Brief</string>
     <string name="wxbrief_notams_abbreviated_brief_info">This option provides an abbreviated brief with assumed takeoff time of 1 hr in the future and a flight duration of 10 hrs.
         \nHowever 1800WXBrief defaults provides information from 2 hrs before this time to 72 hours pass the end of the flight duration.
-        \nOnly the following are requested for this briefing.
-        \nTemporary Flight Restrictions
-        \nClose/Unsafe NOTAMS
-        \nDeparture and Destination NOTAMS
-        \nUAS Operating Area
-        \nCommunication NOTAM
-        \nSpecial Use Airspace NOTAM
-        \nMilitary NOTAM
-        \nThe route corridor is set to the minimum of 25nm allowed by 1800WXBrief
+        \n\nOnly the following are requested for this briefing:
+        \n\u2022 Temporary Flight Restrictions
+        \n\u2022 Closed/Unsafe NOTAMS
+        \n\u2022 Departure and Destination NOTAMS
+        \n\u2022 UAS Operating Area
+        \n\u2022 Communication NOTAM
+        \n\u2022 Special Use Airspace NOTAM
+        \n\nThe route corridor is set to 25nm, the minimum allowed by 1800WXBrief.
     </string>
     <string name="wxbrief_aircraft_registration_info">Use any club aircraft registration or your own glider.</string>
     <string name="wxbrief_account_name_info">Your email address associated with your 1800WXBrief account.</string>
     <string name="wxbrief_official_brief_info">If checked the briefing will be retained on the system.\nIf not checked it won\'t be retained, nor is an aircraft registration required.</string>
-
+    <string name="wxbrief_departure_date_info">For current date the brief assumes 1hr in the future. For future days, a 9AM departure is assumed.</string>
+    <string name="wxbrief_title">1800WxBrief</string>
+    <string name="permission_denied_to_write_pdf_to_downloads_dir">Permission to write to Downloads directory for the 1800WXBrief PDF was denied. </string>
+    <string name="rational_pdf_downloads_dir">A PDF briefing is first downloaded to the Downloads directory. You first need to grant SoaringForecast permission to use the Downloads directory.</string>
 </resources>

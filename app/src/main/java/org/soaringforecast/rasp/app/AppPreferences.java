@@ -51,7 +51,7 @@ public class AppPreferences {
     private static final String CLEAR_CACHE_TIME_MINUTES = "CLEAR_CACHE_TIME_MINUTES";
     private static final String AIRCRAFT_REGISTRATION = "AIRCRAFT_REGISTRATION";
     private static final String ONE_800_WX_BRIEF_USER_ID = "ONE_800_WX_BRIEF_USER_ID";
-    private static final String WX_BRIEF_SHOW_DISLAIMER = "WX_BRIEF_SHOW_DISLAIMER";
+    private static final String WX_BRIEF_SHOW_DISLAIMER = "WX_BRIEF_SHOW_DISCLAIMER";
     private static final String WX_BRIEF_FIRST_TIME_FOR_DEFAULTS = "WX_BRIEF_FIRST_TIME_FOR_DEFAULTS";
 
 
@@ -535,6 +535,7 @@ public class AppPreferences {
         return sharedPreferences.getBoolean(WX_BRIEF_SHOW_DISLAIMER, true);
     }
 
+    // return true to show disclaimer - false if not
     public void setWxBriefShowDisclaimer(boolean displayAuthorization){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(WX_BRIEF_SHOW_DISLAIMER, displayAuthorization);

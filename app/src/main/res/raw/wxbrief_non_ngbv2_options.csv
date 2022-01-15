@@ -1,8 +1,0 @@
-1800WxBrief Parameter name,1800WxBrief parm description,Display Description,Display for OutlookBrief,Default Value OutLook Brief ,Display for StandardBrief,Default value for Standard Brief,Display For Abbreviated Brief,Default vale for Abbreviated Brief
-ENCODED_ONLY, Include encoded data, Include encoded data,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
-PLAINTEXT_ONLY, Include plaintext, Include plaintext,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
-NO_GEOMETRY,Do not include Geometry data,Include Geometry data,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
-NO_SUMMARIZATION_PASSING_TIMES,Do not include Summarization and passing times,Include Summarization and passing times,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
-NO_NOTAM_CATEGORIZATION,Do not include inside / outside corridor categorization for NOTAMs,Include inside / outside corridor categorization for NOTAMs,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
-NO_TFR_NOTAM_RECORD,Do not include NotamRecord for TFRs,Include NotamRecord for TFRs,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
-NO_FIX_LIST,Do not include the fix list in a NGB Weather Briefing object,Include the fix list in a NGB Weather Briefing object,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE

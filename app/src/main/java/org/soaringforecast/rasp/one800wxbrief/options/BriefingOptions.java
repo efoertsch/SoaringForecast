@@ -41,7 +41,7 @@ public class BriefingOptions {
 
     /**
      * @param fullProductCodeList
-     * @param fullTailoringOptionList - may be NGBV2 or non-NGBV2 options
+     * @param fullTailoringOptionList - may be NGBV2
      */
     public BriefingOptions(ArrayList<BriefingOption> fullProductCodeList, ArrayList<BriefingOption> fullTailoringOptionList) {
         this.fullProductCodeList = fullProductCodeList;
@@ -120,13 +120,7 @@ public class BriefingOptions {
     }
 
 
-    // Add only set list of NOTAMS product codes
-    private ArrayList<String> getProductCodesForNOTAMSBriefing() {
-        BriefingOption briefingOption;
-        ArrayList<String> productCodesList = new ArrayList<String>(Arrays.asList("TFR","DD_NTM","DEP_NTM","DEST_NTM",
-        "UOA","ENROUTE_NTM_COM","ENROUTE_NTM_SUA","ENROUTE_NTM_MIL"));
-        return productCodesList;
-    }
+
 
     // Display a list of tailoring options to include (do not send EXCLUDE key value)  in a brief
     private void createTailoringOptionsDisplayFields() {
@@ -175,31 +169,6 @@ public class BriefingOptions {
         }
         return tailoringOptionList;
     }
-
-    public ArrayList<String> getTailoringOptionsForNOTAMSBriefing() {
-        BriefingOption briefingOption;
-        ArrayList<String> tailoringOptionList = new ArrayList<String>(Arrays.asList(
-                "EXCLUDE_HISTORICAL_METARS",
-                "EXCLUDE_ENROUTE_METARS_TAFS",
-                "EXCLUDE_FAR_WINDS_ALOFT",
-                "EXCLUDE_LOW_ENROUTE_OBSTRUCTIONS",
-                "EXCLUDE_GFA_BEYOND_DEP_TIME",
-                "EXCLUDE_FLOW_CONTROL",
-                "EXCLUDE_NHC_BULLETIN",
-                "EXCLUDE_NON_LOCATION_FDC_NOTAM",
-                "EXCLUDE_STATE_DEPARTMENT_NOTAM",
-                "EXCLUDE_ENROUTE_NAV_VOR",
-                "EXCLUDE_ENROUTE_NAV_VOR-DME",
-                "EXCLUDE_ENROUTE_NAV_VORTAC",
-                "EXCLUDE_ENROUTE_NAV_NDB",
-                "EXCLUDE_ENROUTE_NAV_DME",
-                "EXCLUDE_ENROUTE_NAV_TACAN",
-                "EXCLUDE_ENROUTE_NAV_ILS",
-                "EXCLUDE_ENROUTE_NAV_OTHER"));
-        return tailoringOptionList;
-
-    }
-
 
         /**
          * Update both the display list AND original list of tailoring options (as app can send EXCLUDE values

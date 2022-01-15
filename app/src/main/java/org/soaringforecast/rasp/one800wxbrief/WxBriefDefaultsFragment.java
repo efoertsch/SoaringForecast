@@ -70,7 +70,7 @@ public class WxBriefDefaultsFragment extends MasterFragment {
 
     public void onViewCreated(View view, Bundle savedInstance) {
         super.onViewCreated(view, savedInstance);
-        viewModel.init();
+        viewModel.init(null);
 
     }
 

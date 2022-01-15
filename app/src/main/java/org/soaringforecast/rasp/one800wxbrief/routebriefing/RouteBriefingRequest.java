@@ -1,7 +1,11 @@
 package org.soaringforecast.rasp.one800wxbrief.routebriefing;
 
+import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.utils.TimeUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import timber.log.Timber;
@@ -48,8 +52,7 @@ public class RouteBriefingRequest {
      */
     private String briefingPreferences;
     private String selectedBriefingType;
-
-
+    private Constants.TypeOfBrief typeOfBrief;
 
     public enum TimeZoneAbbrev {
         AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HST, UTC
@@ -73,7 +76,7 @@ public class RouteBriefingRequest {
     private String destination;
 
     /**
-     * Default to 10 hr (so basically all day) flight
+     * Default to 12 hr  flight
      */
     private String flightDuration = "PT12H";
 
@@ -348,6 +351,12 @@ public class RouteBriefingRequest {
         this.routeCorridorWidth = routeCorridorWidth;
     }
 
+    public void setTypeOfBrief(Constants.TypeOfBrief selectedTypeOfBrief) {
+        this.typeOfBrief = selectedTypeOfBrief;
+        setOutlookBriefing(selectedTypeOfBrief == Constants.TypeOfBrief.OUTLOOK);
+
+    }
+
     public void setOutlookBriefing(Boolean outlookBriefing) {
         this.outlookBriefing = outlookBriefing;
     }
@@ -385,18 +394,17 @@ public class RouteBriefingRequest {
      * &speedKnots=50&versionRequested=99999999&notABriefing=false&briefingType=NGBV2
      * &briefingResultFormat=PDF&emailAddress=flightservice%40soaringforecast.org
      */
-    public String getRestParmString() {
+    public String getRestParmString() throws IllegalArgumentException, UnsupportedEncodingException {
         StringBuffer sb = new StringBuffer();
         sb.append("notABriefing=").append(notABriefing);
         sb.append(AMPERSAND).append("includeCodedMessages=").append(includeCodedMessages);
-        sb.append(AMPERSAND).append("type=").append(type);
+        sb.append(AMPERSAND).append("type=").append(type);   //ICAO
         // Only send id if user wants record of briefing filed at
         // 1800wxbrief ((!notABriefing) == false)
         if (!notABriefing) {
             sb.append(AMPERSAND).append("aircraftIdentifier=").append(aircraftIdentifier);
         }
         sb.append(AMPERSAND).append("routeCorridorWidth=").append(routeCorridorWidth);
-        sb.append(AMPERSAND).append("briefingPreferences=").append(getBriefingPreferences());
         sb.append(AMPERSAND).append("outlookBriefing=").append(((outlookBriefing != null) ? outlookBriefing : false));
         sb.append(AMPERSAND).append("flightRules=").append(flightRules);
         sb.append(AMPERSAND).append("departure=").append(departure);
@@ -418,13 +426,13 @@ public class RouteBriefingRequest {
         }
         sb.append(AMPERSAND).append("altitudeFL=").append(flightLevel);
         String plainTextTimeZone = TimeZoneAbbrev.UTC.name();
-        try {
-            // make sure current timezone valid
-            plainTextTimeZone = TimeZoneAbbrev.valueOf(TimeUtils.getLocalTimeZoneAbbrev()).name();
-        } catch (IllegalArgumentException ex) {
-            //nope
-        }
+
+        // make sure current timezone valid possible IllegalArgumentException
+        plainTextTimeZone = TimeZoneAbbrev.valueOf(TimeUtils.getLocalTimeZoneAbbrev()).name();
         sb.append(AMPERSAND).append("plainTextTimeZone=").append(plainTextTimeZone);
+        //  possible UnsupportedEncodingException
+        sb.append(AMPERSAND).append("briefingPreferences=").append(
+                URLEncoder.encode(getBriefingPreferences(), StandardCharsets.UTF_8.toString()));
         Timber.d("Briefing Request Options: %1$s", sb.toString());
         return sb.toString();
     }
@@ -440,7 +448,6 @@ public class RouteBriefingRequest {
         StringBuilder sb = new StringBuilder();
         sb.append('{')
                 .append(getProductCodesJson())
-                .append(',')
                 .append(getTailorOptionsJson())
                 .append('}');
         return sb.toString();
@@ -452,6 +459,9 @@ public class RouteBriefingRequest {
      * @return
      */
     private synchronized String getProductCodesJson() {
+        if (typeOfBrief == Constants.TypeOfBrief.STANDARD){
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         boolean atLeastOne = false;
         sb.append("\"items\":[");
@@ -462,7 +472,7 @@ public class RouteBriefingRequest {
                         .append("\"");
             }
         }
-        sb.append(']');
+        sb.append("],");
         return sb.toString();
     }
 

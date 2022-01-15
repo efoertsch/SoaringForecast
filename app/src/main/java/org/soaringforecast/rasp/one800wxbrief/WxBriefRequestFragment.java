@@ -1,7 +1,9 @@
 package org.soaringforecast.rasp.one800wxbrief;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterFragment;
 import org.soaringforecast.rasp.common.messages.CrashReport;
+import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.databinding.WxBriefRequestView;
 import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDefaults;
 import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDisclaimer;
@@ -35,9 +38,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
-public class WxBriefRequestFragment extends MasterFragment {
+import java.util.List;
+
+import pub.devrel.easypermissions.EasyPermissions;
+import timber.log.Timber;
+
+public class WxBriefRequestFragment extends MasterFragment implements EasyPermissions.PermissionCallbacks  {
 
     private static final String TASKID = "TASKID";
+    private static final int WRITE_DOWNLOADS_ACCESS = 7777;
     private WxBriefViewModel viewModel;
     private WxBriefRequestView wxBriefRequestView;
     private long taskId = -1;
@@ -78,7 +87,6 @@ public class WxBriefRequestFragment extends MasterFragment {
         shortAnimationDuration = getResources().getInteger(
                 android.R.integer.config_shortAnimTime);
 
-        //setHasOptionsMenu(true);
     }
 
     public View onCreateView(LayoutInflater inflater,
@@ -89,9 +97,10 @@ public class WxBriefRequestFragment extends MasterFragment {
         wxBriefRequestView.setViewModel(viewModel);
         wxBriefRequestView.wxBriefCancel.setOnClickListener(v -> getActivity().finish());
 
-        wxBriefRequestView.wxBriefAircraftRegistrationInfo.setOnClickListener(v-> displayInfoDialog(R.string.wxbrief_aircraft_registration_info));
-        wxBriefRequestView.wxBriefAccountNameInfo.setOnClickListener(v-> displayInfoDialog(R.string.wxbrief_account_name_info));
-        wxBriefRequestView.wxBriefOfficialBriefInfo.setOnClickListener(v-> displayInfoDialog(R.string.wxbrief_official_brief_info));
+        wxBriefRequestView.wxBriefAircraftRegistrationInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_aircraft_registration_info));
+        wxBriefRequestView.wxBriefAccountNameInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_account_name_info));
+        wxBriefRequestView.wxBriefOfficialBriefInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_official_brief_info));
+        wxBriefRequestView.wxBriefDepartureDateInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_departure_date_info));
 
         return wxBriefRequestView.getRoot();
     }
@@ -104,9 +113,9 @@ public class WxBriefRequestFragment extends MasterFragment {
                     setProductCodesSpinnerValues(briefingOptions);
                 }
         );
-        
+
         viewModel.getWxBriefUri().observe(getViewLifecycleOwner(), wxbriefUri -> {
-            if (wxbriefUri == null) {
+            if (wxbriefUri == Uri.EMPTY) {
                 return;
             }
             boolean canDisplayPdf = AppRepository.canDisplayPdf(getContext());
@@ -119,51 +128,19 @@ public class WxBriefRequestFragment extends MasterFragment {
                 displayPdfNotDisplayable();
             }
         });
-        
-        viewModel.init();
+
+        viewModel.init(null);
 
     }
 
     public void onResume() {
-        boolean bypassObserver = false;
         super.onResume();
-//        if (appPreferences.getFirstTimeforDefaultsDisplay()) {
-//            EventBus.getDefault().post(new WxBriefShowDefaults());
-//            bypassObserver = true;
-//        }
-//        if (appPreferences.getWxBriefShowDisclaimer()) {
-//            EventBus.getDefault().post(new WxBriefShowDisclaimer());
-//            bypassObserver = true;
-//        }
+        // Only using this observer so the validation logic in mediator will be fired
+        viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
+        });
+        viewModel.startListening();
 
-        if (!bypassObserver) {
-            // Only using this observer so the validation logic in mediator will be fired
-            viewModel.getValidator().observe(getViewLifecycleOwner(), any -> {
-            });
-            viewModel.startListening();
-        }
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.wxbrief_defaults_menu, menu);
-//        super.onCreateOptionsMenu(menu, inflater);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.wxbrief_defaults_menu:
-//                EventBus.getDefault().post(new WxBriefShowDefaults());
-//                return true;
-//            default:
-//                break;
-//        }
-//
-//        return false;
-//    }
-
-
 
     public void onPause() {
         super.onPause();
@@ -172,12 +149,10 @@ public class WxBriefRequestFragment extends MasterFragment {
         viewModel.stopListening();
     }
 
-
     public void onDestroyView() {
         super.onDestroyView();
         wxBriefRequestView = null;
     }
-
 
     private void setTailoringOptionsSpinnerValues(BriefingOptions briefingOptions) {
         wxBriefRequestView.wxBriefTailoringOptionsSpinner.setItems(briefingOptions.getTailoringOptionDescriptions()
@@ -194,10 +169,10 @@ public class WxBriefRequestFragment extends MasterFragment {
     }
 
     private void displayPdfNotDisplayable() {
-        displayInfoDialog( R.string.pdf_downloaded_but_no_pdf_viewer);
+        displayInfoDialog(R.string.pdf_downloaded_but_no_pdf_viewer);
     }
 
-    private void displayInfoDialog( @StringRes int stringResourceId) {
+    private void displayInfoDialog(@StringRes int stringResourceId) {
         AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle("1800WxBrief")
                 .setView(R.layout.wx_brief_info_layout)
@@ -236,6 +211,39 @@ public class WxBriefRequestFragment extends MasterFragment {
         AlertDialog alertDialog = builder.show();
         alertDialog.setCanceledOnTouchOutside(false);
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        Timber.d("Permission has been granted");
+        if (requestCode == WRITE_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // carry on
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        if (requestCode == WRITE_DOWNLOADS_ACCESS && perms != null & perms.size() >= 1 && perms.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            viewModel.resetSelectedBriefFormatPosition();
+            Timber.d("Permission has been denied");
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.no_permission_to_write_downloads_dir)
+                    .setTitle(R.string.permission_denied)
+                    .setPositiveButton(R.string.ok, (dialog, id) -> {
+                        viewModel.resetSelectedBriefFormatPosition();
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+        }
+    }
+
+
 
 
 }

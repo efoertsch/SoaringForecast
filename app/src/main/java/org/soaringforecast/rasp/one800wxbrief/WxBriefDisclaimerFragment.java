@@ -40,7 +40,7 @@ public class WxBriefDisclaimerFragment extends DaggerFragment {
         wxBriefDisclaimerView.wxBriefDisclaimerText.setText(appRepository.getWxBriefDisclaimer());
         wxBriefDisclaimerView.wxBriefDisclaimerDoNotShowAgain
                 .setOnCheckedChangeListener((buttonView, isChecked) ->
-                        appPreferences.setWxBriefShowDisclaimer(isChecked)
+                        appPreferences.setWxBriefShowDisclaimer(!isChecked)
                 );
 
         Button cancelButton = wxBriefDisclaimerView.wxBriefCancel;

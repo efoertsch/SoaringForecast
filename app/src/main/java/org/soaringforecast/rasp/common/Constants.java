@@ -29,7 +29,8 @@ public class Constants {
     public enum TypeOfBrief {
         OUTLOOK("Outlook"),
         STANDARD("Standard"),
-        ABBREVIATED("Abbreviated");
+        ABBREVIATED("Abbreviated"),
+        NOTAMS("NOTAMS");   // not an offical 1800WXBrief type of brief but an app specific type
         public static String BufferedReader;
         public final String displayValue;
 

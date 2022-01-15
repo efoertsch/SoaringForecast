@@ -259,7 +259,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_selector"
                 android:enabled="@{viewModel.isValidData()}"
-                android:onClick="@{() -> viewModel.submitBriefingRequest()}"
+                android:onClick="@{() -> viewModel.submitNOTAMSBriefingRequest()}"
                 android:text="@string/get_notams" />
         </LinearLayout>
 
@@ -269,6 +269,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin_standard"
         android:layout_marginEnd="@dimen/margin_standard"
+        tools:visibility="gone"
         android:visibility="@{viewModel.simpleBriefingText != null ? View.VISIBLE : View.GONE}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -303,8 +304,8 @@
 
     <include
         android:id="@+id/progress_indicator"
-        gravity="center"
         layout="@layout/indeterminate_progress_bar"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

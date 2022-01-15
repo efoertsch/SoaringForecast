@@ -1053,12 +1053,6 @@ public class AppRepository implements CacheTimeListener {
         return getWxBriefingOptions(R.raw.wxbrief_ngbv2_options, selectedTypeOfBrief);
     }
 
-    public Single<ArrayList<BriefingOption>> getWxBriefNonNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
-        return getWxBriefingOptions(R.raw.wxbrief_non_ngbv2_options, selectedTypeOfBrief);
-    }
-
-
-
     public Single<ArrayList<BriefingOption>> getWxBriefingOptions(int rawResourceId, Constants.TypeOfBrief selectedTypeOfBrief) {
         return Single.create(emitter -> {
             BufferedReader reader = null;

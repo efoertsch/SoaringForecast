@@ -3,14 +3,19 @@ package org.soaringforecast.rasp.one800wxbrief;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.net.Uri;
-import android.text.Html;
-import android.text.Spanned;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.common.ObservableViewModel;
+import org.soaringforecast.rasp.common.messages.ProgramError;
+import org.soaringforecast.rasp.one800wxbrief.messages.WXBriefDownloadsPermission;
 import org.soaringforecast.rasp.one800wxbrief.options.BriefingOption;
 import org.soaringforecast.rasp.one800wxbrief.options.BriefingOptions;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.ReturnCodedMessage;
@@ -24,13 +29,9 @@ import org.soaringforecast.rasp.utils.TimeUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -47,7 +48,11 @@ import timber.log.Timber;
 public class WxBriefViewModel extends ObservableViewModel {
 
     private static final SimpleDateFormat departureDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static final long OneDayInMillisec = 24 * 60 * 60 * 1000;
+    private static final SimpleDateFormat departureInstantFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    private static final long ONE_HOUR_IN_MILLISECS = 60 * 60 * 1000;
+    private static final long ONE_DAY_IN_MILLISEC = 24 * ONE_HOUR_IN_MILLISECS;
+    private static final String NOTAMS_BRIEF = "NOTAMS_BRIEF";
+    private static final String REGULAR_BRIEF = "REGULAR_BRIEF";
 
     private AppRepository appRepository;
     private long taskId = 0;
@@ -82,6 +87,8 @@ public class WxBriefViewModel extends ObservableViewModel {
     private MutableLiveData<String> simpleBriefingText;
     //private MutableLiveData<String> aircraftRegistration = new MutableLiveData<>();
     private MutableLiveData<String> accountName = new MutableLiveData<>();
+    private MutableLiveData<Boolean> pdfBrief = new MutableLiveData<>();
+    private MutableLiveData<Boolean> displayProductCodes = new MutableLiveData<>();
 
 
     private MediatorLiveData validationMediator = new MediatorLiveData<Void>();
@@ -117,7 +124,6 @@ public class WxBriefViewModel extends ObservableViewModel {
      * {"items":[...],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
      */
     ArrayList<BriefingOption> tailoringOptions;
-
 
     /**
      * In API call the briefing format is referred to as briefing type
@@ -174,7 +180,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         return this;
     }
 
-    public void init() {
+    public void init(Constants.TypeOfBrief typeOfBrief) {
         // Since viewmodel shared among fragments only initialize once
         if (isInitialized){
             return;
@@ -196,6 +202,9 @@ public class WxBriefViewModel extends ObservableViewModel {
         getTurnpointList();
         loadTask();
         loadTaskTurnpoints();
+        if (typeOfBrief != null && typeOfBrief == Constants.TypeOfBrief.NOTAMS){
+            selectedTypeOfBriefPosition.setValue(Constants.TypeOfBrief.NOTAMS.ordinal());
+        }
         loadProductsAndTailoringOptions();
     }
 
@@ -208,8 +217,8 @@ public class WxBriefViewModel extends ObservableViewModel {
         validationMediator.addSource(wxBriefWebUserName, wxBriefWebUserName -> validateWxBriefUserName((String) wxBriefWebUserName));
         validationMediator.addSource(routeCorridorWidth, routeCorridorWidth -> validateRouteCorridorWidth((String) routeCorridorWidth));
         validationMediator.addSource(windsAloftCorridor, windsAloftCorridor -> validateWindsAloftCorridor((String) windsAloftCorridor));
-        validationMediator.addSource(selectedBriefingDatePosition, selectedBriefingDatePosition -> formatDepartureInstant());
-        validationMediator.addSource(selectedDepartureTimePosition, selectedDepartureTimePosition -> formatDepartureInstant());
+        validationMediator.addSource(selectedBriefingDatePosition, selectedBriefingDatePosition -> setDepartureDate());
+        //validationMediator.addSource(selectedDepartureTimePosition, selectedDepartureTimePosition -> formatDepartureInstant());
         validationMediator.addSource(selectedBriefFormatPosition, selectedBriefFormatPosition -> updateBriefingFormat((Integer) selectedBriefFormatPosition));
     }
     public void stopListening(){
@@ -381,11 +390,12 @@ public class WxBriefViewModel extends ObservableViewModel {
     // notABrief = false
     public void updateOfficialBriefing(Boolean isChecked) {
         routeBriefingRequest.setNotABriefing(!isChecked);
-        updateBriefingFormatList();
+        // bypass as all briefing formats valid for both official/informal brief
+       // updateBriefingFormatList();
     }
 
     /**
-     * Type of Brief - Outlook, Standard, Abbreviated)
+     * Type of Brief - Outlook, Standard, Abbreviated) - skip NOTAMS
      *
      * @return
      */
@@ -394,7 +404,7 @@ public class WxBriefViewModel extends ObservableViewModel {
             typeOfBriefs = new MutableLiveData<>();
             ArrayList<String> listOfBriefs = new ArrayList<>();
             for (Constants.TypeOfBrief typeOfBrief : Constants.TypeOfBrief.values()) {
-                listOfBriefs.add(typeOfBrief.displayValue);
+                    listOfBriefs.add(typeOfBrief.displayValue);
             }
             typeOfBriefs.setValue(listOfBriefs);
             // set to the default type of brief so you can load product codes/options for initial display
@@ -416,15 +426,21 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     /**
-     * Based on selected brief  (Outlook, Standard, Abbreviated)
+     * Based on selected brief  (Outlook, Standard, Abbreviated, NOTAMS)
      * set various briefing options
      *
      * @param position
      */
     public void setSelectedTypeOfBriefPosition(int position) {
         selectedTypeOfBrief = Constants.TypeOfBrief.values()[position];
-        routeBriefingRequest.setOutlookBriefing(selectedTypeOfBrief == Constants.TypeOfBrief.OUTLOOK);
+        routeBriefingRequest.setTypeOfBrief(selectedTypeOfBrief);
+        displayProductCodes.setValue(! (selectedTypeOfBrief == Constants.TypeOfBrief.STANDARD ));
     }
+
+    public MutableLiveData<Boolean> getDisplayProductCodes() {
+        return displayProductCodes;
+    }
+
 
     public MutableLiveData<String> getAircraftId() {
         if (aircraftId == null) {
@@ -589,12 +605,23 @@ public class WxBriefViewModel extends ObservableViewModel {
             ArrayList<String> dateList = new ArrayList<>();
             long currentTime = System.currentTimeMillis();
             dateList.add(departureDateFormat.format(currentTime));
-            dateList.add(departureDateFormat.format(currentTime + OneDayInMillisec));
-            dateList.add(departureDateFormat.format(currentTime + (2 * OneDayInMillisec)));
+            dateList.add(departureDateFormat.format(currentTime + ONE_DAY_IN_MILLISEC));
+            dateList.add(departureDateFormat.format(currentTime + (2 * ONE_DAY_IN_MILLISEC)));
             briefingDates.setValue(dateList);
             getSelectedBriefingDatePosition();
         }
         return briefingDates;
+    }
+
+    private void setDepartureDate(){
+        // if not current day, then set to outlook briefing
+        if (selectedBriefingDatePosition.getValue() != 0) {
+            if (selectedTypeOfBriefPosition.getValue() == Constants.TypeOfBrief.STANDARD.ordinal()) {
+                selectedTypeOfBriefPosition.setValue(0);
+            }
+        }
+        formatDepartureInstant();
+
     }
 
     /**
@@ -602,13 +629,18 @@ public class WxBriefViewModel extends ObservableViewModel {
      * Time must be in format of yyyy-MM-ddTHH:mm:ss.S
      */
     private void formatDepartureInstant() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(briefingDates.getValue().get(selectedBriefingDatePosition.getValue()))
-                .append("T")
-                //.append(departureTimes.getValue().get(selectedDepartureTimePosition.getValue()))
-                .append("07:00")
-                .append(":00.000");
-        routeBriefingRequest.setDepartureInstant(TimeUtils.convertLocalTimeToZulu(sb.toString()));
+        // if today assume flight 1 hr in future
+        if (selectedBriefingDatePosition.getValue()== 0){
+            routeBriefingRequest.setDepartureInstant(
+                    TimeUtils.convertLocalTimeToZulu(departureInstantFormat.format(System.currentTimeMillis() + ONE_HOUR_IN_MILLISECS)));
+        }
+        else { // assume 9AM local time departure
+            StringBuilder sb = new StringBuilder();
+            sb.append(briefingDates.getValue().get(selectedBriefingDatePosition.getValue()))
+                    .append("T")
+                    .append("09:00:00.000");
+            routeBriefingRequest.setDepartureInstant(TimeUtils.convertLocalTimeToZulu(sb.toString()));
+        }
     }
 
     public MutableLiveData<Integer> getSelectedBriefingDatePosition() {
@@ -629,9 +661,8 @@ public class WxBriefViewModel extends ObservableViewModel {
         if (departureTimes == null) {
             departureTimes = new MutableLiveData<>();
             ArrayList<String> timeList = new ArrayList<>();
-            int time = 6;
-            // For early risers
-            for (int i = 0; i < 12; ++i) {
+            int time = 9;
+            for (int i = 0; i < 8; ++i) {
                 timeList.add(String.format(getApplication().getString(R.string.time_format), time));
                 time = time + 1;
             }
@@ -692,6 +723,13 @@ public class WxBriefViewModel extends ObservableViewModel {
         return selectedBriefFormatPosition;
     }
 
+    public void resetSelectedBriefFormatPosition(){
+        if (selectedBriefFormatPosition == null) {
+            getSelectedBriefFormatPosition();
+            return;
+        }
+        selectedBriefFormatPosition.setValue(0);
+    }
 
     public BriefingFormat getBriefingFormatBasedOnDisplayValue(String displayValue) {
         for (BriefingFormat briefingFormat : BriefingFormat.values()) {
@@ -709,8 +747,11 @@ public class WxBriefViewModel extends ObservableViewModel {
                 briefingFormats.getValue().get(selectedBriefingFormatPosition));
         routeBriefingRequest.setSelectedBriefingType(selectedBriefingFormat.name());
         displayEmailAddressField.setValue(selectedBriefingFormat == BriefingFormat.EMAIL);
-
         toggleTailoringListUpdatedFlag();
+        if (selectedBriefingFormat == BriefingFormat.NGBV2){
+             post(new WXBriefDownloadsPermission());
+
+        }
     }
 
     // currently always true unless we implement option for BriefingFormat.SIMPLE
@@ -771,32 +812,42 @@ public class WxBriefViewModel extends ObservableViewModel {
         routeBriefingRequest.setTailoringOptions(masterBriefingOptions.getValue().getTailoringOptionsForBriefing());
     }
 
+    // NOTAMS assume abbreviated briefing with departure 1 hr from now.
+    public void submitNOTAMSBriefingRequest(){
+        working.setValue(true);
+        // override various values
+        officialBriefing.setValue( true);
+        formatDepartureInstant();
+        // set departure 1 hr in future must be in zulu time
+        submitBriefingRequest();
+    }
+
     public void submitBriefingRequest() {
         validateData();
         if (!isValidData().getValue()) {
             return;
         }
         setWorkingFlag(true);
-        Disposable disposable = appRepository.submitWxBriefBriefingRequest(routeBriefingRequest.getRestParmString())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(routeBriefing -> {
-                            evaluateRouteBriefingCall(routeBriefing);
-                        },
-                        t -> {
-                            //TODO email stack trace
-                            Timber.e(t);
-                            evaluateRouteBriefingCall(null);
+        Disposable disposable = null;
+        try {
+            disposable = appRepository.submitWxBriefBriefingRequest(routeBriefingRequest.getRestParmString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(routeBriefing -> {
+                                evaluateRouteBriefingCall(routeBriefing);
+                            },
+                            t -> {
+                                //TODO email stack trace
+                                Timber.e(t);
+                                evaluateRouteBriefingCall(null);
 
-                        });
+                            });
+        } catch (Exception e) {
+            post(new ProgramError(e));
+        }
         compositeDisposable.add(disposable);
     }
 
-    private void addProductsAndOptionsToRouteBriefingRequest() {
-        routeBriefingRequest.setProductCodes(masterBriefingOptions.getValue().getProductCodesForBriefing());
-        routeBriefingRequest.setTailoringOptions(masterBriefingOptions.getValue().getTailoringOptionsForBriefing());
-
-    }
 
     private void evaluateRouteBriefingCall(RouteBriefing routeBriefing) {
         setWorkingFlag(false);
@@ -878,7 +929,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private void setWxBriefUri(Uri pdfBriefUri) {
         // Do this as right now using fixed name for pdf file, so make sure the observer will fire
         // for subsequent briefings
-        wxBriefUri.setValue(null);
+        wxBriefUri.setValue(Uri.EMPTY);
         wxBriefUri.setValue(pdfBriefUri);
     }
 

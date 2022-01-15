@@ -6,7 +6,7 @@ import org.soaringforecast.rasp.utils.CSVUtils;
 import java.util.List;
 
 /**
- * Used to contain 1800WXBrief Product codes, NGBV2 or non-NGBV2 tailoring options
+ * Used to contain 1800WXBrief Product codes, NGBV2  tailoring options
  * When used for product codes, selecting a product code means to send that code to the api
  * BUT the opposite is true for tailoring options. They are all 'EXCLUDE...', i.e. a brief has all options EXCEPT for those
  * that you send in the api. To not have user think about selected a negative(EXCLUDE...) the tailoring option  display descriptions
@@ -20,7 +20,6 @@ public class BriefingOption {
     private boolean briefOption;
     // Default value (whether displayed or not) for the selected type of briefing
     private boolean selectForBrief;
-
 
     private BriefingOption(){}
 
@@ -45,6 +44,9 @@ public class BriefingOption {
                     briefingOption.briefOption = Boolean.parseBoolean(briefingOptionDetails.get(7));
                     briefingOption.selectForBrief = Boolean.parseBoolean(briefingOptionDetails.get(8));
                     break;
+                case NOTAMS:
+                    briefingOption.briefOption = Boolean.parseBoolean(briefingOptionDetails.get(9));
+                    briefingOption.selectForBrief = Boolean.parseBoolean(briefingOptionDetails.get(10));
             }
         } catch (Exception nfe) {
             briefingOption = null;

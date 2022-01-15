@@ -49,7 +49,6 @@ public class OneEightHundredWxBriefJsonTest {
 
     @Test
     public void shouldStartEmailBriefing() throws Exception {
-
         RouteBriefingRequest routeBriefingRequest = RouteBriefingRequest.newInstance();
         routeBriefingRequest.setDeparture("3B3");
         routeBriefingRequest.setRoute("KAFN KEEN");
@@ -93,9 +92,6 @@ public class OneEightHundredWxBriefJsonTest {
                 .client(okHttpClient)
                 .build();
     }
-
-
-
 
     @Test
     public void shouldCreateSimpleBriefForNotABriefingWithProductAndTailoringOptions() throws Exception {
