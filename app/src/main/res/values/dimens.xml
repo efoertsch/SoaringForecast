@@ -8,6 +8,7 @@
     <dimen name="margin_half">4dp</dimen>
     <dimen name="margin_standard">8dp</dimen>
     <dimen name="margin_double">16dp</dimen>
+    <dimen name="margin_trip">24dp</dimen>
 
 
     <!-- text size -->
@@ -33,5 +34,10 @@
     <dimen name="nav_drawer_item_margin_end">56dp</dimen>
 
     <dimen name="design_fab_image_size" tools:override="true">36dp</dimen>
+
+    <!-- used for 'floating' label for spinners to make it look similar to TextInputLayout -->
+    <dimen name="input_label_vertical_spacing">8dp</dimen>
+    <dimen name="input_label_horizontal_spacing">4dp</dimen>
+
 
 </resources>

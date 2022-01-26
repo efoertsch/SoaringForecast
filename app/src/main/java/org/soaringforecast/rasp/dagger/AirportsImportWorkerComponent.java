@@ -23,6 +23,7 @@ import dagger.Component;
         , AirportsDownloaderModule.class
         , AviationWeatherGovModule.class
         , UsgsServerUrlModule.class
+        , One800WxBriefUrlModule.class
 })
 public interface AirportsImportWorkerComponent {
 

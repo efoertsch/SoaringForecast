@@ -129,7 +129,7 @@
                         android:layout_marginEnd="@dimen/margin_standard"
                         android:contentDescription="@string/back_arrow"
                         android:onClick="@{() -> viewModel.onStepClick(forecastAction.BACKWARD)}"
-                        android:tint="@color/colorPrimary"
+                        app:tint="@color/colorPrimary"
                         app:srcCompat="@drawable/ic_keyboard_arrow_left"/>
 
                     <TextView
@@ -158,7 +158,7 @@
                         android:layout_marginStart="@dimen/margin_standard"
                         android:contentDescription="@string/forward_arrow"
                         android:onClick="@{() -> viewModel.onStepClick(forecastAction.FORWARD)}"
-                        android:tint="@color/colorPrimary"
+                        app:tint="@color/colorPrimary"
                         app:srcCompat="@drawable/ic_keyboard_arrow_right"/>
 
                 </LinearLayout>

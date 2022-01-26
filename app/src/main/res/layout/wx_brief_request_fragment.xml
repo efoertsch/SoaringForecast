@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="WxBriefRequestView">
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="org.soaringforecast.rasp.one800wxbrief.WxBriefViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/wx_brief_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="@android:color/white">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginEnd="@dimen/margin_standard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/wx_brief_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_50pct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.50" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_75pct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.75" />
+
+                <TextView
+                    android:id="@+id/wx_brief_task_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:ellipsize="end"
+                    android:text="@{viewModel.getTaskTitle}"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_size_extra_large"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Sterling Jaffrey Keene Sterling" />
+
+                <TextView
+                    android:id="@+id/wx_brief_turnpoints"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_half"
+                    android:text="@={viewModel.turnpointList}"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/wx_brief_task_title"
+                    tools:text="3B3 KAFN KEEN 3B3" />
+
+                <CheckBox
+                    android:id="@+id/wx_brief_record_briefing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:button="@null"
+                    android:checked="@={viewModel.officialBriefing}"
+                    android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
+                    android:drawablePadding="@dimen/margin_double"
+                    android:paddingEnd="@dimen/margin_standard"
+                    android:text="@string/official_wxbrief"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/wx_brief_official_brief_info"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_turnpoints"
+                    app:layout_constraintVertical_bias="0.411"
+                    tools:checked="true" />
+
+                <ImageButton
+                    android:id="@+id/wx_brief_official_brief_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?android:colorBackground"
+                    app:layout_constraintBottom_toBottomOf="@+id/wx_brief_record_briefing"
+                    app:layout_constraintStart_toEndOf="@+id/wx_brief_record_briefing"
+                    app:layout_constraintTop_toTopOf="@+id/wx_brief_record_briefing"
+                    app:srcCompat="@drawable/ic_info" />
+
+                <org.soaringforecast.rasp.common.BaselineTextInputLayout
+                    android:id="@+id/wx_brief_aircraft_id_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:gravity="bottom"
+                    android:hint="@string/aircraft_id"
+                    android:visibility="@{viewModel.officialBriefing ? View.VISIBLE : View.GONE, default = gone}"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.aircraftIdErrorText}"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_record_briefing"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/wx_brief_aircraft_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions|textCapCharacters"
+                        android:text="@={viewModel.aircraftId}" />
+
+                </org.soaringforecast.rasp.common.BaselineTextInputLayout>
+
+
+                <ImageButton
+                    android:id="@+id/wx_brief_aircraft_registration_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?android:colorBackground"
+                    android:visibility="@{viewModel.officialBriefing ? View.VISIBLE : View.GONE, default = gone}"
+                    app:layout_constraintBottom_toBottomOf="@+id/wx_brief_aircraft_id_layout"
+                    app:layout_constraintStart_toEndOf="@+id/wx_brief_aircraft_id_layout"
+                    app:layout_constraintTop_toTopOf="@+id/wx_brief_aircraft_id_layout"
+                    app:srcCompat="@drawable/ic_info" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/wx_brief_type_barrier"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="wx_brief_aircraft_id_layout,wx_brief_record_briefing" />
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/wx_brief_web_user_name_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/wx_brief_web_user_name"
+                    app:errorEnabled="true"
+                    app:errorText="@{viewModel.wxBriefUserNameErrorText}"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_75pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/wx_brief_aircraft_id_layout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/wwx_brief_web_user_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:text="@={viewModel.wxBriefUserName}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/wx_brief_account_name_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?android:colorBackground"
+                    app:layout_constraintBottom_toBottomOf="@+id/wx_brief_web_user_name_layout"
+                    app:layout_constraintStart_toEndOf="@id/guideline_75pct"
+                    app:layout_constraintTop_toTopOf="@+id/wx_brief_web_user_name_layout"
+                    app:srcCompat="@drawable/ic_info" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/wx_brief_user_name_barrier"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="wx_brief_web_user_name_layout" />
+
+                <TextView
+                    android:id="@+id/wx_brief_departure_date_label"
+                    style="@style/TextView.ForSpinnerLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:text="@string/departure_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_user_name_barrier" />
+
+                <ImageButton
+                    android:id="@+id/wx_brief_departure_date_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?android:colorBackground"
+                    app:layout_constraintBottom_toBottomOf="@+id/wx_brief_departure_date_label"
+                    app:layout_constraintStart_toEndOf="@+id/wx_brief_departure_date_label"
+                    app:layout_constraintTop_toTopOf="@+id/wx_brief_departure_date_label"
+                    app:srcCompat="@drawable/ic_info" />
+
+                <TextView
+                    android:id="@+id/wx_brief_departure_time_label"
+                    style="@style/TextView.ForSpinnerLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/departure_time"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_departure_barrier" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/wx_briefing_date_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@{viewModel.briefingDates}"
+                    android:selectedItemPosition="@={viewModel.selectedBriefingDatePosition}"
+                    android:theme="@style/DividerSpinnerTheme"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_date_label" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/wx_brief_departure_time_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@{viewModel.departureTimes}"
+                    android:selectedItemPosition="@={viewModel.selectedDepartureTimePosition}"
+                    android:theme="@style/DividerSpinnerTheme"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+                    app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_time_label" />
+
+
+                <TextView
+                    android:id="@+id/wx_brief_type_of_brief_label"
+                    style="@style/TextView.ForSpinnerLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:text="@string/type_of_brief"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_50pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_briefing_date_spinner" />
+
+                <!-- Outlook, Standard, Abbreviated brief -->
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/wx_brief_type_of_brief_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@{viewModel.typesOfBriefs}"
+                    android:selectedItemPosition="@={viewModel.selectedTypeOfBriefPosition}"
+                    android:theme="@style/DividerSpinnerTheme"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_50pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_type_of_brief_label" />
+
+                <TextView
+                    android:id="@+id/wx_brief_format_label"
+                    style="@style/TextView.ForSpinnerLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:text="@string/briefing_format"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_briefing_date_spinner" />
+
+                <!-- EMAIL, PDF -->
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/wx_briefing_format_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@{viewModel.briefFormats}"
+                    android:selectedItemPosition="@={viewModel.selectedBriefFormatPosition}"
+                    android:theme="@style/DividerSpinnerTheme"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_format_label" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/wx_brief_departure_barrier"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="wx_brief_type_of_brief_spinner" />
+
+                <TextView
+                    android:id="@+id/wx_brief_tailoring_options"
+                    style="@style/TextView.ForSpinnerLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:text="@string/reporting_options"
+                    android:visibility="@{safeUnbox(viewModel.displayTailoringOptions) ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_type_of_brief_spinner" />
+
+
+                <org.soaringforecast.rasp.common.MultiSpinner
+                    android:id="@+id/wx_brief_tailoring_options_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/margin_standard"
+                    android:theme="@style/DividerSpinnerTheme"
+                    android:visibility="@{safeUnbox(viewModel.displayTailoringOptions) ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_tailoring_options" />
+
+
+                <TextView
+                    android:id="@+id/wx_brief_product_code_options"
+                    style="@style/TextView.ForSpinnerLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:text="@string/product_options"
+                    android:visibility="@{viewModel.displayProductCodes ? View.VISIBLE: View.GONE}"
+                    app:layout_constraintStart_toStartOf="@id/guideline_50pct"
+                    app:layout_constraintTop_toTopOf="@+id/wx_brief_tailoring_options" />
+
+                <org.soaringforecast.rasp.common.MultiSpinner
+                    android:id="@+id/wx_brief_product_codes_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/margin_standard"
+                    android:theme="@style/DividerSpinnerTheme"
+                    android:visibility="@{viewModel.displayProductCodes ? View.VISIBLE: View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline_50pct"
+                    app:layout_constraintTop_toBottomOf="@+id/wx_brief_product_code_options" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/wx_brief_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/wx_brief_cancel"
+                style="@style/ButtonPrimaryWhite"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:layout_weight="1"
+                android:text="@string/cancel"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/wx_brief_submit_briefing_request"
+                style="@style/ButtonPrimaryWhite"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:layout_weight="1"
+                android:enabled="@{viewModel.isValidData()}"
+                android:onClick="@{() -> viewModel.submitBriefingRequest()}"
+                android:text="@string/get_briefing" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/wx_brief_simple_briefing_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginEnd="@dimen/margin_standard"
+            android:visibility="@{viewModel.simpleBriefingText != null ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/wx_brief_close_simple_briefing"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/wx_brief_simple_briefing_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:text="@{viewModel.simpleBriefingText}"
+                    android:visibility="@{viewModel.simpleBriefingText != null ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toTopOf="@+id/wx_brief_close_simple_briefing"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </ScrollView>
+
+            <Button
+                android:id="@+id/wx_brief_close_simple_briefing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:background="@drawable/button_selector"
+                android:enabled="true"
+                android:onClick="@{() -> viewModel.removeSimpleBriefingText()}"
+                android:text="@string/close"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <include
+            android:id="@+id/progress_indicator"
+            layout="@layout/indeterminate_progress_bar"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            bind:isWorking="@{viewModel.working}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

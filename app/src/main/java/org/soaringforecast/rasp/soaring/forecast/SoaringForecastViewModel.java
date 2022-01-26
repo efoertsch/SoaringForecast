@@ -794,6 +794,10 @@ public class SoaringForecastViewModel extends AndroidViewModel {
 
     // ------- Task display ---------------------
 
+    long getTaskId(){
+        return appPreferences.getSelectedTaskId();
+    }
+
     void checkIfToDisplayTask() {
         long currentTaskId = appPreferences.getSelectedTaskId();
         if (currentTaskId != -1) {

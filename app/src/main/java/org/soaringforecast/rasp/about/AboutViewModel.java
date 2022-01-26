@@ -39,31 +39,12 @@ public class AboutViewModel extends AndroidViewModel {
     public MutableLiveData<Spanned> getAboutSoaringWeather() {
         if (aboutSoaringWeather == null) {
             aboutSoaringWeather = new MutableLiveData<>();
-            loadAboutText();
+            aboutSoaringWeather.setValue(Html.fromHtml(appRepository.loadAssetText("about.txt",
+                    R.string.oops_about_file_is_missing, R.string.oops_error_reading_about_file )));
         }
         return aboutSoaringWeather;
     }
 
-    // Keep just in case
-    private void loadAboutText() {
-        StringBuilder sb = new StringBuilder();
-        AssetManager assetManager = getApplication().getAssets();
-        InputStream inputStream;
-        try {
-            inputStream = assetManager.open("about.txt");
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    inputStream));
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (FileNotFoundException e) {
-            EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.oops_about_file_is_missing)));
-        } catch (IOException e) {
-            EventBus.getDefault().post(new SnackbarMessage(getApplication().getString(R.string.oops_error_reading_about_file)));
-        }
-        aboutSoaringWeather.setValue(Html.fromHtml(sb.toString()));
-    }
 
     public int getDatabaseVersion() {
         return appRepository.getDatabaseVersion();

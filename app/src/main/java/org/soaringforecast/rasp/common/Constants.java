@@ -16,7 +16,7 @@ public class Constants {
         LOOP
     }
 
-   public enum FORECAST_SOUNDING {
+    public enum FORECAST_SOUNDING {
         FORECAST, SOUNDING
     }
 
@@ -26,5 +26,19 @@ public class Constants {
     public static final String NEWENGLAND_REGION = "NewEngland";
 
 
+    public enum TypeOfBrief {
+        OUTLOOK("Outlook"),
+        STANDARD("Standard"),
+        ABBREVIATED("Abbreviated"),
+        NOTAMS("NOTAMS");   // not an offical 1800WXBrief type of brief but an app specific type
+        public static String BufferedReader;
+        public final String displayValue;
+
+        TypeOfBrief(String displayValue) {
+            this.displayValue = displayValue;
+        }
+    }
+
+    public static final String CRASH_REPORT_EMAIL = "ericfoertsch@gmail.com";
 
 }

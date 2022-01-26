@@ -5,7 +5,6 @@ package org.soaringforecast.rasp.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -27,10 +26,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 
 import static android.content.Context.MODE_PRIVATE;
 
+// TODO move this into repository
 public class AppPreferences {
 
     //private static final String AIRPORT_LIST_KEY = "AIRPORT_LIST_KEY";
@@ -48,6 +49,11 @@ public class AppPreferences {
     private static final String SELECTED_MODEL_FORECAST_DATE = "SELECTED_MODEL_FORECAST_DATE";
     private static final String ORDERED_FORECAST_OPTIONS = "ORDERED_FORECAST_OPTIONS";
     private static final String CLEAR_CACHE_TIME_MINUTES = "CLEAR_CACHE_TIME_MINUTES";
+    private static final String AIRCRAFT_REGISTRATION = "AIRCRAFT_REGISTRATION";
+    private static final String ONE_800_WX_BRIEF_USER_ID = "ONE_800_WX_BRIEF_USER_ID";
+    private static final String WX_BRIEF_SHOW_DISLAIMER = "WX_BRIEF_SHOW_DISCLAIMER";
+    private static final String WX_BRIEF_FIRST_TIME_FOR_DEFAULTS = "WX_BRIEF_FIRST_TIME_FOR_DEFAULTS";
+
 
 
     // These string values are assigned in code so they match what is used in Settings
@@ -511,7 +517,6 @@ public class AppPreferences {
 
     }
 
-
     // setter handled bu SettingsPreferenceFragment, default value must match value in display_preferences.xml
     public boolean getDisplayTurnpointSatelliteView() {
         return sharedPreferences.getBoolean(DISPLAY_TURNPOINT_SATELLITE_VIEW, true);
@@ -521,6 +526,54 @@ public class AppPreferences {
     public boolean getDisplayTurnpointInfoWindowView() {
         return sharedPreferences.getBoolean(DISPLAY_TURNPOINT_INFOWINDOW_VIEW, true);
     }
+
+
+    // ----------- 1800wxbrief  --------------------
+
+    // return true if user no longer wants to see disclaimer
+    public boolean getWxBriefShowDisclaimer(){
+        return sharedPreferences.getBoolean(WX_BRIEF_SHOW_DISLAIMER, true);
+    }
+
+    // return true to show disclaimer - false if not
+    public void setWxBriefShowDisclaimer(boolean displayAuthorization){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(WX_BRIEF_SHOW_DISLAIMER, displayAuthorization);
+        editor.apply();
+    }
+
+    public boolean getFirstTimeforDefaultsDisplay(){
+        return sharedPreferences.getBoolean(WX_BRIEF_FIRST_TIME_FOR_DEFAULTS, true);
+    }
+
+    public void setFirstTimeforDefaultsDisplay(boolean firstTime){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(WX_BRIEF_FIRST_TIME_FOR_DEFAULTS, firstTime);
+        editor.apply();
+    }
+
+
+    public String getAircraftRegistration(){
+        return sharedPreferences.getString(AIRCRAFT_REGISTRATION, " ");
+    }
+
+    public void setAircraftRegistration(String aircraftRegistration){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(AIRCRAFT_REGISTRATION, aircraftRegistration);
+        editor.apply();
+    }
+
+    public String getOne800WxBriefUserId(){
+        return sharedPreferences.getString(ONE_800_WX_BRIEF_USER_ID, "");
+    }
+
+    public void setOne800WxBriefUserId(String userId){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ONE_800_WX_BRIEF_USER_ID, userId);
+        editor.apply();
+    }
+
+
 
 }
 

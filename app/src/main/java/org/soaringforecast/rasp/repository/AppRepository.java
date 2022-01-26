@@ -2,8 +2,15 @@ package org.soaringforecast.rasp.repository;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Environment;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Base64;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
@@ -20,8 +27,11 @@ import org.soaringforecast.rasp.common.Constants.FORECAST_SOUNDING;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.data.metars.MetarResponse;
 import org.soaringforecast.rasp.data.taf.TafResponse;
+import org.soaringforecast.rasp.one800wxbrief.options.BriefingOption;
+import org.soaringforecast.rasp.one800wxbrief.routebriefing.RouteBriefing;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
+import org.soaringforecast.rasp.retrofit.One800WxBriefApi;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
 import org.soaringforecast.rasp.retrofit.UsgsApi;
 import org.soaringforecast.rasp.satellite.data.SatelliteImageType;
@@ -41,10 +51,12 @@ import org.soaringforecast.rasp.windy.WindyAltitude;
 import org.soaringforecast.rasp.windy.WindyLayer;
 import org.soaringforecast.rasp.windy.WindyModel;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +71,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.core.content.FileProvider;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -69,6 +84,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -83,6 +100,10 @@ import timber.log.Timber;
 
 public class AppRepository implements CacheTimeListener {
 
+    private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final String ONE_800_WX_BRIEF_FILE_NAME = "WxBrief.pdf";
+    public static final String MIME_TYPE_PDF = "application/pdf";
+
     private static AppRepository appRepository;
     private static AppDatabase db;
     private static ArrayList<SatelliteRegion> satelliteRegions;
@@ -90,7 +111,6 @@ public class AppRepository implements CacheTimeListener {
     private static ArrayList<WindyModel> windyModels;
     private static ArrayList<WindyLayer> windyLayers;
     private static ArrayList<WindyAltitude> windyAltitudes;
-    private static final String NEW_LINE = System.getProperty("line.separator");
 
     private Context context;
     private AirportDao airportDao;
@@ -110,7 +130,7 @@ public class AppRepository implements CacheTimeListener {
     private JSONServerApi jsonServerApi;
     private AviationWeatherGovApi aviationWeatherGovApi;
     private UsgsApi usgsApi;
-
+    private One800WxBriefApi one800WxBriefApi;
 
     private AppRepository(Context context) {
         db = AppDatabase.getDatabase(context);
@@ -130,7 +150,8 @@ public class AppRepository implements CacheTimeListener {
             , String raspUrl
             , StringUtils stringUtils
             , AppPreferences appPreferences
-            , UsgsApi usgsApi) {
+            , UsgsApi usgsApi
+            , One800WxBriefApi one800WxBriefApi) {
         synchronized (AppRepository.class) {
             if (appRepository == null) {
                 appRepository = new AppRepository(context);
@@ -145,6 +166,7 @@ public class AppRepository implements CacheTimeListener {
                 // Since downloader should exist for lifetime of app, not unregistering anywhere
                 appRepository.appPreferences.registerCacheTimeChangeListener(appRepository);
                 appRepository.cacheTimeLimit(appPreferences.getClearCacheTime());
+                appRepository.one800WxBriefApi = one800WxBriefApi;
             }
 
         }
@@ -1021,11 +1043,142 @@ public class AppRepository implements CacheTimeListener {
         });
     }
 
+    //----- 1800WXBrief --------------------------------------------------------------
+
+    public Single<ArrayList<BriefingOption>> getWxBriefProductCodes(Constants.TypeOfBrief selectedTypeOfBrief) {
+        return getWxBriefingOptions(R.raw.wxbrief_product_codes, selectedTypeOfBrief);
+    }
+
+    public Single<ArrayList<BriefingOption>> getWxBriefNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
+        return getWxBriefingOptions(R.raw.wxbrief_ngbv2_options, selectedTypeOfBrief);
+    }
+
+    public Single<ArrayList<BriefingOption>> getWxBriefingOptions(int rawResourceId, Constants.TypeOfBrief selectedTypeOfBrief) {
+        return Single.create(emitter -> {
+            BufferedReader reader = null;
+            String line;
+            int linesRead = 0;
+            BriefingOption briefingOption;
+            ArrayList<BriefingOption> briefingOptions = new ArrayList<>();
+            try {
+                InputStream is = context.getResources().openRawResource(rawResourceId);
+                reader = new BufferedReader(new InputStreamReader(is));
+                line = reader.readLine();
+                while (line != null && !line.isEmpty()) {
+                    if (linesRead > 0) {
+                        briefingOption = BriefingOption.createBriefingOptionFromCSVDetail(line, selectedTypeOfBrief);
+                        if (briefingOption != null) {
+                            briefingOptions.add(briefingOption);
+                        }
+                    }
+                    linesRead++;
+                    line = reader.readLine();
+                }
+                Timber.d("Lines read: %1$d   Number of product/options codes  %2$d", linesRead, briefingOptions.size());
+                emitter.onSuccess(briefingOptions);
+
+            } finally {
+                if (reader != null) try {
+                    reader.close();
+                } catch (IOException ignored) {
+                }
+            }
+        });
+    }
+
+
+    public Single<RouteBriefing> submitWxBriefBriefingRequest(String parms) {
+        RequestBody body = RequestBody.create(MediaType.parse("\"text/plain\""), parms);
+        return Single.create(emitter -> {
+            try {
+                Call<RouteBriefing> call = one800WxBriefApi.getRouteBriefing(get1800WXBriefAPIAuthorization(), body);
+                RouteBriefing routeBriefing = call.execute().body();
+                emitter.onSuccess(routeBriefing);
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
+    private String get1800WXBriefAPIAuthorization() {
+        String encoded = Base64.encodeToString((context.getString(R.string.One800WXBriefID)
+                + ":"
+                + context.getString(R.string.One800WXBriefPassword)).getBytes(), Base64.NO_WRAP);
+        return "Basic " + encoded;
+    }
+
+    public Single<Uri> writeWxBriefToDownloadsDirectory(final String briefAsBase64PdfString)  {
+        return Single.create(emitter -> {
+            byte[] wxBriefPdf = Base64.decode(briefAsBase64PdfString, Base64.DEFAULT);
+            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File wxBriefFile = new File(path, ONE_800_WX_BRIEF_FILE_NAME);
+            try {
+                if (wxBriefFile.exists()){
+                    boolean deleted = wxBriefFile.delete();
+                    if (!deleted)
+                         throw new Throwable(context.getString(R.string.wxbrief_file_not_deleted_in_downloads_dir));
+
+                }
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(wxBriefFile, false));
+                bos.write(wxBriefPdf);
+                emitter.onSuccess(FileProvider.getUriForFile(context
+                        , context.getApplicationContext().getPackageName() + ".provider",
+                        wxBriefFile));
+            } catch (Throwable e){
+                Timber.d(e.toString());
+                emitter.onError(e);
+            }
+        });
+    }
+
+
+    public boolean canDisplayPdf(){
+        return canDisplayPdf(context);
+    }
+    public static boolean canDisplayPdf(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent testIntent = new Intent(Intent.ACTION_VIEW);
+        testIntent.setType(MIME_TYPE_PDF);
+        if (packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     // ---------------- Miscellaneous -----------------------------------------------
     private void post(Object post) {
         EventBus.getDefault().post(post);
 
+    }
+
+
+    public Spanned getWxBriefDisclaimer(){
+        return Html.fromHtml(appRepository.loadAssetText("wx_brief_experimental_disclaimer"
+                , R.string.wxbrief_disclaimer_file_is_missing
+                , R.string.oops_error_reading_wxbrief_displaimer_file));
+    }
+
+    //   Read asset file
+    // Keep just in case
+    public String loadAssetText(String filename, @StringRes int fileNotFoundErrorMsg, @StringRes int ioExceptionErrorMsg ) {
+        StringBuilder sb = new StringBuilder();
+        AssetManager assetManager = context.getApplicationContext().getAssets();
+        InputStream inputStream;
+        try {
+            inputStream = assetManager.open(filename);
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    inputStream));
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (FileNotFoundException e) {
+            EventBus.getDefault().post(new SnackbarMessage(context.getApplicationContext().getString(R.string.oops_about_file_is_missing)));
+        } catch (IOException e) {
+            EventBus.getDefault().post(new SnackbarMessage(context.getApplicationContext().getString(R.string.oops_error_reading_about_file)));
+        }
+        return sb.toString();
     }
 
 }

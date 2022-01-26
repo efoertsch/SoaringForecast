@@ -18,7 +18,9 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        android:requestLegacyExternalStorage="true"
+        >
 
         <!-- fixes bug for maps on targetSDk version  28 -->
         <!-- java.lang.NoClassDefFoundError: Failed resolution of: Lorg/apache/http/ProtocolVersion; -->
@@ -114,6 +116,17 @@
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity" />
         </activity>
 
+        <activity
+            android:name=".one800wxbrief.WxBriefRequestActivity"
+            android:label="@string/one_800_wx_brief"
+            android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity" />
+        </activity>
+
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -123,6 +136,17 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GoogleMapsKey" />
+
+        <!-- This is needed for PDF view to read any PDF's downloaded to Downloads directory -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
 
     </application>
 

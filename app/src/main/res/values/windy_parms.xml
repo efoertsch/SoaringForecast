@@ -6,10 +6,15 @@
     <string name="windy_model_geos5" translatable="false">0,geos5,GEOS5</string>
     <string name="windy_model_iconGlobal" translatable="false">0,iconGlobal,IconGlobal</string>
     <string name="windy_model_iconEu" translatable="false">0,iconEu,IconEu</string>
+    <string name="windy_model_sattelite" translatable="false">0,satellite,Satellite</string>
 
     <string-array name="windy_models">
         <item>@string/windy_model_gfs</item>
         <item>@string/windy_model_nam</item>
+      <!--  <item>@string/windy_model_geos5</item>  -->
+        <item>@string/windy_model_iconGlobal</item>
+        <item>@string/windy_model_iconEu</item>
+
     </string-array>
 
     <!-- format index, windy parm name, display name, altitude applies (0 no, 1 yes) -->

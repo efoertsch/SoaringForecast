@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="WxBriefDefaultsView">
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="org.soaringforecast.rasp.one800wxbrief.WxBriefViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/wx_brief_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/margin_standard"
+        android:layout_marginRight="@dimen/margin_standard"
+        android:animateLayoutChanges="true"
+        android:background="@android:color/white">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_50pct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_75pct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
+        <TextView
+            android:id="@+id/wx_brief_default_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_double"
+            android:text="@string/default_wxbrief_label"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <org.soaringforecast.rasp.common.BaselineTextInputLayout
+            android:id="@+id/wx_brief_aircraft_id_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:gravity="bottom"
+            android:hint="@string/aircraft_id"
+            app:errorEnabled="true"
+            app:errorText="@{viewModel.aircraftIdErrorText}"
+            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_label">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/wx_brief_aircraft_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:nextFocusForward="@+id/wwx_brief_web_user_name"
+                android:text="@={viewModel.aircraftId}" />
+
+        </org.soaringforecast.rasp.common.BaselineTextInputLayout>
+
+
+        <ImageButton
+            android:id="@+id/wx_brief_default_aircraft_registration_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:colorBackground"
+            app:layout_constraintBottom_toTopOf="@+id/wx_brief_web_user_name_layout"
+            app:layout_constraintStart_toEndOf="@+id/wx_brief_aircraft_id_layout"
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_label"
+            app:srcCompat="@drawable/ic_info" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/wx_brief_web_user_name_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_standard"
+            android:hint="@string/wx_brief_web_user_name"
+            app:errorEnabled="true"
+            app:errorText="@{viewModel.wxBriefUserNameErrorText}"
+            app:layout_constraintEnd_toStartOf="@id/guideline_75pct"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wx_brief_aircraft_id_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/wwx_brief_web_user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:nextFocusForward="@+id/wx_briefing_date_spinner"
+                android:text="@={viewModel.wxBriefUserName}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/wx_brief_default_account_name_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:colorBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/wx_brief_web_user_name_layout"
+            app:layout_constraintStart_toEndOf="@id/guideline_75pct"
+            app:layout_constraintTop_toTopOf="@+id/wx_brief_web_user_name_layout"
+            app:srcCompat="@drawable/ic_info" />
+
+
+        <!-- currently keeping but not displaying as just using 1800wxbrief for NOTAMS -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/wx_brief_corridor_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/wx_brief_web_user_name_layout">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_corridor_50pct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.50" />
+
+
+            <TextView
+                android:id="@+id/wx_brief_default_corridor_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_double"
+                android:text="@string/default_corridor_width_label"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/wx_brief_default_corridor_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:colorBackground"
+                app:layout_constraintBottom_toBottomOf="@+id/wx_brief_default_corridor_label"
+                app:layout_constraintStart_toEndOf="@+id/wx_brief_default_corridor_label"
+                app:layout_constraintTop_toTopOf="@+id/wx_brief_default_corridor_label"
+                app:srcCompat="@drawable/ic_info" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/wx_brief_corridor_width_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_double"
+                android:hint="@string/route_corridor_width"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.corridorWidthErrorText}"
+                app:layout_constraintEnd_toStartOf="@id/guideline_corridor_50pct"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_corridor_label">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/wx_brief_corridor_width"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:nextFocusForward="@+id/wx_brief_winds_aloft_corridor"
+                    android:text="@={viewModel.routeCorridorWidth}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/wx_brief_winds_aloft_corridor_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_double"
+                android:hint="@string/wx_brief_winds_aloft_corridor"
+                app:errorEnabled="true"
+                app:errorText="@{viewModel.windsAloftCorridorErrorText}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline_corridor_50pct"
+                app:layout_constraintTop_toBottomOf="@+id/wx_brief_default_corridor_label">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/wx_brief_winds_aloft_corridor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:nextFocusForward="@+id/wx_brief_product_codes_spinner"
+                    android:text="@={viewModel.windsAloftCorridor}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/wx_brief_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <Button
+                android:id="@+id/wx_brief_cancel"
+                style="@style/ButtonPrimaryWhite"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:layout_weight="1"
+                android:text="@string/cancel"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/wx_brief_default_save_btn"
+                style="@style/ButtonPrimaryWhite"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_standard"
+                android:layout_marginBottom="@dimen/margin_standard"
+                android:layout_weight="1"
+                android:background="@drawable/button_selector"
+                android:enabled="@{viewModel.isValidData}"
+                android:text="@string/save"
+                android:textAlignment="center"
+                />
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

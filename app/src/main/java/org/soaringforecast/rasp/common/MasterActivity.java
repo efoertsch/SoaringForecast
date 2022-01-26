@@ -1,7 +1,9 @@
 package org.soaringforecast.rasp.common;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
 
@@ -10,7 +12,9 @@ import com.google.android.material.snackbar.Snackbar;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.soaringforecast.rasp.BuildConfig;
 import org.soaringforecast.rasp.R;
+import org.soaringforecast.rasp.common.messages.CrashReport;
 import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.common.messages.SnackbarMessage;
 import org.soaringforecast.rasp.soaring.messages.DisplayTurnpointSatelliteView;
@@ -163,6 +167,22 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
         // Doing it this way due to  turnpoint edit cupstyle spinner onItemSelected firing when it shouldn't
         // displayFragment(getTurnpointEditFragment(event.getTurnpoint()), false, true);
         startActivity(TurnpointActivity.Builder.getBuilder().editTurnpoint(event.getTurnpoint()).build(this));
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(CrashReport event) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setDataAndType(Uri.parse("mailto:"),"text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, Constants.CRASH_REPORT_EMAIL);
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, event.getCrashErrorMsg());
+        intent.putExtra(android.content.Intent.EXTRA_TEXT,
+                 "VersionCode:" + BuildConfig.VERSION_CODE + "\n"
+                     +  "VersionName:" + BuildConfig.VERSION_NAME + "\n"
+                + event.getCrashException().toString());
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     /**

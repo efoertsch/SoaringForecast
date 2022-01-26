@@ -26,6 +26,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
         , TurnpointBitmapUtilsModule.class
         , AviationWeatherGovModule.class
         , UsgsServerUrlModule.class
+        , One800WxBriefUrlModule.class
 })
 
 public interface ApplicationComponent extends
