@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Used to contain all briefing options to be displayed and selectable by user to create a route briefing request.
  */
+// TODO too much code duplication with the ViewModel. Reduce redundancy by moving code to ViewModel.
 public class BriefingOptions {
 
     // Full set of briefing options
@@ -107,13 +108,14 @@ public class BriefingOptions {
                     // The user didn't select it so don't send the parm
                 }
                 ++j;
-            }
-            // On an option what wasn't displayable but
-            // see if we should send it based on default value
-            // true means send the parm value
-            briefingOption = fullProductCodeList.get(i);
-            if (briefingOption.isSelectForBrief()) {
-                productCodesList.add(briefingOption.getWxBriefParameterName());
+            } else {
+                // On an option what wasn't displayable but
+                // see if we should send it based on default value
+                // true means send the parm value
+                briefingOption = fullProductCodeList.get(i);
+                if (briefingOption.isSelectForBrief()) {
+                    productCodesList.add(briefingOption.getWxBriefParameterName());
+                }
             }
         }
         return productCodesList;
@@ -156,7 +158,7 @@ public class BriefingOptions {
                     briefingOption = fullTailoringOptionList.get(i);
                     tailoringOptionList.add(briefingOption.getWxBriefParameterName());
                 }
-
+                ++j;
             } else {
                 // see if we should send it based on default value
                 briefingOption = fullTailoringOptionList.get(i);
@@ -165,7 +167,6 @@ public class BriefingOptions {
                     tailoringOptionList.add(briefingOption.getWxBriefParameterName());
                 }
             }
-            ++j;
         }
         return tailoringOptionList;
     }

@@ -458,7 +458,7 @@
     <string name="get_notams">GET NOTAMS</string>
     <string name="get_briefing">GET BRIEFING</string>
     <string name="wx_brief_route_briefing">188WXBrief Route Briefing</string>
-    <string name="set_defaults">Defaults</string>
+    <string name="use_and_disclaimer">Use And Disclaimer</string>
     <string name="notams_abbreviated_brief">NOTAMS Abbreviated Brief</string>
     <string name="wxbrief_notams_abbreviated_brief_info">This option provides an abbreviated brief with assumed takeoff time of 1 hr in the future and a flight duration of 10 hrs.
         \nHowever 1800WXBrief defaults provides information from 2 hrs before this time to 72 hours pass the end of the flight duration.
@@ -478,4 +478,5 @@
     <string name="wxbrief_title">1800WxBrief</string>
     <string name="permission_denied_to_write_pdf_to_downloads_dir">Permission to write to Downloads directory for the 1800WXBrief PDF was denied. </string>
     <string name="rational_pdf_downloads_dir">A PDF briefing is first downloaded to the Downloads directory. You first need to grant SoaringForecast permission to use the Downloads directory.</string>
+    <string name="wxbrief_file_not_deleted_in_downloads_dir">Previous 1800WXBrief not deleted in Downloads directory. The briefing may be incorrect.</string>
 </resources>

@@ -1107,18 +1107,24 @@ public class AppRepository implements CacheTimeListener {
         return "Basic " + encoded;
     }
 
-    public Single<Uri> writeWxBriefToDownloadsDirectory(final String briefAsBase64PdfString) {
+    public Single<Uri> writeWxBriefToDownloadsDirectory(final String briefAsBase64PdfString)  {
         return Single.create(emitter -> {
             byte[] wxBriefPdf = Base64.decode(briefAsBase64PdfString, Base64.DEFAULT);
             File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File wxBriefFile = new File(path, ONE_800_WX_BRIEF_FILE_NAME);
             try {
+                if (wxBriefFile.exists()){
+                    boolean deleted = wxBriefFile.delete();
+                    if (!deleted)
+                         throw new Throwable(context.getString(R.string.wxbrief_file_not_deleted_in_downloads_dir));
+
+                }
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(wxBriefFile, false));
                 bos.write(wxBriefPdf);
                 emitter.onSuccess(FileProvider.getUriForFile(context
                         , context.getApplicationContext().getPackageName() + ".provider",
                         wxBriefFile));
-            } catch (Exception e){
+            } catch (Throwable e){
                 Timber.d(e.toString());
                 emitter.onError(e);
             }

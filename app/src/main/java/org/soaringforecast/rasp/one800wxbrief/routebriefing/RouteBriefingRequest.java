@@ -424,7 +424,8 @@ public class RouteBriefingRequest {
         if (selectedBriefingType != null & selectedBriefingType.equals("EMAIL")) {
             sb.append(AMPERSAND).append("emailAddress=").append(emailAddress);
         }
-        sb.append(AMPERSAND).append("altitudeFL=").append(flightLevel);
+        //sb.append(AMPERSAND).append("altitudeVFRFL=").append(flightLevel);
+        sb.append(AMPERSAND).append("altitudeVFR");
         String plainTextTimeZone = TimeZoneAbbrev.UTC.name();
 
         // make sure current timezone valid possible IllegalArgumentException

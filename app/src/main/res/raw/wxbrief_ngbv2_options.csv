@@ -1,6 +1,6 @@
 1800WxBrief Parameter name,1800WxBrief parm description,Display Description,Display for OutlookBrief,Default Value OutLook Brief ,Display for StandardBrief,Default value for Standard Brief,Display For Abbreviated Brief,Default vale for Abbreviated Brief,Display For NOTAMS Brief only,Default vale for NOTAMS Brief
-EXCLUDE_GRAPHICS,Exclude graphics,Include graphics,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
-EXCLUDE_NEXTGEN,Exclude Nextgen content,Include NextGen content,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE
+EXCLUDE_GRAPHICS,Exclude graphics,Include graphics,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+EXCLUDE_NEXTGEN,Exclude Nextgen content,Include NextGen content,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
 EXCLUDE_PLAINTEXT,Exclude plaintext,Plain Text Translations,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
 EXCLUDE_HISTORICAL_METARS,Exclude historical METARs,Include most recent METARS,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
 EXCLUDE_ENROUTE_METARS_TAFS,"Exclude en route METARs and TAFs only if the filed altitude is at least 18,000ft","Include enroute METARS and TAFS if filed alt is >=18,000ft",FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE

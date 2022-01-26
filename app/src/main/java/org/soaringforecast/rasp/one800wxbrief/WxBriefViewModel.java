@@ -48,7 +48,7 @@ import timber.log.Timber;
 public class WxBriefViewModel extends ObservableViewModel {
 
     private static final SimpleDateFormat departureDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static final SimpleDateFormat departureInstantFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    private static final SimpleDateFormat departureInstantFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
     private static final long ONE_HOUR_IN_MILLISECS = 60 * 60 * 1000;
     private static final long ONE_DAY_IN_MILLISEC = 24 * ONE_HOUR_IN_MILLISECS;
     private static final String NOTAMS_BRIEF = "NOTAMS_BRIEF";
@@ -84,7 +84,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     private MutableLiveData<Boolean> tailoringListUpdatedFlag;
     private MutableLiveData<Boolean> validBriefingData = new MutableLiveData<>();
     private MutableLiveData<Uri> wxBriefUri;
-    private MutableLiveData<String> simpleBriefingText;
+    private MutableLiveData<String> simpleBriefingText = new MutableLiveData<>();
     //private MutableLiveData<String> aircraftRegistration = new MutableLiveData<>();
     private MutableLiveData<String> accountName = new MutableLiveData<>();
     private MutableLiveData<Boolean> pdfBrief = new MutableLiveData<>();
@@ -182,7 +182,7 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     public void init(Constants.TypeOfBrief typeOfBrief) {
         // Since viewmodel shared among fragments only initialize once
-        if (isInitialized){
+        if (isInitialized) {
             return;
         }
         isInitialized = true;
@@ -202,10 +202,10 @@ public class WxBriefViewModel extends ObservableViewModel {
         getTurnpointList();
         loadTask();
         loadTaskTurnpoints();
-        if (typeOfBrief != null && typeOfBrief == Constants.TypeOfBrief.NOTAMS){
+        if (typeOfBrief != null && typeOfBrief == Constants.TypeOfBrief.NOTAMS) {
             selectedTypeOfBriefPosition.setValue(Constants.TypeOfBrief.NOTAMS.ordinal());
         }
-        loadProductsAndTailoringOptions();
+
     }
 
 
@@ -221,7 +221,8 @@ public class WxBriefViewModel extends ObservableViewModel {
         //validationMediator.addSource(selectedDepartureTimePosition, selectedDepartureTimePosition -> formatDepartureInstant());
         validationMediator.addSource(selectedBriefFormatPosition, selectedBriefFormatPosition -> updateBriefingFormat((Integer) selectedBriefFormatPosition));
     }
-    public void stopListening(){
+
+    public void stopListening() {
         validationMediator.removeSource(officialBriefing);
         validationMediator.removeSource(selectedTypeOfBriefPosition);
         validationMediator.removeSource(aircraftId);
@@ -391,7 +392,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     public void updateOfficialBriefing(Boolean isChecked) {
         routeBriefingRequest.setNotABriefing(!isChecked);
         // bypass as all briefing formats valid for both official/informal brief
-       // updateBriefingFormatList();
+        // updateBriefingFormatList();
     }
 
     /**
@@ -404,7 +405,7 @@ public class WxBriefViewModel extends ObservableViewModel {
             typeOfBriefs = new MutableLiveData<>();
             ArrayList<String> listOfBriefs = new ArrayList<>();
             for (Constants.TypeOfBrief typeOfBrief : Constants.TypeOfBrief.values()) {
-                    listOfBriefs.add(typeOfBrief.displayValue);
+                listOfBriefs.add(typeOfBrief.displayValue);
             }
             typeOfBriefs.setValue(listOfBriefs);
             // set to the default type of brief so you can load product codes/options for initial display
@@ -434,7 +435,8 @@ public class WxBriefViewModel extends ObservableViewModel {
     public void setSelectedTypeOfBriefPosition(int position) {
         selectedTypeOfBrief = Constants.TypeOfBrief.values()[position];
         routeBriefingRequest.setTypeOfBrief(selectedTypeOfBrief);
-        displayProductCodes.setValue(! (selectedTypeOfBrief == Constants.TypeOfBrief.STANDARD ));
+        displayProductCodes.setValue(!(selectedTypeOfBrief == Constants.TypeOfBrief.STANDARD));
+        loadProductsAndTailoringOptions();
     }
 
     public MutableLiveData<Boolean> getDisplayProductCodes() {
@@ -613,7 +615,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         return briefingDates;
     }
 
-    private void setDepartureDate(){
+    private void setDepartureDate() {
         // if not current day, then set to outlook briefing
         if (selectedBriefingDatePosition.getValue() != 0) {
             if (selectedTypeOfBriefPosition.getValue() == Constants.TypeOfBrief.STANDARD.ordinal()) {
@@ -630,11 +632,10 @@ public class WxBriefViewModel extends ObservableViewModel {
      */
     private void formatDepartureInstant() {
         // if today assume flight 1 hr in future
-        if (selectedBriefingDatePosition.getValue()== 0){
+        if (selectedBriefingDatePosition.getValue() == 0) {
             routeBriefingRequest.setDepartureInstant(
                     TimeUtils.convertLocalTimeToZulu(departureInstantFormat.format(System.currentTimeMillis() + ONE_HOUR_IN_MILLISECS)));
-        }
-        else { // assume 9AM local time departure
+        } else { // assume 9AM local time departure
             StringBuilder sb = new StringBuilder();
             sb.append(briefingDates.getValue().get(selectedBriefingDatePosition.getValue()))
                     .append("T")
@@ -723,7 +724,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         return selectedBriefFormatPosition;
     }
 
-    public void resetSelectedBriefFormatPosition(){
+    public void resetSelectedBriefFormatPosition() {
         if (selectedBriefFormatPosition == null) {
             getSelectedBriefFormatPosition();
             return;
@@ -748,8 +749,8 @@ public class WxBriefViewModel extends ObservableViewModel {
         routeBriefingRequest.setSelectedBriefingType(selectedBriefingFormat.name());
         displayEmailAddressField.setValue(selectedBriefingFormat == BriefingFormat.EMAIL);
         toggleTailoringListUpdatedFlag();
-        if (selectedBriefingFormat == BriefingFormat.NGBV2){
-             post(new WXBriefDownloadsPermission());
+        if (selectedBriefingFormat == BriefingFormat.NGBV2) {
+            post(new WXBriefDownloadsPermission());
 
         }
     }
@@ -813,10 +814,10 @@ public class WxBriefViewModel extends ObservableViewModel {
     }
 
     // NOTAMS assume abbreviated briefing with departure 1 hr from now.
-    public void submitNOTAMSBriefingRequest(){
+    public void submitNOTAMSBriefingRequest() {
         working.setValue(true);
         // override various values
-        officialBriefing.setValue( true);
+        officialBriefing.setValue(true);
         formatDepartureInstant();
         // set departure 1 hr in future must be in zulu time
         submitBriefingRequest();
@@ -897,7 +898,9 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     private void createRouteBriefingPDF(String ngbv2PdfBriefing) {
         setWorkingFlag(true);
-        Disposable disposable = appRepository.writeWxBriefToDownloadsDirectory(ngbv2PdfBriefing)
+        Disposable disposable = null;
+
+        disposable = appRepository.writeWxBriefToDownloadsDirectory(ngbv2PdfBriefing)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pdfBriefUri -> {
@@ -914,7 +917,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void requestNOTAMSBriefing(){
+    public void requestNOTAMSBriefing() {
         //construct standard brief only requesting NOTAMS
 
     }
@@ -933,13 +936,14 @@ public class WxBriefViewModel extends ObservableViewModel {
         wxBriefUri.setValue(pdfBriefUri);
     }
 
-
     public void saveDefaultSettings() {
         appPreferences.setAircraftRegistration(aircraftId.getValue());
         appPreferences.setOne800WxBriefUserId(wxBriefWebUserName.getValue());
     }
 
-
+    public void showWxBriefDisclaimer() {
+        appPreferences.setWxBriefShowDisclaimer(true);
+    }
 
     // TODO Put into superclass
     private void post(Object object) {

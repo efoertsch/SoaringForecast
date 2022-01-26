@@ -11,7 +11,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterActivity;
 import org.soaringforecast.rasp.one800wxbrief.messages.ContineWithWxBrief;
-import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefShowDefaults;
+import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefUseAndDisclaimer;
 import org.soaringforecast.rasp.repository.AppRepository;
 
 import javax.inject.Inject;
@@ -79,8 +79,8 @@ public class WxBriefRequestActivity extends MasterActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(WxBriefShowDefaults wxBriefShowDefaults) {
-        displayFragment(getWxBriefDefaultsFragment(), false, true);
+    public void onMessageEvent(WxBriefUseAndDisclaimer wxBriefUseAndDisclaimer) {
+        displayFragment(getWxBriefDisclaimerFragment(), false, true);
     }
 
     private void goToNextScreen() {
