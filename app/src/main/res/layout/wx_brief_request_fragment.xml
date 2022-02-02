@@ -325,7 +325,6 @@
                     style="@style/TextView.ForSpinnerLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_standard"
                     android:text="@string/product_options"
                     android:visibility="@{viewModel.displayProductCodes ? View.VISIBLE: View.GONE}"
                     app:layout_constraintStart_toStartOf="@id/guideline_50pct"

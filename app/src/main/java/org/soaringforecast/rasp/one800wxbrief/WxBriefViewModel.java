@@ -435,7 +435,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     public void setSelectedTypeOfBriefPosition(int position) {
         selectedTypeOfBrief = Constants.TypeOfBrief.values()[position];
         routeBriefingRequest.setTypeOfBrief(selectedTypeOfBrief);
-        displayProductCodes.setValue(!(selectedTypeOfBrief == Constants.TypeOfBrief.STANDARD));
+        displayProductCodes.setValue(selectedTypeOfBrief == Constants.TypeOfBrief.ABBREVIATED);
         loadProductsAndTailoringOptions();
     }
 
