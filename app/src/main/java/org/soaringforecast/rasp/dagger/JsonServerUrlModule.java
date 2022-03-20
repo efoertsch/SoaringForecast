@@ -7,13 +7,12 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class ForecastServerUrlModule {
+public class JsonServerUrlModule {
 
     @Provides
-    @Named("forecast_server_url")
-    public String getRaspUrl(Context context){
-        return context.getString(R.string.forecast_server_url);
+    @Named("json_server_url")
+    public String getJsonUrl(Context context){
+        return context.getString(R.string.json_server_url);
     }
-
 
 }

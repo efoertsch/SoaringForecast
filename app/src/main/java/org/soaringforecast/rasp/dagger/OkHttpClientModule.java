@@ -41,6 +41,19 @@ public class OkHttpClientModule {
         return httpClient.build();
     }
 
+    @Provides @Named("no_interceptor_no_cache")
+    @Singleton
+    public OkHttpClient getOkHttpClientNoInterceptorNoCache() {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(6);
+        httpClient.cache(null);
+        httpClient.dispatcher(dispatcher);
+        httpClient.connectTimeout(30, TimeUnit.SECONDS);
+        httpClient.readTimeout(30, TimeUnit.SECONDS);
+        return httpClient.build();
+    }
+
     @Provides
     @Singleton
     OkHttpClient providesOkHttpClient(){

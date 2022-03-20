@@ -986,6 +986,8 @@ public class SoaringForecastViewModel extends AndroidViewModel {
                                 } catch (IOException ioe) {
                                     // TODO report error
                                 }
+                            } else {
+                                Timber.d("Error on point forecast: %s", responseBodyResponse.toString());
                             }
                         }
 

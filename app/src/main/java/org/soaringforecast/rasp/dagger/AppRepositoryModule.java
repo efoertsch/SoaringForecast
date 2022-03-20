@@ -7,7 +7,9 @@ import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.repository.AppRepository;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovApi;
 import org.soaringforecast.rasp.retrofit.AviationWeatherGovRetrofit;
+import org.soaringforecast.rasp.retrofit.ForecastServerRetrofit;
 import org.soaringforecast.rasp.retrofit.JSONServerApi;
+import org.soaringforecast.rasp.retrofit.JsonServerRetrofit;
 import org.soaringforecast.rasp.retrofit.One800WxBriefApi;
 import org.soaringforecast.rasp.retrofit.One800WxBriefServerRetrofit;
 import org.soaringforecast.rasp.retrofit.SoaringForecastApi;
@@ -24,7 +26,7 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 
 @Module
-public class AppRepositoryModule extends ForecastServerModule {
+public class AppRepositoryModule  {
 
     @Provides
     @Singleton
@@ -53,13 +55,16 @@ public class AppRepositoryModule extends ForecastServerModule {
     @Provides
     @Singleton
     public SoaringForecastApi getSoaringForecastApi(@Named("no_interceptor") OkHttpClient okHttpClient, @Named("forecast_server_url") String forecastServerUrl) {
-        return getForecastServerRetrofit(okHttpClient, forecastServerUrl).getRetrofit().create(SoaringForecastApi.class);
+        return new ForecastServerRetrofit(okHttpClient, forecastServerUrl).getRetrofit().create(SoaringForecastApi.class);
     }
 
 
     @Provides
-    public JSONServerApi getJSONServerApi(@Named("no_interceptor") OkHttpClient okHttpClient, @Named("forecast_server_url") String forecastServerUrl) {
-        return getForecastServerRetrofit(okHttpClient, forecastServerUrl).getRetrofit().create(JSONServerApi.class);
+    @Singleton
+    // Apparently due to later version of Retrofit if you use "interceptor" you can get error:
+    //java.lang.IllegalStateException: cannot make a new request because the previous response is still open: please call response.close()
+    public JSONServerApi getJSONServerApi(@Named("no_interceptor") OkHttpClient okHttpClient, @Named("json_server_url") String jsonServerUrl) {
+        return new JsonServerRetrofit(okHttpClient, jsonServerUrl).getRetrofit().create(JSONServerApi.class);
     }
 
     @Provides
@@ -76,7 +81,7 @@ public class AppRepositoryModule extends ForecastServerModule {
 
     @Provides
     @Singleton
-    public One800WxBriefApi providesOne800WxBriefApi(@Named("interceptor") OkHttpClient okHttpClient, @Named("one_800wxbrief_server") String one800WxbriefUrl){
+    public One800WxBriefApi providesOne800WxBriefApi(@Named("no_interceptor_no_cache") OkHttpClient okHttpClient, @Named("one_800wxbrief_server") String one800WxbriefUrl){
         return new One800WxBriefServerRetrofit(okHttpClient, one800WxbriefUrl).getRetrofit().create(One800WxBriefApi.class);
     }
 

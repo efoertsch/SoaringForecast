@@ -39,6 +39,25 @@ public class Constants {
         }
     }
 
+    public enum BriefingFormat {
+        EMAIL("EMail", true),
+        NGBV2("Online(PDF)", true),
+        SIMPLE("Simple", true);
+        private String displayValue;
+        private boolean validForNotABrief;
+        public String getDisplayValue() {
+            return displayValue;
+        }
+        public boolean isValidForNotABrief() {
+            return validForNotABrief;
+        }
+
+        BriefingFormat(String displayValue, boolean validForNotABrief) {
+            this.displayValue = displayValue;
+            this.validForNotABrief = validForNotABrief;
+        }
+    }
+
     public static final String CRASH_REPORT_EMAIL = "ericfoertsch@gmail.com";
 
 }

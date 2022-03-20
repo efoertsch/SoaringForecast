@@ -32,7 +32,8 @@
             android:name="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -120,7 +121,8 @@
             android:name=".one800wxbrief.WxBriefRequestActivity"
             android:label="@string/one_800_wx_brief"
             android:parentActivityName="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity"
-            android:screenOrientation="portrait">
+            android:windowSoftInputMode="stateAlwaysHidden"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.soaringforecast.rasp.soaring.forecast.ForecastDrawerActivity" />

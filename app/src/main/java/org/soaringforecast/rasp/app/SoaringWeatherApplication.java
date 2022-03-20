@@ -22,6 +22,7 @@ import androidx.work.WorkManager;
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -49,6 +50,7 @@ public class SoaringWeatherApplication extends DaggerApplication {
         configureEventBus();
         checkIfAirportDownloadNeeded();
         //ElapsedTimeUtil.showElapsedTime(TAG,"End of application onCreate()");
+        RxJavaPlugins.setErrorHandler(Timber::e);
     }
 
     @SuppressLint("CheckResult")
@@ -111,4 +113,5 @@ public class SoaringWeatherApplication extends DaggerApplication {
             notificationManager.createNotificationChannel(channel);
         }
     }
+
 }

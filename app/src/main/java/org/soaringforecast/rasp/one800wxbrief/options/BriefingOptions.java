@@ -36,19 +36,21 @@ public class BriefingOptions {
     // same size as tailorOptionDescriptions
     private ArrayList<Integer> tailoringOptionListIndex = new ArrayList<>();
 
-    Constants.TypeOfBrief typeOfBrief;
+    private Constants.BriefingFormat briefingFormat;
 
     private BriefingOptions() { };
 
     /**
      * @param fullProductCodeList
-     * @param fullTailoringOptionList - may be NGBV2
+     * @param fullTailoringOptionList - may be NGBV2 or non-NGBV2 options
      */
-    public BriefingOptions(ArrayList<BriefingOption> fullProductCodeList, ArrayList<BriefingOption> fullTailoringOptionList) {
+    public BriefingOptions(ArrayList<BriefingOption> fullProductCodeList, ArrayList<BriefingOption> fullTailoringOptionList, Constants.BriefingFormat  briefingFormat) {
+        this.briefingFormat = briefingFormat;
         this.fullProductCodeList = fullProductCodeList;
         this.fullTailoringOptionList = fullTailoringOptionList;
         createProductCodeDisplayFields();
         createTailoringOptionsDisplayFields();
+
     }
 
     private void createProductCodeDisplayFields() {
@@ -124,6 +126,8 @@ public class BriefingOptions {
 
 
 
+    // In nonNGBV2 (EMAIL, SIMPLE) if option checked send that parm in "tailoring" string
+    // For NBGV2 (PDF/ONLINE) if option is checked do NOT send that option as parms are 'EXCLUDE...'
     // Display a list of tailoring options to include (do not send EXCLUDE key value)  in a brief
     private void createTailoringOptionsDisplayFields() {
         BriefingOption briefingOption;
@@ -151,18 +155,24 @@ public class BriefingOptions {
 
         int j = 0;
         for (int i = 0; i < fullTailoringOptionList.size(); ++i) {
+            // if the tailoring option is one that is displayed on screen
             if (j < tailoringOptionListIndex.size() && i == tailoringOptionListIndex.get(j)) {
                 // this option was one that was displayed to user to see what user wants
-                if (!tailoringOptionsSelected[j]) {
-                    // User doesn't want to see this option so we add EXCLUDE value to list
+                // NOte that NGBV2 are 'EXCLUDE...' but nonNGBV2 are INCLUDE so need to handle differently
+                if ((briefingFormat == Constants.BriefingFormat.NGBV2 && !tailoringOptionsSelected[j])
+                 || (briefingFormat != Constants.BriefingFormat.NGBV2 &&  tailoringOptionsSelected[j])){
+                    // NGBV2 User doesn't want to see this option so we add EXCLUDE value to list
+                    // nonNBBV2 User wants option so add it
                     briefingOption = fullTailoringOptionList.get(i);
                     tailoringOptionList.add(briefingOption.getWxBriefParameterName());
                 }
                 ++j;
             } else {
-                // see if we should send it based on default value
+                // tailoring option is not one displayed on screen but see if we should send based on
+                // default value
                 briefingOption = fullTailoringOptionList.get(i);
-                if (!briefingOption.isSelectForBrief()) {
+                if ((briefingFormat == Constants.BriefingFormat.NGBV2 && !briefingOption.isSelectForBrief())
+                  || (briefingFormat != Constants.BriefingFormat.NGBV2 && briefingOption.isSelectForBrief())){
                     // Default is to not include this options so we add EXCLUDE value to list
                     tailoringOptionList.add(briefingOption.getWxBriefParameterName());
                 }

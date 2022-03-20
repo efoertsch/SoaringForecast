@@ -75,6 +75,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.FileProvider;
+import androidx.documentfile.provider.DocumentFile;
+
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -317,7 +319,7 @@ public class AppRepository implements CacheTimeListener {
                     case FORECAST:
                         parmUrl = getSoaringForecastUrlParm(region, yyyymmddDate, forecastType, forecastParameter
                                 , stringUtils.stripOldIfNeeded(forecastTime), bitmapType);
-                        Timber.d("calling parmUrl %1$s", parmUrl);
+                       // Timber.d("calling parmUrl %1$s", parmUrl);
                         break;
                     case SOUNDING:
                         parmUrl = getSoaringForecastSoundingUrlParm(region, yyyymmddDate, forecastType, forecastParameter
@@ -916,7 +918,7 @@ public class AppRepository implements CacheTimeListener {
             File[] flists = fileDir.listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
-                    Timber.d("Found stored sua file with name %1$s", file.getName());
+                   // Timber.d("Found stored sua file with name %1$s", file.getName());
                     return p.matcher(file.getName()).matches();
                 }
             });
@@ -938,7 +940,7 @@ public class AppRepository implements CacheTimeListener {
     private void deleteSUAFile(String regionName, String suaFilename) {
         File suaFile = getSuaFile(regionName, suaFilename);
         if (suaFile.exists()) {
-            Timber.d("Deleting existing %1$s file.", suaFilename);
+            //Timber.d("Deleting existing %1$s file.", suaFilename);
             suaFile.delete();
         }
     }
@@ -949,7 +951,7 @@ public class AppRepository implements CacheTimeListener {
         File[] flists = fileDir.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                Timber.d("Found stored sua file with name %1$s", file.getName());
+                //Timber.d("Found stored sua file with name %1$s", file.getName());
                 return p.matcher(file.getName()).matches();
             }
         });
@@ -1053,6 +1055,12 @@ public class AppRepository implements CacheTimeListener {
         return getWxBriefingOptions(R.raw.wxbrief_ngbv2_options, selectedTypeOfBrief);
     }
 
+    public Single<ArrayList<BriefingOption>> getWxBriefNonNGBV2TailoringOptions(Constants.TypeOfBrief selectedTypeOfBrief) {
+        return getWxBriefingOptions(R.raw.wxbrief_non_ngbv2_options, selectedTypeOfBrief);
+    }
+
+
+
     public Single<ArrayList<BriefingOption>> getWxBriefingOptions(int rawResourceId, Constants.TypeOfBrief selectedTypeOfBrief) {
         return Single.create(emitter -> {
             BufferedReader reader = null;
@@ -1093,6 +1101,7 @@ public class AppRepository implements CacheTimeListener {
             try {
                 Call<RouteBriefing> call = one800WxBriefApi.getRouteBriefing(get1800WXBriefAPIAuthorization(), body);
                 RouteBriefing routeBriefing = call.execute().body();
+                Timber.d("Successfullcall for routeBriefing");
                 emitter.onSuccess(routeBriefing);
             } catch (Exception e) {
                 emitter.onError(e);
@@ -1107,17 +1116,21 @@ public class AppRepository implements CacheTimeListener {
         return "Basic " + encoded;
     }
 
-    public Single<Uri> writeWxBriefToDownloadsDirectory(final String briefAsBase64PdfString)  {
+    public Single<Uri> writeWxBriefToDirectory(final String briefAsBase64PdfString)  {
         return Single.create(emitter -> {
-            byte[] wxBriefPdf = Base64.decode(briefAsBase64PdfString, Base64.DEFAULT);
-            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            File wxBriefFile = new File(path, ONE_800_WX_BRIEF_FILE_NAME);
             try {
-                if (wxBriefFile.exists()){
-                    boolean deleted = wxBriefFile.delete();
-                    if (!deleted)
-                         throw new Throwable(context.getString(R.string.wxbrief_file_not_deleted_in_downloads_dir));
 
+                byte[] wxBriefPdf = Base64.decode(briefAsBase64PdfString, Base64.DEFAULT);
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                //File path = context.getCacheDir();
+                File wxBriefFile = new File(path, ONE_800_WX_BRIEF_FILE_NAME);
+                Timber.d("Writing response to %s", wxBriefFile.toString());
+                DocumentFile pickedFile = DocumentFile.fromFile(wxBriefFile);
+                if (pickedFile.exists()) {
+                    if (!pickedFile.delete()) {
+                        Timber.e("Could not delete %s", wxBriefFile.toString());
+                        throw new Throwable(context.getString(R.string.wxbrief_file_not_deleted_in_downloads_dir));
+                    }
                 }
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(wxBriefFile, false));
                 bos.write(wxBriefPdf);
@@ -1128,6 +1141,7 @@ public class AppRepository implements CacheTimeListener {
                 Timber.d(e.toString());
                 emitter.onError(e);
             }
+
         });
     }
 
@@ -1135,6 +1149,7 @@ public class AppRepository implements CacheTimeListener {
     public boolean canDisplayPdf(){
         return canDisplayPdf(context);
     }
+
     public static boolean canDisplayPdf(Context context) {
         PackageManager packageManager = context.getPackageManager();
         Intent testIntent = new Intent(Intent.ACTION_VIEW);

@@ -45,7 +45,7 @@ public class LoggingInterceptor implements Interceptor {
             String bodyString = response.body().string();
             if (BuildConfig.DEBUG) {
             //    Timber.d("response only" + "\n" + bodyString);
-                Timber.d("response" + "\n" + responseLog + "\n" + bodyString);
+                Timber.d("response \n %s \n %s", responseLog , bodyString);
             }
             return response.newBuilder()
                     .body(ResponseBody.create(response.body().contentType(), bodyString))

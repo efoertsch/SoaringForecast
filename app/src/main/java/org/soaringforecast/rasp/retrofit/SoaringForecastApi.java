@@ -15,7 +15,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
- * Calls to www.soargbsc.com/rasp
+ * Calls to www.soargbsc.net/rasp
  */
 public interface SoaringForecastApi {
 
