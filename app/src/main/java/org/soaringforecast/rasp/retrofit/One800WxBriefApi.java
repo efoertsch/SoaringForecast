@@ -16,10 +16,10 @@ public interface One800WxBriefApi {
 
     // Get a METAR (mainly for testing 1800wxbrief api. App get METARS from other source
     @GET("retrieveMETAR")
-    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @Headers({"Content-Type: application/x-www-form-urlencoded", "User-Agent: Soaring Forecast FFSP Interface"})
     Call<ResponseBody> getMETAR(@Header("Authorization") String basicBase64,  @Query("location") String airport);
 
-    @Headers({"Content-Type: application/x-www-form-urlencoded"})
+    @Headers({"Content-Type: application/x-www-form-urlencoded", "User-Agent: Soaring Forecast FFSP Interface"})
     @POST("FP/routeBriefing")
     Call<RouteBriefing> getRouteBriefing(@Header("Authorization") String basicBase64, @Body RequestBody completeQueryString);
 

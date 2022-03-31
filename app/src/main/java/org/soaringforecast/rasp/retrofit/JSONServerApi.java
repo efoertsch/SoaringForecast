@@ -7,22 +7,23 @@ import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Streaming;
 
 public interface JSONServerApi {
 
     // Get list of turnpoint files
-    @GET("https://soargbsc.com/soaringforecast/turnpoint_regions.json")
+    @GET("/soaringforecast/turnpoint_regions.json")
     Single<TurnpointRegions> getTurnpointRegions();
 
 
     // Get list of SUA files
-    @GET("https://soargbsc.com/soaringforecast/sua_regions.json")
+    @GET("/soaringforecast/sua_regions.json")
     Single<SUARegionFiles> getSUARegions();
 
     @Streaming
-    @GET("https://soargbsc.com/soaringforecast/{suaFilename}")
+    @GET("/soaringforecast/{suaFilename}")
     Single<Response<ResponseBody>> downloadSuaFile(@Path("suaFilename") String suaFilename);
 
 

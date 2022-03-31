@@ -22,6 +22,7 @@ import org.soaringforecast.rasp.app.AppPreferences;
 import org.soaringforecast.rasp.common.MasterFragment;
 import org.soaringforecast.rasp.common.messages.CrashReport;
 import org.soaringforecast.rasp.databinding.WxBriefRequestView;
+import org.soaringforecast.rasp.one800wxbrief.messages.WXBriefDownloadsPermission;
 import org.soaringforecast.rasp.one800wxbrief.messages.WxBriefUseAndDisclaimer;
 import org.soaringforecast.rasp.one800wxbrief.routebriefing.WxBriefRequestResponse;
 import org.soaringforecast.rasp.repository.AppRepository;
@@ -142,6 +143,16 @@ public class WxBriefMasterFragment extends MasterFragment implements EasyPermiss
         }
 
         alertDialog.setCanceledOnTouchOutside(false);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(WXBriefDownloadsPermission wxBriefDownloadsPermission) {
+        // Check for permission to read downloads directory
+        if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+             // continue
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.rational_write_downloads_dir), WRITE_DOWNLOADS_ACCESS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
     }
 
 

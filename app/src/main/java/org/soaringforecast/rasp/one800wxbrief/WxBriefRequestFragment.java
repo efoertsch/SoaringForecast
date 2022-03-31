@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,7 +64,7 @@ public class WxBriefRequestFragment extends WxBriefMasterFragment{
         wxBriefView.wxBriefAccountNameInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_account_name_info));
         wxBriefView.wxBriefOfficialBriefInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_official_brief_info));
         wxBriefView.wxBriefDepartureDateInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_departure_date_info));
-
+        wxBriefView.wxBriefSimpleBriefingText.setMovementMethod(new ScrollingMovementMethod());
         return wxBriefView.getRoot();
     }
 
@@ -97,10 +98,5 @@ public class WxBriefRequestFragment extends WxBriefMasterFragment{
                 , getString(R.string.select_1800wxbrief_product_options)
                 , selected -> viewModel.updateProductCodesSelected(selected));
     }
-
-
-
-
-
 
 }

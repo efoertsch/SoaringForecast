@@ -4,8 +4,6 @@ import org.soaringforecast.rasp.common.Constants;
 import org.soaringforecast.rasp.utils.TimeUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import timber.log.Timber;
@@ -30,27 +28,6 @@ public class RouteBriefingRequest {
      * ... ,"tailoring":["EXCLUDE_GRAPHICS","EXCLUDE_HISTORICAL_METARS"]
      */
     private ArrayList<String> tailoringOptions = new ArrayList<>();
-
-
-
-    /**
-     * The briefing preferences element is a JSON string containing the desired briefing products, tailoring options, and a plain text parameter.
-     * Usage:
-     * {"items":["productCode","productCode",...,"productCode"],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
-     * <p>
-     * Note: The items parameter is not supported by SIMPLE briefingType. If it is not specified, all briefing products will be included.
-     * The plainText parameter is not supported by NGBv2 briefingType.
-     * If it is not specified, it will default to false. If it is true, then plain text will be included regardless of the tailoring options.
-     * <p>
-     * Example for NGBv2 briefingType:
-     * {"items":["DD_NTM","SEV_WX","METAR","PIREP"],"tailoring":["EXCLUDE_GRAPHICS","EXCLUDE_HISTORICAL_METARS"]}
-     * The returned briefing will include only the following products: Closed/Unsafe NOTAMs, Severe Weather, METARs, and Pilot Reports. Also, it will not include graphics nor historical METARs.
-     * <p>
-     * Note: If there is a conflict between a tailoring option and a product item, the tailoring option takes precedence.
-     * For example, a briefing with the following briefingPreferences will include only Synopsis:
-     * {"items":["SYNS","WH"],"tailoring":["EXCLUDE_NHC_BULLETIN"]}
-     */
-    private String briefingPreferences;
     private String selectedBriefingType;
     private Constants.TypeOfBrief typeOfBrief;
 
@@ -418,27 +395,52 @@ public class RouteBriefingRequest {
         sb.append(AMPERSAND).append("speedKnots=").append(speedKnots);
         sb.append(AMPERSAND).append("versionRequested=").append("99999999");
         sb.append(AMPERSAND).append("briefingType=").append(selectedBriefingType);
-        if (selectedBriefingType != null && selectedBriefingType.equals("NGBV2")) {
-            sb.append(AMPERSAND).append("briefingResultFormat=").append(briefingResultFormat);
+        if (selectedBriefingType != null) {
+            switch (selectedBriefingType) {
+                case "NGBV2":
+                    sb.append(AMPERSAND).append("briefingResultFormat=").append(briefingResultFormat);
+                    // LEIDOS wants altitudeVFRFL when requesting PDF
+                    sb.append(AMPERSAND).append("altitudeVFRFL=").append(flightLevel);
+                    break;
+                case "EMAIL":
+                    sb.append(AMPERSAND).append("emailAddress=").append(emailAddress);
+                    sb.append(AMPERSAND).append("altitudeVFR");
+                    break;
+                default:
+                    sb.append(AMPERSAND).append("altitudeVFR");
+            }
         }
-        if (selectedBriefingType != null & selectedBriefingType.equals("EMAIL")) {
-            sb.append(AMPERSAND).append("emailAddress=").append(emailAddress);
+        if (selectedBriefingType.equals("SIMPLE")){
+            sb.append(AMPERSAND).append("plainText=true");
         }
-        //sb.append(AMPERSAND).append("altitudeVFRFL=").append(flightLevel);
-        sb.append(AMPERSAND).append("altitudeVFR");
-        String plainTextTimeZone = TimeZoneAbbrev.UTC.name();
-
         // make sure current timezone valid possible IllegalArgumentException
-        plainTextTimeZone = TimeZoneAbbrev.valueOf(TimeUtils.getLocalTimeZoneAbbrev()).name();
+        String plainTextTimeZone  = TimeZoneAbbrev.valueOf(TimeUtils.getLocalTimeZoneAbbrev()).name();
         sb.append(AMPERSAND).append("plainTextTimeZone=").append(plainTextTimeZone);
-        //  possible UnsupportedEncodingException
-        sb.append(AMPERSAND).append("briefingPreferences=").append(
-                URLEncoder.encode(getBriefingPreferences(), StandardCharsets.UTF_8.toString()));
-        Timber.d("Briefing Request Options: %1$s", sb.toString());
-        return sb.toString();
+        if (selectedBriefingType != null) {
+            sb.append(AMPERSAND).append("briefingPreferences=").append(getBriefingPreferences());
+        }
+        String unencodedParms = sb.toString();
+        Timber.d("Briefing Request Options (unencoded): %1$s", unencodedParms);
+        return unencodedParms;
     }
 
     /**
+     * The briefing preferences element is a JSON string containing the desired briefing products, tailoring options, and a plain text parameter.
+     * Usage:
+     * {"items":["productCode","productCode",...,"productCode"],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
+     * <p>
+     * Note: The items parameter is not supported by SIMPLE briefingType. If it is not specified, all briefing products will be included.
+     * The plainText parameter is not supported by NGBv2 briefingType.
+     * If it is not specified, it will default to false. If it is true, then plain text will be included regardless of the tailoring options.
+     * <p>
+     * Example for NGBv2 briefingType:
+     * {"items":["DD_NTM","SEV_WX","METAR","PIREP"],"tailoring":["EXCLUDE_GRAPHICS","EXCLUDE_HISTORICAL_METARS"]}
+     * The returned briefing will include only the following products: Closed/Unsafe NOTAMs, Severe Weather, METARs, and Pilot Reports. Also, it will not include graphics nor historical METARs.
+     * <p>
+     * Note: If there is a conflict between a tailoring option and a product item, the tailoring option takes precedence.
+     * For example, a briefing with the following briefingPreferences will include only Synopsis:
+     * {"items":["SYNS","WH"],"tailoring":["EXCLUDE_NHC_BULLETIN"]}
+     * <p>
      * Formatted briefingPreferences string
      * {"items":["productCode","productCode",...,"productCode"],"plainText":true,"tailoring":["tailoringOption","tailoringOption",...,"tailoringOption"]}
      * Note "plainText" parm not included
@@ -447,11 +449,20 @@ public class RouteBriefingRequest {
      */
     private String getBriefingPreferences() {
         StringBuilder sb = new StringBuilder();
-        sb.append('{')
-                .append(getProductCodesJson())
-                .append(getTailorOptionsJson())
-                .append('}');
+        sb.append('{');
+        sb.append(getProductCodesJson());
+        sb.append(getTailorOptionsJson());
+        sb.append(getPlainTextOption());
+        sb.append('}');
         return sb.toString();
+    }
+
+    private String getPlainTextOption() {
+        if (selectedBriefingType.equals("NGBV2")){
+            return "";
+        }
+        // EMAIL/SIMPLE
+        return ",\"plainText\":true";
     }
 
     /**
@@ -460,11 +471,12 @@ public class RouteBriefingRequest {
      * @return
      */
     private synchronized String getProductCodesJson() {
-        if (typeOfBrief == Constants.TypeOfBrief.STANDARD){
+        if (typeOfBrief == Constants.TypeOfBrief.STANDARD
+                || typeOfBrief == Constants.TypeOfBrief.OUTLOOK
+                || selectedBriefingType == Constants.BriefingFormat.SIMPLE.getDisplayValue()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        boolean atLeastOne = false;
         sb.append("\"items\":[");
         if (productCodes.size() > 0) {
             for (int i = 0; i < productCodes.size(); ++i) {
@@ -477,9 +489,8 @@ public class RouteBriefingRequest {
         return sb.toString();
     }
 
-    private synchronized String getTailorOptionsJson() {
+    private synchronized String  getTailorOptionsJson() {
         StringBuilder sb = new StringBuilder();
-        boolean atLeastOne = false;
         sb.append("\"tailoring\":[");
         if (tailoringOptions.size() > 0) {
             for (int i = 0; i < tailoringOptions.size(); ++i) {

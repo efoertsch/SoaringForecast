@@ -13,6 +13,22 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/forecast_menu_1800wxbrief"
+        android:title="@string/one_800_wx_brief"
+        app:showAsAction="never"
+        android:visible="false"
+        >
+        <menu>
+            <item
+                android:id="@+id/wxbrief_task_notams"
+                android:title="@string/wxbrief_task_notams" />
+            <item
+                android:id="@+id/wxbrief_route_briefing"
+                android:title="@string/wxbrief_route_briefing" />
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/forecast_menu_display_options"
         android:title="@string/forecast_menu_display_options"
         app:showAsAction="never" />
@@ -34,20 +50,6 @@
             <item
                 android:id="@+id/forecast_menu_map_hybrid"
                 android:title="@string/hybrid" />
-        </menu>
-    </item>
-
-    <item
-        android:id="@+id/forecast_menu_1800wxbrief"
-        android:title="@string/one_800_wx_brief"
-        app:showAsAction="never">
-        <menu>
-            <item
-                android:id="@+id/wxbrief_task_notams"
-                android:title="@string/wxbrief_task_notams" />
-            <item
-                android:id="@+id/wxbrief_route_briefing"
-                android:title="@string/wxbrief_route_briefing" />
         </menu>
     </item>
 

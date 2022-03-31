@@ -23,6 +23,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
         , StringsUtilsModule.class
         , AppPreferencesModule.class
         , ForecastServerUrlModule.class
+        , JsonServerUrlModule.class
         , TurnpointBitmapUtilsModule.class
         , AviationWeatherGovModule.class
         , UsgsServerUrlModule.class

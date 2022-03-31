@@ -20,6 +20,7 @@ import dagger.Component;
         , StringsUtilsModule.class
         , AppPreferencesModule.class
         , ForecastServerUrlModule.class
+        , JsonServerUrlModule.class
         , AirportsDownloaderModule.class
         , AviationWeatherGovModule.class
         , UsgsServerUrlModule.class

@@ -136,30 +136,8 @@ public class WxBriefViewModel extends ObservableViewModel {
      * NGB not implemented as don't want to handle all returned data types
      * So left with those below
      */
-    public enum BriefingFormat {
-        EMAIL("EMail", true),
-        NGBV2("Online(PDF)", true),
-        SIMPLE("Simple", true);
 
-        private String displayValue;
-        private boolean validForNotABrief;
-
-        public String getDisplayValue() {
-            return displayValue;
-        }
-
-        public boolean isValidForNotABrief() {
-            return validForNotABrief;
-        }
-
-        BriefingFormat(String displayValue, boolean validForNotABrief) {
-            this.displayValue = displayValue;
-            this.validForNotABrief = validForNotABrief;
-        }
-    }
-
-
-    private BriefingFormat selectedBriefingFormat = BriefingFormat.EMAIL;
+    private Constants.BriefingFormat selectedBriefingFormat = Constants.BriefingFormat.EMAIL;
 
     public WxBriefViewModel(@NonNull Application application) {
         super(application);
@@ -192,7 +170,6 @@ public class WxBriefViewModel extends ObservableViewModel {
         getOfficialBriefing();
         getBriefFormats();
         getAircraftId();
-        getTypesOfBriefs();
         getWxBriefUserName();
         getDisplayEmailAddressField();
         getBriefingDates();
@@ -202,9 +179,12 @@ public class WxBriefViewModel extends ObservableViewModel {
         getTurnpointList();
         loadTask();
         loadTaskTurnpoints();
+        // a bit of a hack
+        // set this to load in appropriate products and filter
         if (typeOfBrief != null && typeOfBrief == Constants.TypeOfBrief.NOTAMS) {
-            selectedTypeOfBriefPosition.setValue(Constants.TypeOfBrief.NOTAMS.ordinal());
+            defaultTypeOfBriefPosition = Constants.TypeOfBrief.NOTAMS.ordinal();
         }
+        getTypesOfBriefs();
 
     }
 
@@ -240,11 +220,16 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     private void loadProductsAndTailoringOptions() {
         Single<ArrayList<BriefingOption>> singleProductCodes = appRepository.getWxBriefProductCodes(selectedTypeOfBrief);
-        Single<ArrayList<BriefingOption>> singleTailoringOptions = appRepository.getWxBriefNGBV2TailoringOptions(selectedTypeOfBrief);
+        Single<ArrayList<BriefingOption>> singleTailoringOptions;
+        if (selectedBriefingFormat == Constants.BriefingFormat.EMAIL) {
+            singleTailoringOptions = appRepository.getWxBriefNonNGBV2TailoringOptions(selectedTypeOfBrief);
+        } else {
+            singleTailoringOptions = appRepository.getWxBriefNGBV2TailoringOptions(selectedTypeOfBrief);
+        }
         Disposable disposable = Single.zip(
                 singleProductCodes,
                 singleTailoringOptions,
-                (productCodes, tailoringOptions) -> createBriefingOptions(productCodes, tailoringOptions))
+                (productCodes, tailoringOptions) -> createBriefingOptions(productCodes, tailoringOptions,selectedBriefingFormat ))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(briefingOptions -> {
@@ -256,8 +241,8 @@ public class WxBriefViewModel extends ObservableViewModel {
         compositeDisposable.add(disposable);
     }
 
-    private BriefingOptions createBriefingOptions(ArrayList<BriefingOption> productCodes, ArrayList<BriefingOption> tailoringOptions) {
-        return new BriefingOptions(productCodes, tailoringOptions);
+    private BriefingOptions createBriefingOptions(ArrayList<BriefingOption> productCodes, ArrayList<BriefingOption> tailoringOptions, Constants.BriefingFormat  briefingFormat) {
+        return new BriefingOptions(productCodes, tailoringOptions,   briefingFormat );
     }
 
     public MutableLiveData<BriefingOptions> getMasterBriefingOptions() {
@@ -435,7 +420,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     public void setSelectedTypeOfBriefPosition(int position) {
         selectedTypeOfBrief = Constants.TypeOfBrief.values()[position];
         routeBriefingRequest.setTypeOfBrief(selectedTypeOfBrief);
-        displayProductCodes.setValue(!(selectedTypeOfBrief == Constants.TypeOfBrief.STANDARD));
+        displayProductCodes.setValue(selectedTypeOfBrief == Constants.TypeOfBrief.ABBREVIATED);
         loadProductsAndTailoringOptions();
     }
 
@@ -485,7 +470,7 @@ public class WxBriefViewModel extends ObservableViewModel {
     public MutableLiveData<Boolean> getDisplayEmailAddressField() {
         if (displayEmailAddressField == null) {
             displayEmailAddressField = new MutableLiveData<>();
-            displayEmailAddressField.setValue(selectedBriefingFormat == BriefingFormat.EMAIL);
+            displayEmailAddressField.setValue(selectedBriefingFormat == Constants.BriefingFormat.EMAIL);
         }
         return displayEmailAddressField;
     }
@@ -695,10 +680,10 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     public ArrayList<String> getBriefingFormatList() {
         ArrayList<String> briefingTypes = new ArrayList<>();
-        for (BriefingFormat briefingFormat : BriefingFormat.values()) {
+        for (Constants.BriefingFormat briefingFormat : Constants.BriefingFormat.values()) {
             boolean isOfficialBriefing = getOfficialBriefing().getValue();
             if (isOfficialBriefing
-                    || (!isOfficialBriefing && briefingFormat.validForNotABrief)) {
+                    || (!isOfficialBriefing && briefingFormat.isValidForNotABrief())) {
                 briefingTypes.add(briefingFormat.getDisplayValue());
             }
         }
@@ -715,7 +700,7 @@ public class WxBriefViewModel extends ObservableViewModel {
 
     }
 
-    // Briefing is Email, or PDF
+    // Briefing is Email, or PDF, Simple
     public MutableLiveData<Integer> getSelectedBriefFormatPosition() {
         if (selectedBriefFormatPosition == null) {
             selectedBriefFormatPosition = new MutableLiveData<>();
@@ -732,9 +717,9 @@ public class WxBriefViewModel extends ObservableViewModel {
         selectedBriefFormatPosition.setValue(0);
     }
 
-    public BriefingFormat getBriefingFormatBasedOnDisplayValue(String displayValue) {
-        for (BriefingFormat briefingFormat : BriefingFormat.values()) {
-            if (briefingFormat.displayValue.equals(displayValue)) {
+    public Constants.BriefingFormat getBriefingFormatBasedOnDisplayValue(String displayValue) {
+        for (Constants.BriefingFormat briefingFormat : Constants.BriefingFormat.values()) {
+            if (briefingFormat.getDisplayValue().equals(displayValue)) {
                 return briefingFormat;
             }
         }
@@ -747,12 +732,12 @@ public class WxBriefViewModel extends ObservableViewModel {
         selectedBriefingFormat = getBriefingFormatBasedOnDisplayValue(
                 briefingFormats.getValue().get(selectedBriefingFormatPosition));
         routeBriefingRequest.setSelectedBriefingType(selectedBriefingFormat.name());
-        displayEmailAddressField.setValue(selectedBriefingFormat == BriefingFormat.EMAIL);
+        displayEmailAddressField.setValue(selectedBriefingFormat == Constants.BriefingFormat.EMAIL);
         toggleTailoringListUpdatedFlag();
-        if (selectedBriefingFormat == BriefingFormat.NGBV2) {
+        if (selectedBriefingFormat == Constants.BriefingFormat.NGBV2) {
             post(new WXBriefDownloadsPermission());
-
         }
+        loadProductsAndTailoringOptions();
     }
 
     // currently always true unless we implement option for BriefingFormat.SIMPLE
@@ -854,12 +839,12 @@ public class WxBriefViewModel extends ObservableViewModel {
         setWorkingFlag(false);
         if (routeBriefing != null && routeBriefing.returnStatus && routeBriefing.returnMessages.size() == 0) {
             // request submitted OK
-            if (selectedBriefingFormat.equals(BriefingFormat.EMAIL)) {
+            if (selectedBriefingFormat.equals(Constants.BriefingFormat.EMAIL)) {
                 post(new WxBriefRequestResponse(getApplication().getString(R.string.your_briefing_should_arrive_in_your_mailbox_shortly), false));
-            } else if (selectedBriefingFormat.equals(BriefingFormat.NGBV2)) {
+            } else if (selectedBriefingFormat.equals(Constants.BriefingFormat.NGBV2)) {
                 // need to get NGBV2 briefing from
                 createRouteBriefingPDF(routeBriefing.ngbv2PdfBriefing);
-            } else if ((selectedBriefingFormat.equals(BriefingFormat.SIMPLE))) {
+            } else if ((selectedBriefingFormat.equals(Constants.BriefingFormat.SIMPLE))) {
                 createSimpleRouteBriefing(routeBriefing.simpleWeatherBriefing);
             }
         } else {
@@ -900,7 +885,7 @@ public class WxBriefViewModel extends ObservableViewModel {
         setWorkingFlag(true);
         Disposable disposable = null;
 
-        disposable = appRepository.writeWxBriefToDownloadsDirectory(ngbv2PdfBriefing)
+        disposable = appRepository.writeWxBriefToDirectory(ngbv2PdfBriefing)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pdfBriefUri -> {

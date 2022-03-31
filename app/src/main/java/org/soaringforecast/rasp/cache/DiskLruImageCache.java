@@ -134,9 +134,9 @@ public class DiskLruImageCache {
             }
         }
 
-        if (BuildConfig.DEBUG) {
-            Timber.d(bitmap == null ? "" : "image read from disk %s",  getCacheKey(key));
-        }
+//        if (BuildConfig.DEBUG) {
+//            Timber.d(bitmap == null ? "" : "image read from disk %s",  getCacheKey(key));
+//        }
 
         return bitmap;
 
