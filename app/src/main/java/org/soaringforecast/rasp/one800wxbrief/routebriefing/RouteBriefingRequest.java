@@ -462,7 +462,7 @@ public class RouteBriefingRequest {
             return "";
         }
         // EMAIL/SIMPLE
-        return ",\"plainText\n:true";
+        return ",\"plainText\":true";
     }
 
     /**
@@ -472,6 +472,7 @@ public class RouteBriefingRequest {
      */
     private synchronized String getProductCodesJson() {
         if (typeOfBrief == Constants.TypeOfBrief.STANDARD
+                || typeOfBrief == Constants.TypeOfBrief.OUTLOOK
                 || selectedBriefingType == Constants.BriefingFormat.SIMPLE.getDisplayValue()) {
             return "";
         }
