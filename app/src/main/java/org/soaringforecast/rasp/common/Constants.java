@@ -40,8 +40,8 @@ public class Constants {
     }
 
     public enum BriefingFormat {
-        EMAIL("EMail", true),
         NGBV2("Online(PDF)", true),
+        EMAIL("EMail", true),
         SIMPLE("Simple", true);
         private String displayValue;
         private boolean validForNotABrief;
