@@ -1,5 +1,6 @@
 
+<p>Use at your own risk. No warrenties expressed or implied.</p>
 <p>1800WxBrief options are experimental options that provide a subset of flight information from the <a href="1800wxbrief.com">1800WxBrief.com</a> FlightService system.</p>
-<p>Before using this option you must first authorize this app to request flight information on your behalf. To permit this: </p>
+<p>Before using this option you must first authorize this app to request flight information on your behalf. To authorize this: </p>
 <p>1. Sign in to <a href="1800wxbrief.com">1800WxBrief.com</a><br>2. On the menu bar click on Account/Service Provider Authorization<br>3. Click Edit<br>4. Click Yes next to SoaringForecast<br>5. Click Save</p>
 <p>Authorizing this app to use 1800WxBrief does not inhibit getting flight information directly from 1800WxBrief. You can continue to sign into and use 1800WxBrief as before.</p>
