@@ -408,7 +408,8 @@
                     android:text="@{viewModel.simpleBriefingText}"
                     android:visibility="@{viewModel.simpleBriefingText != null ? View.VISIBLE : View.GONE}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
             </ScrollView>
 
             <Button
