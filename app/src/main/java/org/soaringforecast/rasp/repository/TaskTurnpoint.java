@@ -24,7 +24,7 @@ public class TaskTurnpoint {
     private int taskOrder;
 
     // Following 2 fields refer back to same fields as in Turnpoint
-    // Doing this rather than turnpoint.id due to  OnConflictStrategy.REPLACE stategy
+    // Doing this rather than turnpoint.id due to  OnConflictStrategy.REPLACE strategy
     // used for any turnpoint updates.
     @NonNull
     private String title = "";

@@ -48,6 +48,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import dagger.android.support.DaggerAppCompatActivity;
 
 // Nav bar http://guides.codepath.com/android/fragment-navigation-drawer#setup-toolbar
@@ -331,13 +332,13 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(PopThisFragmentFromBackStack event) {
-            FragmentManager fm = getSupportFragmentManager();
-            List<Fragment> fragments = fm.getFragments();
-            if (fragments.size() > 1 ) {
-                fm.beginTransaction().remove(fragments.get(fragments.size() -1)).commit();
-            } else {
-                // never get rid of SoaringForecastFragment( which should always be first fragment
-            }
+        FragmentManager fm = getSupportFragmentManager();
+        List<Fragment> fragments = fm.getFragments();
+        if (fragments.size() > 1) {
+            fm.beginTransaction().remove(fragments.get(fragments.size() - 1)).commit();
+        } else {
+            // never get rid of SoaringForecastFragment( which should always be first fragment
+        }
     }
 
     public void sendFeedBack() {
@@ -357,31 +358,22 @@ public class ForecastDrawerActivity extends DaggerAppCompatActivity {
      * Determine if the Play Store is installed on the device
      *
      * */
-    public void rateApp()
-    {
-        try
-        {
+    public void rateApp() {
+        try {
             Intent rateIntent = rateIntentForUrl("market://details");
             startActivity(rateIntent);
-        }
-        catch (ActivityNotFoundException e)
-        {
+        } catch (ActivityNotFoundException e) {
             Intent rateIntent = rateIntentForUrl("https://play.google.com/store/apps/details");
             startActivity(rateIntent);
         }
     }
 
-    private Intent rateIntentForUrl(String url)
-    {
+    private Intent rateIntentForUrl(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("%s?id=%s", url, getPackageName())));
         int flags = Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
-        if (Build.VERSION.SDK_INT >= 21)
-        {
+        if (Build.VERSION.SDK_INT >= 21) {
             flags |= Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
-        }
-        else
-        {
-            //noinspection deprecation
+        } else {
             flags |= Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
         }
         intent.addFlags(flags);

@@ -507,7 +507,7 @@ public class TurnpointEditViewModel extends ObservableViewModel {
             needToSaveUpdates.setValue(true);
             frequencyErrorText = null;
         } else {
-            frequencyErrorText = getApplication().getString(R.string.frequency_format_errror);
+            frequencyErrorText = getApplication().getString(R.string.frequency_format_error);
         }
         setSaveIndicator();
         notifyPropertyChanged(org.soaringforecast.rasp.BR.frequencyErrorText);

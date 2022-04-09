@@ -373,14 +373,15 @@ public class RouteBriefingRequest {
      */
     public String getRestParmString() throws IllegalArgumentException, UnsupportedEncodingException {
         StringBuffer sb = new StringBuffer();
-        sb.append("notABriefing=").append(notABriefing);
+       // sb.append("notABriefing=").append(notABriefing);
         sb.append(AMPERSAND).append("includeCodedMessages=").append(includeCodedMessages);
         sb.append(AMPERSAND).append("type=").append(type);   //ICAO
         // Only send id if user wants record of briefing filed at
         // 1800wxbrief ((!notABriefing) == false)
-        if (!notABriefing) {
-            sb.append(AMPERSAND).append("aircraftIdentifier=").append(aircraftIdentifier);
-        }
+//        if (!notABriefing) {
+//            sb.append(AMPERSAND).append("aircraftIdentifier=").append(aircraftIdentifier);
+//        }
+        sb.append(AMPERSAND).append("aircraftIdentifier=").append(aircraftIdentifier);
         sb.append(AMPERSAND).append("routeCorridorWidth=").append(routeCorridorWidth);
         sb.append(AMPERSAND).append("outlookBriefing=").append(((outlookBriefing != null) ? outlookBriefing : false));
         sb.append(AMPERSAND).append("flightRules=").append(flightRules);
@@ -389,9 +390,10 @@ public class RouteBriefingRequest {
         sb.append(AMPERSAND).append("destination=").append(destination);
         sb.append(AMPERSAND).append("route=").append(route);
         sb.append(AMPERSAND).append("flightDuration=").append(flightDuration);
-        if (!notABriefing) {
-            sb.append(AMPERSAND).append("webUserName=").append(webUserName);
-        }
+//        if (!notABriefing) {
+//            sb.append(AMPERSAND).append("webUserName=").append(webUserName);
+//        }
+        sb.append(AMPERSAND).append("webUserName=").append(webUserName);
         sb.append(AMPERSAND).append("speedKnots=").append(speedKnots);
         sb.append(AMPERSAND).append("versionRequested=").append("99999999");
         sb.append(AMPERSAND).append("briefingType=").append(selectedBriefingType);

@@ -29,7 +29,6 @@ import org.soaringforecast.rasp.utils.TimeUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -447,7 +446,7 @@ public class WxBriefViewModel extends ObservableViewModel {
             appPreferences.setAircraftRegistration(trimmedId);
             setAircraftIdErrorText(null);
         } else {
-            setAircraftIdErrorText(getApplication().getString(R.string.invalid_aircraftid));
+            setAircraftIdErrorText(getApplication().getString(R.string.invalid_aircraft_id));
         }
         validateData();
     }

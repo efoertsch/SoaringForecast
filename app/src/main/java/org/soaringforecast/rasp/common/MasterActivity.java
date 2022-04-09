@@ -145,7 +145,7 @@ public abstract class MasterActivity extends DaggerAppCompatActivity {
     }
 
 
-    // Putting these here because needs to be handled from bith task and turnpoint activities
+    // Putting these here because needs to be handled from both task and turnpoint activities
     // Perhaps should subclass but...
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTurnpointMessageEvent(DisplayTurnpointSatelliteView displayTurnpointSatelliteView) {

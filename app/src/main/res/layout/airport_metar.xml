@@ -227,7 +227,7 @@
                         style="@style/forecastLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/metar_visibilty"
+                        android:text="@string/metar_visibility"
                         />
 
                     <TextView

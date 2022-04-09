@@ -71,7 +71,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.FileProvider;
@@ -1171,7 +1170,7 @@ public class AppRepository implements CacheTimeListener {
     public Spanned getWxBriefDisclaimer(){
         return Html.fromHtml(appRepository.loadAssetText("wx_brief_experimental_disclaimer"
                 , R.string.wxbrief_disclaimer_file_is_missing
-                , R.string.oops_error_reading_wxbrief_displaimer_file));
+                , R.string.oops_error_reading_wxbrief_disclaimer_file));
     }
 
     //   Read asset file

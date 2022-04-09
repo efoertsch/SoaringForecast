@@ -14,7 +14,7 @@
     <string name="format_temp_in_parenthesis" formatted="false">(%1.1f%2$s)</string>
 
     <!-- misc errors -->
-    <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from avaiationweather.gov</string>
+    <string name="aviation_gov_unspecified_error">Unspecified error occurred in receiving data from aviationweather.gov</string>
 
     <!-- menu items -->
     <string name="action_settings">Settings</string>
@@ -31,7 +31,7 @@
     <string name="metar_speed">Speed:</string>
     <string name="metar_windSpeed">Wind Speed:</string>
     <string name="metar_windGust">Gusts:</string>
-    <string name="metar_visibilty">Visibility:</string>
+    <string name="metar_visibility">Visibility:</string>
     <string name="metar_flightCategory">Flight Category:</string>
     <string name="metar_skyConditions">Sky Conditions:</string>
     <string name="metar_cloudBaseAgl">CloudBase(AGL):</string>
@@ -255,7 +255,7 @@
     <string name="airport_menu_metar_settings">Settings</string>
     <string name="no_metar_taf_airports_selected">No airports have been selected yet. Would you like to add some?</string>
     <string name="new_task_name">New Task</string>
-    <string name="error_adding_task_and_turnpoints">An error occurrred adding the task and turnpoints to the database.</string>
+    <string name="error_adding_task_and_turnpoints">An error occurred adding the task and turnpoints to the database.</string>
     <string name="add_task">Add Task</string>
     <string name="error_loading_task_and_turnpoints">An error occurring retrieving the task from the database.</string>
     <string name="error_searching_turnpoints">An error occurred searching the turnpoint database.</string>
@@ -277,7 +277,7 @@
     <string name="save_task_before_exit">Do you want to save your changes before exit?</string>
     <string name="select_region">Select Region</string>
 
-    <string name="default_region_not_in_available_forecast_regions">Your default region: %1$s is not in the available list of forecast regions. Please select another region forforecasts.</string>
+    <string name="default_region_not_in_available_forecast_regions">Your default region: %1$s is not in the available list of forecast regions. Please select another region forecasts.</string>
     <string name="default_forecast_model" translatable="false">GFS</string>
     <string name="oops_error_getting_regions">Error getting current.json for regions/dates.</string>
     <string name="no_soundings_available">No soundings available.</string>
@@ -293,7 +293,7 @@
     <string name="order_forecasts">Order Forecasts</string>
     <string name="forecast_order_menu_reset">Reset</string>
 
-    <string name="missing_data_check_internet_cell_service">Can not load forecast. Check for bad interent/cell service.</string>
+    <string name="missing_data_check_internet_cell_service">Can not load forecast. Check for bad internet/cell service.</string>
     <string name="googlemap_not_defined_can_not_create_turnpoint_markers">GoogleMap not defined. Can\'t create turnpoint markers</string>
     <string name="distance_from_prior_and_start">%1$d/%2$dkm</string>
     <string name="display_sua">Display SUA</string>
@@ -309,7 +309,7 @@
     <string name="no_permission_to_read_downloads_dir">Permission to read Downloads directory was denied. Can not check for/import custom turnpoint files.</string>
     <string name="no_permission_to_write_downloads_dir">Permission to write to Downloads directory was denied. Can not export turnpoints to Downloads directory.</string>
     <string name="permission_denied">PERMISSION DENIED</string>
-    <string name="unknow_error_in_render">Unkown\nError in rendering info</string>
+    <string name="unknown_error_in_render">Unknown\nError in rendering info</string>
     <string name="map_background">Map Background</string>
     <string name="terrain">Terrain</string>
     <string name="satellite">Satellite</string>
@@ -351,7 +351,7 @@
     <string name="direction_error">Empty or 3 digit direction from 000 - 360.</string>
     <string name="runway_length_error">Empty or format nnnn.n(ft|m)</string>
     <string name="runway_width_error">Empty or format nnn(ft|m)</string>
-    <string name="frequency_format_errror">Empty or format of nnn.nnn (last digit 0 or 5)</string>
+    <string name="frequency_format_error">Empty or format of nnn.nnn (last digit 0 or 5)</string>
     <string name="turnpoint_cup_style_type">Turnpoint Type</string>
     <string name="turnpoint_type">Turnpoint type</string>
     <string name="search_turnpoints">Search Turnpoints</string>
@@ -389,7 +389,7 @@
     <string name="turnpoint_edit_email">Email</string>
     <string name="error_reading_turnpoints">Oops! An error occurred getting the turnpoints.</string>
     <string name="only_alpha_numeric_chars">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
-    <string name="error_in_emailing_turnpoint">Oops! An error occurred emailling your turnpoint(s).</string>
+    <string name="error_in_emailing_turnpoint">Oops! An error occurred emailing your turnpoint(s).</string>
     <string name="updated_or_new_turnpoint">New or updated turnpoint information</string>
     <string name="add_email_turnpoints">Email Turnpoints</string>
     <string name="turnpoint_edit_toggle_latlng_format">Toggle Lat/Long Format</string>
@@ -400,7 +400,7 @@
     <string name="turnpoint_view_airnav">AirNav</string>
     <string name="turnpoint_edit_menu_airnav">AirNav</string>
     <string name="activity_rate_app">Rate App</string>
-    <string name="error_in_emailing_feedback">Error in emailling feedback.</string>
+    <string name="error_in_emailing_feedback">Error in emailing feedback.</string>
     <string name="feedback">Feedback</string>
     <string name="task_deleted">Task Deleted</string>
     <string name="undo">Undo?</string>
@@ -421,10 +421,10 @@
     <string name="departure_date">Departure Date</string>
     <string name="departure_time">Departure Time</string>
     <string name="briefing_format">Briefing Format</string>
-    <string name="error_loading_task">An error occured retrieving the task from the database.</string>
+    <string name="error_loading_task">An error occurred retrieving the task from the database.</string>
     <string name="your_briefing_should_arrive_in_your_mailbox_shortly">Your briefing should arrive in your mailbox shortly</string>
     <string name="undefined_error_occurred_on_1800wxbrief_request">Oops. Undefined error occurred on 1800WxBrief request.</string>
-    <string name="invalid_aircraftid">"Invalid aircraft registration id. "</string>
+    <string name="invalid_aircraft_id">"Invalid aircraft registration id. "</string>
     <string name="invalid_wxbrief_web_username">Invalid 1800WXBrief user name. Must be email address.</string>
     <string name="route_corridor_width_min_and_max_range">Route Corridor width must be between %1$d and %2$d.</string>
     <string name="winds_aloft_corridor_min_to_max_value">Winds aloft corridor must be between %1$d and %2$d.</string>
@@ -434,7 +434,7 @@
     <string name="select_1800wxbrief_tailoring_options">Output &amp; Filters</string>
     <string name="select_1800wxbrief_product_options">Select Content</string>
     <string name="wxbrief_disclaimer_file_is_missing">Oops! The 1800wxbrief disclaimer file is missing.</string>
-    <string name="oops_error_reading_wxbrief_displaimer_file">Oops. Error reading the 1800WxBrief disclaimer file.</string>
+    <string name="oops_error_reading_wxbrief_disclaimer_file">Oops. Error reading the 1800WxBrief disclaimer file.</string>
     <string name="product_options">Product Options</string>
     <string name="type_of_brief">Type Of Brief</string>
     <string name="reporting_options">Reporting Options</string>
@@ -457,11 +457,10 @@
     <string name="request_notams">Request NOTAMS</string>
     <string name="get_notams">GET NOTAMS</string>
     <string name="get_briefing">GET BRIEFING</string>
-    <string name="wx_brief_route_briefing">188WXBrief Route Briefing</string>
+    <string name="wx_brief_route_briefing">1800WXBrief Route Brief</string>
     <string name="use_and_disclaimer">Use And Disclaimer</string>
     <string name="notams_abbreviated_brief">NOTAMS Abbreviated Brief</string>
-    <string name="wxbrief_notams_abbreviated_brief_info">This option provides an abbreviated brief with assumed takeoff time of 1 hr in the future and a flight duration of 10 hrs.
-        \nHowever 1800WXBrief defaults provides information from 2 hrs before this time to 72 hours pass the end of the flight duration.
+    <string name="wxbrief_notams_abbreviated_brief_info">This option provides NOTAMs and TFRs currently active as of the time the request is made.
         \n\nOnly the following are requested for this briefing:
         \n\u2022 Temporary Flight Restrictions
         \n\u2022 Closed/Unsafe NOTAMS
@@ -469,7 +468,7 @@
         \n\u2022 UAS Operating Area
         \n\u2022 Communication NOTAM
         \n\u2022 Special Use Airspace NOTAM
-        \n\nThe route corridor is set to 25nm, the minimum allowed by 1800WXBrief.
+        \n\nThe route corridor is set to 50nm width, the minimum allowed by 1800WXBrief.
     </string>
     <string name="wxbrief_aircraft_registration_info">Use any club aircraft registration or your own glider.</string>
     <string name="wxbrief_account_name_info">Your email address associated with your 1800WXBrief account.</string>

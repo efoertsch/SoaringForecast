@@ -173,62 +173,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/wx_brief_format_label" />
 
-        <TextView
-            android:id="@+id/wx_brief_departure_date_label"
-            android:visibility="gone"
-            style="@style/TextView.ForSpinnerLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/departure_date"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wx_briefing_format_spinner" />
-
-        <ImageButton
-            android:id="@+id/wx_brief_departure_date_info"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?android:colorBackground"
-            app:layout_constraintStart_toEndOf="@+id/wx_brief_departure_date_label"
-            app:layout_constraintTop_toTopOf="@+id/wx_brief_departure_date_label"
-            app:layout_constraintBottom_toBottomOf="@+id/wx_brief_departure_date_label"
-            app:srcCompat="@drawable/ic_info" />
-
-        <TextView
-            android:id="@+id/wx_brief_departure_time_label"
-            style="@style/TextView.ForSpinnerLabel"
-            android:visibility="gone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/departure_time"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
-            app:layout_constraintTop_toBottomOf="@+id/wx_briefing_format_spinner" />
-
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/wx_briefing_date_spinner"
-            android:visibility="gone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:entries="@{viewModel.briefingDates}"
-            android:selectedItemPosition="@={viewModel.selectedBriefingDatePosition}"
-            android:theme="@style/DividerSpinnerTheme"
-            app:layout_constraintEnd_toStartOf="@id/guideline_50pct"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_date_label" />
-
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/wx_brief_departure_time_spinner"
-            android:visibility="gone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:entries="@{viewModel.departureTimes}"
-            android:nextFocusForward="@+id/wx_brief_corridor_width"
-            android:selectedItemPosition="@={viewModel.selectedDepartureTimePosition}"
-            android:theme="@style/DividerSpinnerTheme"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline_50pct"
-            app:layout_constraintTop_toBottomOf="@id/wx_brief_departure_time_label" />
 
         <LinearLayout
             android:id="@+id/wx_brief_buttons"

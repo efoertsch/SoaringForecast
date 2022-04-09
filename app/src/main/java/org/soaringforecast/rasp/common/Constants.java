@@ -30,7 +30,7 @@ public class Constants {
         OUTLOOK("Outlook"),
         STANDARD("Standard"),
         ABBREVIATED("Abbreviated"),
-        NOTAMS("NOTAMS");   // not an offical 1800WXBrief type of brief but an app specific type
+        NOTAMS("NOTAMS");   // for NOTAMS of interest to glider pilots
         public static String BufferedReader;
         public final String displayValue;
 
