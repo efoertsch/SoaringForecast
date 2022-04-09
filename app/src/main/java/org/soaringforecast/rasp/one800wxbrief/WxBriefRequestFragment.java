@@ -62,7 +62,7 @@ public class WxBriefRequestFragment extends WxBriefMasterFragment{
 
         wxBriefView.wxBriefAircraftRegistrationInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_aircraft_registration_info));
         wxBriefView.wxBriefAccountNameInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_account_name_info));
-        wxBriefView.wxBriefOfficialBriefInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_official_brief_info));
+        //wxBriefView.wxBriefOfficialBriefInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_official_brief_info));
         wxBriefView.wxBriefDepartureDateInfo.setOnClickListener(v -> displayInfoDialog(R.string.wxbrief_departure_date_info));
         wxBriefView.wxBriefSimpleBriefingText.setMovementMethod(new ScrollingMovementMethod());
         return wxBriefView.getRoot();

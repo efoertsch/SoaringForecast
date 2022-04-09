@@ -16,9 +16,9 @@
             android:id="@+id/scrollView1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_standard"
-            android:layout_marginBottom="@dimen/margin_standard"
-            android:padding="@dimen/margin_double"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_standard"
+            android:layout_marginEnd="@dimen/margin_standard"
             app:layout_constraintBottom_toTopOf="@+id/wx_brief_buttons"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -33,7 +33,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoLink="all"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="#000000"/>
 
                 <CheckBox
                     android:id="@+id/wx_brief_disclaimer_do_not_show_again"

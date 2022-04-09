@@ -780,7 +780,7 @@ public class ForecastMapper implements OnMapReadyCallback, GoogleMap.OnMarkerCli
                     view.setText(turnpoint.getFormattedTurnpointDetails());
 
                 } catch (NumberFormatException nfe) {
-                    view.setText(context.getString(R.string.unknow_error_in_render));
+                    view.setText(context.getString(R.string.unknown_error_in_render));
                 }
 
             } else if (marker.getTag() instanceof LatLngForecast) {

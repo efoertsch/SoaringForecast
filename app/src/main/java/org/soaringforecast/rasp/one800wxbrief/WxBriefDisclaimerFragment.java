@@ -11,9 +11,8 @@ import androidx.databinding.DataBindingUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.soaringforecast.rasp.R;
 import org.soaringforecast.rasp.app.AppPreferences;
-import org.soaringforecast.rasp.common.messages.PopThisFragmentFromBackStack;
 import org.soaringforecast.rasp.databinding.WxBriefDisclaimerView;
-import org.soaringforecast.rasp.one800wxbrief.messages.ContineWithWxBrief;
+import org.soaringforecast.rasp.one800wxbrief.messages.ContinueWithWxBrief;
 import org.soaringforecast.rasp.repository.AppRepository;
 
 import javax.inject.Inject;
@@ -55,7 +54,7 @@ public class WxBriefDisclaimerFragment extends DaggerFragment {
     }
 
     private void sendWxBriefContinue() {
-        EventBus.getDefault().post(new ContineWithWxBrief());
+        EventBus.getDefault().post(new ContinueWithWxBrief());
     }
 
 }
