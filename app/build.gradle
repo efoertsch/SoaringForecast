@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'   // prerequisite for crashlytics
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 31
@@ -115,9 +117,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Android compat/support libraries
-
     implementation "com.google.android.material:material:$MATERIAL_VERSION"
-
     implementation "androidx.appcompat:appcompat:$ANDROIDX_APPCOMPAT_VERSION"
     implementation "androidx.recyclerview:recyclerview:$ANDROIDX_RECYCLERVIEW_VERSION"
     implementation "androidx.cardview:cardview:$ANDROIDX_CARDVIEW_VERSION"
@@ -150,7 +150,6 @@ dependencies {
 
     // For cgi call to get specific lat/long forecast
     implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
-
 
     // GSON (JSON)
     implementation "com.google.code.gson:gson:$GSON"
@@ -203,6 +202,11 @@ dependencies {
 
     // Timber for logging
     implementation "com.jakewharton.timber:timber:$TIMBER"
+
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:29.3.1')
+    implementation 'com.google.firebase:firebase-crashlytics'   // With irebase-bom bom don't need to specify version
+    implementation 'com.google.firebase:firebase-analytics'    // ditto
 
     // JVM Unit Testing---------------------------------------------------------------------
     testImplementation "junit:junit:$JUNIT"

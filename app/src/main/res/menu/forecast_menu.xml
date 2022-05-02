@@ -16,6 +16,7 @@
         android:id="@+id/forecast_menu_1800wxbrief"
         android:title="@string/one_800_wx_brief"
         app:showAsAction="never"
+        android:visible="false"
         >
         <menu>
             <item

@@ -667,7 +667,7 @@ public class SoaringForecastViewModel extends AndroidViewModel {
             soaringForecastImageAnimation.cancel();
         }
         setLoopRunning();
-        Timber.e("soaringForecastImageAnimation is null so no animation to stop");
+        Timber.w("soaringForecastImageAnimation is null so no animation to stop");
     }
 
     private void selectForecastImage(int index) {
