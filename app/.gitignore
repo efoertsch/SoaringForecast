@@ -14,5 +14,6 @@ gradlew.bat
 app/release
 app/src/debug/res/values
 app/src/release/res/values/
+app/google-services.json
 
 
