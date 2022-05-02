@@ -4,6 +4,6 @@
     <string name="json_server_url">http://www.soargbsc.com</string>
     <string name="aviation_weather_gov_url">https://aviationweather.gov/adds/dataserver_current/</string>
     <string name="usgs_server_url">https://nationalmap.gov/</string>
-    <string name="one_800wxbrief_url"></string>
+    <string name="one_800wxbrief_url">https://lmfsweb.afss.com/Website/rest/</string>
 
 </resources>

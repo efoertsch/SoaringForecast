@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/wxbrief_use_and_disclaimer_menu"
-        android:title="@string/use_and_disclaimer"
+        android:title="@string/wxbrief_setup"
         app:showAsAction="never"
         android:visible="true"
         />
