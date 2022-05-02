@@ -29,6 +29,7 @@ public class WxBriefDisclaimerFragment extends DaggerFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setTitle(R.string.wx_brief_authorization);
     }
 
     @Override

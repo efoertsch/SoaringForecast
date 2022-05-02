@@ -135,7 +135,7 @@ public class WxBriefMasterFragment extends MasterFragment implements EasyPermiss
                 .show();
         TextView title = alertDialog.findViewById(R.id.wxbrief_info_title);
         if (title != null) {
-            title.setText(R.string.wxbrief_title);
+            title.setText(R.string.wxbrief_notams_brief);
         }
         TextView info = alertDialog.findViewById(R.id.wxbrief_info);
         if (info != null) {
