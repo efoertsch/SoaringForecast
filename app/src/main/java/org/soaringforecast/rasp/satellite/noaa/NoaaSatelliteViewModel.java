@@ -50,6 +50,8 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> working = new MutableLiveData<>();
     private MutableLiveData<Boolean> loopRunning = new MutableLiveData<>();
 
+    private MutableLiveData<Boolean> steppingEnabled = new MutableLiveData<>();
+
     private SatelliteImageInfo satelliteImageInfo;
 
     public SatelliteImageDownloader satelliteImageDownloader;
@@ -146,7 +148,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
 
     protected void loadSatelliteImages() {
         working.setValue(true);
-
+        steppingEnabled.setValue(false);
        Disposable disposable = satelliteImageDownloader.getImageDownloaderObservable(satelliteImageInfo.getSatelliteImageNames())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -213,6 +215,7 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
 
     private void startImageAnimation() {
         working.setValue(false);
+        steppingEnabled.setValue(true);
         stopImageAnimation();
         numberImages = satelliteImageInfo.getSatelliteImageNames().size();
         // need to 'overshoot' the animation to be able to get the last image value
@@ -270,6 +273,12 @@ public class NoaaSatelliteViewModel extends AndroidViewModel {
     public LiveData<Boolean> getWorking() {
         return working;
     }
+
+
+    public LiveData<Boolean> isSteppingEnabled() {
+        return steppingEnabled;
+    }
+
 
 
     //-------- Satellite Regions (CONUS, Albany, ..

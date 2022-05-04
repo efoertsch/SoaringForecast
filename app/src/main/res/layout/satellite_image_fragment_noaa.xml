@@ -107,6 +107,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/back_arrow"
                     android:onClick="@{() -> viewModel.onStepClick(setAction.BACKWARD)}"
+                    android:clickable="@{viewModel.isSteppingEnabled()}"
                     android:tint="@color/colorPrimary"
                     bind:srcCompat="@drawable/ic_keyboard_arrow_left"/>
 
@@ -135,6 +136,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/forward_arrow"
                     android:onClick="@{() -> viewModel.onStepClick(setAction.FORWARD)}"
+                    android:clickable="@{viewModel.isSteppingEnabled()}"
                     android:tint="@color/colorPrimary"
                     bind:srcCompat="@drawable/ic_keyboard_arrow_right"/>
             </LinearLayout>
