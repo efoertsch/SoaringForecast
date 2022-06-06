@@ -6,7 +6,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public class TurnpointFileRetrofit {
 
-    private static final String TURNPOINTS_URL = "http://soaringweb.org/TP/";
+    private static final String TURNPOINTS_URL = "https://soaringweb.org/TP/";
 
     private Retrofit retrofit;
 

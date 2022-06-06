@@ -830,7 +830,9 @@ public class WxBriefViewModel extends ObservableViewModel {
         } catch (Exception e) {
             post(new ProgramError(e));
         }
-        compositeDisposable.add(disposable);
+        if (disposable != null) {
+            compositeDisposable.add(disposable);
+        }
     }
 
 

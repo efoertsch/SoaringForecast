@@ -2,6 +2,7 @@ package org.soaringforecast.rasp.turnpoints.seeyou;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +33,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
+import timber.log.Timber;
 
 // TODO create viewmodel and move business logic to it
 public class SeeYouImportFragment extends CommonTurnpointsImportFragment<TurnpointFile, SeeYouImportViewHolder> {
@@ -164,6 +166,7 @@ public class SeeYouImportFragment extends CommonTurnpointsImportFragment<Turnpoi
                             showProgressBar(false);
                             post(new SnackbarMessage(getString(R.string.turnpoint_database_load_oops), Snackbar.LENGTH_INDEFINITE));
                             // TODO mail crash
+                            Timber.d( t);
                         });
         compositeDisposable.add(disposable);
     }

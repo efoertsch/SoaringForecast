@@ -151,7 +151,7 @@ public class WxBriefMasterFragment extends MasterFragment implements EasyPermiss
         if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
              // continue
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.rational_write_downloads_dir), WRITE_DOWNLOADS_ACCESS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            EasyPermissions.requestPermissions(this, getString(R.string.rational_downloads_dir_for_1800wxbrief_pdf), WRITE_DOWNLOADS_ACCESS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
     }
 

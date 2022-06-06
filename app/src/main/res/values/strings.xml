@@ -468,6 +468,7 @@
         \n\u2022 UAS Operating Area
         \n\u2022 Communication NOTAM
         \n\u2022 Special Use Airspace NOTAM
+        \n\u2022 Runway/Taxiway/Apron/Aerodome/FDC NOTAM
         \n\nThe route corridor is set to 50nm width, the minimum allowed by 1800WXBrief.
     </string>
     <string name="wxbrief_aircraft_registration_info">Use any club aircraft registration or your own glider.</string>
@@ -480,4 +481,5 @@
     <string name="wxbrief_file_not_deleted_in_downloads_dir">Previous 1800WXBrief not deleted in Downloads directory. The briefing may be incorrect.</string>
     <string name="wx_brief_authorization">Briefing Authorization</string>
     <string name="wxbrief_notams_brief">NOTAMS Brief</string>
+    <string name="rational_downloads_dir_for_1800wxbrief_pdf">Permission is needed to dowload PDF brief (recommended) to Downloads directory.</string>
 </resources>
