@@ -11,6 +11,7 @@ Display soaring forecast and weather information of interest to glider pilots.
 6. GEOS East current and animated (GIF) images.
 7. Customized version of Windy with task overlay. 
 8. Options to start browsers to display either Dr. Jacks and/or SkySight
+9. Use task turnpoints to get 1800WxBrief briefing.
 
 Airport information for TAF/METARS downloaded from http://ourairports.com/data/. Note that on weekends, the file may be empty (being updated?) for a period of time, but the app should check for that and schedule downloads until what appears to be a full file is available.
 
