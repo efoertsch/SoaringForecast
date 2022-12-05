@@ -1,4 +1,7 @@
 # SoaringForecast
+
+!!! Development has been switched to a Flutter version of this code. See https://github.com/efoertsch/flutter_soaring_forecast.
+
 Display soaring forecast and weather information of interest to glider pilots.
 
 1. Soaring forecasts displayed from Greater Boston Soaring Club RASP (http://www.soargbsc.com/rasp/  courtesy of Steve Paavola). Currently NewEngland forecasts are always generated. Mifflin forecasts are also being generated but they may be dropped post Mifflin encampment in May. (A short diversion - Steve Paavola's RASP generating code posted in github at https://github.com/s-paavola/multi-rasp )
